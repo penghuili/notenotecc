@@ -52,8 +52,8 @@ export function Camera() {
     const constraints = {
       video: {
         facingMode: { exact: 'environment' },
-        width: { ideal: 512 },
-        height: { ideal: 512 },
+        width: { ideal: 1024 },
+        height: { ideal: 1024 },
       },
     };
 
