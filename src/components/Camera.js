@@ -52,8 +52,8 @@ export function Camera() {
     const constraints = {
       video: {
         facingMode: { exact: 'environment' },
-        width: { ideal: 1024 },
-        height: { ideal: 1024 },
+        width: { ideal: 512 },
+        height: { ideal: 512 },
       },
     };
 
@@ -172,9 +172,10 @@ export function Camera() {
         bottom="0"
         left="0"
         width="100%"
+        height="100%"
         justify="center"
-        pb="8"
-        style={{ zIndex: 3 }}
+        align="end"
+        style={{ zIndex: 3, paddingBottom: '30vh' }}
       >
         {hasImage ? (
           <>

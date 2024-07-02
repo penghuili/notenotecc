@@ -26,7 +26,7 @@ function App() {
           <Camera />
         ) : (
           <Flex justify="center" pt="6" px="2">
-            Only Android phones are supported.
+            Use it on your phone.
           </Flex>
         )}
 
