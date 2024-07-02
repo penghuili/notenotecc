@@ -2,9 +2,10 @@ import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiAnticlockwise2Line,
   RiCameraLine,
-  RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
+  RiDownloadLine,
+  RiShareLine,
 } from '@remixicon/react';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver';
@@ -195,7 +196,7 @@ export function Camera() {
                 }
               }}
             >
-              <RiCheckLine />
+              {isIOS() ? <RiShareLine /> : <RiDownloadLine />}
             </IconButton>
             <IconButton
               size="4"
