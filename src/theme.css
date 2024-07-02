@@ -1,0 +1,79 @@
+:root, .light, .light-theme {
+  --tomato-1: #f9fefe !important;
+  --tomato-2: #f2fbfa !important;
+  --tomato-3: #dcf9f7 !important;
+  --tomato-4: #c7f4f0 !important;
+  --tomato-5: #b0ece7 !important;
+  --tomato-6: #98dfda !important;
+  --tomato-7: #77cfc9 !important;
+  --tomato-8: #3cbab4 !important;
+  --tomato-9: #33b4ae !important;
+  --tomato-10: #1fa8a2 !important;
+  --tomato-11: #007f7a !important;
+  --tomato-12: #003e3b !important;
+
+  --tomato-a1: #00d5d506 !important;
+  --tomato-a2: #00b19d0d !important;
+  --tomato-a3: #00d4c523 !important;
+  --tomato-a4: #00cdbb38 !important;
+  --tomato-a5: #00c2b24f !important;
+  --tomato-a6: #00b0a467 !important;
+  --tomato-a7: #00a59a88 !important;
+  --tomato-a8: #00a59dc3 !important;
+  --tomato-a9: #00a19acc !important;
+  --tomato-a10: #009c95e0 !important;
+  --tomato-a11: #007f7a !important;
+  --tomato-a12: #003e3b !important;
+
+  --tomato-contrast: #fff !important;
+  --tomato-surface: #effaf9cc !important;
+  --tomato-indicator: #33b4ae !important;
+  --tomato-track: #33b4ae !important;
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root, .light, .light-theme {
+      --tomato-1: oklch(99.4% 0.005 190.3) !important;
+      --tomato-2: oklch(98.1% 0.01 190.3) !important;
+      --tomato-3: oklch(96.1% 0.03 190.3) !important;
+      --tomato-4: oklch(93.5% 0.047 190.3) !important;
+      --tomato-5: oklch(90% 0.061 190.3) !important;
+      --tomato-6: oklch(85.6% 0.072 190.3) !important;
+      --tomato-7: oklch(79.7% 0.085 190.3) !important;
+      --tomato-8: oklch(72.1% 0.109 190.3) !important;
+      --tomato-9: oklch(70.1% 0.109 190.3) !important;
+      --tomato-10: oklch(66.3% 0.109 190.3) !important;
+      --tomato-11: oklch(53% 0.109 190.3) !important;
+      --tomato-12: oklch(32.7% 0.056 190.3) !important;
+
+      --tomato-a1: color(display-p3 0.02 0.804 0.804 / 0.02) !important;
+      --tomato-a2: color(display-p3 0.02 0.647 0.557 / 0.044) !important;
+      --tomato-a3: color(display-p3 0.004 0.761 0.725 / 0.114) !important;
+      --tomato-a4: color(display-p3 0.004 0.749 0.682 / 0.185) !important;
+      --tomato-a5: color(display-p3 0.004 0.682 0.639 / 0.259) !important;
+      --tomato-a6: color(display-p3 0.004 0.612 0.565 / 0.342) !important;
+      --tomato-a7: color(display-p3 0.004 0.569 0.525 / 0.451) !important;
+      --tomato-a8: color(display-p3 0 0.541 0.514 / 0.612) !important;
+      --tomato-a9: color(display-p3 0 0.518 0.494 / 0.636) !important;
+      --tomato-a10: color(display-p3 0 0.49 0.463 / 0.687) !important;
+      --tomato-a11: color(display-p3 0 0.349 0.329 / 0.785) !important;
+      --tomato-a12: color(display-p3 0 0.165 0.157 / 0.91) !important;
+
+      --tomato-contrast: #fff !important;
+      --tomato-surface: color(display-p3 0.941 0.98 0.976 / 0.8) !important;
+      --tomato-indicator: oklch(70.1% 0.109 190.3) !important;
+      --tomato-track: oklch(70.1% 0.109 190.3) !important;
+    }
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.remixicon {
+  width: 20px;
+  height: 20px;
+}
