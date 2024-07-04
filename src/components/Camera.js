@@ -2,6 +2,7 @@ import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiAnticlockwise2Line,
   RiCameraLine,
+  RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
   RiDownloadLine,
@@ -21,7 +22,7 @@ const Video = styled.video`
   left: 0;
   width: 100vw;
   height: 100vw;
-  object-fit: cover;
+  object-fit: contain;
   z-index: 1;
 `;
 const Image = styled.img`
@@ -32,8 +33,8 @@ const ImageWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: white;
   z-index: 2;
 
@@ -42,7 +43,7 @@ const ImageWrapper = styled.div`
   justify-content: center;
 `;
 
-export function Camera() {
+export function Camera({ onSelect }) {
   const [hasImage, setHasImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [canvas, setCanvas] = useState(null);
@@ -53,8 +54,8 @@ export function Camera() {
     const constraints = {
       video: {
         facingMode: { exact: 'environment' },
-        width: { ideal: 1024 },
-        height: { ideal: 1024 },
+        width: { ideal: 900 },
+        height: { ideal: 900 },
       },
     };
 
@@ -160,7 +161,13 @@ export function Camera() {
   }
 
   return (
-    <div>
+    <div
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+      }}
+    >
       <Video ref={videoRef} autoPlay />
       {hasImage && (
         <ImageWrapper>
@@ -169,7 +176,7 @@ export function Camera() {
       )}
 
       <Flex
-        position="fixed"
+        position="absolute"
         bottom="0"
         left="0"
         width="100%"
@@ -180,6 +187,15 @@ export function Camera() {
       >
         {hasImage ? (
           <>
+            <IconButton
+              size="4"
+              onClick={() => {
+                onSelect({ canvas, url: imageUrl });
+                handleClose();
+              }}
+            >
+              <RiCheckLine />
+            </IconButton>
             <IconButton
               size="4"
               onClick={async () => {
@@ -195,6 +211,7 @@ export function Camera() {
                   });
                 }
               }}
+              ml="4"
             >
               {isIOS() ? <RiShareLine /> : <RiDownloadLine />}
             </IconButton>
