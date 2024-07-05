@@ -1,3 +1,4 @@
+import { Box } from '@radix-ui/themes';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -6,6 +7,7 @@ import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton';
 import { useAtomValue } from '../shared-private/react/store/atomHelpers';
 import { isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
 import { updateImageUrlsEffect } from '../store/note/noteEffects';
+import { ImageActions } from './ImageActions';
 
 const FullScreenWrapper = styled.div`
   position: fixed;
@@ -20,7 +22,7 @@ const FullScreenWrapper = styled.div`
   align-items: center;
 `;
 
-export function Image({ noteId, imageUrl }) {
+export function Image({ noteId, imageUrl, imagePath }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
 
   const [showImage, setShowImage] = useState(false);
@@ -54,6 +56,10 @@ export function Image({ noteId, imageUrl }) {
           onClick={() => setShowFullScreen(true)}
         />
 
+        <Box position="absolute" top="2" right="2">
+          <ImageActions noteId={noteId} image={{ url: imageUrl, path: imagePath }} />
+        </Box>
+
         {showFullScreen && (
           <FullScreenWrapper onClick={() => setShowFullScreen(false)}>
             <img
@@ -68,7 +74,7 @@ export function Image({ noteId, imageUrl }) {
   }
 
   return (
-    <div ref={ref} style={{ minHeight: '10px' }}>
+    <div ref={ref} style={{ minHeight: '10px', position: 'relative' }}>
       {renderContent()}
     </div>
   );

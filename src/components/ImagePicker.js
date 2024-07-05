@@ -1,5 +1,5 @@
-import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
-import { RiCameraLine, RiCheckLine } from '@remixicon/react';
+import { Flex, IconButton } from '@radix-ui/themes';
+import { RiArrowDownDoubleLine, RiImageAddLine } from '@remixicon/react';
 import { Cropt } from 'cropt';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -33,26 +33,29 @@ export function ImagePicker({ onSelect }) {
   }, [url]);
 
   return (
-    <div>
-      <FilePicker accept="image/*" takePhoto onSelect={setImage} height="auto">
+    <Flex direction="column">
+      <FilePicker accept="image/*" takePhoto={false} onSelect={setImage} height="auto">
         <IconButton size="4">
-          <RiCameraLine />
+          <RiImageAddLine />
         </IconButton>
       </FilePicker>
 
-      <div ref={editorRef} />
+      <div ref={editorRef} style={{ marginTop: '8px' }} />
 
       {image && (
         <IconButton
           size="4"
           onClick={async () => {
             const canvas = await croptRef.current.toCanvas(900);
-            onSelect({ canvas, imageUrl: url });
+            const imageUrl = canvas.toDataURL('image/png');
+            onSelect({ canvas, url: imageUrl });
+            setImage(null);
           }}
+          mt="2"
         >
-          <RiCheckLine />
+          <RiArrowDownDoubleLine />
         </IconButton>
       )}
-    </div>
+    </Flex>
   );
 }

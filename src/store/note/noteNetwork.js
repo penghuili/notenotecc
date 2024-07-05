@@ -151,7 +151,7 @@ export async function deleteNote(noteId) {
   try {
     const data = await HTTP.delete(appName, `/v1/notes/${noteId}`);
 
-    await updateCache(data, 'delete');
+    await updateCache({ sortKey: noteId }, 'delete');
 
     return { data, error: null };
   } catch (error) {

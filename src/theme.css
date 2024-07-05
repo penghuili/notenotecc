@@ -1,4 +1,6 @@
-:root, .light, .light-theme {
+:root,
+.light,
+.light-theme {
   --tomato-1: #f9fefe !important;
   --tomato-2: #f2fbfa !important;
   --tomato-3: #dcf9f7 !important;
@@ -33,7 +35,9 @@
 
 @supports (color: color(display-p3 1 1 1)) {
   @media (color-gamut: p3) {
-    :root, .light, .light-theme {
+    :root,
+    .light,
+    .light-theme {
       --tomato-1: oklch(99.4% 0.005 190.3) !important;
       --tomato-2: oklch(98.1% 0.01 190.3) !important;
       --tomato-3: oklch(96.1% 0.03 190.3) !important;
@@ -76,4 +80,14 @@ body {
 .remixicon {
   width: 20px;
   height: 20px;
+}
+
+.cropt-container .cr-slider-wrap {
+  margin-bottom: 0;
+}
+.cropt-container .cr-boundary {
+  width: 100%;
+  height: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
 }

@@ -1,6 +1,9 @@
 import { Box } from '@radix-ui/themes';
 import React from 'react';
 
+import { useIsMobileSize } from '../shared-private/react/hooks/useIsMobileSize';
+
 export function Padding({ children }) {
-  return <Box px="2">{children}</Box>;
+  const isMobile = useIsMobileSize();
+  return <Box px={isMobile ? '2' : '0'}>{children}</Box>;
 }

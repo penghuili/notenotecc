@@ -15,11 +15,8 @@ export function Images({ noteId, images, showDelete }) {
     if (images?.length === 1) {
       return '100%';
     }
-    if (images?.length === 2) {
-      return 'calc(50% - 5px)';
-    }
 
-    return 'calc(25% - 7.5px)';
+    return 'calc(50% - 5px)';
   }, [images]);
 
   if (!images?.length) {

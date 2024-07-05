@@ -1,15 +1,14 @@
-import { Box, CheckboxGroup, Spinner, Text } from '@radix-ui/themes';
+import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { InputField } from '../shared-private/react/InputField';
-import { albumsAtom, isLoadingAlbumsAtom } from '../store/album/albumAtoms';
+import { albumsAtom } from '../store/album/albumAtoms';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 
 export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKeys, onSelect }) {
   const albums = useAtomValue(albumsAtom);
-  const isLoading = useAtomValue(isLoadingAlbumsAtom);
 
   useEffectOnce(fetchAlbumsEffect);
 
@@ -43,8 +42,6 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
           </CheckboxGroup.Root>
         </>
       )}
-
-      {isLoading && <Spinner />}
     </div>
   );
 }

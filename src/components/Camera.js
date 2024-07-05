@@ -1,29 +1,25 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiAnticlockwise2Line,
+  RiArrowDownDoubleLine,
   RiCameraLine,
-  RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
-  RiDownloadLine,
-  RiShareLine,
+  RiImageAddLine,
 } from '@remixicon/react';
-import { format } from 'date-fns';
-import { saveAs } from 'file-saver';
-import React, { useEffect, useRef, useState } from 'react';
+import { Cropt } from 'cropt';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { setToastEffect } from '../shared-private/react/store/sharedEffects';
-import { isIOS } from './isAndroid';
+import { FilePicker } from './FilePicker';
+import { isAndroidPhone } from './isAndroid';
 
 const Video = styled.video`
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100vw;
   height: 100vw;
+  max-width: 600px;
+  max-height: 600px;
   object-fit: contain;
-  z-index: 1;
 `;
 const Image = styled.img`
   width: 100%;
@@ -34,7 +30,7 @@ const ImageWrapper = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100vw;
   background-color: white;
   z-index: 2;
 
@@ -44,11 +40,19 @@ const ImageWrapper = styled.div`
 `;
 
 export function Camera({ onSelect }) {
-  const [hasImage, setHasImage] = useState(false);
+  const [hasTakenImage, setHasTakenImage] = useState(false);
   const [imageUrl, setImageUrl] = useState(null);
   const [canvas, setCanvas] = useState(null);
   const videoStreamRef = useRef(null);
   const videoRef = useRef(null);
+
+  const pickedImageEditorRef = useRef(null);
+  const croptRef = useRef(null);
+  const [pickedImage, setPickedImage] = useState(null);
+  const pickedImageUrl = useMemo(
+    () => (pickedImage ? URL.createObjectURL(pickedImage) : null),
+    [pickedImage]
+  );
 
   useEffect(() => {
     const constraints = {
@@ -60,7 +64,7 @@ export function Camera({ onSelect }) {
     };
 
     function startVideoStream() {
-      if (videoStreamRef.current) {
+      if (videoStreamRef.current || !isAndroidPhone()) {
         return;
       }
 
@@ -97,6 +101,26 @@ export function Camera({ onSelect }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!pickedImageUrl) {
+      return;
+    }
+
+    const cropt = new Cropt(pickedImageEditorRef.current, {
+      viewport: {
+        width: Math.min(600, window.innerWidth),
+        height: Math.min(600, window.innerWidth),
+        type: 'square',
+      },
+    });
+    cropt.bind(pickedImageUrl);
+    croptRef.current = cropt;
+
+    return () => {
+      cropt.destroy();
+    };
+  }, [pickedImageUrl]);
+
   function handleCapture() {
     const tempCanvas = document.createElement('canvas');
     const width = videoRef.current.videoWidth;
@@ -107,7 +131,7 @@ export function Camera({ onSelect }) {
     context.drawImage(videoRef.current, 0, 0, width, height);
     const data = tempCanvas.toDataURL('image/png');
     setImageUrl(data);
-    setHasImage(true);
+    setHasTakenImage(true);
     setCanvas(tempCanvas);
   }
   function handleRotate(clockwise) {
@@ -132,60 +156,36 @@ export function Camera({ onSelect }) {
     setCanvas(newCanvas);
   }
   function handleClose() {
-    setHasImage(false);
+    setHasTakenImage(false);
     setImageUrl(null);
     setCanvas(null);
-  }
-  async function shareCanvasImage() {
-    // Convert canvas to blob
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-
-    // Create a File object
-    const file = new File([blob], `simplestcam-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`, {
-      type: 'image/png',
-    });
-
-    // Check if the browser supports sharing files
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          files: [file],
-          title: 'SimplestCam',
-        });
-      } catch (error) {
-        console.error('Error sharing canvas image:', error);
-      }
-    } else {
-      console.log('Your browser does not support sharing files.');
-    }
   }
 
   return (
     <div
       style={{
         position: 'relative',
-        width: '100vw',
-        height: '100vh',
       }}
     >
       <Video ref={videoRef} autoPlay />
-      {hasImage && (
+      {hasTakenImage && (
         <ImageWrapper>
           <Image src={imageUrl} />
         </ImageWrapper>
       )}
+      <div
+        ref={pickedImageEditorRef}
+        style={{
+          width: '100%',
+          position: 'absolute',
+          zIndex: pickedImage ? '1' : '-1',
+          top: 0,
+          left: 0,
+        }}
+      />
 
-      <Flex
-        position="absolute"
-        bottom="0"
-        left="0"
-        width="100%"
-        height="100%"
-        justify="center"
-        align="end"
-        style={{ zIndex: 3, paddingBottom: '30vh' }}
-      >
-        {hasImage ? (
+      <Flex justify="center" align="center" pt="9">
+        {hasTakenImage && (
           <>
             <IconButton
               size="4"
@@ -194,26 +194,7 @@ export function Camera({ onSelect }) {
                 handleClose();
               }}
             >
-              <RiCheckLine />
-            </IconButton>
-            <IconButton
-              size="4"
-              onClick={async () => {
-                if (isIOS()) {
-                  await shareCanvasImage();
-                  setToastEffect('Image saved.');
-                  handleClose();
-                } else {
-                  canvas.toBlob(blob => {
-                    saveAs(blob, `simplestcam-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`);
-                    setToastEffect('Image saved.');
-                    handleClose();
-                  });
-                }
-              }}
-              ml="4"
-            >
-              {isIOS() ? <RiShareLine /> : <RiDownloadLine />}
+              <RiArrowDownDoubleLine />
             </IconButton>
             <IconButton
               size="4"
@@ -237,10 +218,36 @@ export function Camera({ onSelect }) {
               <RiCloseLine />
             </IconButton>
           </>
-        ) : (
-          <IconButton size="4" onClick={handleCapture}>
-            <RiCameraLine />
+        )}
+
+        {!!pickedImage && (
+          <IconButton
+            size="4"
+            onClick={async () => {
+              const canvas = await croptRef.current.toCanvas(900);
+              const imageUrl = canvas.toDataURL('image/png');
+              onSelect({ canvas, url: imageUrl });
+              setPickedImage(null);
+            }}
+          >
+            <RiArrowDownDoubleLine />
           </IconButton>
+        )}
+
+        {!hasTakenImage && !pickedImage && (
+          <>
+            {isAndroidPhone() && (
+              <IconButton size="4" onClick={handleCapture} mr="2">
+                <RiCameraLine />
+              </IconButton>
+            )}
+
+            <FilePicker accept="image/*" takePhoto={false} onSelect={setPickedImage} height="auto">
+              <IconButton size="4">
+                <RiImageAddLine />
+              </IconButton>
+            </FilePicker>
+          </>
         )}
       </Flex>
     </div>
