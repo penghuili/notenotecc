@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 export async function shareFile(file) {
   try {
     await navigator.share({
@@ -6,16 +8,22 @@ export async function shareFile(file) {
     });
     return true;
   } catch (error) {
-    console.log('Error sharing canvas image:', error);
+    console.log('Error sharing file:', error);
     return false;
   }
 }
 
-export async function shareImageWithUrl(imageUrl) {
+export async function shareImageFromImgTag(imgElement) {
   try {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const file = new File([blob], 'photo.jpg', { type: blob.type });
+    const canvas = document.createElement('canvas');
+    canvas.width = imgElement.naturalWidth;
+    canvas.height = imgElement.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgElement, 0, 0);
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    const file = new File([blob], `simplestcam-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`, {
+      type: 'image/png',
+    });
 
     return await shareFile(file);
   } catch (e) {

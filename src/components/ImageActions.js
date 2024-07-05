@@ -3,13 +3,13 @@ import { RiDeleteBinLine, RiMoreLine, RiShareLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
-import { shareImageWithUrl, supportShare } from '../lib/shareFile';
+import { shareImageFromImgTag, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { isDeletingImageAtom } from '../store/note/noteAtoms';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
-export function ImageActions({ noteId, image }) {
+export function ImageActions({ noteId, image, imageRef }) {
   const isDeleting = useAtomValue(isDeletingImageAtom);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -32,7 +32,7 @@ export function ImageActions({ noteId, image }) {
             <>
               <DropdownMenu.Item
                 onClick={() => {
-                  shareImageWithUrl(image.url);
+                  shareImageFromImgTag(imageRef.current);
                 }}
               >
                 <RiShareLine />

@@ -1,24 +1,13 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import {
-  RiDeleteBinLine,
-  RiMoreLine,
-  RiPencilLine,
-  RiRefreshLine,
-} from '@remixicon/react';
+import { RiDeleteBinLine, RiMoreLine, RiPencilLine, RiRefreshLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import {
-  isDeletingNoteAtom,
-  isUpdatingImageUrlsAtom,
-} from '../store/note/noteAtoms';
-import {
-  deleteNoteEffect,
-  updateImageUrlsEffect,
-} from '../store/note/noteEffects';
+import { isDeletingNoteAtom, isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
+import { deleteNoteEffect, updateImageUrlsEffect } from '../store/note/noteEffects';
 
 export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
@@ -56,7 +45,7 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
 
           <DropdownMenu.Item
             onClick={() => {
-              updateImageUrlsEffect(note.sortKey, {});
+              updateImageUrlsEffect(note.sortKey, { showSuccess: true });
             }}
             disabled={isUpdatingImageUrls}
           >

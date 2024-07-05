@@ -1,11 +1,5 @@
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
-import {
-  goBackEffect,
-  setToastEffect,
-} from '../../shared-private/react/store/sharedEffects';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
+import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import {
   isAddingImagesAtom,
@@ -201,7 +195,7 @@ export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack })
   updateAtomValue(isAddingImagesAtom, false);
 }
 
-export async function updateImageUrlsEffect(noteId, { onSucceeded, goBack }) {
+export async function updateImageUrlsEffect(noteId, { onSucceeded, goBack, showSuccess }) {
   updateAtomValue(isUpdatingImageUrlsAtom, true);
 
   const { data } = await updateImageUrls(noteId);
@@ -218,7 +212,9 @@ export async function updateImageUrlsEffect(noteId, { onSucceeded, goBack }) {
       updateAtomValue(noteAtom, data);
     }
 
-    setToastEffect('Updated!');
+    if (showSuccess) {
+      setToastEffect('Updated!');
+    }
 
     if (onSucceeded) {
       onSucceeded(data);

@@ -1,5 +1,5 @@
 import { Box } from '@radix-ui/themes';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { useInView } from '../shared-private/react/hooks/useInView';
@@ -26,7 +26,6 @@ export function Image({ noteId, imageUrl, imagePath }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
 
   const [showImage, setShowImage] = useState(false);
-  const [showFullScreen, setShowFullScreen] = useState(false);
 
   const ref = useInView(
     () => {
@@ -43,33 +42,13 @@ export function Image({ noteId, imageUrl, imagePath }) {
     }
 
     return (
-      <>
-        <img
-          src={imageUrl}
-          style={{ width: '100%' }}
-          onError={() => {
-            if (noteId && !isUpdatingImageUrls) {
-              setShowImage(false);
-              updateImageUrlsEffect(noteId, { onSucceeded: () => setShowImage(true) });
-            }
-          }}
-          onClick={() => setShowFullScreen(true)}
-        />
-
-        <Box position="absolute" top="2" right="2">
-          <ImageActions noteId={noteId} image={{ url: imageUrl, path: imagePath }} />
-        </Box>
-
-        {showFullScreen && (
-          <FullScreenWrapper onClick={() => setShowFullScreen(false)}>
-            <img
-              src={imageUrl}
-              style={{ width: '100%', maxWidth: 900, maxHeight: 900 }}
-              onClick={e => e.stopPropagation()}
-            />
-          </FullScreenWrapper>
-        )}
-      </>
+      <InnerImage
+        noteId={noteId}
+        imageUrl={imageUrl}
+        imagePath={imagePath}
+        isUpdatingImageUrls={isUpdatingImageUrls}
+        onShowImage={setShowImage}
+      />
     );
   }
 
@@ -77,5 +56,49 @@ export function Image({ noteId, imageUrl, imagePath }) {
     <div ref={ref} style={{ minHeight: '10px', position: 'relative' }}>
       {renderContent()}
     </div>
+  );
+}
+
+function InnerImage({ noteId, imageUrl, imagePath, isUpdatingImageUrls, onShowImage }) {
+  const imageRef = useRef(null);
+  const [showFullScreen, setShowFullScreen] = useState(false);
+
+  return (
+    <>
+      <img
+        ref={imageRef}
+        src={imageUrl}
+        style={{ width: '100%' }}
+        onError={() => {
+          if (noteId && !isUpdatingImageUrls) {
+            onShowImage(false);
+            updateImageUrlsEffect(noteId, {
+              onSucceeded: () => onShowImage(true),
+              showSuccess: false,
+            });
+          }
+        }}
+        onClick={() => setShowFullScreen(true)}
+        crossOrigin="anonymous"
+      />
+
+      <Box position="absolute" top="2" right="2">
+        <ImageActions
+          noteId={noteId}
+          image={{ url: imageUrl, path: imagePath }}
+          imageRef={imageRef}
+        />
+      </Box>
+
+      {showFullScreen && (
+        <FullScreenWrapper onClick={() => setShowFullScreen(false)}>
+          <img
+            src={imageUrl}
+            style={{ width: '100%', maxWidth: 900, maxHeight: 900 }}
+            onClick={e => e.stopPropagation()}
+          />
+        </FullScreenWrapper>
+      )}
+    </>
   );
 }
