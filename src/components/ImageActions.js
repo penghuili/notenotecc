@@ -9,20 +9,16 @@ import { Confirm } from '../shared-private/react/Confirm';
 import { isDeletingImageAtom } from '../store/note/noteAtoms';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
-export function ImageActions({ noteId, image, imageRef }) {
+export function ImageActions({ noteId, image, imageRef, onDeleteLocal }) {
   const isDeleting = useAtomValue(isDeletingImageAtom);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  if (!noteId) {
-    return null;
-  }
 
   return (
     <>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <IconButton mr="2" radius="full">
+          <IconButton radius="full">
             <RiMoreLine />
           </IconButton>
         </DropdownMenu.Trigger>
@@ -62,7 +58,13 @@ export function ImageActions({ noteId, image, imageRef }) {
         message="Are you sure you want to delete this photo?"
         onConfirm={() => {
           setShowDeleteConfirm(false);
-          deleteImageEffect(noteId, { imagePath: image.path });
+          if (noteId) {
+            deleteImageEffect(noteId, { imagePath: image.path });
+          } else {
+            if (onDeleteLocal) {
+              onDeleteLocal(image);
+            }
+          }
         }}
       />
     </>

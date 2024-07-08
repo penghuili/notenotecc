@@ -1,9 +1,12 @@
+import { IconButton } from '@radix-ui/themes';
+import { RiAddLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector';
-import { Images } from '../components/Images';
+import { Camera } from '../components/Camera';
+import { ImageCarousel } from '../components/ImageCarousel';
 import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { FormButton } from '../shared-private/react/FormButton';
@@ -12,23 +15,31 @@ import { useListener } from '../shared-private/react/hooks/useListener';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import {
+  isAddingImagesAtom,
   isLoadingNoteAtom,
   isUpdatingNoteAtom,
   noteAtom,
 } from '../store/note/noteAtoms';
-import { fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  fetchNoteEffect,
+  updateNoteEffect,
+} from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
 
   const isLoading = useAtomValue(isLoadingNoteAtom);
   const isUpdating = useAtomValue(isUpdatingNoteAtom);
+  const isAddingImages = useAtomValue(isAddingImagesAtom);
   const noteItem = useAtomValue(noteAtom);
 
   const [images, setImages] = useState([]);
   const [note, setNote] = useState('');
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
+
+  const [showCamera, setShowCamera] = useState(false);
 
   useListener(noteItem, value => {
     if (!value) {
@@ -47,14 +58,21 @@ export function NoteEdit() {
   return (
     <>
       <Padding>
-        <PageHeader title="Update note" isLoading={isLoading} hasBack />
+        <PageHeader
+          title="Update note"
+          isLoading={isLoading || isAddingImages || isUpdating}
+          hasBack
+        />
       </Padding>
 
-      <Images noteId={noteId} images={images} showDelete />
+      <ImageCarousel images={images} />
 
       <Padding>
+        <IconButton my="4" onClick={() => setShowCamera(true)}>
+          <RiAddLine />
+        </IconButton>
         <ItemsWrapper>
-          <AreaField label="Note" value={note} onChange={setNote} />
+          <AreaField value={note} onChange={setNote} />
 
           <AlbumsSelector
             selectedAlbumSortKeys={selectedAlbumSortKeys}
@@ -78,6 +96,18 @@ export function NoteEdit() {
           </FormButton>
         </ItemsWrapper>
       </Padding>
+
+      {showCamera && (
+        <Camera
+          onSelect={newImages => {
+            addImagesEffect(noteId, {
+              canvases: newImages.map(i => i.canvas),
+            });
+            setShowCamera(false);
+          }}
+          onCancel={() => setShowCamera(false)}
+        />
+      )}
     </>
   );
 }

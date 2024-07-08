@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Square Image Cropper</title>
+    <style>
+      #cropArea {
+        position: relative;
+        display: inline-block;
+        max-width: 600px;
+        width: 100%;
+      }
+      #cropSquare {
+        position: absolute;
+        border: 2px solid white;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        cursor: move;
+      }
+      #imageCanvas {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <input type="file" id="imageInput" accept="image/*" />
+    <div id="cropArea"></div>
+    <button id="cropButton" style="display: none">Crop</button>
+    <canvas id="resultCanvas" style="display: none"></canvas>
+
+    <script>
+      const imageInput = document.getElementById('imageInput');
+      const cropArea = document.getElementById('cropArea');
+      const cropButton = document.getElementById('cropButton');
+      const resultCanvas = document.getElementById('resultCanvas');
+
+      let image,
+        cropSquare,
+        squareSize,
+        offsetX,
+        offsetY,
+        scale,
+        isLandscape,
+        isDragging = false;
+
+      imageInput.addEventListener('change', handleImageUpload);
+      cropButton.addEventListener('click', cropImage);
+
+      function handleImageUpload(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          image = new Image();
+          image.onload = function () {
+            setupCropArea();
+          };
+          image.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function setupCropArea() {
+        cropArea.innerHTML = '';
+
+        const canvas = document.createElement('canvas');
+        canvas.id = 'imageCanvas';
+
+        scale = Math.min(1, 600 / image.width);
+        canvas.width = image.width * scale;
+        canvas.height = image.height * scale;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        cropArea.appendChild(canvas);
+
+        squareSize = Math.min(canvas.width, canvas.height);
+        isLandscape = canvas.width > canvas.height;
+
+        cropSquare = document.createElement('div');
+        cropSquare.id = 'cropSquare';
+        cropSquare.style.width = squareSize + 'px';
+        cropSquare.style.height = squareSize + 'px';
+        cropSquare.style.left = isLandscape ? '0px' : (canvas.width - squareSize) / 2 + 'px';
+        cropSquare.style.top = isLandscape ? (canvas.height - squareSize) / 2 + 'px' : '0px';
+        cropArea.appendChild(cropSquare);
+
+        cropSquare.addEventListener('mousedown', startDragging);
+        cropSquare.addEventListener('touchstart', startDragging);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        document.addEventListener('mouseup', stopDragging);
+        document.addEventListener('touchend', stopDragging);
+
+        cropButton.style.display = 'block';
+      }
+
+      function startDragging(e) {
+        e.preventDefault();
+        isDragging = true;
+        if (e.type === 'mousedown') {
+          offsetX = e.clientX - cropSquare.offsetLeft;
+          offsetY = e.clientY - cropSquare.offsetTop;
+        } else if (e.type === 'touchstart') {
+          offsetX = e.touches[0].clientX - cropSquare.offsetLeft;
+          offsetY = e.touches[0].clientY - cropSquare.offsetTop;
+        }
+      }
+
+      function drag(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        let newX, newY;
+        if (e.type === 'mousemove') {
+          newX = e.clientX - offsetX;
+          newY = e.clientY - offsetY;
+        } else if (e.type === 'touchmove') {
+          newX = e.touches[0].clientX - offsetX;
+          newY = e.touches[0].clientY - offsetY;
+        }
+
+        if (isLandscape) {
+          newX = Math.max(0, Math.min(newX, cropArea.clientWidth - squareSize));
+          cropSquare.style.left = newX + 'px';
+        } else {
+          newY = Math.max(0, Math.min(newY, cropArea.clientHeight - squareSize));
+          cropSquare.style.top = newY + 'px';
+        }
+      }
+
+      function stopDragging() {
+        isDragging = false;
+      }
+
+      function cropImage() {
+        const cropX = parseInt(cropSquare.style.left) / scale;
+        const cropY = parseInt(cropSquare.style.top) / scale;
+        const originalSquareSize = squareSize / scale;
+
+        resultCanvas.width = originalSquareSize;
+        resultCanvas.height = originalSquareSize;
+        const ctx = resultCanvas.getContext('2d');
+        ctx.drawImage(
+          image,
+          cropX,
+          cropY,
+          originalSquareSize,
+          originalSquareSize,
+          0,
+          0,
+          originalSquareSize,
+          originalSquareSize
+        );
+
+        resultCanvas.style.display = 'block';
+        // You can now use resultCanvas.toDataURL() to get the cropped image data
+      }
+    </script>
+  </body>
+</html>

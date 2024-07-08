@@ -22,7 +22,7 @@ const FullScreenWrapper = styled.div`
   align-items: center;
 `;
 
-export function Image({ noteId, imageUrl, imagePath }) {
+export function Image({ noteId, imageUrl, imagePath, onDeleteLocal }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
 
   const [showImage, setShowImage] = useState(false);
@@ -32,7 +32,7 @@ export function Image({ noteId, imageUrl, imagePath }) {
       setShowImage(true);
     },
     {
-      threshold: 0.5,
+      threshold: 0.1,
     }
   );
 
@@ -48,18 +48,26 @@ export function Image({ noteId, imageUrl, imagePath }) {
         imagePath={imagePath}
         isUpdatingImageUrls={isUpdatingImageUrls}
         onShowImage={setShowImage}
+        onDeleteLocal={onDeleteLocal}
       />
     );
   }
 
   return (
-    <div ref={ref} style={{ minHeight: '10px', position: 'relative' }}>
+    <div ref={ref} style={{ minHeight: '10px', position: 'relative', aspectRatio: '1/1' }}>
       {renderContent()}
     </div>
   );
 }
 
-function InnerImage({ noteId, imageUrl, imagePath, isUpdatingImageUrls, onShowImage }) {
+function InnerImage({
+  noteId,
+  imageUrl,
+  imagePath,
+  isUpdatingImageUrls,
+  onShowImage,
+  onDeleteLocal,
+}) {
   const imageRef = useRef(null);
   const [showFullScreen, setShowFullScreen] = useState(false);
 
@@ -87,6 +95,7 @@ function InnerImage({ noteId, imageUrl, imagePath, isUpdatingImageUrls, onShowIm
           noteId={noteId}
           image={{ url: imageUrl, path: imagePath }}
           imageRef={imageRef}
+          onDeleteLocal={onDeleteLocal}
         />
       </Box>
 

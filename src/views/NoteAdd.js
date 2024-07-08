@@ -1,15 +1,18 @@
 import { Box } from '@radix-ui/themes';
+import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
+import { RiImageLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { AlbumsSelector } from '../components/AlbumsSelector';
 import { Camera } from '../components/Camera';
-import { Images } from '../components/Images';
+import { ImageCarousel } from '../components/ImageCarousel';
 import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { FormButton } from '../shared-private/react/FormButton';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { RouteLink } from '../shared-private/react/RouteLink';
+import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteAtom } from '../store/note/noteAtoms';
 import { createNoteEffect } from '../store/note/noteEffects';
 
@@ -20,38 +23,32 @@ export function NoteAdd() {
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
+  const [showCamera, setShowCamera] = useState(true);
+
   return (
     <>
-      {/* {isAndroidPhone() ? (
+      {showCamera && (
         <Camera
-          onSelect={image => {
-            setImages([...images, image]);
+          onSelect={newImages => {
+            setImages([...images, ...newImages]);
+            setShowCamera(false);
           }}
+          onClose={() => setShowCamera(false)}
         />
-      ) : (
-        <Padding>
-          <Flex pt="4">
-            <ImagePicker
-              onSelect={image => {
-                setImages([...images, image]);
-              }}
-            />
-          </Flex>
-        </Padding>
-      )} */}
+      )}
 
-      <Camera
-        onSelect={image => {
-          setImages([...images, image]);
-        }}
-      />
-
-      <Box mt="6">
-        <Images images={images} />
+      <Box my="6">
+        <ImageCarousel
+          images={images}
+          onDeleteLocal={image => setImages(images.filter(i => i.url !== image.url))}
+        />
       </Box>
 
       <Padding>
         <ItemsWrapper>
+          <IconButton size="4" onClick={() => setShowCamera(true)}>
+            <RiImageLine />
+          </IconButton>
           <AreaField value={note} onChange={setNote} />
 
           <AlbumsSelector
@@ -71,6 +68,10 @@ export function NoteAdd() {
                 goBack: false,
                 onSucceeded: () => {
                   setImages([]);
+                  setNote('');
+                  setSelectedAlbumSortKeys([]);
+                  setNewAlbumDescription('');
+                  navigateEffect('/notes');
                 },
               });
             }}

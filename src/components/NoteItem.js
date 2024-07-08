@@ -4,7 +4,7 @@ import React from 'react';
 
 import { formatDateWeekTime } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink';
-import { Images } from './Images';
+import { ImageCarousel } from './ImageCarousel';
 import { NoteActions } from './NoteActions';
 import { Padding } from './Padding';
 
@@ -21,7 +21,7 @@ export function NoteItem({ note, albums }) {
         </Flex>
       </Padding>
 
-      <Images noteId={note.sortKey} images={note.images} showDelete={false} />
+      <ImageCarousel noteId={note.sortKey} images={note.images} />
 
       {!!note.note && (
         <Padding>

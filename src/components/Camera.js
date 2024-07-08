@@ -1,19 +1,44 @@
 import { Flex, IconButton } from '@radix-ui/themes';
+import { Button } from '@radix-ui/themes/dist/cjs/index.js';
 import {
   RiAnticlockwise2Line,
   RiArrowDownDoubleLine,
   RiCameraLine,
+  RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
   RiImageAddLine,
+  RiSkipDownLine,
+  RiSkipUpLine,
+  RiSquareLine,
 } from '@remixicon/react';
-import { Cropt } from 'cropt';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
+import { makeImageSquare } from '../lib/makeImageSquare';
+import { AnimatedBox } from '../shared-private/react/AnimatedBox';
 import { FilePicker } from './FilePicker';
+import { ImageCropper } from './ImageCropper';
+import { Images } from './Images';
 import { isAndroidPhone } from './isAndroid';
 
+const Wrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  background-color: white;
+`;
+const ContentWrapper = styled.div`
+  position: relative;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  height: 100vh;
+`;
 const Video = styled.video`
   width: 100vw;
   height: 100vw;
@@ -31,28 +56,61 @@ const ImageWrapper = styled.div`
   left: 0;
   width: 100vw;
   height: 100vw;
+  max-width: 600px;
+  max-height: 600px;
   background-color: white;
   z-index: 2;
 
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
 `;
+const CropperWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vw;
+  max-width: 600px;
+  max-height: 600px;
+  background-color: white;
+  z-index: ${props => (props.hasImage ? 2 : -1)};
 
-export function Camera({ onSelect }) {
-  const [hasTakenImage, setHasTakenImage] = useState(false);
-  const [imageUrl, setImageUrl] = useState(null);
-  const [canvas, setCanvas] = useState(null);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const ImagesWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: white;
+`;
+
+export function Camera({ onSelect, onClose }) {
   const videoStreamRef = useRef(null);
   const videoRef = useRef(null);
+  const cropperRef = useRef(null);
 
-  const pickedImageEditorRef = useRef(null);
-  const croptRef = useRef(null);
+  const [takenImageCanvas, setTakenImageCanvas] = useState(null);
+  const [takeImageUrl, setTakenImageUrl] = useState(null);
   const [pickedImage, setPickedImage] = useState(null);
-  const pickedImageUrl = useMemo(
-    () => (pickedImage ? URL.createObjectURL(pickedImage) : null),
-    [pickedImage]
-  );
+
+  const [images, setImages] = useState([]);
+  const [showImages, setShowImages] = useState(false);
+
+  useEffect(() => {
+    disableBodyScroll();
+    return () => {
+      enableBodyScroll();
+      handleClose();
+    };
+  }, []);
 
   useEffect(() => {
     const constraints = {
@@ -85,41 +143,17 @@ export function Camera({ onSelect }) {
         videoStreamRef.current = null;
       }
     }
-    function handleVisibilityChange() {
-      if (document.hidden) {
-        stopVideoStream();
-      } else {
-        startVideoStream();
-      }
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    window.addEventListener('focus', startVideoStream);
+    window.addEventListener('blur', stopVideoStream);
 
     startVideoStream();
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', startVideoStream);
+      window.removeEventListener('blur', stopVideoStream);
     };
   }, []);
-
-  useEffect(() => {
-    if (!pickedImageUrl) {
-      return;
-    }
-
-    const cropt = new Cropt(pickedImageEditorRef.current, {
-      viewport: {
-        width: Math.min(600, window.innerWidth),
-        height: Math.min(600, window.innerWidth),
-        type: 'square',
-      },
-    });
-    cropt.bind(pickedImageUrl);
-    croptRef.current = cropt;
-
-    return () => {
-      cropt.destroy();
-    };
-  }, [pickedImageUrl]);
 
   function handleCapture() {
     const tempCanvas = document.createElement('canvas');
@@ -130,126 +164,172 @@ export function Camera({ onSelect }) {
     const context = tempCanvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, width, height);
     const data = tempCanvas.toDataURL('image/png');
-    setImageUrl(data);
-    setHasTakenImage(true);
-    setCanvas(tempCanvas);
+    setTakenImageUrl(data);
+    setTakenImageCanvas(tempCanvas);
   }
   function handleRotate(clockwise) {
     const newCanvas = document.createElement('canvas');
-    newCanvas.width = canvas.height;
-    newCanvas.height = canvas.width;
+    newCanvas.width = takenImageCanvas.height;
+    newCanvas.height = takenImageCanvas.width;
 
     const newCtx = newCanvas.getContext('2d');
 
     if (clockwise) {
-      newCtx.translate(canvas.height, 0);
+      newCtx.translate(takenImageCanvas.height, 0);
       newCtx.rotate(Math.PI / 2);
     } else {
-      newCtx.translate(0, canvas.width);
+      newCtx.translate(0, takenImageCanvas.width);
       newCtx.rotate(-Math.PI / 2);
     }
 
-    newCtx.drawImage(canvas, 0, 0);
+    newCtx.drawImage(takenImageCanvas, 0, 0);
 
     const data = newCanvas.toDataURL('image/png');
-    setImageUrl(data);
-    setCanvas(newCanvas);
+    setTakenImageUrl(data);
+    setTakenImageCanvas(newCanvas);
   }
   function handleClose() {
-    setHasTakenImage(false);
-    setImageUrl(null);
-    setCanvas(null);
+    setTakenImageCanvas(null);
+    setTakenImageUrl(null);
+    setPickedImage(null);
+    setImages([]);
   }
 
   return (
-    <div
-      style={{
-        position: 'relative',
-      }}
-    >
-      <Video ref={videoRef} autoPlay />
-      {hasTakenImage && (
-        <ImageWrapper>
-          <Image src={imageUrl} />
-        </ImageWrapper>
-      )}
-      <div
-        ref={pickedImageEditorRef}
-        style={{
-          width: '100%',
-          position: 'absolute',
-          zIndex: pickedImage ? '1' : '-1',
-          top: 0,
-          left: 0,
-        }}
-      />
-
-      <Flex justify="center" align="center" pt="9">
-        {hasTakenImage && (
-          <>
-            <IconButton
-              size="4"
-              onClick={() => {
-                onSelect({ canvas, url: imageUrl });
-                handleClose();
-              }}
-            >
-              <RiArrowDownDoubleLine />
-            </IconButton>
-            <IconButton
-              size="4"
-              onClick={() => {
-                handleRotate(false);
-              }}
-              ml="4"
-            >
-              <RiAnticlockwise2Line />
-            </IconButton>
-            <IconButton
-              size="4"
-              onClick={() => {
-                handleRotate(true);
-              }}
-              ml="4"
-            >
-              <RiClockwise2Line />
-            </IconButton>
-            <IconButton size="4" onClick={handleClose} ml="4">
-              <RiCloseLine />
-            </IconButton>
-          </>
+    <Wrapper>
+      <ContentWrapper>
+        <Video ref={videoRef} autoPlay />
+        {!!takenImageCanvas && (
+          <ImageWrapper>
+            <Image src={takeImageUrl} />
+          </ImageWrapper>
         )}
+        <CropperWrapper hasImage={!!pickedImage}>
+          <ImageCropper
+            ref={cropperRef}
+            width={Math.min(600, window.innerWidth / 2)}
+            pickedImage={pickedImage}
+          />
+        </CropperWrapper>
 
-        {!!pickedImage && (
-          <IconButton
-            size="4"
-            onClick={async () => {
-              const canvas = await croptRef.current.toCanvas(900);
-              const imageUrl = canvas.toDataURL('image/png');
-              onSelect({ canvas, url: imageUrl });
-              setPickedImage(null);
-            }}
-          >
-            <RiArrowDownDoubleLine />
-          </IconButton>
-        )}
-
-        {!hasTakenImage && !pickedImage && (
-          <>
-            {isAndroidPhone() && (
-              <IconButton size="4" onClick={handleCapture} mr="2">
-                <RiCameraLine />
+        <Flex justify="center" align="center" py="2">
+          {!!takenImageCanvas && (
+            <>
+              <IconButton
+                size="4"
+                onClick={() => {
+                  setImages([...images, { canvas: takenImageCanvas, url: takeImageUrl }]);
+                }}
+              >
+                <RiArrowDownDoubleLine />
               </IconButton>
-            )}
-
-            <FilePicker accept="image/*" takePhoto={false} onSelect={setPickedImage} height="auto">
-              <IconButton size="4">
-                <RiImageAddLine />
+              <IconButton
+                size="4"
+                onClick={() => {
+                  handleRotate(false);
+                }}
+                ml="4"
+              >
+                <RiAnticlockwise2Line />
               </IconButton>
-            </FilePicker>
-          </>
+              <IconButton
+                size="4"
+                onClick={() => {
+                  handleRotate(true);
+                }}
+                ml="4"
+              >
+                <RiClockwise2Line />
+              </IconButton>
+              <IconButton size="4" onClick={handleClose} ml="4">
+                <RiCloseLine />
+              </IconButton>
+            </>
+          )}
+
+          {!!pickedImage && (
+            <>
+              <IconButton
+                size="4"
+                onClick={async () => {
+                  const canvas = cropperRef.current.crop(900);
+                  const imageUrl = canvas.toDataURL('image/png');
+                  setImages([...images, { canvas, url: imageUrl }]);
+                  setPickedImage(null);
+                }}
+              >
+                <RiArrowDownDoubleLine />
+              </IconButton>
+              <IconButton
+                size="4"
+                onClick={async () => {
+                  const squareCanvas = await makeImageSquare(pickedImage);
+                  const imageUrl = squareCanvas.toDataURL('image/png');
+                  setImages([...images, { canvas: takenImageCanvas, url: imageUrl }]);
+                  setPickedImage(null);
+                }}
+                ml="4"
+              >
+                <RiSquareLine />
+              </IconButton>
+              <IconButton size="4" onClick={handleClose} ml="4">
+                <RiCloseLine />
+              </IconButton>
+            </>
+          )}
+
+          {!takenImageCanvas && !pickedImage && (
+            <>
+              {isAndroidPhone() && (
+                <IconButton size="4" onClick={handleCapture} mr="2">
+                  <RiCameraLine />
+                </IconButton>
+              )}
+
+              <FilePicker
+                accept="image/*"
+                takePhoto={false}
+                onSelect={setPickedImage}
+                height="auto"
+              >
+                <IconButton size="4">
+                  <RiImageAddLine />
+                </IconButton>
+              </FilePicker>
+
+              <IconButton size="4" onClick={onClose} ml="4">
+                <RiCloseLine />
+              </IconButton>
+            </>
+          )}
+        </Flex>
+        {!!images.length && (
+          <Flex justify="center" align="center" py="2">
+            <IconButton
+              size="4"
+              onClick={() => {
+                onSelect(images);
+              }}
+            >
+              <RiCheckLine />
+            </IconButton>
+          </Flex>
         )}
-      </Flex>
-    </div>
+
+        {!!images?.length && (
+          <ImagesWrapper>
+            <Button onClick={() => setShowImages(!showImages)} variant="ghost">
+              {showImages ? <RiSkipDownLine /> : <RiSkipUpLine />} ({images.length})
+            </Button>
+            <AnimatedBox visible={showImages}>
+              <Images
+                images={images}
+                onDeleteLocal={item => setImages(images.filter(i => i.url !== item.url))}
+              />
+            </AnimatedBox>
+          </ImagesWrapper>
+        )}
+      </ContentWrapper>
+    </Wrapper>
   );
 }
