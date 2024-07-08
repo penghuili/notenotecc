@@ -54,7 +54,10 @@ export function Image({ noteId, imageUrl, imagePath, onDeleteLocal }) {
   }
 
   return (
-    <div ref={ref} style={{ minHeight: '10px', position: 'relative', aspectRatio: '1/1' }}>
+    <div
+      ref={ref}
+      style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
+    >
       {renderContent()}
     </div>
   );
@@ -70,13 +73,16 @@ function InnerImage({
 }) {
   const imageRef = useRef(null);
   const [showFullScreen, setShowFullScreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <>
+      {isLoading && <LoadingSkeleton width="100%" height="100%" />}
       <img
         ref={imageRef}
         src={imageUrl}
-        style={{ width: '100%' }}
+        style={{ width: '100%', display: isLoading ? 'none' : 'block' }}
+        onLoad={() => setIsLoading(false)}
         onError={() => {
           if (noteId && !isUpdatingImageUrls) {
             onShowImage(false);
