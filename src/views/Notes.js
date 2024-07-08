@@ -7,11 +7,12 @@ import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import { isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
+import { isAddingImagesAtom, isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {
   const isLoading = useAtomValue(isLoadingNotesAtom);
+  const isAddingImages = useAtomValue(isAddingImagesAtom);
   const { items: notes, startKey, hasMore } = useAtomValue(notesAtom);
   const albumsObject = useAtomValue(albumsObjectAtom);
 
@@ -22,7 +23,7 @@ export function Notes() {
   return (
     <>
       <Padding>
-        <PageHeader title="SimplestCam" isLoading={isLoading} />
+        <PageHeader title="SimplestCam" isLoading={isLoading || isAddingImages} />
       </Padding>
 
       {!!notes?.length &&

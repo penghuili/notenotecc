@@ -1,5 +1,5 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiMoreLine, RiShareLine } from '@remixicon/react';
+import { RiDeleteBinLine, RiMore2Line, RiShareLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -19,7 +19,7 @@ export function ImageActions({ noteId, image, imageRef, onDeleteLocal }) {
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton radius="full">
-            <RiMoreLine />
+            <RiMore2Line />
           </IconButton>
         </DropdownMenu.Trigger>
 
@@ -56,16 +56,17 @@ export function ImageActions({ noteId, image, imageRef, onDeleteLocal }) {
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
         message="Are you sure you want to delete this photo?"
-        onConfirm={() => {
-          setShowDeleteConfirm(false);
+        onConfirm={async () => {
           if (noteId) {
-            deleteImageEffect(noteId, { imagePath: image.path });
+            await deleteImageEffect(noteId, { imagePath: image.path });
           } else {
             if (onDeleteLocal) {
               onDeleteLocal(image);
             }
           }
+          setShowDeleteConfirm(false);
         }}
+        isSaving={isDeleting}
       />
     </>
   );

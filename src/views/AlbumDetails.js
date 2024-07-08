@@ -8,16 +8,15 @@ import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import {
-  isLoadingAlbumItemsAtom,
-  useAlbumNotes,
-} from '../store/album/albumItemAtoms';
+import { isLoadingAlbumItemsAtom, useAlbumNotes } from '../store/album/albumItemAtoms';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
+import { isAddingImagesAtom } from '../store/note/noteAtoms';
 
 export function AlbumDetails() {
   const { albumId } = useParams();
 
   const isLoading = useAtomValue(isLoadingAlbumItemsAtom);
+  const isAddingImages = useAtomValue(isAddingImagesAtom);
   const { items: notes, startKey, hasMore } = useAlbumNotes(albumId);
   const albumsObject = useAtomValue(albumsObjectAtom);
 
@@ -28,7 +27,7 @@ export function AlbumDetails() {
   return (
     <>
       <Padding>
-        <PageHeader title="Album details" isLoading={isLoading} hasBack />
+        <PageHeader title="Album details" isLoading={isLoading || isAddingImages} hasBack />
       </Padding>
 
       {!!notes?.length &&

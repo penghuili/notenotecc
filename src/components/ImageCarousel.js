@@ -1,14 +1,14 @@
 import './ImageCarousel.css';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useSwipeable } from 'react-swipeable';
 
 import { Image } from './Image';
 
 export function ImageCarousel({ noteId, images, onDeleteLocal }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [dragStart, setDragStart] = useState(0);
-  const [dragging, setDragging] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef(null);
 
   const innerIndex = useMemo(
@@ -17,43 +17,67 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
   );
 
   const nextSlide = () => {
+    if (isTransitioning) {
+      return;
+    }
+    setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
   };
 
   const prevSlide = () => {
+    if (isTransitioning) {
+      return;
+    }
+    setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
   };
 
-  const handlers = useSwipeable({
-    onSwipedLeft: nextSlide,
-    onSwipedRight: prevSlide,
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true,
-  });
-
-  const handleDragStart = e => {
-    setDragStart(e.clientX);
-    setDragging(true);
+  const handleTouchStart = e => {
+    setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const handleDragMove = e => {
-    if (!dragging) return;
+  const handleTouchMove = e => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
 
-    const dragDistance = e.clientX - dragStart;
-    const containerWidth = containerRef.current.offsetWidth;
-
-    if (Math.abs(dragDistance) > containerWidth / 3) {
-      if (dragDistance > 0) {
-        prevSlide();
-      } else {
-        nextSlide();
-      }
-      setDragging(false);
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    if (distance > minSwipeDistance) {
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      prevSlide();
     }
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
-  const handleDragEnd = () => {
-    setDragging(false);
+  const handleMouseDown = e => {
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = e => {
+    if (!touchStart) return;
+    setTouchEnd(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+    if (distance > minSwipeDistance) {
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      prevSlide();
+    }
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  const handleMouseLeave = () => {
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   useEffect(() => {
@@ -77,13 +101,16 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
   }
 
   return (
-    <div className="carousel-container" {...handlers} ref={containerRef}>
-      <div
+    <div className="carousel-container" ref={containerRef}>
+      {/* <div
         className="carousel-slide"
-        onMouseDown={handleDragStart}
-        onMouseMove={handleDragMove}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
       >
         <Image
           noteId={noteId}
@@ -91,6 +118,36 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
           imagePath={images[innerIndex].path}
           onDeleteLocal={onDeleteLocal}
         />
+      </div> */}
+
+      <div
+        className="carousel-track"
+        style={{
+          transform: `translateX(-${innerIndex * 100}%)`,
+          transition: isTransitioning ? 'transform 0.2s ease-in-out' : 'none',
+        }}
+        onTransitionEnd={() => setIsTransitioning(false)}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className="carousel-slide"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
+            <Image
+              noteId={noteId}
+              imageUrl={image.url}
+              imagePath={image.path}
+              onDeleteLocal={onDeleteLocal}
+            />
+          </div>
+        ))}
       </div>
       {images.length > 1 && (
         <>

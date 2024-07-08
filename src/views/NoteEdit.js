@@ -65,7 +65,7 @@ export function NoteEdit() {
         />
       </Padding>
 
-      <ImageCarousel images={images} />
+      <ImageCarousel noteId={noteId} images={images} />
 
       <Padding>
         <IconButton my="4" onClick={() => setShowCamera(true)}>

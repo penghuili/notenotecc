@@ -1,5 +1,11 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiMoreLine, RiPencilLine, RiRefreshLine } from '@remixicon/react';
+import {
+  RiDeleteBinLine,
+  RiImageLine,
+  RiMoreLine,
+  RiPencilLine,
+  RiRefreshLine,
+} from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -7,13 +13,19 @@ import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingNoteAtom, isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
-import { deleteNoteEffect, updateImageUrlsEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  deleteNoteEffect,
+  updateImageUrlsEffect,
+} from '../store/note/noteEffects';
+import { Camera } from './Camera';
 
 export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
   const isDeleting = useAtomValue(isDeletingNoteAtom);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   if (!note) {
     return null;
@@ -53,6 +65,15 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
             Refresh images
           </DropdownMenu.Item>
 
+          <DropdownMenu.Item
+            onClick={() => {
+              setShowCamera(true);
+            }}
+          >
+            <RiImageLine />
+            Add images
+          </DropdownMenu.Item>
+
           <DropdownMenu.Separator />
 
           <DropdownMenu.Item
@@ -78,6 +99,17 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
           });
         }}
       />
+      {!!showCamera && (
+        <Camera
+          onSelect={newImages => {
+            addImagesEffect(note.sortKey, {
+              canvases: newImages.map(i => i.canvas),
+            });
+            setShowCamera(false);
+          }}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </>
   );
 }
