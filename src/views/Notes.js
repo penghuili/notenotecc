@@ -1,3 +1,5 @@
+import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
+import { RiAddLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -6,6 +8,7 @@ import { Padding } from '../components/Padding';
 import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
+import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
 import { isAddingImagesAtom, isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
 import { fetchNotesEffect } from '../store/note/noteEffects';
@@ -23,7 +26,15 @@ export function Notes() {
   return (
     <>
       <Padding>
-        <PageHeader title="SimplestCam" isLoading={isLoading || isAddingImages} />
+        <PageHeader
+          title="SimplestCam"
+          isLoading={isLoading || isAddingImages}
+          right={
+            <IconButton onClick={() => navigateEffect('/notes/add')} mr="2">
+              <RiAddLine />
+            </IconButton>
+          }
+        />
       </Padding>
 
       {!!notes?.length &&

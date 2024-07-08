@@ -297,7 +297,7 @@ export function Camera({ onSelect, onClose }) {
                 </IconButton>
               </FilePicker>
 
-              <IconButton size="4" onClick={onClose} ml="4">
+              <IconButton size="4" onClick={onClose} ml="2" variant="soft">
                 <RiCloseLine />
               </IconButton>
             </>

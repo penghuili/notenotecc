@@ -11,7 +11,7 @@ import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { FormButton } from '../shared-private/react/FormButton';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
-import { RouteLink } from '../shared-private/react/RouteLink';
+import { PageHeader } from '../shared-private/react/PageHeader';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteAtom } from '../store/note/noteAtoms';
 import { createNoteEffect } from '../store/note/noteEffects';
@@ -27,22 +27,18 @@ export function NoteAdd() {
 
   return (
     <>
-      {showCamera && (
-        <Camera
-          onSelect={newImages => {
-            setImages([...images, ...newImages]);
-            setShowCamera(false);
-          }}
-          onClose={() => setShowCamera(false)}
-        />
-      )}
+      <Padding>
+        <PageHeader title="Update note" isLoading={isCreating} hasBack />
+      </Padding>
 
-      <Box my="6">
-        <ImageCarousel
-          images={images}
-          onDeleteLocal={image => setImages(images.filter(i => i.url !== image.url))}
-        />
-      </Box>
+      {!!images?.length && (
+        <Box mb="2">
+          <ImageCarousel
+            images={images}
+            onDeleteLocal={image => setImages(images.filter(i => i.url !== image.url))}
+          />
+        </Box>
+      )}
 
       <Padding>
         <ItemsWrapper>
@@ -80,9 +76,17 @@ export function NoteAdd() {
             Create
           </FormButton>
         </ItemsWrapper>
-
-        <RouteLink to="/notes">Notes</RouteLink>
       </Padding>
+
+      {showCamera && (
+        <Camera
+          onSelect={newImages => {
+            setImages([...images, ...newImages]);
+            setShowCamera(false);
+          }}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </>
   );
 }

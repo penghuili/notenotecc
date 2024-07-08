@@ -5,10 +5,7 @@ import { Redirect, Route, Switch, useLocation } from 'wouter';
 
 import { ChangeEmail } from './shared-private/react/ChangeEmail';
 import { ChangePassword } from './shared-private/react/ChangePassword';
-import {
-  LocalStorage,
-  sharedLocalStorageKeys,
-} from './shared-private/react/LocalStorage';
+import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
 import { ResetPassword } from './shared-private/react/ResetPassword';
 import { Security } from './shared-private/react/Security';
 import { Setup2FA } from './shared-private/react/Setup2FA';
@@ -64,6 +61,7 @@ export function Router() {
 
     return (
       <Switch>
+        <Route path="/notes/add" component={NoteAdd} />
         <Route path="/notes/:noteId" component={NoteEdit} />
         <Route path="/notes" component={Notes} />
         <Route path="/albums/:albumId" component={AlbumDetails} />
@@ -73,7 +71,7 @@ export function Router() {
         <Route path="/security/email" component={ChangeEmail} />
         <Route path="/security/password" component={ChangePassword} />
 
-        <Route path="/" component={NoteAdd} />
+        <Route path="/" component={Notes} />
         <Route>{() => <Redirect to="/" />}</Route>
       </Switch>
     );

@@ -1,12 +1,18 @@
 import { Box, Text } from '@radix-ui/themes';
 import { Flex } from '@radix-ui/themes/dist/cjs/index.js';
 import React from 'react';
+import styled from 'styled-components';
 
 import { formatDateWeekTime } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink';
 import { ImageCarousel } from './ImageCarousel';
 import { NoteActions } from './NoteActions';
 import { Padding } from './Padding';
+
+const Descripption = styled.pre`
+  margin: 0;
+  padding: 0;
+`;
 
 export function NoteItem({ note, albums }) {
   return (
@@ -25,7 +31,7 @@ export function NoteItem({ note, albums }) {
 
       {!!note.note && (
         <Padding>
-          <Text>{note.note}</Text>
+          <Descripption>{note.note}</Descripption>
         </Padding>
       )}
 
