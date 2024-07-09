@@ -19,10 +19,7 @@ export function Images({ noteId, images, onDeleteLocal }) {
   return (
     <Flex wrap="wrap" direction="row" justify="start" style={{ gap: '6px' }}>
       {images.map(image => (
-        <div
-          key={image.url}
-          style={{ width: imageWidth, position: 'relative', aspectRaito: '1/1' }}
-        >
+        <div key={image.url} style={{ width: imageWidth, aspectRaito: '1/1' }}>
           <Image
             noteId={noteId}
             imageUrl={image.url}

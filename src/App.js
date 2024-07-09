@@ -5,14 +5,12 @@ import { useLocation } from 'wouter';
 
 import { AppWrapper } from './components/AppWrapper';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { FullScreenImage } from './components/FullScreenImage';
 import { registerSW } from './registerSW';
 import { Router } from './Router';
 import { apps } from './shared-private/js/apps';
 import { useEffectOnce } from './shared-private/react/hooks/useEffectOnce';
-import {
-  HooksOutsieWrapper,
-  setHook,
-} from './shared-private/react/hooksOutside';
+import { HooksOutsieWrapper, setHook } from './shared-private/react/hooksOutside';
 import { initShared } from './shared-private/react/initShared';
 import { initEffect } from './shared-private/react/store/sharedEffects';
 import { Toast } from './shared-private/react/Toast';
@@ -44,6 +42,7 @@ function App() {
       <AppWrapper>
         <Router />
 
+        <FullScreenImage />
         <Toast position="bottom-right" />
       </AppWrapper>
       <HooksOutsieWrapper />

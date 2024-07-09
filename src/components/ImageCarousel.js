@@ -102,24 +102,6 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
 
   return (
     <div className="carousel-container" ref={containerRef}>
-      {/* <div
-        className="carousel-slide"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-      >
-        <Image
-          noteId={noteId}
-          imageUrl={images[innerIndex].url}
-          imagePath={images[innerIndex].path}
-          onDeleteLocal={onDeleteLocal}
-        />
-      </div> */}
-
       <div
         className="carousel-track"
         style={{

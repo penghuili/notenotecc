@@ -12,6 +12,7 @@ export const isDeletingImageAtom = atom(false);
 export const isAddingImagesAtom = atom(false);
 export const isUpdatingImageUrlsAtom = atom(false);
 export const isDeletingNoteAtom = atom(false);
+export const fullScreenImageUrlAtom = atom(null);
 
 export function resetNoteAtoms() {
   updateAtomValue(notesAtom, {});
@@ -24,4 +25,5 @@ export function resetNoteAtoms() {
   updateAtomValue(isAddingImagesAtom, false);
   updateAtomValue(isUpdatingImageUrlsAtom, false);
   updateAtomValue(isDeletingNoteAtom, false);
+  updateAtomValue(fullScreenImageUrlAtom, null);
 }

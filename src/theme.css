@@ -93,7 +93,7 @@ body {
 }
 
 /* disable pull to refresh on android */
-body {
+body.no-pull-to-refresh {
   overscroll-behavior-y: contain;
 }
 

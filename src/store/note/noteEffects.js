@@ -42,6 +42,12 @@ export async function fetchNotesEffect(startKey) {
   const { data } = await fetchNotes(startKey);
   if (data) {
     updateAtomValue(notesAtom, data);
+
+    updateAtomValue(notesAtom, {
+      items: startKey ? [...getAtomValue(notesAtom).items, ...data.items] : data.items,
+      startKey: data.startKey,
+      hasMore: data.hasMore,
+    });
   }
 
   updateAtomValue(isLoadingNotesAtom, false);
