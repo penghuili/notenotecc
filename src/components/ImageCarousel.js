@@ -2,6 +2,7 @@ import './ImageCarousel.css';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import { isMobile } from '../lib/isAndroid';
 import { Image } from './Image';
 
 export function ImageCarousel({ noteId, images, onDeleteLocal }) {
@@ -133,12 +134,16 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
       </div>
       {images.length > 1 && (
         <>
-          <button className="carousel-button prev" onClick={prevSlide}>
-            &#10094;
-          </button>
-          <button className="carousel-button next" onClick={nextSlide}>
-            &#10095;
-          </button>
+          {!isMobile() && (
+            <>
+              <button className="carousel-button prev" onClick={prevSlide}>
+                &#10094;
+              </button>
+              <button className="carousel-button next" onClick={nextSlide}>
+                &#10095;
+              </button>
+            </>
+          )}
           <div className="carousel-dots">
             {images.map((_, index) => (
               <span

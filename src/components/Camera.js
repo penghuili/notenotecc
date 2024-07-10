@@ -7,7 +7,6 @@ import {
   RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
-  RiDeleteBinLine,
   RiImageAddLine,
   RiRefreshLine,
   RiSkipDownLine,
@@ -18,12 +17,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
+import { isAndroidPhone } from '../lib/isAndroid';
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { AnimatedBox } from '../shared-private/react/AnimatedBox';
 import { FilePicker } from './FilePicker';
 import { ImageCropper } from './ImageCropper';
 import { Images } from './Images';
-import { isAndroidPhone } from './isAndroid';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -241,7 +240,7 @@ export function Camera({ onSelect, onClose }) {
               >
                 <RiClockwise2Line />
               </IconButton>
-              <IconButton size="4" onClick={handleClose}>
+              <IconButton size="4" onClick={handleClose} variant="soft">
                 <RiCloseLine />
               </IconButton>
             </>
@@ -271,7 +270,7 @@ export function Camera({ onSelect, onClose }) {
               >
                 <RiSquareLine />
               </IconButton>
-              <IconButton size="4" onClick={handleClose}>
+              <IconButton size="4" onClick={handleClose} variant="soft">
                 <RiCloseLine />
               </IconButton>
             </>
@@ -281,9 +280,10 @@ export function Camera({ onSelect, onClose }) {
             <>
               {isAndroidPhone() && (
                 <>
-                  <IconButton size="4" onClick={handleCapture} mr="2">
+                  <IconButton size="4" onClick={handleCapture}>
                     <RiCameraLine />
                   </IconButton>
+
                   <IconButton
                     size="4"
                     onClick={() => {
@@ -307,6 +307,10 @@ export function Camera({ onSelect, onClose }) {
                   <RiImageAddLine />
                 </IconButton>
               </FilePicker>
+
+              <IconButton size="4" onClick={onClose}>
+                <RiCloseLine />
+              </IconButton>
             </>
           )}
         </Flex>
@@ -322,8 +326,8 @@ export function Camera({ onSelect, onClose }) {
               <RiCheckLine />
             </IconButton>
 
-            <IconButton size="4" onClick={onClose} variant="soft">
-              <RiDeleteBinLine />
+            <IconButton size="4" onClick={onClose}>
+              <RiCloseLine />
             </IconButton>
           </Flex>
         )}

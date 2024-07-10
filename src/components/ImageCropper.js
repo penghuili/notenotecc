@@ -1,7 +1,13 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 import { disablePullToRefresh, enablePullToRefresh } from '../lib/bodySccroll';
-import { isAndroidPhone, isIOS } from './isAndroid';
+import { isAndroidPhone, isIOS } from '../lib/isAndroid';
 
 // eslint-disable-next-line react/display-name
 export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {

@@ -19,3 +19,7 @@ export function isIOS() {
 
   return false;
 }
+
+export function isMobile() {
+  return isAndroidPhone() || isIOS();
+}

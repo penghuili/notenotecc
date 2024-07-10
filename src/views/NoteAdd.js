@@ -11,18 +11,20 @@ import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
+import { getQueryParams } from '../shared-private/react/routeHelpers';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteAtom } from '../store/note/noteAtoms';
 import { createNoteEffect } from '../store/note/noteEffects';
 
 export function NoteAdd() {
+  const { image } = getQueryParams();
   const isCreating = useAtomValue(isCreatingNoteAtom);
   const [images, setImages] = useState([]);
   const [note, setNote] = useState('');
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
-  const [showCamera, setShowCamera] = useState(true);
+  const [showCamera, setShowCamera] = useState(image !== '0');
 
   return (
     <>
