@@ -7,6 +7,7 @@ import {
   RiCheckLine,
   RiClockwise2Line,
   RiCloseLine,
+  RiDeleteBinLine,
   RiImageAddLine,
   RiRefreshLine,
   RiSkipDownLine,
@@ -36,29 +37,22 @@ const Wrapper = styled.div`
 const ContentWrapper = styled.div`
   position: relative;
   margin: 0 auto;
-  width: 100%;
-  max-width: 600px;
+  width: ${props => `${props.size}px`};
   height: 100vh;
 `;
 const Video = styled.video`
-  width: 100vw;
-  height: 100vw;
-  max-width: 600px;
-  max-height: 600px;
-  object-fit: contain;
+  width: ${props => `${props.size}px`};
+  height: ${props => `${props.size}px`};
 `;
 const Image = styled.img`
   width: 100%;
-  object-fit: contain;
 `;
 const ImageWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vw;
-  max-width: 600px;
-  max-height: 600px;
+  width: ${props => `${props.size}px`};
+  height: ${props => `${props.size}px`};
   background-color: white;
   z-index: 2;
 
@@ -70,10 +64,8 @@ const CropperWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vw;
-  max-width: 600px;
-  max-height: 600px;
+  width: ${props => `${props.size}px`};
+  height: ${props => `${props.size}px`};
   background-color: white;
   z-index: ${props => (props.hasImage ? 2 : -1)};
 
@@ -203,24 +195,22 @@ export function Camera({ onSelect, onClose }) {
     setPickedImage(null);
   }
 
+  const size = Math.min(600, window.innerWidth, window.innerHeight) - 150;
+
   return (
     <Wrapper>
-      <ContentWrapper>
-        <Video ref={videoRef} autoPlay />
+      <ContentWrapper size={size}>
+        <Video ref={videoRef} autoPlay size={size} />
         {!!takenImageCanvas && (
-          <ImageWrapper>
+          <ImageWrapper size={size}>
             <Image src={takeImageUrl} />
           </ImageWrapper>
         )}
-        <CropperWrapper hasImage={!!pickedImage}>
-          <ImageCropper
-            ref={cropperRef}
-            width={Math.min(600, window.innerWidth / 2)}
-            pickedImage={pickedImage}
-          />
+        <CropperWrapper hasImage={!!pickedImage} size={size}>
+          <ImageCropper ref={cropperRef} width={size} pickedImage={pickedImage} />
         </CropperWrapper>
 
-        <Flex justify="center" align="center" py="2">
+        <Flex justify="center" align="center" py="2" gap="2">
           {!!takenImageCanvas && (
             <>
               <IconButton
@@ -237,7 +227,6 @@ export function Camera({ onSelect, onClose }) {
                 onClick={() => {
                   handleRotate(false);
                 }}
-                ml="4"
               >
                 <RiAnticlockwise2Line />
               </IconButton>
@@ -246,11 +235,10 @@ export function Camera({ onSelect, onClose }) {
                 onClick={() => {
                   handleRotate(true);
                 }}
-                ml="4"
               >
                 <RiClockwise2Line />
               </IconButton>
-              <IconButton size="4" onClick={handleClose} ml="4">
+              <IconButton size="4" onClick={handleClose}>
                 <RiCloseLine />
               </IconButton>
             </>
@@ -277,11 +265,10 @@ export function Camera({ onSelect, onClose }) {
                   setImages([...images, { canvas: takenImageCanvas, url: imageUrl }]);
                   handleClose();
                 }}
-                ml="2"
               >
                 <RiSquareLine />
               </IconButton>
-              <IconButton size="4" onClick={handleClose} ml="2">
+              <IconButton size="4" onClick={handleClose}>
                 <RiCloseLine />
               </IconButton>
             </>
@@ -301,7 +288,6 @@ export function Camera({ onSelect, onClose }) {
                       setFacingMode(mode);
                       requestCameraPermission(mode);
                     }}
-                    mr="2"
                   >
                     <RiRefreshLine />
                   </IconButton>
@@ -318,15 +304,12 @@ export function Camera({ onSelect, onClose }) {
                   <RiImageAddLine />
                 </IconButton>
               </FilePicker>
-
-              <IconButton size="4" onClick={onClose} ml="2" variant="soft">
-                <RiCloseLine />
-              </IconButton>
             </>
           )}
         </Flex>
+
         {!!images.length && (
-          <Flex justify="center" align="center" py="2">
+          <Flex justify="center" align="center" py="2" gap="2">
             <IconButton
               size="4"
               onClick={() => {
@@ -334,6 +317,10 @@ export function Camera({ onSelect, onClose }) {
               }}
             >
               <RiCheckLine />
+            </IconButton>
+
+            <IconButton size="4" onClick={onClose} variant="soft">
+              <RiDeleteBinLine />
             </IconButton>
           </Flex>
         )}
