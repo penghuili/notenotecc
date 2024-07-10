@@ -44,7 +44,7 @@ export function Image({ noteId, imageUrl, imagePath, onDeleteLocal }) {
       <div
         ref={ref}
         style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
-        onClick={() => {
+        onDoubleClick={() => {
           updateAtomValue(fullScreenImageUrlAtom, imageUrl);
         }}
       >

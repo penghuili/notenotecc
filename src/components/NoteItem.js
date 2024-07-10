@@ -12,6 +12,7 @@ import { Padding } from './Padding';
 const Descripption = styled.pre`
   margin: 0;
   padding: 0;
+  white-space: pre-wrap;
 `;
 
 export function NoteItem({ note, albums }) {

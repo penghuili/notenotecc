@@ -8,6 +8,7 @@ import {
   RiClockwise2Line,
   RiCloseLine,
   RiImageAddLine,
+  RiRefreshLine,
   RiSkipDownLine,
   RiSkipUpLine,
   RiSquareLine,
@@ -96,6 +97,7 @@ export function Camera({ onSelect, onClose }) {
   const videoStreamRef = useRef(null);
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
+  const [facingMode, setFacingMode] = useState('environment');
 
   const [takenImageCanvas, setTakenImageCanvas] = useState(null);
   const [takeImageUrl, setTakenImageUrl] = useState(null);
@@ -104,37 +106,44 @@ export function Camera({ onSelect, onClose }) {
   const [images, setImages] = useState([]);
   const [showImages, setShowImages] = useState(false);
 
-  useEffect(() => {
-    disableBodyScroll();
-    return () => {
-      enableBodyScroll();
-      handleClose();
-    };
-  }, []);
+  function requestCameraPermission(mode) {
+    setFacingMode(mode);
 
-  useEffect(() => {
     const constraints = {
       video: {
-        facingMode: { exact: 'environment' },
+        facingMode: { exact: mode },
         width: { ideal: 900 },
         height: { ideal: 900 },
       },
     };
 
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(stream => {
+        videoStreamRef.current = stream;
+        videoRef.current.srcObject = stream;
+      })
+      .catch(error => {
+        console.error('Error accessing the camera: ', error);
+      });
+  }
+
+  useEffect(() => {
+    disableBodyScroll();
+    return () => {
+      enableBodyScroll();
+      handleClose();
+      setImages([]);
+    };
+  }, []);
+
+  useEffect(() => {
     function startVideoStream() {
       if (videoStreamRef.current || !isAndroidPhone()) {
         return;
       }
 
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(stream => {
-          videoStreamRef.current = stream;
-          videoRef.current.srcObject = stream;
-        })
-        .catch(error => {
-          console.error('Error accessing the camera: ', error);
-        });
+      requestCameraPermission('environment');
     }
 
     function stopVideoStream() {
@@ -192,7 +201,6 @@ export function Camera({ onSelect, onClose }) {
     setTakenImageCanvas(null);
     setTakenImageUrl(null);
     setPickedImage(null);
-    setImages([]);
   }
 
   return (
@@ -219,6 +227,7 @@ export function Camera({ onSelect, onClose }) {
                 size="4"
                 onClick={() => {
                   setImages([...images, { canvas: takenImageCanvas, url: takeImageUrl }]);
+                  handleClose();
                 }}
               >
                 <RiArrowDownDoubleLine />
@@ -255,7 +264,7 @@ export function Camera({ onSelect, onClose }) {
                   const canvas = cropperRef.current.crop(900);
                   const imageUrl = canvas.toDataURL('image/png');
                   setImages([...images, { canvas, url: imageUrl }]);
-                  setPickedImage(null);
+                  handleClose();
                 }}
               >
                 <RiArrowDownDoubleLine />
@@ -266,13 +275,13 @@ export function Camera({ onSelect, onClose }) {
                   const squareCanvas = await makeImageSquare(pickedImage);
                   const imageUrl = squareCanvas.toDataURL('image/png');
                   setImages([...images, { canvas: takenImageCanvas, url: imageUrl }]);
-                  setPickedImage(null);
+                  handleClose();
                 }}
-                ml="4"
+                ml="2"
               >
                 <RiSquareLine />
               </IconButton>
-              <IconButton size="4" onClick={handleClose} ml="4">
+              <IconButton size="4" onClick={handleClose} ml="2">
                 <RiCloseLine />
               </IconButton>
             </>
@@ -281,9 +290,22 @@ export function Camera({ onSelect, onClose }) {
           {!takenImageCanvas && !pickedImage && (
             <>
               {isAndroidPhone() && (
-                <IconButton size="4" onClick={handleCapture} mr="2">
-                  <RiCameraLine />
-                </IconButton>
+                <>
+                  <IconButton size="4" onClick={handleCapture} mr="2">
+                    <RiCameraLine />
+                  </IconButton>
+                  <IconButton
+                    size="4"
+                    onClick={() => {
+                      const mode = facingMode === 'user' ? 'environment' : 'user';
+                      setFacingMode(mode);
+                      requestCameraPermission(mode);
+                    }}
+                    mr="2"
+                  >
+                    <RiRefreshLine />
+                  </IconButton>
+                </>
               )}
 
               <FilePicker

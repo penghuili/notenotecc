@@ -28,7 +28,7 @@ export function NoteAdd() {
   return (
     <>
       <Padding>
-        <PageHeader title="Update note" isLoading={isCreating} hasBack />
+        <PageHeader title="Add note" isLoading={isCreating} hasBack />
       </Padding>
 
       {!!images?.length && (
