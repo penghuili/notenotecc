@@ -195,7 +195,10 @@ export function Camera({ onSelect, onClose }) {
     setPickedImage(null);
   }
 
-  const size = Math.min(600, window.innerWidth, window.innerHeight) - 150;
+  let size = Math.min(600, window.innerWidth, window.innerHeight);
+  if (window.innerWidth > window.innerHeight) {
+    size = size - 150;
+  }
 
   return (
     <Wrapper>

@@ -1,6 +1,6 @@
 import { Box } from '@radix-ui/themes';
 import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
-import { RiImageLine } from '@remixicon/react';
+import { RiCheckLine, RiImageLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -9,7 +9,6 @@ import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
 import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
-import { FormButton } from '../shared-private/react/FormButton';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
@@ -28,7 +27,35 @@ export function NoteAdd() {
   return (
     <>
       <Padding>
-        <PageHeader title="Add note" isLoading={isCreating} hasBack />
+        <PageHeader
+          title="Add note"
+          isLoading={isCreating}
+          hasBack
+          right={
+            <IconButton
+              disabled={(!images?.length && !note) || isCreating}
+              onClick={() => {
+                createNoteEffect({
+                  note,
+                  canvases: images.map(i => i.canvas),
+                  albumDescription: newAlbumDescription || undefined,
+                  albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
+                  goBack: false,
+                  onSucceeded: () => {
+                    setImages([]);
+                    setNote('');
+                    setSelectedAlbumSortKeys([]);
+                    setNewAlbumDescription('');
+                    navigateEffect('/notes');
+                  },
+                });
+              }}
+              mr="2"
+            >
+              <RiCheckLine />
+            </IconButton>
+          }
+        />
       </Padding>
 
       {!!images?.length && (
@@ -53,28 +80,6 @@ export function NoteAdd() {
             newAlbum={newAlbumDescription}
             onNewAlbumChange={setNewAlbumDescription}
           />
-
-          <FormButton
-            onClick={() => {
-              createNoteEffect({
-                note,
-                canvases: images.map(i => i.canvas),
-                albumDescription: newAlbumDescription || undefined,
-                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
-                goBack: false,
-                onSucceeded: () => {
-                  setImages([]);
-                  setNote('');
-                  setSelectedAlbumSortKeys([]);
-                  setNewAlbumDescription('');
-                  navigateEffect('/notes');
-                },
-              });
-            }}
-            disabled={!images?.length || isCreating}
-          >
-            Create
-          </FormButton>
         </ItemsWrapper>
       </Padding>
 

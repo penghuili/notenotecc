@@ -1,5 +1,5 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiAddLine } from '@remixicon/react';
+import { RiAddLine, RiCheckLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
@@ -9,7 +9,6 @@ import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
 import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
-import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { useListener } from '../shared-private/react/hooks/useListener';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
@@ -62,6 +61,22 @@ export function NoteEdit() {
           title="Update note"
           isLoading={isLoading || isAddingImages || isUpdating}
           hasBack
+          right={
+            <IconButton
+              disabled={!note || isUpdating}
+              onClick={() => {
+                updateNoteEffect(noteId, {
+                  note,
+                  albumDescription: newAlbumDescription || null,
+                  albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
+                  goBack: false,
+                });
+              }}
+              mr="2"
+            >
+              <RiCheckLine />
+            </IconButton>
+          }
         />
       </Padding>
 
@@ -80,20 +95,6 @@ export function NoteEdit() {
             newAlbum={newAlbumDescription}
             onNewAlbumChange={setNewAlbumDescription}
           />
-
-          <FormButton
-            onClick={() => {
-              updateNoteEffect(noteId, {
-                note,
-                albumDescription: newAlbumDescription || null,
-                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
-                goBack: false,
-              });
-            }}
-            disabled={isUpdating}
-          >
-            Update
-          </FormButton>
         </ItemsWrapper>
       </Padding>
 
