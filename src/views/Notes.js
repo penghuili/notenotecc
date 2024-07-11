@@ -4,7 +4,6 @@ import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { NoteItem } from '../components/NoteItem';
-import { Padding } from '../components/Padding';
 import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -25,32 +24,29 @@ export function Notes() {
 
   return (
     <>
-      <Padding>
-        <PageHeader
-          title="SimplestCam"
-          isLoading={isLoading || isAddingImages}
-          fixed
-          right={
-            <>
-              <IconButton onClick={() => navigateEffect('/notes/add')} mr="2">
-                <RiImageAddLine />
-              </IconButton>
+      <PageHeader
+        isLoading={isLoading || isAddingImages}
+        fixed
+        right={
+          <>
+            <IconButton onClick={() => navigateEffect('/notes/add')} mr="2">
+              <RiImageAddLine />
+            </IconButton>
 
-              <IconButton onClick={() => navigateEffect('/notes/add?image=0')} mr="2">
-                <RiStickyNoteAddLine />
-              </IconButton>
+            <IconButton onClick={() => navigateEffect('/notes/add?image=0')} mr="2">
+              <RiStickyNoteAddLine />
+            </IconButton>
 
-              <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2" variant="ghost">
-                <RiHistoryLine />
-              </IconButton>
+            <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2" variant="ghost">
+              <RiHistoryLine />
+            </IconButton>
 
-              <IconButton onClick={() => navigateEffect('/albums')} mr="2" variant="ghost">
-                <RiHashtag />
-              </IconButton>
-            </>
-          }
-        />
-      </Padding>
+            <IconButton onClick={() => navigateEffect('/albums')} mr="2" variant="ghost">
+              <RiHashtag />
+            </IconButton>
+          </>
+        }
+      />
 
       {!!notes?.length &&
         notes.map(note => (
