@@ -24,6 +24,7 @@ import { Verify2FA } from './shared-private/react/Verify2FA';
 import { VerifyEmail } from './shared-private/react/VerifyEmail';
 import { Account } from './views/Account';
 import { AlbumDetails } from './views/AlbumDetails';
+import { Albums } from './views/Albums';
 import { NoteAdd } from './views/NoteAdd';
 import { NoteEdit } from './views/NoteEdit';
 import { Notes } from './views/Notes';
@@ -69,7 +70,9 @@ export function Router() {
         <Route path="/notes/add" component={NoteAdd} />
         <Route path="/notes/:noteId" component={NoteEdit} />
         <Route path="/notes" component={Notes} />
+
         <Route path="/albums/:albumId" component={AlbumDetails} />
+        <Route path="/albums" component={Albums} />
 
         <Route path="/account" component={Account} />
         <Route path="/on-this-day" component={OnThisDay} />

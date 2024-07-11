@@ -67,20 +67,19 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   updateAtomValue(isCreatingAlbumAtom, false);
 }
 
-export async function updateAlbumEffect(albumId, { title, onSucceeded, goBack }) {
+export async function updateAlbumEffect(albumId, { title, position, onSucceeded, goBack }) {
   updateAtomValue(isUpdatingAlbumAtom, true);
 
   const { data } = await updateAlbum(albumId, {
     title,
+    position,
   });
 
   if (data) {
-    updateAtomValue(
-      albumsAtom,
-      orderByPosition(getAtomValue(albumsAtom) || []).map(album =>
-        album.sortKey === albumId ? data : album
-      )
+    const newAlbums = orderByPosition(
+      (getAtomValue(albumsAtom) || []).map(album => (album.sortKey === albumId ? data : album))
     );
+    updateAtomValue(albumsAtom, newAlbums);
 
     setToastEffect('Updated!');
 

@@ -10,11 +10,12 @@ export const albumCache = createItemsCache('simplestcam-album');
 export async function fetchAlbums() {
   try {
     const albums = await HTTP.get(appName, `/v1/albums`);
+    const sorted = orderByPosition(albums);
 
-    await albumCache.cacheItems(albums);
+    await albumCache.cacheItems(sorted);
 
     return {
-      data: { items: albums },
+      data: { items: sorted },
       error: null,
     };
   } catch (error) {
@@ -62,10 +63,11 @@ export async function createAlbum({ title }) {
   }
 }
 
-export async function updateAlbum(albumId, { title }) {
+export async function updateAlbum(albumId, { title, position }) {
   try {
     const data = await HTTP.put(appName, `/v1/albums/${albumId}`, {
       title,
+      position,
     });
 
     await updateCache(data, 'update');
