@@ -1,5 +1,11 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiHashtag, RiHistoryLine, RiImageAddLine, RiStickyNoteAddLine } from '@remixicon/react';
+import {
+  RiHashtag,
+  RiHistoryLine,
+  RiImageAddLine,
+  RiRefreshLine,
+  RiStickyNoteAddLine,
+} from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -27,6 +33,11 @@ export function Notes() {
       <PageHeader
         isLoading={isLoading || isAddingImages}
         fixed
+        title={
+          <IconButton onClick={() => fetchNotesEffect()} mr="2" variant="soft">
+            <RiRefreshLine />
+          </IconButton>
+        }
         right={
           <>
             <IconButton onClick={() => navigateEffect('/notes/add')} mr="2">
