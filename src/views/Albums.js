@@ -8,10 +8,7 @@ import { PageHeader } from '../shared-private/react/PageHeader';
 import { Reorder } from '../shared-private/react/Reorder';
 import { RouteLink } from '../shared-private/react/RouteLink';
 import { albumsAtom, isLoadingAlbumsAtom } from '../store/album/albumAtoms';
-import {
-  fetchAlbumsEffect,
-  updateAlbumEffect,
-} from '../store/album/albumEffects';
+import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
 
 export function Albums() {
   const isLoading = useAtomValue(isLoadingAlbumsAtom);
@@ -24,7 +21,7 @@ export function Albums() {
   return (
     <>
       <Padding>
-        <PageHeader title="Albums" isLoading={isLoading} hasBack />
+        <PageHeader title="Albums" isLoading={isLoading} fixed hasBack />
 
         {!!albums?.length &&
           albums?.map(album => (

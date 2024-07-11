@@ -18,10 +18,7 @@ import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import {
-  isLoadingOnThisDayNotesAtom,
-  onThisDayNotesAtom,
-} from '../store/note/noteAtoms';
+import { isLoadingOnThisDayNotesAtom, onThisDayNotesAtom } from '../store/note/noteAtoms';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
 function parseStartTime(startTime) {
@@ -94,7 +91,7 @@ export function OnThisDay() {
   return (
     <>
       <Padding>
-        <PageHeader title="On this day" isLoading={isLoading} hasBack />
+        <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />
       </Padding>
 
       <Tabs.Root

@@ -1,14 +1,9 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
-import {
-  RiBookLine,
-  RiCheckboxBlankCircleLine,
-  RiFileCopyLine,
-  RiHistoryLine,
-  RiLockLine,
-} from '@remixicon/react';
+import { RiCheckboxBlankCircleLine, RiFileCopyLine, RiLockLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
+import { Padding } from '../components/Padding';
 import { formatDateTime } from '../shared-private/js/date';
 import { themeCssColor } from '../shared-private/react/AppWrapper';
 import { copyToClipboard } from '../shared-private/react/copyToClipboard';
@@ -18,10 +13,7 @@ import { LogoutLink } from '../shared-private/react/LogoutLink';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { PaymentStatus } from '../shared-private/react/PaymentStatus';
 import { RouteLink } from '../shared-private/react/RouteLink';
-import {
-  isLoadingAccountAtom,
-  userAtom,
-} from '../shared-private/react/store/sharedAtoms';
+import { isLoadingAccountAtom, userAtom } from '../shared-private/react/store/sharedAtoms';
 import { setToastEffect } from '../shared-private/react/store/sharedEffects';
 
 export function Account() {
@@ -31,8 +23,8 @@ export function Account() {
   const noalbumSortKey = `album_noalbum_${account.id}`;
 
   return (
-    <>
-      <PageHeader title="Account" isLoading={isLoadingAccount} hasBack />
+    <Padding>
+      <PageHeader title="Account" isLoading={isLoadingAccount} fixed hasBack />
 
       {!!account?.id && (
         <>
@@ -92,22 +84,9 @@ export function Account() {
 
       <ItemsWrapper align="start">
         <HorizontalCenter gap="1">
-          <RiHistoryLine color={themeCssColor} />
-          <RouteLink to="/on-this-day">On this day</RouteLink>
-        </HorizontalCenter>
-
-        <HorizontalCenter gap="1">
           <RiLockLine color={themeCssColor} />
           <RouteLink to="/security">Security</RouteLink>
         </HorizontalCenter>
-      </ItemsWrapper>
-
-      <ItemsWrapper>
-        <HorizontalCenter gap="1">
-          <RiBookLine color={themeCssColor} />
-          <RouteLink to="/albums">Albums</RouteLink>
-        </HorizontalCenter>
-
         <HorizontalCenter gap="1">
           <RiCheckboxBlankCircleLine color={themeCssColor} />
           <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without album</RouteLink>
@@ -117,6 +96,6 @@ export function Account() {
       <ItemsWrapper align="start">
         <LogoutLink />
       </ItemsWrapper>
-    </>
+    </Padding>
   );
 }

@@ -31,6 +31,7 @@ export function NoteAdd() {
         <PageHeader
           title="Add note"
           isLoading={isCreating}
+          fixed
           hasBack
           right={
             <IconButton

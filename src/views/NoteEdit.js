@@ -19,11 +19,7 @@ import {
   isUpdatingNoteAtom,
   noteAtom,
 } from '../store/note/noteAtoms';
-import {
-  addImagesEffect,
-  fetchNoteEffect,
-  updateNoteEffect,
-} from '../store/note/noteEffects';
+import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
@@ -60,6 +56,7 @@ export function NoteEdit() {
         <PageHeader
           title="Update note"
           isLoading={isLoading || isAddingImages || isUpdating}
+          fixed
           hasBack
           right={
             <IconButton

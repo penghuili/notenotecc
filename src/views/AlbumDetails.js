@@ -27,7 +27,7 @@ export function AlbumDetails() {
   return (
     <>
       <Padding>
-        <PageHeader title="Album details" isLoading={isLoading || isAddingImages} hasBack />
+        <PageHeader title="Album details" isLoading={isLoading || isAddingImages} fixed hasBack />
       </Padding>
 
       {!!notes?.length &&
