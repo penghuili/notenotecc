@@ -1,6 +1,13 @@
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
-import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
+import {
+  getAtomValue,
+  updateAtomValue,
+} from '../../shared-private/react/store/atomHelpers';
+import {
+  goBackEffect,
+  setToastEffect,
+} from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
+import { albumItemsAtom } from '../album/albumItemAtoms';
 import {
   isAddingImagesAtom,
   isCreatingNoteAtom,
@@ -8,10 +15,12 @@ import {
   isDeletingNoteAtom,
   isLoadingNoteAtom,
   isLoadingNotesAtom,
+  isLoadingOnThisDayNotesAtom,
   isUpdatingImageUrlsAtom,
   isUpdatingNoteAtom,
   noteAtom,
   notesAtom,
+  onThisDayNotesAtom,
 } from './noteAtoms';
 import {
   addImages,
@@ -49,6 +58,22 @@ export async function fetchNotesEffect(startKey) {
   }
 
   updateAtomValue(isLoadingNotesAtom, false);
+}
+
+export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
+  const onThisDayNotes = getAtomValue(onThisDayNotesAtom);
+  if (onThisDayNotes[type]) {
+    return;
+  }
+
+  updateAtomValue(isLoadingOnThisDayNotesAtom, true);
+
+  const { data } = await fetchNotes(null, startTime, endTime);
+  if (data?.items) {
+    updateAtomValue(onThisDayNotesAtom, { ...onThisDayNotes, [type]: data.items });
+  }
+
+  updateAtomValue(isLoadingOnThisDayNotesAtom, false);
 }
 
 export async function fetchNoteEffect(noteId) {
@@ -115,16 +140,7 @@ export async function updateNoteEffect(
       await fetchAlbumsEffect(true);
     }
 
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, {
-      ...currentNotes,
-      items: (currentNotes.items || []).map(note => (note.sortKey === data.sortKey ? data : note)),
-    });
-
-    const currentNoteDetails = getAtomValue(noteAtom);
-    if (currentNoteDetails?.sortKey === data.sortKey) {
-      updateAtomValue(noteAtom, data);
-    }
+    updateStates(data, 'update');
 
     setToastEffect('Updated!');
 
@@ -145,16 +161,7 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
   const { data } = await deleteImage(noteId, imagePath);
 
   if (data) {
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, {
-      ...currentNotes,
-      items: (currentNotes.items || []).map(note => (note.sortKey === data.sortKey ? data : note)),
-    });
-
-    const currentNoteDetails = getAtomValue(noteAtom);
-    if (currentNoteDetails?.sortKey === data.sortKey) {
-      updateAtomValue(noteAtom, data);
-    }
+    updateStates(data, 'update');
 
     setToastEffect('Deleted!');
 
@@ -175,16 +182,7 @@ export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack })
   const { data } = await addImages(noteId, canvases);
 
   if (data) {
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, {
-      ...currentNotes,
-      items: (currentNotes.items || []).map(note => (note.sortKey === data.sortKey ? data : note)),
-    });
-
-    const currentNoteDetails = getAtomValue(noteAtom);
-    if (currentNoteDetails?.sortKey === data.sortKey) {
-      updateAtomValue(noteAtom, data);
-    }
+    updateStates(data, 'update');
 
     setToastEffect('Added!');
 
@@ -199,22 +197,16 @@ export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack })
   updateAtomValue(isAddingImagesAtom, false);
 }
 
-export async function updateImageUrlsEffect(noteId, { onSucceeded, goBack, showSuccess }) {
+export async function updateImageUrlsEffect(
+  noteId,
+  { onSucceeded, onFailed, goBack, showSuccess }
+) {
   updateAtomValue(isUpdatingImageUrlsAtom, true);
 
   const { data } = await updateImageUrls(noteId);
 
   if (data) {
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, {
-      ...currentNotes,
-      items: (currentNotes.items || []).map(note => (note.sortKey === data.sortKey ? data : note)),
-    });
-
-    const currentNoteDetails = getAtomValue(noteAtom);
-    if (currentNoteDetails?.sortKey === data.sortKey) {
-      updateAtomValue(noteAtom, data);
-    }
+    updateStates(data, 'update');
 
     if (showSuccess) {
       setToastEffect('Updated!');
@@ -225,6 +217,10 @@ export async function updateImageUrlsEffect(noteId, { onSucceeded, goBack, showS
     }
     if (goBack) {
       goBackEffect();
+    }
+  } else {
+    if (onFailed) {
+      onFailed();
     }
   }
 
@@ -237,11 +233,7 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
   const { error } = await deleteNote(noteId);
 
   if (!error) {
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, {
-      ...currentNotes,
-      items: (currentNotes.items || []).filter(note => note.sortKey !== noteId),
-    });
+    updateStates({ sortKey: noteId }, 'delete');
 
     setToastEffect('Deleted!');
 
@@ -254,4 +246,44 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
   }
 
   updateAtomValue(isDeletingNoteAtom, false);
+}
+
+function updateStates(newNote, type) {
+  const fn =
+    type === 'update'
+      ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? item : i))
+      : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
+
+  const currentNotes = getAtomValue(notesAtom);
+  updateAtomValue(notesAtom, {
+    ...currentNotes,
+    items: fn(currentNotes.items || [], newNote),
+  });
+
+  const currentNote = getAtomValue(noteAtom);
+  if (currentNote?.sortKey === newNote.sortKey) {
+    updateAtomValue(noteAtom, newNote);
+  }
+
+  const albumItems = getAtomValue(albumItemsAtom);
+  if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
+    updateAtomValue(albumItemsAtom, {
+      ...albumItems,
+      items: fn(albumItems.items || [], newNote),
+    });
+  }
+
+  const currentOnThisDayNotes = getAtomValue(onThisDayNotesAtom);
+  const types = Object.keys(currentOnThisDayNotes);
+  if (types.length) {
+    const updatedItems = types.map(type => ({
+      type,
+      items: fn(currentOnThisDayNotes[type] || [], newNote),
+    }));
+    const newOnThisDayNotes = updatedItems.reduce(
+      (acc, item) => ({ ...acc, [item.type]: item.items }),
+      {}
+    );
+    updateAtomValue(onThisDayNotesAtom, newOnThisDayNotes);
+  }
 }

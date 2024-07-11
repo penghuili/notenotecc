@@ -1,5 +1,4 @@
-import { Box } from '@radix-ui/themes';
-import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
+import { Box, IconButton } from '@radix-ui/themes';
 import { RiCheckLine, RiImageLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';

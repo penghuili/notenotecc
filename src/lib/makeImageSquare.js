@@ -11,7 +11,6 @@ export function makeImageSquare(file) {
 
       // Get colors for gradient
       const colors = getImageColors(img);
-      console.log(colors);
 
       // Create gradient
       const gradient = ctx.createLinearGradient(0, 0, size, size);

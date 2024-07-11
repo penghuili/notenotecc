@@ -1,5 +1,5 @@
-import { IconButton } from '@radix-ui/themes/dist/cjs/index.js';
-import { RiImageAddLine, RiStickyNoteAddLine } from '@remixicon/react';
+import { IconButton } from '@radix-ui/themes';
+import { RiImageAddLine, RiStickyNoteAddLine, RiHistoryLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -10,11 +10,7 @@ import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import {
-  isAddingImagesAtom,
-  isLoadingNotesAtom,
-  notesAtom,
-} from '../store/note/noteAtoms';
+import { isAddingImagesAtom, isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {
@@ -41,6 +37,10 @@ export function Notes() {
 
               <IconButton onClick={() => navigateEffect('/notes/add?image=0')} mr="2">
                 <RiStickyNoteAddLine />
+              </IconButton>
+
+              <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2">
+                <RiHistoryLine />
               </IconButton>
             </>
           }

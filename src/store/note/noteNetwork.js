@@ -7,16 +7,16 @@ import { objectToQueryString } from '../../shared-private/react/routeHelpers';
 
 export const noteCache = createItemsCache('simplestcam-note');
 
-export async function fetchNotes(startKey) {
+export async function fetchNotes(startKey, startTime, endTime) {
   try {
-    const query = objectToQueryString({ startKey });
+    const query = objectToQueryString({ startKey, startTime, endTime });
     const {
       items,
       startKey: newStartKey,
       limit,
     } = await HTTP.get(appName, `/v1/notes${query ? `?${query}` : ''}`);
 
-    if (!startKey) {
+    if (!startKey && !startTime && !endTime) {
       await noteCache.cacheItems(items);
     }
 

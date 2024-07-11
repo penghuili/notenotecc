@@ -1,5 +1,4 @@
-import { Box, Text } from '@radix-ui/themes';
-import { Flex } from '@radix-ui/themes/dist/cjs/index.js';
+import { Box, Flex, Text } from '@radix-ui/themes';
 import React from 'react';
 import styled from 'styled-components';
 

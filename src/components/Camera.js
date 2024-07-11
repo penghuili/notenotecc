@@ -1,5 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
-import { Button } from '@radix-ui/themes/dist/cjs/index.js';
+import { Button, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiAnticlockwise2Line,
   RiArrowDownDoubleLine,
@@ -19,6 +18,7 @@ import styled from 'styled-components';
 import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
 import { isAndroidPhone } from '../lib/isAndroid';
 import { makeImageSquare } from '../lib/makeImageSquare';
+import { resizeCanvas } from '../lib/resizeCanvas';
 import { AnimatedBox } from '../shared-private/react/AnimatedBox';
 import { FilePicker } from './FilePicker';
 import { ImageCropper } from './ImageCropper';
@@ -263,8 +263,9 @@ export function Camera({ onSelect, onClose }) {
                 size="4"
                 onClick={async () => {
                   const squareCanvas = await makeImageSquare(pickedImage);
-                  const imageUrl = squareCanvas.toDataURL('image/png');
-                  setImages([...images, { canvas: takenImageCanvas, url: imageUrl }]);
+                  const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
+                  const imageUrl = resizedCanvas.toDataURL('image/png');
+                  setImages([...images, { canvas: resizedCanvas, url: imageUrl }]);
                   handleClose();
                 }}
               >
