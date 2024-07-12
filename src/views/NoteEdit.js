@@ -67,6 +67,9 @@ export function NoteEdit() {
                   albumDescription: newAlbumDescription || null,
                   albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
                   goBack: false,
+                  onSucceeded: () => {
+                    setNewAlbumDescription('');
+                  },
                 });
               }}
               mr="2"
