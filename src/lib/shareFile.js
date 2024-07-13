@@ -4,7 +4,7 @@ export async function shareFile(file) {
   try {
     await navigator.share({
       files: [file],
-      title: 'SimplestCam',
+      title: 'notenote.cc',
     });
     return true;
   } catch (error) {
@@ -21,7 +21,7 @@ export async function shareImageFromImgTag(imgElement) {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(imgElement, 0, 0);
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    const file = new File([blob], `simplestcam-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`, {
+    const file = new File([blob], `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`, {
       type: 'image/png',
     });
 

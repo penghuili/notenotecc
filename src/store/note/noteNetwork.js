@@ -5,7 +5,7 @@ import { appName } from '../../shared-private/react/initShared';
 import { md5 } from '../../shared-private/react/md5';
 import { objectToQueryString } from '../../shared-private/react/routeHelpers';
 
-export const noteCache = createItemsCache('simplestcam-note');
+export const noteCache = createItemsCache('notenotecc-note');
 
 export async function fetchNotes(startKey, startTime, endTime) {
   try {

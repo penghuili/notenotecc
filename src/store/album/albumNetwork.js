@@ -5,7 +5,7 @@ import { idbStorage } from '../../shared-private/react/indexDB';
 import { appName } from '../../shared-private/react/initShared';
 import { objectToQueryString } from '../../shared-private/react/routeHelpers';
 
-export const albumCache = createItemsCache('simplestcam-album');
+export const albumCache = createItemsCache('notenotecc-album');
 
 export async function fetchAlbums() {
   try {
