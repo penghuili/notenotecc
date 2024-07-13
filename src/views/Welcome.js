@@ -1,6 +1,7 @@
 import { Avatar, Heading, Link } from '@radix-ui/themes';
 import React from 'react';
 
+import { Padding } from '../components/Padding';
 import { HorizontalCenter } from '../shared-private/react/HorizontalCenter';
 import { appName, logo, privacyUrl, termsUrl } from '../shared-private/react/initShared';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
@@ -8,7 +9,7 @@ import { RouteLink } from '../shared-private/react/RouteLink';
 
 export function Welcome() {
   return (
-    <>
+    <Padding>
       <ItemsWrapper>
         <HorizontalCenter p="2rem 0 1rem" gap="2">
           <Avatar src={logo} /> <Heading as="h2">{appName}</Heading>
@@ -31,6 +32,6 @@ export function Welcome() {
           Contact
         </Link>
       </ItemsWrapper>
-    </>
+    </Padding>
   );
 }
