@@ -5,10 +5,7 @@ import { Redirect, Route, Switch, useLocation } from 'wouter';
 
 import { ChangeEmail } from './shared-private/react/ChangeEmail';
 import { ChangePassword } from './shared-private/react/ChangePassword';
-import {
-  LocalStorage,
-  sharedLocalStorageKeys,
-} from './shared-private/react/LocalStorage';
+import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
 import { ResetPassword } from './shared-private/react/ResetPassword';
 import { Security } from './shared-private/react/Security';
 import { Setup2FA } from './shared-private/react/Setup2FA';
@@ -24,6 +21,7 @@ import { Verify2FA } from './shared-private/react/Verify2FA';
 import { VerifyEmail } from './shared-private/react/VerifyEmail';
 import { Account } from './views/Account';
 import { AlbumDetails } from './views/AlbumDetails';
+import { AlbumEdit } from './views/AlbumEdit';
 import { Albums } from './views/Albums';
 import { NoteAdd } from './views/NoteAdd';
 import { NoteEdit } from './views/NoteEdit';
@@ -71,6 +69,7 @@ export function Router() {
         <Route path="/notes/:noteId" component={NoteEdit} />
         <Route path="/notes" component={Notes} />
 
+        <Route path="/albums/:albumId/edit" component={AlbumEdit} />
         <Route path="/albums/:albumId" component={AlbumDetails} />
         <Route path="/albums" component={Albums} />
 

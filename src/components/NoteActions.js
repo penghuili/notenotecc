@@ -2,7 +2,7 @@ import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
   RiImageLine,
-  RiMoreLine,
+  RiMore2Line,
   RiPencilLine,
   RiRefreshLine,
 } from '@remixicon/react';
@@ -36,7 +36,7 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
-            <RiMoreLine />
+            <RiMore2Line />
           </IconButton>
         </DropdownMenu.Trigger>
 

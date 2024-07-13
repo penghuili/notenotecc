@@ -10,7 +10,7 @@ const FullScreenWrapper = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 100;
+  z-index: 3000;
   background: black;
   display: flex;
   justify-content: center;
