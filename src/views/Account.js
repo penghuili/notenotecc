@@ -3,7 +3,6 @@ import { RiCheckboxBlankCircleLine, RiFileCopyLine, RiLockLine } from '@remixico
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { Padding } from '../components/Padding';
 import { formatDateTime } from '../shared-private/js/date';
 import { themeCssColor } from '../shared-private/react/AppWrapper';
 import { copyToClipboard } from '../shared-private/react/copyToClipboard';
@@ -23,7 +22,7 @@ export function Account() {
   const noalbumSortKey = `album_noalbum_${account.id}`;
 
   return (
-    <Padding>
+    <>
       <PageHeader title="Account" isLoading={isLoadingAccount} fixed hasBack />
 
       {!!account?.id && (
@@ -96,6 +95,6 @@ export function Account() {
       <ItemsWrapper align="start">
         <LogoutLink />
       </ItemsWrapper>
-    </Padding>
+    </>
   );
 }

@@ -4,7 +4,6 @@ import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
 
-import { Padding } from '../components/Padding';
 import { useListener } from '../shared-private/react/hooks/useListener';
 import { InputField } from '../shared-private/react/InputField';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -28,30 +27,28 @@ export function AlbumEdit() {
 
   return (
     <>
-      <Padding>
-        <PageHeader
-          title="Edit album"
-          isLoading={isUpdating}
-          fixed
-          hasBack
-          right={
-            <IconButton
-              disabled={!title || isUpdating}
-              onClick={() => {
-                updateAlbumEffect(albumId, {
-                  title,
-                  goBack: false,
-                });
-              }}
-              mr="2"
-            >
-              <RiCheckLine />
-            </IconButton>
-          }
-        />
+      <PageHeader
+        title="Edit album"
+        isLoading={isUpdating}
+        fixed
+        hasBack
+        right={
+          <IconButton
+            disabled={!title || isUpdating}
+            onClick={() => {
+              updateAlbumEffect(albumId, {
+                title,
+                goBack: false,
+              });
+            }}
+            mr="2"
+          >
+            <RiCheckLine />
+          </IconButton>
+        }
+      />
 
-        <InputField value={title} onChange={setTitle} />
-      </Padding>
+      <InputField value={title} onChange={setTitle} />
     </>
   );
 }

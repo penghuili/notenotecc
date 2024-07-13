@@ -7,7 +7,6 @@ import { useParams } from 'wouter';
 import { AlbumsSelector } from '../components/AlbumsSelector';
 import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
-import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { useListener } from '../shared-private/react/hooks/useListener';
@@ -52,51 +51,47 @@ export function NoteEdit() {
 
   return (
     <>
-      <Padding>
-        <PageHeader
-          title="Update note"
-          isLoading={isLoading || isAddingImages || isUpdating}
-          fixed
-          hasBack
-          right={
-            <IconButton
-              disabled={!note || isUpdating}
-              onClick={() => {
-                updateNoteEffect(noteId, {
-                  note,
-                  albumDescription: newAlbumDescription || null,
-                  albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
-                  goBack: false,
-                  onSucceeded: () => {
-                    setNewAlbumDescription('');
-                  },
-                });
-              }}
-              mr="2"
-            >
-              <RiCheckLine />
-            </IconButton>
-          }
-        />
-      </Padding>
+      <PageHeader
+        title="Update note"
+        isLoading={isLoading || isAddingImages || isUpdating}
+        fixed
+        hasBack
+        right={
+          <IconButton
+            disabled={!note || isUpdating}
+            onClick={() => {
+              updateNoteEffect(noteId, {
+                note,
+                albumDescription: newAlbumDescription || null,
+                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
+                goBack: false,
+                onSucceeded: () => {
+                  setNewAlbumDescription('');
+                },
+              });
+            }}
+            mr="2"
+          >
+            <RiCheckLine />
+          </IconButton>
+        }
+      />
 
       <ImageCarousel noteId={noteId} images={images} />
 
-      <Padding>
-        <IconButton my="4" onClick={() => setShowCamera(true)}>
-          <RiAddLine />
-        </IconButton>
-        <ItemsWrapper>
-          <AreaField value={note} onChange={setNote} />
+      <IconButton my="4" onClick={() => setShowCamera(true)}>
+        <RiAddLine />
+      </IconButton>
+      <ItemsWrapper>
+        <AreaField value={note} onChange={setNote} />
 
-          <AlbumsSelector
-            selectedAlbumSortKeys={selectedAlbumSortKeys}
-            onSelect={setSelectedAlbumSortKeys}
-            newAlbum={newAlbumDescription}
-            onNewAlbumChange={setNewAlbumDescription}
-          />
-        </ItemsWrapper>
-      </Padding>
+        <AlbumsSelector
+          selectedAlbumSortKeys={selectedAlbumSortKeys}
+          onSelect={setSelectedAlbumSortKeys}
+          newAlbum={newAlbumDescription}
+          onNewAlbumChange={setNewAlbumDescription}
+        />
+      </ItemsWrapper>
 
       {showCamera && (
         <Camera

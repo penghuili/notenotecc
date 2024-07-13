@@ -28,7 +28,7 @@ const Wrapper = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 100;
+  z-index: 3000;
   background-color: white;
 `;
 const ContentWrapper = styled.div`
@@ -48,7 +48,7 @@ const CropperWrapper = styled.div`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
   background-color: white;
-  z-index: ${props => (props.hasImage ? 3000 : -1)};
+  z-index: ${props => (props.hasImage ? 2 : -1)};
 
   display: flex;
   align-items: center;

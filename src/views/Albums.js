@@ -3,7 +3,6 @@ import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
-import { Padding } from '../components/Padding';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -28,65 +27,63 @@ export function Albums() {
 
   return (
     <>
-      <Padding>
-        <PageHeader title="Albums" isLoading={isLoading || isDeleting} fixed hasBack />
+      <PageHeader title="Albums" isLoading={isLoading || isDeleting} fixed hasBack />
 
-        {!!albums?.length &&
-          albums?.map(album => (
-            <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
-              #{album.title}
-            </RouteLink>
-          ))}
+      {!!albums?.length &&
+        albums?.map(album => (
+          <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
+            #{album.title}
+          </RouteLink>
+        ))}
 
-        <Box mt="6">
-          <Reorder
-            items={albums}
-            onReorder={({ itemId, newPosition, onSucceeded }) => {
-              updateAlbumEffect(itemId, {
-                position: newPosition,
-                onSucceeded,
-              });
-            }}
-            renderItem={item => (
-              <Flex align="center">
-                {item.title}
+      <Box mt="6">
+        <Reorder
+          items={albums}
+          onReorder={({ itemId, newPosition, onSucceeded }) => {
+            updateAlbumEffect(itemId, {
+              position: newPosition,
+              onSucceeded,
+            });
+          }}
+          renderItem={item => (
+            <Flex align="center">
+              {item.title}
 
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <IconButton radius="full" ml="2" variant="soft">
-                      <RiMore2Line />
-                    </IconButton>
-                  </DropdownMenu.Trigger>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <IconButton radius="full" ml="2" variant="soft">
+                    <RiMore2Line />
+                  </IconButton>
+                </DropdownMenu.Trigger>
 
-                  <DropdownMenu.Content variant="soft">
-                    <DropdownMenu.Item
-                      onClick={e => {
-                        e.stopPropagation();
-                        navigateEffect(`/albums/${item.sortKey}/edit`);
-                      }}
-                    >
-                      <RiPencilLine />
-                      Edit
-                    </DropdownMenu.Item>
+                <DropdownMenu.Content variant="soft">
+                  <DropdownMenu.Item
+                    onClick={e => {
+                      e.stopPropagation();
+                      navigateEffect(`/albums/${item.sortKey}/edit`);
+                    }}
+                  >
+                    <RiPencilLine />
+                    Edit
+                  </DropdownMenu.Item>
 
-                    <DropdownMenu.Item
-                      onClick={e => {
-                        e.stopPropagation();
-                        deleteAlbumEffect(item.sortKey, {});
-                      }}
-                      color={errorColor}
-                      disabled={isDeleting}
-                    >
-                      <RiDeleteBinLine />
-                      Delete
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              </Flex>
-            )}
-          />
-        </Box>
-      </Padding>
+                  <DropdownMenu.Item
+                    onClick={e => {
+                      e.stopPropagation();
+                      deleteAlbumEffect(item.sortKey, {});
+                    }}
+                    color={errorColor}
+                    disabled={isDeleting}
+                  >
+                    <RiDeleteBinLine />
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </Flex>
+          )}
+        />
+      </Box>
     </>
   );
 }

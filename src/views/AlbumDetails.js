@@ -3,7 +3,6 @@ import React from 'react';
 import { useParams } from 'wouter';
 
 import { NoteItem } from '../components/NoteItem';
-import { Padding } from '../components/Padding';
 import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -26,9 +25,7 @@ export function AlbumDetails() {
 
   return (
     <>
-      <Padding>
-        <PageHeader title="Album details" isLoading={isLoading || isAddingImages} fixed hasBack />
-      </Padding>
+      <PageHeader title="Album details" isLoading={isLoading || isAddingImages} fixed hasBack />
 
       {!!notes?.length &&
         notes.map(note => (

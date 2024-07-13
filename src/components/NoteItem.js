@@ -6,7 +6,6 @@ import { formatDateWeekTime } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink';
 import { ImageCarousel } from './ImageCarousel';
 import { NoteActions } from './NoteActions';
-import { Padding } from './Padding';
 
 const Descripption = styled.pre`
   margin: 0;
@@ -17,34 +16,26 @@ const Descripption = styled.pre`
 export function NoteItem({ note, albums }) {
   return (
     <Box mb="8">
-      <Padding>
-        <Flex justify="between" align="center" mb="2">
-          <Text size="1" as="p">
-            {formatDateWeekTime(note.createdAt)}
-          </Text>
+      <Flex justify="between" align="center" mb="2">
+        <Text size="1" as="p">
+          {formatDateWeekTime(note.createdAt)}
+        </Text>
 
-          <NoteActions note={note} showUpdate />
-        </Flex>
-      </Padding>
+        <NoteActions note={note} showUpdate />
+      </Flex>
 
       <ImageCarousel noteId={note.sortKey} images={note.images} />
 
-      {!!note.note && (
-        <Padding>
-          <Descripption>{note.note}</Descripption>
-        </Padding>
-      )}
+      {!!note.note && <Descripption>{note.note}</Descripption>}
 
       {!!albums?.length && (
-        <Padding>
-          <Flex wrap="wrap">
-            {albums?.map(album => (
-              <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
-                #{album.title}
-              </RouteLink>
-            ))}
-          </Flex>
-        </Padding>
+        <Flex wrap="wrap">
+          {albums?.map(album => (
+            <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
+              #{album.title}
+            </RouteLink>
+          ))}
+        </Flex>
       )}
     </Box>
   );

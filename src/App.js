@@ -10,10 +10,7 @@ import { Router } from './Router';
 import { apps } from './shared-private/js/apps';
 import { AppWrapper } from './shared-private/react/AppWrapper';
 import { useEffectOnce } from './shared-private/react/hooks/useEffectOnce';
-import {
-  HooksOutsieWrapper,
-  setHook,
-} from './shared-private/react/hooksOutside';
+import { HooksOutsieWrapper, setHook } from './shared-private/react/hooksOutside';
 import { initShared } from './shared-private/react/initShared';
 import { initEffect } from './shared-private/react/store/sharedEffects';
 import { Toast } from './shared-private/react/Toast';
@@ -42,7 +39,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <AppWrapper hasPadding={false}>
+      <AppWrapper>
         <Router />
 
         <FullScreenImage />

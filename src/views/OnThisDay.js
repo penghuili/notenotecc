@@ -12,7 +12,6 @@ import { useAtomValue } from 'jotai';
 import React, { useMemo, useState } from 'react';
 
 import { NoteItem } from '../components/NoteItem';
-import { Padding } from '../components/Padding';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -90,9 +89,7 @@ export function OnThisDay() {
 
   return (
     <>
-      <Padding>
-        <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />
-      </Padding>
+      <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />
 
       <Tabs.Root
         defaultValue="account"
@@ -123,9 +120,7 @@ export function OnThisDay() {
           />
         ))
       ) : (
-        <Padding>
-          <Text my="2">No notes on this day.</Text>
-        </Padding>
+        <Text my="2">No notes on this day.</Text>
       )}
     </>
   );

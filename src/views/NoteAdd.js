@@ -6,7 +6,6 @@ import React, { useState } from 'react';
 import { AlbumsSelector } from '../components/AlbumsSelector';
 import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
-import { Padding } from '../components/Padding';
 import { AreaField } from '../shared-private/react/AreaField';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -27,38 +26,36 @@ export function NoteAdd() {
 
   return (
     <>
-      <Padding>
-        <PageHeader
-          title="Add note"
-          isLoading={isCreating}
-          fixed
-          hasBack
-          right={
-            <IconButton
-              disabled={(!images?.length && !note) || isCreating}
-              onClick={() => {
-                createNoteEffect({
-                  note,
-                  canvases: images.map(i => i.canvas),
-                  albumDescription: newAlbumDescription || undefined,
-                  albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
-                  goBack: false,
-                  onSucceeded: () => {
-                    setImages([]);
-                    setNote('');
-                    setSelectedAlbumSortKeys([]);
-                    setNewAlbumDescription('');
-                    navigateEffect('/notes');
-                  },
-                });
-              }}
-              mr="2"
-            >
-              <RiCheckLine />
-            </IconButton>
-          }
-        />
-      </Padding>
+      <PageHeader
+        title="Add note"
+        isLoading={isCreating}
+        fixed
+        hasBack
+        right={
+          <IconButton
+            disabled={(!images?.length && !note) || isCreating}
+            onClick={() => {
+              createNoteEffect({
+                note,
+                canvases: images.map(i => i.canvas),
+                albumDescription: newAlbumDescription || undefined,
+                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
+                goBack: false,
+                onSucceeded: () => {
+                  setImages([]);
+                  setNote('');
+                  setSelectedAlbumSortKeys([]);
+                  setNewAlbumDescription('');
+                  navigateEffect('/notes');
+                },
+              });
+            }}
+            mr="2"
+          >
+            <RiCheckLine />
+          </IconButton>
+        }
+      />
 
       {!!images?.length && (
         <Box mb="2">
@@ -69,21 +66,19 @@ export function NoteAdd() {
         </Box>
       )}
 
-      <Padding>
-        <ItemsWrapper>
-          <IconButton size="4" onClick={() => setShowCamera(true)}>
-            <RiImageLine />
-          </IconButton>
-          <AreaField value={note} onChange={setNote} />
+      <ItemsWrapper>
+        <IconButton size="4" onClick={() => setShowCamera(true)}>
+          <RiImageLine />
+        </IconButton>
+        <AreaField value={note} onChange={setNote} />
 
-          <AlbumsSelector
-            selectedAlbumSortKeys={selectedAlbumSortKeys}
-            onSelect={setSelectedAlbumSortKeys}
-            newAlbum={newAlbumDescription}
-            onNewAlbumChange={setNewAlbumDescription}
-          />
-        </ItemsWrapper>
-      </Padding>
+        <AlbumsSelector
+          selectedAlbumSortKeys={selectedAlbumSortKeys}
+          onSelect={setSelectedAlbumSortKeys}
+          newAlbum={newAlbumDescription}
+          onNewAlbumChange={setNewAlbumDescription}
+        />
+      </ItemsWrapper>
 
       {showCamera && (
         <Camera
