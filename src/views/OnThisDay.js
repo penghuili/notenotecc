@@ -36,7 +36,7 @@ export function OnThisDay() {
   const isLoading = useAtomValue(isLoadingOnThisDayNotesAtom);
   const notes = useAtomValue(onThisDayNotesAtom);
 
-  const [tab, setTab] = useState('week');
+  const [activeTab, setActiveTab] = useState('week');
 
   const tabs = useMemo(() => {
     if (!user?.createdAt) {
@@ -97,9 +97,9 @@ export function OnThisDay() {
 
       <Tabs.Root
         defaultValue="account"
-        value={tab}
+        value={activeTab}
         onValueChange={async value => {
-          setTab(value);
+          setActiveTab(value);
 
           const tabObj = tabs.find(t => t.value === value);
           fetchOnThisDayNotesEffect(value, tabObj.startTime, tabObj.endTime);
@@ -115,8 +115,8 @@ export function OnThisDay() {
         </Tabs.List>
       </Tabs.Root>
 
-      {notes[tab]?.length ? (
-        notes[tab].map(note => (
+      {notes[activeTab]?.length ? (
+        notes[activeTab].map(note => (
           <NoteItem
             key={note.sortKey}
             note={note}

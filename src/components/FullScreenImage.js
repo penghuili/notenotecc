@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { updateAtomValue, useAtomValue } from '../shared-private/react/store/atomHelpers';
+import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
+import {
+  updateAtomValue,
+  useAtomValue,
+} from '../shared-private/react/store/atomHelpers';
 import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
 
 const FullScreenWrapper = styled.div`
@@ -19,6 +23,14 @@ const FullScreenWrapper = styled.div`
 
 export function FullScreenImage() {
   const url = useAtomValue(fullScreenImageUrlAtom);
+  useEffect(() => {
+    if (url) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+  }, [url]);
+
   if (!url) {
     return null;
   }

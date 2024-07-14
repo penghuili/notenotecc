@@ -1,6 +1,8 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes/dist/cjs/index.js';
 import {
   RiDeleteBinLine,
+  RiImageAddLine,
   RiImageLine,
   RiMore2Line,
   RiPencilLine,
@@ -12,7 +14,10 @@ import React, { useState } from 'react';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { isDeletingNoteAtom, isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
+import {
+  isDeletingNoteAtom,
+  isUpdatingImageUrlsAtom,
+} from '../store/note/noteAtoms';
 import {
   addImagesEffect,
   deleteNoteEffect,
@@ -32,7 +37,17 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
   }
 
   return (
-    <>
+    <Flex align="center" gap="2">
+      <IconButton
+        variant="ghost"
+        onClick={() => {
+          setShowCamera(true);
+        }}
+        mr="2"
+      >
+        <RiImageAddLine />
+      </IconButton>
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
@@ -41,19 +56,25 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          {!!showUpdate && (
-            <>
-              <DropdownMenu.Item
-                onClick={() => {
-                  navigateEffect(`/notes/${note.sortKey}`);
-                }}
-              >
-                <RiPencilLine />
-                Update
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-            </>
-          )}
+          <DropdownMenu.Item
+            onClick={() => {
+              navigateEffect(`/notes/${note.sortKey}`);
+            }}
+          >
+            <RiPencilLine />
+            Update
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator />
+
+          <DropdownMenu.Item
+            onClick={() => {
+              setShowCamera(true);
+            }}
+          >
+            <RiImageLine />
+            Add images
+          </DropdownMenu.Item>
 
           <DropdownMenu.Item
             onClick={() => {
@@ -63,15 +84,6 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
           >
             <RiRefreshLine />
             Refresh images
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item
-            onClick={() => {
-              setShowCamera(true);
-            }}
-          >
-            <RiImageLine />
-            Add images
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator />
@@ -110,6 +122,6 @@ export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
           onClose={() => setShowCamera(false)}
         />
       )}
-    </>
+    </Flex>
   );
 }
