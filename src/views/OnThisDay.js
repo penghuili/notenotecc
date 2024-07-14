@@ -9,15 +9,18 @@ import {
   subYears,
 } from 'date-fns';
 import { useAtomValue } from 'jotai';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { NoteItem } from '../components/NoteItem';
+import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import { isLoadingOnThisDayNotesAtom, onThisDayNotesAtom } from '../store/note/noteAtoms';
+import {
+  isLoadingOnThisDayNotesAtom,
+  onThisDayNotesAtom,
+} from '../store/note/noteAtoms';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
 function parseStartTime(startTime) {
@@ -82,10 +85,11 @@ export function OnThisDay() {
     return tabs;
   }, [user?.createdAt]);
 
-  useEffectOnce(() => {
-    const tabObj = tabs.find(t => t.value === tab);
-    fetchOnThisDayNotesEffect(tab, tabObj.startTime, tabObj.endTime);
-  });
+  useEffect(() => {
+    asyncForEach(tabs, async tabObj => {
+      await fetchOnThisDayNotesEffect(tabObj.value, tabObj.startTime, tabObj.endTime);
+    });
+  }, [tabs]);
 
   return (
     <>
@@ -105,7 +109,7 @@ export function OnThisDay() {
         <Tabs.List>
           {tabs.map(tab => (
             <Tabs.Trigger key={tab.value} value={tab.value}>
-              {tab.label}
+              {tab.label} ({notes[tab.value]?.length || 0})
             </Tabs.Trigger>
           ))}
         </Tabs.List>
