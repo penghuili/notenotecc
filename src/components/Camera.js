@@ -294,7 +294,11 @@ function ImagesPreview({ images, onDelete }) {
       </Button>
 
       {showImages ? (
-        <LocalImages images={reversedImages} onDelete={onDelete} />
+        <LocalImages
+          images={reversedImages}
+          onDelete={onDelete}
+          onClick={() => setShowImages(false)}
+        />
       ) : (
         <PreviewWrapper
           width={(reversedImages.length - 1) * 20 + 100}

@@ -3,7 +3,7 @@ import { Box, IconButton } from '@radix-ui/themes/dist/cjs/index.js';
 import { RiCloseLine } from '@remixicon/react';
 import React, { useMemo } from 'react';
 
-export function LocalImages({ images, onDelete }) {
+export function LocalImages({ images, onClick, onDelete }) {
   const imageWidth = useMemo(() => {
     if (images?.length === 1) {
       return '100%';
@@ -17,7 +17,7 @@ export function LocalImages({ images, onDelete }) {
   }
 
   return (
-    <Flex wrap="wrap" direction="row" justify="start" style={{ gap: '6px' }}>
+    <Flex wrap="wrap" direction="row" justify="start" style={{ gap: '6px' }} onClick={onClick}>
       {images.map(image => (
         <div
           key={image.url}
