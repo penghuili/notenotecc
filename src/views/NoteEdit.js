@@ -1,5 +1,5 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiAddLine, RiSendPlaneLine } from '@remixicon/react';
+import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
@@ -81,10 +81,8 @@ export function NoteEdit() {
         }
       />
 
-      <ImageCarousel noteId={noteId} images={images} />
-
       <IconButton my="4" onClick={() => setShowCamera(true)}>
-        <RiAddLine />
+        <RiImageAddLine />
       </IconButton>
       <ItemsWrapper>
         <AreaField value={note} onChange={setNote} />
@@ -96,6 +94,8 @@ export function NoteEdit() {
           onNewAlbumChange={setNewAlbumDescription}
         />
       </ItemsWrapper>
+
+      <ImageCarousel noteId={noteId} images={images} />
 
       {showCamera && (
         <Camera
