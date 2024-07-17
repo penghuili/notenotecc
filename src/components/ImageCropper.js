@@ -1,28 +1,20 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import { disablePullToRefresh, enablePullToRefresh } from '../lib/bodySccroll';
 import { isAndroidPhone, isIOS } from '../lib/isAndroid';
 
+const PADDING = 10;
 // eslint-disable-next-line react/display-name
 export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
   const [image, setImage] = useState(null);
-  const [cropSquare, setCropSquare] = useState({ left: 0, top: 0 });
-  const [cropAreaSize, setCropAreaSize] = useState({ width: 0, height: 0 });
+  const [imagePosition, setImagePosition] = useState({ x: PADDING, y: PADDING });
   const [isDragging, setIsDragging] = useState(false);
-  const [isLandscape, setIsLandscape] = useState(false);
-  const [squareSize, setSquareSize] = useState(0);
   const [scale, setScale] = useState(1);
+  const [isLandscape, setIsLandscape] = useState(false);
+  const [squareSize, setSquareSize] = useState(width);
 
-  const cropSquareRef = useRef(null);
+  const imageContainerRef = useRef(null);
   const canvasRef = useRef(null);
-
-  const BORDER_WIDTH = 2;
 
   useImperativeHandle(ref, () => ({
     crop: cropImage,
@@ -93,32 +85,28 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setImagePosition({ x: PADDING, y: PADDING });
 
-    const newScaleWidth = Math.min(1, (width - 8) / image.width);
-    const newScaleHeight = Math.min(1, (width - 8) / image.height);
-    const newScale = Math.min(newScaleWidth, newScaleHeight);
+    let newSquareSize = squareSize;
+    if (image.width < width - 2 * PADDING || image.height < width - 2 * PADDING) {
+      newSquareSize = Math.min(image.width, image.height) + 2 * PADDING;
+      setSquareSize(newSquareSize);
+    }
+
+    const newScaleWidth = Math.min(1, (newSquareSize - 2 * PADDING) / image.width);
+    const newScaleHeight = Math.min(1, (newSquareSize - 2 * PADDING) / image.height);
+    const newScale = Math.max(newScaleWidth, newScaleHeight);
     setScale(newScale);
+
+    console.log(image.width, image.height, width, newScaleWidth, newScaleHeight, newScale);
 
     canvas.width = image.width * newScale;
     canvas.height = image.height * newScale;
 
-    setCropAreaSize({
-      width: canvas.width,
-      height: canvas.height,
-    });
-
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    const newSquareSize = Math.min(canvas.width, canvas.height) + BORDER_WIDTH * 2;
-    setSquareSize(newSquareSize);
 
     const newIsLandscape = canvas.width > canvas.height;
     setIsLandscape(newIsLandscape);
-
-    setCropSquare({
-      left: newIsLandscape ? -BORDER_WIDTH : (canvas.width - newSquareSize) / 2,
-      top: newIsLandscape ? (canvas.height - newSquareSize) / 2 - BORDER_WIDTH : -BORDER_WIDTH,
-    });
   };
 
   const startDragging = e => {
@@ -126,10 +114,10 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
       e.preventDefault();
     }
     setIsDragging(true);
-    const offsetX = (e.clientX || e.touches[0].clientX) - cropSquareRef.current.offsetLeft;
-    const offsetY = (e.clientY || e.touches[0].clientY) - cropSquareRef.current.offsetTop;
-    cropSquareRef.current.dataset.offsetX = offsetX;
-    cropSquareRef.current.dataset.offsetY = offsetY;
+    const startX = e.clientX || e.touches[0].clientX;
+    const startY = e.clientY || e.touches[0].clientY;
+    imageContainerRef.current.dataset.startX = startX - imagePosition.x;
+    imageContainerRef.current.dataset.startY = startY - imagePosition.y;
   };
 
   const drag = e => {
@@ -137,22 +125,33 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
     if (!isAndroidPhone() && !isIOS()) {
       e.preventDefault();
     }
-    const cropSquare = cropSquareRef.current;
-    const offsetX = parseFloat(cropSquare.dataset.offsetX);
-    const offsetY = parseFloat(cropSquare.dataset.offsetY);
+    const currentX = e.clientX || e.touches?.[0]?.clientX;
+    const currentY = e.clientY || e.touches?.[0]?.clientY;
+    if (currentX === undefined || currentY === undefined) {
+      return;
+    }
+    const startX = parseFloat(imageContainerRef.current.dataset.startX);
+    const startY = parseFloat(imageContainerRef.current.dataset.startY);
 
-    let newX = (e.clientX || e.touches[0].clientX) - offsetX;
-    let newY = (e.clientY || e.touches[0].clientY) - offsetY;
+    let newX = currentX - startX;
+    if (newX < squareSize - canvasRef.current.width - PADDING) {
+      newX = squareSize - canvasRef.current.width - PADDING;
+    }
+    if (newX > PADDING) {
+      newX = PADDING;
+    }
+    let newY = currentY - startY;
+    if (newY < squareSize - canvasRef.current.height - PADDING) {
+      newY = squareSize - canvasRef.current.height - PADDING;
+    }
+    if (newY > PADDING) {
+      newY = PADDING;
+    }
 
     if (isLandscape) {
-      newX = Math.max(-BORDER_WIDTH, Math.min(newX, cropAreaSize.width - squareSize));
-      setCropSquare(prev => ({ ...prev, left: newX }));
+      setImagePosition({ x: newX, y: PADDING });
     } else {
-      newY = Math.max(
-        -BORDER_WIDTH,
-        Math.min(newY, cropAreaSize.height - squareSize + BORDER_WIDTH)
-      );
-      setCropSquare(prev => ({ ...prev, top: newY }));
+      setImagePosition({ x: PADDING, y: newY });
     }
   };
 
@@ -163,7 +162,7 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
   const cropImage = imageWidth => {
     const newCanvas = document.createElement('canvas');
     const newCtx = newCanvas.getContext('2d');
-    const originalSquareSize = (squareSize - BORDER_WIDTH * 2) / scale;
+    const originalSquareSize = (squareSize - 2 * PADDING) / scale;
 
     const targetWidth = Math.min(imageWidth || 900, Math.max(originalSquareSize, image.width));
 
@@ -174,10 +173,10 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
 
     newCtx.drawImage(
       image,
-      (cropSquare.left + BORDER_WIDTH) / scale,
-      (cropSquare.top + BORDER_WIDTH) / scale,
-      originalSquareSize,
-      originalSquareSize,
+      -(imagePosition.x - PADDING) / scale,
+      -(imagePosition.y - PADDING) / scale,
+      (squareSize - 2 * PADDING) / scale,
+      (squareSize - 2 * PADDING) / scale,
       0,
       0,
       targetWidth,
@@ -201,27 +200,36 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
         style={{
           position: 'relative',
           display: 'inline-block',
-          maxWidth: width,
-          width: '100%',
+          width: squareSize,
+          height: squareSize,
+          overflow: 'hidden',
         }}
       >
-        <canvas ref={canvasRef} style={{ maxWidth: '100%', height: 'auto' }} />
+        <div
+          ref={imageContainerRef}
+          style={{
+            position: 'absolute',
+            left: imagePosition.x,
+            top: imagePosition.y,
+            cursor: 'move',
+          }}
+          onMouseDown={startDragging}
+          onTouchStart={startDragging}
+        >
+          <canvas ref={canvasRef} />
+        </div>
         {!!image && (
           <div
-            ref={cropSquareRef}
             style={{
-              position: 'absolute',
-              border: `${BORDER_WIDTH}px solid white`,
-              boxShadow: '0 0 0 4px rgba(0, 0, 0, 0.5)',
-              cursor: 'move',
-              width: `${squareSize}px`,
-              height: `${squareSize}px`,
-              left: `${cropSquare.left}px`,
-              top: `${cropSquare.top}px`,
+              position: 'relative',
+              top: PADDING,
+              left: PADDING,
+              boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.25)',
+              width: squareSize - 2 * PADDING,
+              height: squareSize - 2 * PADDING,
               boxSizing: 'border-box',
+              pointerEvents: 'none',
             }}
-            onMouseDown={startDragging}
-            onTouchStart={startDragging}
           />
         )}
       </div>
