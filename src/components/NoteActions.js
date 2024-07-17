@@ -25,7 +25,7 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera';
 
-export function NoteActions({ note, showUpdate, goBackAfterDelete }) {
+export function NoteActions({ note, goBackAfterDelete }) {
   const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
   const isDeleting = useAtomValue(isDeletingNoteAtom);
 

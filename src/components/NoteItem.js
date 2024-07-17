@@ -21,7 +21,7 @@ export function NoteItem({ note, albums }) {
           {formatDateWeekTime(note.createdAt)}
         </Text>
 
-        <NoteActions note={note} showUpdate />
+        <NoteActions note={note} />
       </Flex>
 
       <ImageCarousel noteId={note.sortKey} images={note.images} />

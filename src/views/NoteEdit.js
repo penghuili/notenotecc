@@ -1,5 +1,5 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiAddLine, RiCheckLine } from '@remixicon/react';
+import { RiAddLine, RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
@@ -18,7 +18,11 @@ import {
   isUpdatingNoteAtom,
   noteAtom,
 } from '../store/note/noteAtoms';
-import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  fetchNoteEffect,
+  updateNoteEffect,
+} from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
@@ -72,7 +76,7 @@ export function NoteEdit() {
             }}
             mr="2"
           >
-            <RiCheckLine />
+            <RiSendPlaneLine />
           </IconButton>
         }
       />

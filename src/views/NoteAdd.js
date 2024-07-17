@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@radix-ui/themes';
-import { RiCheckLine, RiImageLine } from '@remixicon/react';
+import { RiImageLine, RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -52,7 +52,7 @@ export function NoteAdd() {
             }}
             mr="2"
           >
-            <RiCheckLine />
+            <RiSendPlaneLine />
           </IconButton>
         }
       />

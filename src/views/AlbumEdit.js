@@ -1,5 +1,5 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiCheckLine } from '@remixicon/react';
+import { RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 import { useParams } from 'wouter';
@@ -43,7 +43,7 @@ export function AlbumEdit() {
             }}
             mr="2"
           >
-            <RiCheckLine />
+            <RiSendPlaneLine />
           </IconButton>
         }
       />
