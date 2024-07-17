@@ -1,11 +1,8 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
-import {
-  updateAtomValue,
-  useAtomValue,
-} from '../shared-private/react/store/atomHelpers';
+import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import { updateAtomValue, useAtomValue } from '../shared-private/react/store/atomHelpers';
 import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
 
 const FullScreenWrapper = styled.div`

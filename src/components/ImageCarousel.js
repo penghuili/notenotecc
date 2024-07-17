@@ -2,7 +2,7 @@ import './ImageCarousel.css';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { isMobile } from '../lib/isAndroid';
+import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image';
 
 export function ImageCarousel({ noteId, images, onDeleteLocal }) {

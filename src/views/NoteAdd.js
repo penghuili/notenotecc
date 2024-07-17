@@ -1,5 +1,5 @@
 import { Box, IconButton } from '@radix-ui/themes';
-import { RiImageLine, RiSendPlaneLine } from '@remixicon/react';
+import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -68,7 +68,7 @@ export function NoteAdd() {
 
       <ItemsWrapper>
         <IconButton size="4" onClick={() => setShowCamera(true)}>
-          <RiImageLine />
+          <RiImageAddLine />
         </IconButton>
         <AreaField value={note} onChange={setNote} />
 

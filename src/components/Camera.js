@@ -14,12 +14,12 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../lib/bodySccroll';
-import { isAndroidPhone } from '../lib/isAndroid';
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
+import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import { isAndroidPhone } from '../shared-private/react/device';
+import { ImageCropper } from '../shared-private/react/ImageCropper';
 import { FilePicker } from './FilePicker';
-import { ImageCropper } from './ImageCropper';
 import { LocalImages } from './LocalImages';
 
 const Wrapper = styled.div`

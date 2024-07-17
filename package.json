@@ -7,7 +7,6 @@
     "@remixicon/react": "4.2.0",
     "axios": "1.7.2",
     "copy-to-clipboard": "3.3.3",
-    "cropt": "0.8.9",
     "date-fns": "3.6.0",
     "eventemitter3": "5.0.1",
     "file-saver": "2.0.5",
