@@ -80,7 +80,9 @@ export async function fetchNoteEffect(noteId) {
   updateAtomValue(isLoadingNoteAtom, true);
 
   const cachedNote = await noteCache.getCachedItem(noteId);
-  updateAtomValue(noteAtom, cachedNote || null);
+  if (cachedNote?.sortKey === noteId) {
+    updateAtomValue(noteAtom, cachedNote);
+  }
 
   const { data } = await fetchNote(noteId);
   if (data) {
@@ -88,6 +90,10 @@ export async function fetchNoteEffect(noteId) {
   }
 
   updateAtomValue(isLoadingNoteAtom, false);
+}
+
+export function setNoteEffect(note) {
+  updateAtomValue(noteAtom, note);
 }
 
 export async function createNoteEffect({

@@ -1,6 +1,9 @@
 import { atom } from 'jotai';
 
-import { updateAtomValue } from '../../shared-private/react/store/atomHelpers';
+import {
+  updateAtomValue,
+  useAtomValue,
+} from '../../shared-private/react/store/atomHelpers';
 
 export const notesAtom = atom({});
 export const isLoadingNotesAtom = atom(false);
@@ -15,6 +18,11 @@ export const isDeletingNoteAtom = atom(false);
 export const fullScreenImageUrlAtom = atom(null);
 export const onThisDayNotesAtom = atom({});
 export const isLoadingOnThisDayNotesAtom = atom(false);
+
+export function useNote(noteId) {
+  const note = useAtomValue(noteAtom);
+  return note?.sortKey === noteId ? note : null;
+}
 
 export function resetNoteAtoms() {
   updateAtomValue(notesAtom, {});

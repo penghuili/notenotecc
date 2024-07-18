@@ -16,7 +16,7 @@ import {
   isAddingImagesAtom,
   isLoadingNoteAtom,
   isUpdatingNoteAtom,
-  noteAtom,
+  useNote,
 } from '../store/note/noteAtoms';
 import {
   addImagesEffect,
@@ -30,7 +30,7 @@ export function NoteEdit() {
   const isLoading = useAtomValue(isLoadingNoteAtom);
   const isUpdating = useAtomValue(isUpdatingNoteAtom);
   const isAddingImages = useAtomValue(isAddingImagesAtom);
-  const noteItem = useAtomValue(noteAtom);
+  const noteItem = useNote(noteId);
 
   const [images, setImages] = useState([]);
   const [note, setNote] = useState('');

@@ -67,7 +67,6 @@ export function Router() {
       <Switch>
         <Route path="/notes/add" component={NoteAdd} />
         <Route path="/notes/:noteId" component={NoteEdit} />
-        <Route path="/notes" component={Notes} />
 
         <Route path="/albums/:albumId/edit" component={AlbumEdit} />
         <Route path="/albums/:albumId" component={AlbumDetails} />

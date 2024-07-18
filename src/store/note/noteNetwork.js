@@ -77,7 +77,7 @@ export async function createNote({ note, canvases, albumIds, albumDescription })
     const data = await HTTP.post(appName, `/v1/notes`, {
       note,
       images: imagePathes,
-      albumIds,
+      albumIds: albumIds || [],
       albumDescription,
     });
 

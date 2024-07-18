@@ -46,7 +46,7 @@ export function NoteAdd() {
                   setNote('');
                   setSelectedAlbumSortKeys([]);
                   setNewAlbumDescription('');
-                  navigateEffect('/notes');
+                  navigateEffect('/');
                 },
               });
             }}

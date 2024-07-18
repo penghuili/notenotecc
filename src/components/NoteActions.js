@@ -6,6 +6,7 @@ import {
   RiImageLine,
   RiMore2Line,
   RiPencilLine,
+  RiStickyNoteAddLine,
 } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
@@ -14,7 +15,11 @@ import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingNoteAtom } from '../store/note/noteAtoms';
-import { addImagesEffect, deleteNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  deleteNoteEffect,
+  setNoteEffect,
+} from '../store/note/noteEffects';
 import { Camera } from './Camera';
 
 export function NoteActions({ note, goBackAfterDelete }) {
@@ -22,6 +27,11 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+
+  function handleEidt() {
+    setNoteEffect(note);
+    navigateEffect(`/notes/${note.sortKey}`);
+  }
 
   if (!note) {
     return null;
@@ -39,6 +49,10 @@ export function NoteActions({ note, goBackAfterDelete }) {
         <RiImageAddLine />
       </IconButton>
 
+      <IconButton variant="ghost" onClick={handleEidt} mr="2">
+        <RiStickyNoteAddLine />
+      </IconButton>
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
@@ -47,11 +61,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item
-            onClick={() => {
-              navigateEffect(`/notes/${note.sortKey}`);
-            }}
-          >
+          <DropdownMenu.Item onClick={handleEidt}>
             <RiPencilLine />
             Update
           </DropdownMenu.Item>
