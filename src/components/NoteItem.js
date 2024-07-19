@@ -11,6 +11,7 @@ const Description = styled.pre`
   margin: 0;
   padding: 0;
   white-space: pre-wrap;
+  font-family: var(--default-font-family);
 `;
 
 export function NoteItem({ note, albums }) {
