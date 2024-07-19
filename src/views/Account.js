@@ -1,5 +1,5 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
-import { RiCheckboxBlankCircleLine, RiFileCopyLine, RiLockLine } from '@remixicon/react';
+import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React from 'react';
 
@@ -18,8 +18,6 @@ import { setToastEffect } from '../shared-private/react/store/sharedEffects';
 export function Account() {
   const account = useAtomValue(userAtom);
   const isLoadingAccount = useAtomValue(isLoadingAccountAtom);
-
-  const noalbumSortKey = `album_noalbum_${account.id}`;
 
   return (
     <>
@@ -85,10 +83,6 @@ export function Account() {
         <HorizontalCenter gap="1">
           <RiLockLine color={themeCssColor} />
           <RouteLink to="/security">Security</RouteLink>
-        </HorizontalCenter>
-        <HorizontalCenter gap="1">
-          <RiCheckboxBlankCircleLine color={themeCssColor} />
-          <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without album</RouteLink>
         </HorizontalCenter>
       </ItemsWrapper>
 

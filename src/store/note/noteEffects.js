@@ -1,11 +1,5 @@
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
-import {
-  goBackEffect,
-  setToastEffect,
-} from '../../shared-private/react/store/sharedEffects';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
+import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsAtom } from '../album/albumItemAtoms';
 import {
@@ -78,6 +72,11 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 
 export async function fetchNoteEffect(noteId) {
   updateAtomValue(isLoadingNoteAtom, true);
+
+  const noteInState = getAtomValue(noteAtom);
+  if (noteInState?.sortKey === noteId) {
+    return;
+  }
 
   const cachedNote = await noteCache.getCachedItem(noteId);
   if (cachedNote?.sortKey === noteId) {

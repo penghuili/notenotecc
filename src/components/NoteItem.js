@@ -4,11 +4,10 @@ import styled from 'styled-components';
 
 import { formatDateWeekTime } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { ImageCarousel } from './ImageCarousel';
 import { NoteActions } from './NoteActions';
 
-const Descripption = styled.pre`
+const Description = styled.pre`
   margin: 0;
   padding: 0;
   white-space: pre-wrap;
@@ -27,11 +26,7 @@ export function NoteItem({ note, albums }) {
 
       <ImageCarousel noteId={note.sortKey} images={note.images} />
 
-      {!!note.note && (
-        <Descripption onDoubleClick={() => navigateEffect(`/notes/${note.sortKey}`)}>
-          {note.note}
-        </Descripption>
-      )}
+      {!!note.note && <Description>{note.note}</Description>}
 
       {!!albums?.length && (
         <Flex wrap="wrap">

@@ -8,6 +8,7 @@ import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { Reorder } from '../shared-private/react/Reorder';
 import { RouteLink } from '../shared-private/react/RouteLink';
+import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsAtom, isDeletingAlbumAtom, isLoadingAlbumsAtom } from '../store/album/albumAtoms';
 import {
@@ -20,21 +21,28 @@ export function Albums() {
   const isLoading = useAtomValue(isLoadingAlbumsAtom);
   const isDeleting = useAtomValue(isDeletingAlbumAtom);
   const albums = useAtomValue(albumsAtom);
+  const account = useAtomValue(userAtom);
 
   useEffectOnce(() => {
     fetchAlbumsEffect();
   });
 
+  const noalbumSortKey = `album_noalbum_${account?.id}`;
   return (
     <>
       <PageHeader title="Albums" isLoading={isLoading || isDeleting} fixed hasBack />
 
-      {!!albums?.length &&
-        albums?.map(album => (
-          <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
-            #{album.title}
-          </RouteLink>
-        ))}
+      {!!albums?.length && (
+        <Flex wrap="wrap" mb="6">
+          {albums?.map(album => (
+            <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
+              #{album.title}
+            </RouteLink>
+          ))}
+        </Flex>
+      )}
+
+      <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without album</RouteLink>
 
       <Box mt="6">
         <Reorder
