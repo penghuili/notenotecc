@@ -71,8 +71,6 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 }
 
 export async function fetchNoteEffect(noteId) {
-  updateAtomValue(isLoadingNoteAtom, true);
-
   const noteInState = getAtomValue(noteAtom);
   if (noteInState?.sortKey === noteId) {
     return;
@@ -82,6 +80,8 @@ export async function fetchNoteEffect(noteId) {
   if (cachedNote?.sortKey === noteId) {
     updateAtomValue(noteAtom, cachedNote);
   }
+
+  updateAtomValue(isLoadingNoteAtom, true);
 
   const { data } = await fetchNote(noteId);
   if (data) {
