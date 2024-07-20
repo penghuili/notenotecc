@@ -10,10 +10,11 @@ import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { NoteItem } from '../components/NoteItem';
+import { NotesCount } from '../components/NotesCount';
 import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
 import { isAddingImagesAtom, isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
 import { fetchNotesEffect } from '../store/note/noteEffects';
@@ -34,7 +35,14 @@ export function Notes() {
         isLoading={isLoading || isAddingImages}
         fixed
         title={
-          <IconButton onClick={() => fetchNotesEffect()} mr="2" variant="soft">
+          <IconButton
+            onClick={() => {
+              fetchNotesEffect();
+              fetchSettingsEffect(true);
+            }}
+            mr="2"
+            variant="soft"
+          >
             <RiRefreshLine />
           </IconButton>
         }
@@ -58,6 +66,8 @@ export function Notes() {
           </>
         }
       />
+
+      <NotesCount />
 
       {!!notes?.length &&
         notes.map(note => (

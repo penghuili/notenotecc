@@ -1,5 +1,12 @@
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
-import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
+import {
+  getAtomValue,
+  updateAtomValue,
+} from '../../shared-private/react/store/atomHelpers';
+import {
+  fetchSettingsEffect,
+  goBackEffect,
+  setToastEffect,
+} from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsAtom } from '../album/albumItemAtoms';
 import {
@@ -127,6 +134,8 @@ export async function createNoteEffect({
     if (goBack) {
       goBackEffect();
     }
+
+    fetchSettingsEffect(true);
   }
 
   updateAtomValue(isCreatingNoteAtom, false);
@@ -248,6 +257,8 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
     if (goBack) {
       goBackEffect();
     }
+
+    fetchSettingsEffect(true);
   }
 
   updateAtomValue(isDeletingNoteAtom, false);
