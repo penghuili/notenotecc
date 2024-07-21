@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector';
+import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
-import { TakePhoto } from '../components/TakePhoto';
 import { AreaField } from '../shared-private/react/AreaField';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { useListener } from '../shared-private/react/hooks/useListener';
@@ -94,7 +94,7 @@ export function NoteEdit() {
       <ImageCarousel noteId={noteId} images={images} />
 
       {showCamera && (
-        <TakePhoto
+        <Camera
           onSelect={newImages => {
             addImagesEffect(noteId, {
               canvases: newImages.map(i => i.canvas),

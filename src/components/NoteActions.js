@@ -16,7 +16,7 @@ import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingNoteAtom } from '../store/note/noteAtoms';
 import { addImagesEffect, deleteNoteEffect, setNoteEffect } from '../store/note/noteEffects';
-import { TakePhoto } from './TakePhoto';
+import { Camera } from './Camera';
 
 export function NoteActions({ note, goBackAfterDelete }) {
   const isDeleting = useAtomValue(isDeletingNoteAtom);
@@ -99,7 +99,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
         }}
       />
       {!!showCamera && (
-        <TakePhoto
+        <Camera
           onSelect={newImages => {
             addImagesEffect(note.sortKey, {
               canvases: newImages.map(i => i.canvas),
