@@ -4,8 +4,8 @@ import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { AlbumsSelector } from '../components/AlbumsSelector';
-import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
+import { TakePhoto } from '../components/TakePhoto';
 import { AreaField } from '../shared-private/react/AreaField';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -81,7 +81,7 @@ export function NoteAdd() {
       </ItemsWrapper>
 
       {showCamera && (
-        <Camera
+        <TakePhoto
           onSelect={newImages => {
             setImages([...images, ...newImages]);
             setShowCamera(false);

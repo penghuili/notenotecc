@@ -66,7 +66,7 @@ const ImagesWrapper = styled.div`
   background-color: white;
 `;
 
-export function Camera({ onSelect, onClose }) {
+export function TakePhoto({ onSelect, onClose }) {
   const videoStreamRef = useRef(null);
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
@@ -129,6 +129,7 @@ export function Camera({ onSelect, onClose }) {
     startVideoStream();
 
     return () => {
+      stopVideoStream();
       window.removeEventListener('focus', startVideoStream);
       window.removeEventListener('blur', stopVideoStream);
     };
