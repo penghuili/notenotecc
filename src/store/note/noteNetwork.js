@@ -45,23 +45,31 @@ export async function fetchNote(noteId) {
 }
 
 async function uploadImages(canvases) {
-  const imageBlobs = await Promise.all(canvases.map(c => canvasToBlob(c)));
-  const imageNames = await Promise.all(
-    imageBlobs.map(async b => {
-      const hash = await md5(b);
-      return `${hash}.png`;
+  const blobs = await Promise.all(
+    canvases.map(async c => {
+      if (c?.tagName?.toUpperCase() === 'CANVAS') {
+        const blob = await canvasToBlob(c);
+        return { isImage: true, blob };
+      }
+      return { isImage: false, blob: c };
+    })
+  );
+  const names = await Promise.all(
+    blobs.map(async b => {
+      const hash = await md5(b.blob);
+      return b.isImage ? `${hash}.png` : `${hash}.webm`;
     })
   );
   const urls = await HTTP.post(appName, `/v1/upload-urls`, {
-    images: imageNames,
+    images: names,
   });
   await Promise.all(
-    imageBlobs.map(async (blob, i) => {
+    blobs.map(async (blob, i) => {
       await fetch(urls[i].url, {
         method: 'PUT',
-        body: blob,
+        body: blob.blob,
         headers: {
-          'Content-Type': 'image/png',
+          'Content-Type': blob.isImage ? 'image/png' : 'video/webm',
         },
       });
     })

@@ -24,7 +24,7 @@ export function ImageActions({ noteId, image, imageRef, onDeleteLocal }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          {supportShare() && (
+          {supportShare() && !!imageRef.current && (
             <>
               <DropdownMenu.Item
                 onClick={() => {

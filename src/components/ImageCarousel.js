@@ -111,9 +111,9 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
         }}
         onTransitionEnd={() => setIsTransitioning(false)}
       >
-        {images.map((image, index) => (
+        {images.map(image => (
           <div
-            key={index}
+            key={image.url}
             className="carousel-slide"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -127,6 +127,7 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
               noteId={noteId}
               imageUrl={image.url}
               imagePath={image.path}
+              isVideo={image.blob || image?.path?.endsWith('.webm')}
               onDeleteLocal={onDeleteLocal}
             />
           </div>

@@ -3,8 +3,6 @@ import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
-
 const Video = styled.video`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
@@ -21,13 +19,6 @@ const ErrorWrapper = styled.div`
   align-items: center;
 `;
 
-const errorTypes = {
-  notFound: 'notFound',
-  notAllowed: 'notAllowed',
-  inUse: 'inUse',
-  other: 'other',
-};
-
 export function getCameraSize() {
   let size = Math.min(600, window.innerWidth, window.innerHeight);
   if (window.innerWidth > window.innerHeight) {
@@ -35,6 +26,29 @@ export function getCameraSize() {
   }
 
   return size;
+}
+
+export function renderError(mediaError, size) {
+  if (!mediaError) {
+    return null;
+  }
+
+  let errorMessage = 'Camera error';
+  if (mediaError.name === 'NotFoundError' || mediaError.name === 'DevicesNotFoundError') {
+    errorMessage = 'Camera not found';
+  }
+  if (mediaError.name === 'NotAllowedError' || mediaError.name === 'PermissionDeniedError') {
+    errorMessage = 'Camera access not allowed';
+  }
+  if (mediaError.name === 'NotReadableError' || mediaError.name === 'TrackStartError') {
+    errorMessage = 'Camera in use';
+  }
+
+  return (
+    <ErrorWrapper size={size}>
+      <Text as="p">{errorMessage}</Text>
+    </ErrorWrapper>
+  );
 }
 
 export function TakePhoto({ onSelect }) {
@@ -60,24 +74,9 @@ export function TakePhoto({ onSelect }) {
         videoRef.current.srcObject = stream;
       })
       .catch(error => {
-        if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-          setError(errorTypes.notFound);
-        } else if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-          setError(errorTypes.notAllowed);
-        } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-          setError(errorTypes.inUse);
-        } else {
-          setError(errorTypes.other);
-        }
+        setError(error);
       });
   }
-
-  useEffect(() => {
-    disableBodyScroll();
-    return () => {
-      enableBodyScroll();
-    };
-  }, []);
 
   useEffect(() => {
     function startVideoStream() {
@@ -122,39 +121,14 @@ export function TakePhoto({ onSelect }) {
 
   const size = getCameraSize();
 
-  function renderError() {
-    let errorMessage;
-    if (error === errorTypes.notFound) {
-      errorMessage = 'Camera not found';
-    }
-    if (error === errorTypes.notAllowed) {
-      errorMessage = 'Camera access not allowed';
-    }
-    if (error === errorTypes.inUse) {
-      errorMessage = 'Camera in use';
-    }
-    if (error === errorTypes.other) {
-      errorMessage = 'Camera error';
-    }
-    if (!errorMessage) {
-      return null;
-    }
-
-    return (
-      <ErrorWrapper size={size}>
-        <Text as="p">{errorMessage}</Text>
-      </ErrorWrapper>
-    );
-  }
-
   return (
     <div style={{ position: 'relative' }}>
       <Video ref={videoRef} autoPlay size={size} />
 
-      {renderError()}
+      {renderError(error, size)}
 
       <Flex justify="center" align="center" py="2" gap="2">
-        <IconButton size="4" onClick={handleCapture} disabled={!videoStreamRef.current || !!error}>
+        <IconButton size="4" onClick={handleCapture} disabled={!!error}>
           <RiCameraLine />
         </IconButton>
 

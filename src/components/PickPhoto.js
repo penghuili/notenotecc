@@ -1,11 +1,10 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import { RiArrowDownDoubleLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
 import { ImageCropper } from '../shared-private/react/ImageCropper';
 import { FilePicker } from './FilePicker';
 import { getCameraSize } from './TakePhoto';
@@ -23,13 +22,6 @@ export function PickPhoto({ onSelect }) {
   const cropperRef = useRef(null);
 
   const [pickedImage, setPickedImage] = useState(null);
-
-  useEffect(() => {
-    disableBodyScroll();
-    return () => {
-      enableBodyScroll();
-    };
-  }, []);
 
   const size = getCameraSize();
 

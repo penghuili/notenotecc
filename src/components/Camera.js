@@ -17,6 +17,7 @@ import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { LocalImages } from './LocalImages';
 import { PickPhoto } from './PickPhoto';
 import { TakePhoto } from './TakePhoto';
+import { TakeVideo } from './TakeVideo';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -53,6 +54,10 @@ export function Camera({ onSelect, onClose }) {
   return (
     <Wrapper>
       <Flex justify="between" width="100%" p="2" style={{ maxWidth: '500px' }}>
+        <IconButton variant="soft" onClick={onClose}>
+          <RiCloseLine />
+        </IconButton>
+
         <IconButton
           onClick={() => {
             onSelect(images);
@@ -60,13 +65,18 @@ export function Camera({ onSelect, onClose }) {
         >
           <RiCheckLine />
         </IconButton>
-        <IconButton variant="soft" onClick={onClose}>
-          <RiCloseLine />
-        </IconButton>
       </Flex>
 
       {activeTab === types.takePhoto && (
         <TakePhoto
+          onSelect={value => {
+            setImages([...images, value]);
+          }}
+        />
+      )}
+
+      {activeTab === types.takeVideo && (
+        <TakeVideo
           onSelect={value => {
             setImages([...images, value]);
           }}
@@ -144,6 +154,13 @@ const PreviewImage = styled.img`
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 `;
+const PreviewVideo = styled.video`
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ddd;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+`;
 
 function ImagesPreview({ images, onDelete }) {
   const [showImages, setShowImages] = useState(false);
@@ -173,10 +190,20 @@ function ImagesPreview({ images, onDelete }) {
           {reversedImages.map((image, index) => {
             const translateX = -index * 80;
             const zIndex = reversedImages.length - index;
-            return (
+            return image.canvas ? (
               <PreviewImage
-                src={image.url}
                 key={image.url}
+                src={image.url}
+                style={{
+                  transform: `translateX(${translateX}px)`,
+                  zIndex: zIndex,
+                }}
+              />
+            ) : (
+              <PreviewVideo
+                key={image.url}
+                src={image.url}
+                controls
                 style={{
                   transform: `translateX(${translateX}px)`,
                   zIndex: zIndex,

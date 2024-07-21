@@ -23,7 +23,11 @@ export function LocalImages({ images, onClick, onDelete }) {
           key={image.url}
           style={{ width: imageWidth, aspectRaito: '1/1', position: 'relative' }}
         >
-          <img src={image.url} style={{ width: '100%' }} crossOrigin="anonymous" />
+          {image.canvas ? (
+            <img src={image.url} style={{ width: '100%' }} crossOrigin="anonymous" />
+          ) : (
+            <video src={image.url} controls style={{ width: '100%' }} />
+          )}
           <Box position="absolute" top="2" right="2">
             <IconButton>
               <RiCloseLine onClick={() => onDelete(image)} />

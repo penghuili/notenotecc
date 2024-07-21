@@ -6,6 +6,7 @@ import {
   RiImageLine,
   RiMore2Line,
   RiPencilLine,
+  RiRefreshLine,
   RiStickyNoteAddLine,
 } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
@@ -14,12 +15,18 @@ import React, { useState } from 'react';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { isDeletingNoteAtom } from '../store/note/noteAtoms';
-import { addImagesEffect, deleteNoteEffect, setNoteEffect } from '../store/note/noteEffects';
+import { isDeletingNoteAtom, isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
+import {
+  addImagesEffect,
+  deleteNoteEffect,
+  setNoteEffect,
+  updateImageUrlsEffect,
+} from '../store/note/noteEffects';
 import { Camera } from './Camera';
 
 export function NoteActions({ note, goBackAfterDelete }) {
   const isDeleting = useAtomValue(isDeletingNoteAtom);
+  const isRefreshingImages = useAtomValue(isUpdatingImageUrlsAtom);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -73,6 +80,18 @@ export function NoteActions({ note, goBackAfterDelete }) {
             Add images
           </DropdownMenu.Item>
 
+          <DropdownMenu.Item
+            onClick={() => {
+              updateImageUrlsEffect(note.sortKey, {
+                showSuccess: true,
+              });
+            }}
+            disabled={isRefreshingImages}
+          >
+            <RiRefreshLine />
+            Refresh images
+          </DropdownMenu.Item>
+
           <DropdownMenu.Separator />
 
           <DropdownMenu.Item
@@ -102,7 +121,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
         <Camera
           onSelect={newImages => {
             addImagesEffect(note.sortKey, {
-              canvases: newImages.map(i => i.canvas),
+              canvases: newImages.map(i => i.canvas || i.blob),
             });
             setShowCamera(false);
           }}

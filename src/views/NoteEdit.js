@@ -97,7 +97,7 @@ export function NoteEdit() {
         <Camera
           onSelect={newImages => {
             addImagesEffect(noteId, {
-              canvases: newImages.map(i => i.canvas),
+              canvases: newImages.map(i => i.canvas || i.blob),
             });
             setShowCamera(false);
           }}

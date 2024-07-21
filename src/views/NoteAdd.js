@@ -37,7 +37,7 @@ export function NoteAdd() {
             onClick={() => {
               createNoteEffect({
                 note,
-                canvases: images.map(i => i.canvas),
+                canvases: images.map(i => i.canvas || i.blob),
                 albumDescription: newAlbumDescription || undefined,
                 albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
                 goBack: false,
