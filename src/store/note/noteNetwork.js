@@ -48,16 +48,19 @@ async function uploadImages(canvases) {
   const blobs = await Promise.all(
     canvases.map(async c => {
       if (c?.tagName?.toUpperCase() === 'CANVAS') {
-        const blob = await canvasToBlob(c);
-        return { isImage: true, blob };
+        const blob = await canvasToBlob(c, 'image/webp', 0.8);
+        return { isImage: true, blob, size: blob.size };
       }
-      return { isImage: false, blob: c };
+      return { isImage: false, blob: c, size: c.size };
     })
   );
   const names = await Promise.all(
     blobs.map(async b => {
       const hash = await md5(b.blob);
-      return b.isImage ? `${hash}.png` : `${hash}.webm`;
+      return {
+        name: b.isImage ? `${hash}.webp` : `${hash}.webm`,
+        type: b.isImage ? 'image/webp' : 'video/webm',
+      };
     })
   );
   const urls = await HTTP.post(appName, `/v1/upload-urls`, {
@@ -70,12 +73,16 @@ async function uploadImages(canvases) {
         body: blob.blob,
         headers: {
           'Content-Type': blob.isImage ? 'image/png' : 'video/webm',
+          'Cache-Control': 'max-age=31536000,public',
         },
       });
     })
   );
 
-  return urls.map(u => u.path);
+  return urls.map((u, i) => ({
+    path: u.path,
+    size: blobs[i].size,
+  }));
 }
 
 export async function createNote({ note, canvases, albumIds, albumDescription }) {

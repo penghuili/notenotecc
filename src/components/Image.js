@@ -7,7 +7,7 @@ import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
 import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
 import { ImageActions } from './ImageActions';
 
-export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
+export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -29,6 +29,7 @@ export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
         noteId={noteId}
         imageUrl={imageUrl}
         imagePath={imagePath}
+        size={size}
         isVideo={isVideo}
         onDeleteLocal={onDeleteLocal}
       />
@@ -50,7 +51,7 @@ export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
   );
 }
 
-function InnerImage({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
+function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
   const imageRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(!isVideo);
@@ -68,7 +69,7 @@ function InnerImage({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
       {isLoading && <LoadingSkeleton width="100%" height="100%" />}
 
       {isVideo ? (
-        <video src={url} style={{ width: '100%' }} controls muted crossOrigin="anonymous" />
+        <video src={url} style={{ width: '100%' }} controls muted />
       ) : (
         <img
           ref={imageRef}
@@ -77,14 +78,13 @@ function InnerImage({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
           onLoad={() => {
             setIsLoading(false);
           }}
-          crossOrigin="anonymous"
         />
       )}
 
       <Box position="absolute" top="2" right="2">
         <ImageActions
           noteId={noteId}
-          image={{ url: imageUrl, path: imagePath }}
+          image={{ url: imageUrl, path: imagePath, size }}
           imageRef={imageRef}
           onDeleteLocal={onDeleteLocal}
         />

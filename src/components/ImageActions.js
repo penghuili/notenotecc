@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { shareImageFromImgTag, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
+import { getFileSizeString } from '../shared-private/react/file';
 import { isDeletingImageAtom } from '../store/note/noteAtoms';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
@@ -24,6 +25,14 @@ export function ImageActions({ noteId, image, imageRef, onDeleteLocal }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
+          {!!image.size && (
+            <>
+              <DropdownMenu.Item>{getFileSizeString(image.size)}</DropdownMenu.Item>
+
+              <DropdownMenu.Separator />
+            </>
+          )}
+
           {supportShare() && !!imageRef.current && (
             <>
               <DropdownMenu.Item
