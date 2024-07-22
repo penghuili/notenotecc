@@ -11,8 +11,8 @@ export function NotesCount() {
   const count = settings?.notesCount || 0;
   const filesSize = settings?.filesSize || 0;
   return (
-    <Text as="p" my="4">
-      {count} {count === 1 ? 'note' : 'notes'}, {getFileSizeString(filesSize)}
+    <Text as="p" size="1">
+      ({count}, {getFileSizeString(filesSize)})
     </Text>
   );
 }

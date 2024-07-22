@@ -60,6 +60,18 @@ export function NoteActions({ note, goBackAfterDelete }) {
         <RiStickyNoteAddLine />
       </IconButton>
 
+      {hasPNG && (
+        <IconButton
+          variant="ghost"
+          onClick={() => {
+            convertNoteImagesEffect(note, {});
+          }}
+          mr="2"
+        >
+          <RiRestartLine />
+        </IconButton>
+      )}
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
@@ -68,16 +80,6 @@ export function NoteActions({ note, goBackAfterDelete }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          {hasPNG && (
-            <DropdownMenu.Item
-              onClick={() => {
-                convertNoteImagesEffect(note, {});
-              }}
-            >
-              <RiRestartLine />
-              Convert to WEBP
-            </DropdownMenu.Item>
-          )}
           <DropdownMenu.Item onClick={handleEidt}>
             <RiPencilLine />
             Update

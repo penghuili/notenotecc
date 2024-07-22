@@ -1,7 +1,7 @@
+import { convertPNG2Webp } from '../../lib/convertPNG2Webp';
 import { imagePathToUrl } from '../../lib/imagePathToUrl';
 import { asyncForEach } from '../../shared-private/js/asyncForEach';
 import { createItemsCache } from '../../shared-private/react/cacheItems';
-import { canvasToBlob } from '../../shared-private/react/canvasToBlob';
 import { HTTP } from '../../shared-private/react/HTTP';
 import { appName } from '../../shared-private/react/initShared';
 import { md5 } from '../../shared-private/react/md5';
@@ -101,21 +101,6 @@ export async function convertNoteImages(note) {
   }
 
   return { data: newNote, error: newError };
-}
-
-async function convertPNG2Webp(pngUrl) {
-  const response = await fetch(pngUrl, { mode: 'cors' });
-  const blob = await response.blob();
-  const imageBitmap = await createImageBitmap(blob);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = imageBitmap.width;
-  canvas.height = imageBitmap.height;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(imageBitmap, 0, 0);
-
-  const webpBlob = await canvasToBlob(canvas, 'image/webp', 0.8);
-  return { blob: webpBlob, size: webpBlob.size, isImage: true };
 }
 
 export async function createNote({ note, images, albumIds, albumDescription }) {

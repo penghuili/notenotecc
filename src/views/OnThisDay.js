@@ -1,5 +1,7 @@
 import { Tabs, Text } from '@radix-ui/themes';
 import {
+  addDays,
+  differenceInCalendarDays,
   differenceInMonths,
   differenceInYears,
   endOfDay,
@@ -14,13 +16,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { NoteItem } from '../components/NoteItem';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
+import { randomBetween } from '../shared-private/js/utils';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import {
-  isLoadingOnThisDayNotesAtom,
-  onThisDayNotesAtom,
-} from '../store/note/noteAtoms';
+import { isLoadingOnThisDayNotesAtom, onThisDayNotesAtom } from '../store/note/noteAtoms';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
 function parseStartTime(startTime) {
@@ -59,6 +59,14 @@ export function OnThisDay() {
     ];
 
     const months = differenceInMonths(new Date(), new Date(user.createdAt));
+    if (months >= 3) {
+      tabs.push({
+        label: '3 months ago',
+        value: 'threeMonths',
+        startTime: parseStartTime(subMonths(new Date(), 3)),
+        endTime: parseEndTime(subMonths(new Date(), 3)),
+      });
+    }
     if (months >= 6) {
       tabs.push({
         label: '6 months ago',
@@ -81,6 +89,15 @@ export function OnThisDay() {
           });
         });
     }
+
+    const createdDays = differenceInCalendarDays(new Date(), new Date(user.createdAt));
+    const randomDays = randomBetween(0, createdDays);
+    tabs.push({
+      label: 'Random',
+      value: 'random',
+      startTime: parseStartTime(addDays(new Date(user.createdAt), randomDays)),
+      endTime: parseEndTime(addDays(new Date(user.createdAt), randomDays)),
+    });
 
     return tabs;
   }, [user?.createdAt]);

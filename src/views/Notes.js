@@ -1,4 +1,4 @@
-import { IconButton } from '@radix-ui/themes';
+import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiHashtag,
   RiHistoryLine,
@@ -35,16 +35,19 @@ export function Notes() {
         isLoading={isLoading || isAddingImages}
         fixed
         title={
-          <IconButton
-            onClick={() => {
-              fetchNotesEffect();
-              fetchSettingsEffect(true);
-            }}
-            mr="2"
-            variant="soft"
-          >
-            <RiRefreshLine />
-          </IconButton>
+          <Flex align="center">
+            <IconButton
+              onClick={() => {
+                fetchNotesEffect();
+                fetchSettingsEffect(true);
+              }}
+              mr="2"
+              variant="soft"
+            >
+              <RiRefreshLine />
+            </IconButton>
+            <NotesCount />
+          </Flex>
         }
         right={
           <>
@@ -66,8 +69,6 @@ export function Notes() {
           </>
         }
       />
-
-      <NotesCount />
 
       {!!notes?.length &&
         notes.map(note => (
