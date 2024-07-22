@@ -1,6 +1,6 @@
 import { Flex } from '@radix-ui/themes';
 import { Box, IconButton } from '@radix-ui/themes/dist/cjs/index.js';
-import { RiCloseLine } from '@remixicon/react';
+import { RiDeleteBinLine } from '@remixicon/react';
 import React, { useMemo } from 'react';
 
 export function LocalImages({ images, onClick, onDelete }) {
@@ -30,7 +30,12 @@ export function LocalImages({ images, onClick, onDelete }) {
           )}
           <Box position="absolute" top="2" right="2">
             <IconButton>
-              <RiCloseLine onClick={() => onDelete(image)} />
+              <RiDeleteBinLine
+                onClick={e => {
+                  e.stopPropagation();
+                  onDelete(image);
+                }}
+              />
             </IconButton>
           </Box>
         </div>

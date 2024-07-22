@@ -1,7 +1,4 @@
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
 import {
   fetchSettingsEffect,
   goBackEffect,
@@ -17,7 +14,6 @@ import {
   isLoadingNoteAtom,
   isLoadingNotesAtom,
   isLoadingOnThisDayNotesAtom,
-  isUpdatingImageUrlsAtom,
   isUpdatingNoteAtom,
   noteAtom,
   notesAtom,
@@ -31,7 +27,6 @@ import {
   fetchNote,
   fetchNotes,
   noteCache,
-  updateImageUrls,
   updateNote,
 } from './noteNetwork';
 
@@ -209,36 +204,6 @@ export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack })
   }
 
   updateAtomValue(isAddingImagesAtom, false);
-}
-
-export async function updateImageUrlsEffect(
-  noteId,
-  { onSucceeded, onFailed, goBack, showSuccess }
-) {
-  updateAtomValue(isUpdatingImageUrlsAtom, true);
-
-  const { data } = await updateImageUrls(noteId);
-
-  if (data) {
-    updateStates(data, 'update');
-
-    if (showSuccess) {
-      setToastEffect('Updated!');
-    }
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
-  } else {
-    if (onFailed) {
-      onFailed();
-    }
-  }
-
-  updateAtomValue(isUpdatingImageUrlsAtom, false);
 }
 
 export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {

@@ -1,17 +1,13 @@
-import { Box, Flex, IconButton } from '@radix-ui/themes';
-import { RiRefreshLine } from '@remixicon/react';
-import React, { useRef, useState } from 'react';
+import { Box } from '@radix-ui/themes';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { useInView } from '../shared-private/react/hooks/useInView';
 import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton';
-import { updateAtomValue, useAtomValue } from '../shared-private/react/store/atomHelpers';
-import { fullScreenImageUrlAtom, isUpdatingImageUrlsAtom } from '../store/note/noteAtoms';
-import { updateImageUrlsEffect } from '../store/note/noteEffects';
+import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
+import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
 import { ImageActions } from './ImageActions';
 
 export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
-  const isUpdatingImageUrls = useAtomValue(isUpdatingImageUrlsAtom);
-
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -34,8 +30,6 @@ export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
         imageUrl={imageUrl}
         imagePath={imagePath}
         isVideo={isVideo}
-        isUpdatingImageUrls={isUpdatingImageUrls}
-        onShowImage={setShowImage}
         onDeleteLocal={onDeleteLocal}
       />
     );
@@ -56,37 +50,32 @@ export function Image({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
   );
 }
 
-function InnerImage({
-  noteId,
-  imageUrl,
-  imagePath,
-  isVideo,
-  isUpdatingImageUrls,
-  onShowImage,
-  onDeleteLocal,
-}) {
+function InnerImage({ noteId, imageUrl, imagePath, isVideo, onDeleteLocal }) {
   const imageRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(!isVideo);
-  const [hasError, setHasError] = useState(false);
+
+  const url = useMemo(() => {
+    if (imagePath) {
+      return `https://files.notenote.cc/${imagePath}`;
+    }
+
+    return imageUrl;
+  }, [imageUrl, imagePath]);
 
   return (
     <>
       {isLoading && <LoadingSkeleton width="100%" height="100%" />}
 
       {isVideo ? (
-        <video src={imageUrl} style={{ width: '100%' }} controls muted crossOrigin="anonymous" />
+        <video src={url} style={{ width: '100%' }} controls muted crossOrigin="anonymous" />
       ) : (
         <img
           ref={imageRef}
-          src={imageUrl}
+          src={url}
           style={{ width: '100%', display: isLoading ? 'none' : 'block' }}
           onLoad={() => {
-            setHasError(false);
             setIsLoading(false);
-          }}
-          onError={() => {
-            setHasError(true);
           }}
           crossOrigin="anonymous"
         />
@@ -100,32 +89,6 @@ function InnerImage({
           onDeleteLocal={onDeleteLocal}
         />
       </Box>
-
-      {hasError && (
-        <Flex
-          width="100%"
-          height="100%"
-          position="absolute"
-          top="0"
-          left="0"
-          justify="center"
-          align="center"
-        >
-          <IconButton
-            onClick={() => {
-              if (noteId && !isUpdatingImageUrls) {
-                onShowImage(false);
-                updateImageUrlsEffect(noteId, {
-                  onSucceeded: () => onShowImage(true),
-                  showSuccess: false,
-                });
-              }
-            }}
-          >
-            <RiRefreshLine />
-          </IconButton>
-        </Flex>
-      )}
     </>
   );
 }

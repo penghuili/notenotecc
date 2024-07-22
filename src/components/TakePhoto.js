@@ -3,6 +3,14 @@ import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+export const VideoWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 const Video = styled.video`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
@@ -11,7 +19,7 @@ const ErrorWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: ${props => `${props.size}px`};
+  width: 100%;
   height: ${props => `${props.size}px`};
 
   display: flex;
@@ -122,7 +130,7 @@ export function TakePhoto({ onSelect }) {
   const size = getCameraSize();
 
   return (
-    <div style={{ position: 'relative' }}>
+    <VideoWrapper>
       <Video ref={videoRef} autoPlay size={size} />
 
       {renderError(error, size)}
@@ -143,6 +151,6 @@ export function TakePhoto({ onSelect }) {
           <RiRefreshLine />
         </IconButton>
       </Flex>
-    </div>
+    </VideoWrapper>
   );
 }

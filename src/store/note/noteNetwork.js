@@ -143,18 +143,6 @@ export async function addImages(noteId, canvases) {
   }
 }
 
-export async function updateImageUrls(noteId) {
-  try {
-    const data = await HTTP.put(appName, `/v1/notes/${noteId}/images/update-urls`, {});
-
-    await updateCache(data, 'update');
-
-    return { data, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
 export async function deleteNote(noteId) {
   try {
     const data = await HTTP.delete(appName, `/v1/notes/${noteId}`);

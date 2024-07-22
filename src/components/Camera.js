@@ -53,7 +53,7 @@ export function Camera({ onSelect, onClose }) {
 
   return (
     <Wrapper>
-      <Flex justify="between" width="100%" p="2" style={{ maxWidth: '500px' }}>
+      <Flex justify="between" width="100%" p="2" style={{ maxWidth: '600px' }}>
         <IconButton variant="soft" onClick={onClose}>
           <RiCloseLine />
         </IconButton>

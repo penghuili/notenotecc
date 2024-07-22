@@ -9,50 +9,67 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { renderError } from './TakePhoto';
+import { getCameraSize, renderError, VideoWrapper } from './TakePhoto';
 
 const Video = styled.video`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
 `;
 
-export function getCameraSize() {
-  let size = Math.min(600, window.innerWidth, window.innerHeight);
-  if (window.innerWidth > window.innerHeight) {
-    size = size - 230 - 48;
-  }
-
-  return size;
-}
+const RECORDING_DURATION = 15000;
 
 export function TakeVideo({ onSelect }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [facingMode, setFacingMode] = useState('environment');
 
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
-  const timerRef = useRef(null);
+  const recordedChunksRef = useRef([]);
+  const progressIntervalRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const elapsedTimeRef = useRef(0);
 
   useEffect(() => {
-    requestPermission('environment');
+    function handleStart() {
+      requestStream(facingMode);
+    }
+    function handleStop() {
+      stopStream();
+    }
+    window.addEventListener('focus', handleStart);
+    window.addEventListener('blur', handleStop);
+    requestStream('environment');
 
     return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      stopStream();
+      window.removeEventListener('focus', handleStart);
+      window.removeEventListener('blur', handleStop);
+
+      clearAllTimers();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const requestPermission = async mode => {
+  const clearAllTimers = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+  };
+
+  const requestStream = async mode => {
     try {
+      if (streamRef.current && mode === facingMode) {
+        return;
+      }
+      if (streamRef.current) {
+        stopStream();
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 720 },
@@ -68,35 +85,34 @@ export function TakeVideo({ onSelect }) {
       setError(e);
     }
   };
+  const stopStream = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+  };
 
   const startRecording = async () => {
     try {
-      if (!streamRef.current) {
-        await requestPermission(facingMode);
-      }
+      await requestStream(facingMode);
 
       const mediaRecorder = new MediaRecorder(streamRef.current, {
         mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 1000000, // 1 Mbps
+        videoBitsPerSecond: 1000000,
       });
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.start(1000);
+      mediaRecorder.start(100);
 
       setIsRecording(true);
       setIsPaused(false);
-      setTimeLeft(15);
+      setProgress(0);
+      recordedChunksRef.current = [];
+      startTimeRef.current = Date.now();
+      elapsedTimeRef.current = 0;
 
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prevTime => {
-          if (prevTime <= 1) {
-            stopRecording();
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
+      updateProgress();
     } catch (e) {
       setError(e);
     }
@@ -104,30 +120,54 @@ export function TakeVideo({ onSelect }) {
 
   const handleDataAvailable = event => {
     if (event.data.size > 0) {
-      setRecordedChunks(prev => prev.concat(event.data));
+      recordedChunksRef.current.push(event.data);
     }
+  };
+
+  const updateProgress = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+    }
+    progressIntervalRef.current = setInterval(() => {
+      const currentTime = Date.now();
+      const newElapsedTime = elapsedTimeRef.current + (currentTime - startTimeRef.current);
+      const newProgress = Math.min((newElapsedTime / RECORDING_DURATION) * 100, 100);
+      setProgress(newProgress);
+
+      if (newProgress >= 100) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+        stopRecording();
+      }
+    }, 100);
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.ondataavailable = null;
+      mediaRecorderRef.current = null;
     }
-    setIsRecording(false);
-    setIsPaused(false);
-    clearInterval(timerRef.current);
 
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
     onSelect({ blob, url });
 
-    setRecordedChunks([]);
+    setIsRecording(false);
+    setIsPaused(false);
+    clearAllTimers();
+
+    recordedChunksRef.current = [];
+    elapsedTimeRef.current = 0;
+    setProgress(0);
   };
 
   const pauseRecording = () => {
     if (mediaRecorderRef.current && !isPaused) {
       mediaRecorderRef.current.pause();
       setIsPaused(true);
-      clearInterval(timerRef.current);
+      clearAllTimers();
+      elapsedTimeRef.current += Date.now() - startTimeRef.current;
     }
   };
 
@@ -135,24 +175,21 @@ export function TakeVideo({ onSelect }) {
     if (mediaRecorderRef.current && isPaused) {
       mediaRecorderRef.current.resume();
       setIsPaused(false);
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prevTime => {
-          if (prevTime <= 1) {
-            stopRecording();
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
+      startTimeRef.current = Date.now();
+      updateProgress();
     }
   };
 
   const size = getCameraSize();
 
   return (
-    <div style={{ position: 'relative' }}>
+    <VideoWrapper>
       <Video ref={videoRef} autoPlay muted size={size} />
-      <Progress size="1" value={100 - (timeLeft / 15) * 100} />
+      {!error && (
+        <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
+          <Progress size="1" value={progress} />
+        </div>
+      )}
 
       {renderError(error, size)}
 
@@ -168,7 +205,7 @@ export function TakeVideo({ onSelect }) {
               onClick={() => {
                 const mode = facingMode === 'user' ? 'environment' : 'user';
                 setFacingMode(mode);
-                requestPermission(mode);
+                requestStream(mode);
               }}
             >
               <RiRefreshLine />
@@ -188,12 +225,12 @@ export function TakeVideo({ onSelect }) {
           </IconButton>
         )}
 
-        {isRecording && timeLeft > 0 && (
+        {isRecording && progress < 100 && (
           <IconButton size="4" onClick={stopRecording} disabled={!!error}>
             <RiStopLine />
           </IconButton>
         )}
       </Flex>
-    </div>
+    </VideoWrapper>
   );
 }

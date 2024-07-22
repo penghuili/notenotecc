@@ -7,7 +7,7 @@ import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
 import { ImageCropper } from '../shared-private/react/ImageCropper';
 import { FilePicker } from './FilePicker';
-import { getCameraSize } from './TakePhoto';
+import { getCameraSize, VideoWrapper } from './TakePhoto';
 
 const CropperWrapper = styled.div`
   width: ${props => `${props.size}px`};
@@ -26,7 +26,7 @@ export function PickPhoto({ onSelect }) {
   const size = getCameraSize();
 
   return (
-    <div>
+    <VideoWrapper>
       <CropperWrapper size={size}>
         <ImageCropper ref={cropperRef} width={size} pickedImage={pickedImage} />
       </CropperWrapper>
@@ -66,6 +66,6 @@ export function PickPhoto({ onSelect }) {
           </FilePicker>
         )}
       </Flex>
-    </div>
+    </VideoWrapper>
   );
 }
