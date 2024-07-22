@@ -86,7 +86,6 @@ function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal 
         <ImageActions
           noteId={noteId}
           image={{ url: imageUrl, path: imagePath, size }}
-          imageRef={imageRef}
           onDeleteLocal={onDeleteLocal}
         />
       </Box>

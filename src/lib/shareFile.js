@@ -32,6 +32,27 @@ export async function shareImageFromImgTag(imgElement) {
   }
 }
 
+export async function shareFileWithUrl(url) {
+  try {
+    const response = await fetch(url, { mode: 'cors' });
+    const blob = await response.blob();
+    const fileSuffix = url.endsWith('.webp') ? 'webp' : 'webm';
+    const fileType = url.endsWith('.webp') ? 'image/webp' : 'video/webm';
+    const file = new File(
+      [blob],
+      `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.${fileSuffix}`,
+      {
+        type: fileType,
+      }
+    );
+
+    return await shareFile(file);
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
 export function supportShare() {
   return !!navigator.canShare;
 }
