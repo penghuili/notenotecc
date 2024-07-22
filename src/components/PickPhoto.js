@@ -38,7 +38,7 @@ export function PickPhoto({ onSelect }) {
               size="4"
               onClick={async () => {
                 const canvas = cropperRef.current.crop(900);
-                const imageUrl = canvas.toDataURL('image/png');
+                const imageUrl = canvas.toDataURL('image/webp');
                 onSelect({ canvas, url: imageUrl });
                 setPickedImage(null);
               }}
@@ -50,7 +50,7 @@ export function PickPhoto({ onSelect }) {
               onClick={async () => {
                 const squareCanvas = await makeImageSquare(pickedImage);
                 const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
-                const imageUrl = resizedCanvas.toDataURL('image/png');
+                const imageUrl = resizedCanvas.toDataURL('image/webp');
                 onSelect({ canvas: resizedCanvas, url: imageUrl });
                 setPickedImage(null);
               }}

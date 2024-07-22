@@ -122,7 +122,7 @@ export function TakePhoto({ onSelect }) {
     tempCanvas.height = height;
     const context = tempCanvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, width, height);
-    const imageUrl = tempCanvas.toDataURL('image/png');
+    const imageUrl = tempCanvas.toDataURL('image/webp');
 
     onSelect({ canvas: tempCanvas, url: imageUrl });
   }

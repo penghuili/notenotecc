@@ -128,6 +128,7 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
               imageUrl={image.url}
               imagePath={image.path}
               size={image.size}
+              duration={image.duration}
               isVideo={image.blob || image?.path?.endsWith('.webm')}
               onDeleteLocal={onDeleteLocal}
             />

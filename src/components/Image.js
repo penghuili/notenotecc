@@ -1,5 +1,5 @@
-import { Box } from '@radix-ui/themes';
-import React, { useMemo, useRef, useState } from 'react';
+import { Box, Spinner } from '@radix-ui/themes';
+import React, { Suspense, useMemo, useRef, useState } from 'react';
 
 import { imagePathToUrl } from '../lib/imagePathToUrl';
 import { useInView } from '../shared-private/react/hooks/useInView';
@@ -8,7 +8,9 @@ import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
 import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
 import { ImageActions } from './ImageActions';
 
-export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
+const VideoPlayer = React.lazy(() => import('./VideoPlayer'));
+
+export function Image({ noteId, imageUrl, imagePath, size, duration, isVideo, onDeleteLocal }) {
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -31,6 +33,7 @@ export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLoca
         imageUrl={imageUrl}
         imagePath={imagePath}
         size={size}
+        duration={duration}
         isVideo={isVideo}
         onDeleteLocal={onDeleteLocal}
       />
@@ -52,7 +55,7 @@ export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLoca
   );
 }
 
-function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
+function InnerImage({ noteId, imageUrl, imagePath, size, duration, isVideo, onDeleteLocal }) {
   const imageRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(!isVideo);
@@ -70,7 +73,9 @@ function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal 
       {isLoading && <LoadingSkeleton width="100%" height="100%" />}
 
       {isVideo ? (
-        <video src={url} style={{ width: '100%' }} controls muted />
+        <Suspense fallback={<Spinner />}>
+          <VideoPlayer src={url} duration={duration} />
+        </Suspense>
       ) : (
         <img
           ref={imageRef}
@@ -92,3 +97,25 @@ function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal 
     </>
   );
 }
+
+// function VideoPlayer({ src }) {
+//   const ref = useRef(null);
+//   useEffectOnce(() => {
+//     function handleTimeUpdate() {
+//       console.log(ref.current.currentTime, ref.current.duration);
+//     }
+//     ref.current.addEventListener('timeupdate', handleTimeUpdate);
+//     ref.current.addEventListener('loadedmetadata', handleTimeUpdate);
+//     ref.current.addEventListener('durationchange', handleTimeUpdate);
+
+//     return () => {
+//       if (ref.current) {
+//         ref.current.removeEventListener('timeupdate', handleTimeUpdate);
+//         ref.current.removeEventListener('loadedmetadata', handleTimeUpdate);
+//         ref.current.removeEventListener('durationchange', handleTimeUpdate);
+//       }
+//     };
+//   });
+
+//   return <video ref={ref} src={src} style={{ width: '100%' }} controls muted />;
+// }

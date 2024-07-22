@@ -8,7 +8,7 @@ export async function formatImages(canvasAndBlobs) {
         blob = await canvasToBlob(i.canvas, 'image/webp', 0.8);
       }
 
-      return { isImage: !!i.canvas, blob, size: blob.size };
+      return { isImage: !!i.canvas, blob, size: blob.size, duration: i.duration };
     })
   );
 
