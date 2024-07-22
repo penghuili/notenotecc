@@ -149,9 +149,10 @@ export function TakeVideo({ onSelect }) {
       mediaRecorderRef.current = null;
     }
 
+    const duration = elapsedTimeRef.current + (Date.now() - startTimeRef.current);
     const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, duration: elapsedTimeRef.current });
+    onSelect({ blob, url, duration });
 
     setIsRecording(false);
     setIsPaused(false);

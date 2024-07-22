@@ -12,7 +12,7 @@ export default function VideoPlayer({ src, duration }) {
       controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
       seekTime: 3,
       muted: true,
-      duration: duration ? duration / 1000 : undefined,
+      duration: duration ? Math.floor(duration / 1000) : undefined,
     });
   });
 
