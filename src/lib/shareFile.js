@@ -20,9 +20,9 @@ export async function shareImageFromImgTag(imgElement) {
     canvas.height = imgElement.naturalHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(imgElement, 0, 0);
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    const file = new File([blob], `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.png`, {
-      type: 'image/png',
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp'));
+    const file = new File([blob], `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.webp`, {
+      type: 'image/webp',
     });
 
     return await shareFile(file);
