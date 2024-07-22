@@ -1,3 +1,5 @@
+import { imagePathToUrl } from '../../lib/imagePathToUrl';
+import { asyncForEach } from '../../shared-private/js/asyncForEach';
 import { createItemsCache } from '../../shared-private/react/cacheItems';
 import { canvasToBlob } from '../../shared-private/react/canvasToBlob';
 import { HTTP } from '../../shared-private/react/HTTP';
@@ -44,18 +46,9 @@ export async function fetchNote(noteId) {
   }
 }
 
-async function uploadImages(canvases) {
-  const blobs = await Promise.all(
-    canvases.map(async c => {
-      if (c?.tagName?.toUpperCase() === 'CANVAS') {
-        const blob = await canvasToBlob(c, 'image/webp', 0.8);
-        return { isImage: true, blob, size: blob.size };
-      }
-      return { isImage: false, blob: c, size: c.size };
-    })
-  );
+async function uploadImages(images) {
   const names = await Promise.all(
-    blobs.map(async b => {
+    images.map(async b => {
       const hash = await md5(b.blob);
       return {
         name: b.isImage ? `${hash}.webp` : `${hash}.webm`,
@@ -67,12 +60,12 @@ async function uploadImages(canvases) {
     images: names,
   });
   await Promise.all(
-    blobs.map(async (blob, i) => {
+    images.map(async (image, i) => {
       await fetch(urls[i].url, {
         method: 'PUT',
-        body: blob.blob,
+        body: image.blob,
         headers: {
-          'Content-Type': blob.isImage ? 'image/png' : 'video/webm',
+          'Content-Type': image.isImage ? 'image/webp' : 'video/webm',
           'Cache-Control': 'max-age=31536000,public',
         },
       });
@@ -81,17 +74,57 @@ async function uploadImages(canvases) {
 
   return urls.map((u, i) => ({
     path: u.path,
-    size: blobs[i].size,
+    size: images[i].size,
   }));
 }
 
-export async function createNote({ note, canvases, albumIds, albumDescription }) {
+export async function convertNoteImages(note) {
+  const pngImages = (note.images || []).filter(i => i.path.endsWith('.png'));
+
+  const webpImages = await Promise.all(pngImages.map(i => convertPNG2Webp(imagePathToUrl(i.path))));
+  const { data, error } = await addImages(note.sortKey, webpImages);
+  let newNote = data;
+  let newError = error;
+  if (data) {
+    await asyncForEach(pngImages, async i => {
+      const { data: afterDeleteData, error: afterDeleteError } = await deleteImage(
+        note.sortKey,
+        i.path
+      );
+      if (afterDeleteData) {
+        newNote = afterDeleteData;
+      }
+      if (afterDeleteError) {
+        newError = afterDeleteError;
+      }
+    });
+  }
+
+  return { data: newNote, error: newError };
+}
+
+async function convertPNG2Webp(pngUrl) {
+  const response = await fetch(pngUrl, { mode: 'cors' });
+  const blob = await response.blob();
+  const imageBitmap = await createImageBitmap(blob);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = imageBitmap.width;
+  canvas.height = imageBitmap.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(imageBitmap, 0, 0);
+
+  const webpBlob = await canvasToBlob(canvas, 'image/webp', 0.8);
+  return { blob: webpBlob, size: webpBlob.size, isImage: true };
+}
+
+export async function createNote({ note, images, albumIds, albumDescription }) {
   try {
-    const imagePathes = await uploadImages(canvases);
+    const uploadedImages = await uploadImages(images);
 
     const data = await HTTP.post(appName, `/v1/notes`, {
       note,
-      images: imagePathes,
+      images: uploadedImages,
       albumIds: albumIds || [],
       albumDescription,
     });
@@ -134,12 +167,12 @@ export async function deleteImage(noteId, imagePath) {
   }
 }
 
-export async function addImages(noteId, canvases) {
+export async function addImages(noteId, images) {
   try {
-    const imagePathes = await uploadImages(canvases);
+    const uploadedImages = await uploadImages(images);
 
     const data = await HTTP.put(appName, `/v1/notes/${noteId}/images/add`, {
-      images: imagePathes,
+      images: uploadedImages,
     });
 
     await updateCache(data, 'update');

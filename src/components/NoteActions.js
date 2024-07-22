@@ -6,16 +6,23 @@ import {
   RiImageLine,
   RiMore2Line,
   RiPencilLine,
+  RiRestartLine,
   RiStickyNoteAddLine,
 } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
+import { formatImages } from '../lib/formatImages';
 import { errorColor } from '../shared-private/react/AppWrapper';
 import { Confirm } from '../shared-private/react/Confirm';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingNoteAtom } from '../store/note/noteAtoms';
-import { addImagesEffect, deleteNoteEffect, setNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  convertNoteImagesEffect,
+  deleteNoteEffect,
+  setNoteEffect,
+} from '../store/note/noteEffects';
 import { Camera } from './Camera';
 
 export function NoteActions({ note, goBackAfterDelete }) {
@@ -23,6 +30,10 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+
+  const hasPNG = useMemo(() => {
+    return !!note?.images?.find(img => img.path.endsWith('.png'));
+  }, [note]);
 
   function handleEidt() {
     setNoteEffect(note);
@@ -57,6 +68,16 @@ export function NoteActions({ note, goBackAfterDelete }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
+          {hasPNG && (
+            <DropdownMenu.Item
+              onClick={() => {
+                convertNoteImagesEffect(note, {});
+              }}
+            >
+              <RiRestartLine />
+              Convert to WEBP
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Item onClick={handleEidt}>
             <RiPencilLine />
             Update
@@ -100,9 +121,10 @@ export function NoteActions({ note, goBackAfterDelete }) {
       />
       {!!showCamera && (
         <Camera
-          onSelect={newImages => {
+          onSelect={async newImages => {
+            const images = await formatImages(newImages);
             addImagesEffect(note.sortKey, {
-              canvases: newImages.map(i => i.canvas || i.blob),
+              images,
             });
             setShowCamera(false);
           }}

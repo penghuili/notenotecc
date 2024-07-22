@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { AlbumsSelector } from '../components/AlbumsSelector';
 import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
+import { formatImages } from '../lib/formatImages';
 import { AreaField } from '../shared-private/react/AreaField';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -34,10 +35,11 @@ export function NoteAdd() {
         right={
           <IconButton
             disabled={(!images?.length && !note) || isCreating}
-            onClick={() => {
+            onClick={async () => {
+              const formatedImages = await formatImages(images);
               createNoteEffect({
                 note,
-                canvases: images.map(i => i.canvas || i.blob),
+                images: formatedImages,
                 albumDescription: newAlbumDescription || undefined,
                 albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
                 goBack: false,

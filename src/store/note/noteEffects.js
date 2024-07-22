@@ -8,6 +8,7 @@ import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsAtom } from '../album/albumItemAtoms';
 import {
   isAddingImagesAtom,
+  isConvertingImagesAtom,
   isCreatingNoteAtom,
   isDeletingImageAtom,
   isDeletingNoteAtom,
@@ -21,6 +22,7 @@ import {
 } from './noteAtoms';
 import {
   addImages,
+  convertNoteImages,
   createNote,
   deleteImage,
   deleteNote,
@@ -99,7 +101,7 @@ export function setNoteEffect(note) {
 
 export async function createNoteEffect({
   note,
-  canvases,
+  images,
   albumIds,
   albumDescription,
   onSucceeded,
@@ -109,7 +111,7 @@ export async function createNoteEffect({
 
   const { data } = await createNote({
     note,
-    canvases,
+    images,
     albumIds,
     albumDescription,
   });
@@ -180,15 +182,17 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
     if (goBack) {
       goBackEffect();
     }
+
+    fetchSettingsEffect(true);
   }
 
   updateAtomValue(isDeletingImageAtom, false);
 }
 
-export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack }) {
+export async function addImagesEffect(noteId, { images, onSucceeded, goBack }) {
   updateAtomValue(isAddingImagesAtom, true);
 
-  const { data } = await addImages(noteId, canvases);
+  const { data } = await addImages(noteId, images);
 
   if (data) {
     updateStates(data, 'update');
@@ -201,9 +205,34 @@ export async function addImagesEffect(noteId, { canvases, onSucceeded, goBack })
     if (goBack) {
       goBackEffect();
     }
+
+    fetchSettingsEffect(true);
   }
 
   updateAtomValue(isAddingImagesAtom, false);
+}
+
+export async function convertNoteImagesEffect(note, { onSucceeded, goBack }) {
+  updateAtomValue(isConvertingImagesAtom, true);
+
+  const { data } = await convertNoteImages(note);
+
+  if (data) {
+    updateStates(data, 'update');
+
+    setToastEffect('Converted!');
+
+    if (onSucceeded) {
+      onSucceeded(data);
+    }
+    if (goBack) {
+      goBackEffect();
+    }
+
+    fetchSettingsEffect(true);
+  }
+
+  updateAtomValue(isConvertingImagesAtom, false);
 }
 
 export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {

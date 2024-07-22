@@ -1,6 +1,7 @@
 import { Box } from '@radix-ui/themes';
 import React, { useMemo, useRef, useState } from 'react';
 
+import { imagePathToUrl } from '../lib/imagePathToUrl';
 import { useInView } from '../shared-private/react/hooks/useInView';
 import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton';
 import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
@@ -58,7 +59,7 @@ function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal 
 
   const url = useMemo(() => {
     if (imagePath) {
-      return `https://files.notenote.cc/${imagePath}`;
+      return imagePathToUrl(imagePath);
     }
 
     return imageUrl;
