@@ -1,5 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
-import { Button } from '@radix-ui/themes/dist/cjs/index.js';
+import { Button, Flex, IconButton, Tabs } from '@radix-ui/themes';
 import {
   RiCameraLine,
   RiCheckLine,
@@ -91,32 +90,19 @@ export function Camera({ onSelect, onClose }) {
         />
       )}
 
-      <Flex>
-        <IconButton
-          radius="none"
-          size="4"
-          variant={activeTab === types.takePhoto ? 'solid' : 'soft'}
-          onClick={() => setActiveTab(types.takePhoto)}
-        >
-          <RiCameraLine />
-        </IconButton>
-        <IconButton
-          radius="none"
-          size="4"
-          variant={activeTab === types.takeVideo ? 'solid' : 'soft'}
-          onClick={() => setActiveTab(types.takeVideo)}
-        >
-          <RiVideoOnLine />
-        </IconButton>
-        <IconButton
-          radius="none"
-          size="4"
-          variant={activeTab === types.pickPhoto ? 'solid' : 'soft'}
-          onClick={() => setActiveTab(types.pickPhoto)}
-        >
-          <RiImageLine />
-        </IconButton>
-      </Flex>
+      <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
+        <Tabs.List>
+          <Tabs.Trigger value={types.takePhoto}>
+            <RiCameraLine />
+          </Tabs.Trigger>
+          <Tabs.Trigger value={types.takeVideo}>
+            <RiVideoOnLine />
+          </Tabs.Trigger>
+          <Tabs.Trigger value={types.pickPhoto}>
+            <RiImageLine />
+          </Tabs.Trigger>
+        </Tabs.List>
+      </Tabs.Root>
 
       {!!images?.length && (
         <ImagesWrapper>

@@ -26,14 +26,6 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          {!!image.size && (
-            <>
-              <DropdownMenu.Item>{getFileSizeString(image.size)}</DropdownMenu.Item>
-
-              <DropdownMenu.Separator />
-            </>
-          )}
-
           {supportShare() && !!noteId && (
             <>
               <DropdownMenu.Item
@@ -59,6 +51,13 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
             <RiDeleteBinLine />
             Delete
           </DropdownMenu.Item>
+
+          {!!image.size && (
+            <>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item>{getFileSizeString(image.size)}</DropdownMenu.Item>
+            </>
+          )}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
