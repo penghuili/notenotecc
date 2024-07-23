@@ -1,14 +1,14 @@
 import 'plyr/dist/plyr.css';
 
 import Plyr from 'plyr';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { getVideoDuration } from '../lib/getVideoDuration';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 
 export default function VideoPlayer({ src, hidden, onLoad }) {
   const ref = useRef(null);
-  useEffectOnce(() => {
+
+  useEffect(() => {
     getVideoDuration(src)
       .catch(() => undefined)
       .then(duration => {
@@ -19,7 +19,7 @@ export default function VideoPlayer({ src, hidden, onLoad }) {
           duration: duration || undefined,
         });
       });
-  });
+  }, [src]);
 
   return (
     <video

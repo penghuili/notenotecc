@@ -1,8 +1,7 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { InputField } from '../shared-private/react/InputField';
 import { albumsAtom } from '../store/album/albumAtoms';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
@@ -10,7 +9,9 @@ import { fetchAlbumsEffect } from '../store/album/albumEffects';
 export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKeys, onSelect }) {
   const albums = useAtomValue(albumsAtom);
 
-  useEffectOnce(fetchAlbumsEffect);
+  useEffect(() => {
+    fetchAlbumsEffect();
+  }, []);
 
   return (
     <div>

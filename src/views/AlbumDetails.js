@@ -1,10 +1,9 @@
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'wouter';
 
 import { NoteItem } from '../components/NoteItem';
 import { FormButton } from '../shared-private/react/FormButton';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
 import { isLoadingAlbumItemsAtom, useAlbumNotes } from '../store/album/albumItemAtoms';
@@ -19,9 +18,9 @@ export function AlbumDetails() {
   const { items: notes, startKey, hasMore } = useAlbumNotes(albumId);
   const albumsObject = useAtomValue(albumsObjectAtom);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     fetchAlbumItemsEffect(albumId, { startKey: null });
-  });
+  }, [albumId]);
 
   return (
     <>

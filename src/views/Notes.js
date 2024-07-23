@@ -7,11 +7,10 @@ import {
   RiStickyNoteAddLine,
 } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { NoteItem } from '../components/NoteItem';
 import { FormButton } from '../shared-private/react/FormButton';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
@@ -24,9 +23,9 @@ export function Notes() {
   const { items: notes, startKey, hasMore } = useAtomValue(notesAtom);
   const albumsObject = useAtomValue(albumsObjectAtom);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     fetchNotesEffect();
-  });
+  }, []);
 
   return (
     <>

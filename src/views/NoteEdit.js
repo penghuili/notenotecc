@@ -1,7 +1,7 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector';
@@ -9,8 +9,6 @@ import { Camera } from '../components/Camera';
 import { ImageCarousel } from '../components/ImageCarousel';
 import { formatImages } from '../lib/formatImages';
 import { AreaField } from '../shared-private/react/AreaField';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
-import { useListener } from '../shared-private/react/hooks/useListener';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import {
@@ -36,17 +34,17 @@ export function NoteEdit() {
 
   const [showCamera, setShowCamera] = useState(false);
 
-  useListener(noteItem, value => {
-    if (!value) {
+  useEffect(() => {
+    if (!noteItem) {
       return;
     }
 
-    setImages(value.images || []);
-    setNote(value.note || '');
-    setSelectedAlbumSortKeys((value.albumIds || []).map(a => a.albumId));
-  });
+    setImages(noteItem.images || []);
+    setNote(noteItem.note || '');
+    setSelectedAlbumSortKeys((noteItem.albumIds || []).map(a => a.albumId));
+  }, [noteItem]);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     fetchNoteEffect(noteId);
   }, [noteId]);
 

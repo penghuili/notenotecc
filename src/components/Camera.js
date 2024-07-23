@@ -8,11 +8,10 @@ import {
   RiSkipUpLine,
   RiVideoOnLine,
 } from '@remixicon/react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
-import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { LocalImages } from './LocalImages';
 import { PickPhoto } from './PickPhoto';
 import { TakePhoto } from './TakePhoto';
@@ -42,13 +41,13 @@ export function Camera({ onSelect, onClose }) {
   const [activeTab, setActiveTab] = useState(types.takePhoto);
   const [images, setImages] = useState([]);
 
-  useEffectOnce(() => {
+  useEffect(() => {
     disableBodyScroll();
 
     return () => {
       enableBodyScroll();
     };
-  });
+  }, []);
 
   return (
     <Wrapper>

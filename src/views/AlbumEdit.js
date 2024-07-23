@@ -1,10 +1,9 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiSendPlaneLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'wouter';
 
-import { useListener } from '../shared-private/react/hooks/useListener';
 import { InputField } from '../shared-private/react/InputField';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { isUpdatingAlbumAtom, useAlbum } from '../store/album/albumAtoms';
@@ -17,13 +16,13 @@ export function AlbumEdit() {
 
   const [title, setTitle] = useState('');
 
-  useListener(album, value => {
-    if (!value) {
+  useEffect(() => {
+    if (!album) {
       return;
     }
 
-    setTitle(value.title);
-  });
+    setTitle(album.title);
+  }, [album]);
 
   return (
     <>
