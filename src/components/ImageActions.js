@@ -1,5 +1,5 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiMore2Line, RiShareLine } from '@remixicon/react';
+import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
@@ -55,7 +55,10 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
           {!!image.size && (
             <>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item>{getFileSizeString(image.size)}</DropdownMenu.Item>
+              <DropdownMenu.Item>
+                <RiInformationLine />
+                {getFileSizeString(image.size)}
+              </DropdownMenu.Item>
             </>
           )}
         </DropdownMenu.Content>

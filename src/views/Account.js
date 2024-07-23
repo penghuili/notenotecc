@@ -6,18 +6,24 @@ import React from 'react';
 import { formatDateTime } from '../shared-private/js/date';
 import { themeCssColor } from '../shared-private/react/AppWrapper';
 import { copyToClipboard } from '../shared-private/react/copyToClipboard';
+import { getFileSizeString } from '../shared-private/react/file';
 import { HorizontalCenter } from '../shared-private/react/HorizontalCenter';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper';
 import { LogoutLink } from '../shared-private/react/LogoutLink';
 import { PageHeader } from '../shared-private/react/PageHeader';
 import { PaymentStatus } from '../shared-private/react/PaymentStatus';
 import { RouteLink } from '../shared-private/react/RouteLink';
-import { isLoadingAccountAtom, userAtom } from '../shared-private/react/store/sharedAtoms';
+import {
+  isLoadingAccountAtom,
+  settingsAtom,
+  userAtom,
+} from '../shared-private/react/store/sharedAtoms';
 import { setToastEffect } from '../shared-private/react/store/sharedEffects';
 
 export function Account() {
   const account = useAtomValue(userAtom);
   const isLoadingAccount = useAtomValue(isLoadingAccountAtom);
+  const settings = useAtomValue(settingsAtom);
 
   return (
     <>
@@ -72,6 +78,20 @@ export function Account() {
                 <DataList.Label minWidth="88px">Valid until</DataList.Label>
                 <DataList.Value>
                   <PaymentStatus />
+                </DataList.Value>
+              </DataList.Item>
+
+              <DataList.Item>
+                <DataList.Label minWidth="88px">Notes count</DataList.Label>
+                <DataList.Value>
+                  <Text size="3">{settings?.notesCount || 0}</Text>
+                </DataList.Value>
+              </DataList.Item>
+
+              <DataList.Item>
+                <DataList.Label minWidth="88px">Files size</DataList.Label>
+                <DataList.Value>
+                  <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
                 </DataList.Value>
               </DataList.Item>
             </DataList.Root>

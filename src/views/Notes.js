@@ -1,4 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { IconButton } from '@radix-ui/themes';
 import {
   RiHashtag,
   RiHistoryLine,
@@ -10,7 +10,6 @@ import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { NoteItem } from '../components/NoteItem';
-import { NotesCount } from '../components/NotesCount';
 import { FormButton } from '../shared-private/react/FormButton';
 import { useEffectOnce } from '../shared-private/react/hooks/useEffectOnce';
 import { PageHeader } from '../shared-private/react/PageHeader';
@@ -35,19 +34,16 @@ export function Notes() {
         isLoading={isLoading || isAddingImages}
         fixed
         title={
-          <Flex align="center">
-            <IconButton
-              onClick={() => {
-                fetchNotesEffect();
-                fetchSettingsEffect(true);
-              }}
-              mr="2"
-              variant="soft"
-            >
-              <RiRefreshLine />
-            </IconButton>
-            <NotesCount />
-          </Flex>
+          <IconButton
+            onClick={() => {
+              fetchNotesEffect();
+              fetchSettingsEffect(true);
+            }}
+            mr="2"
+            variant="soft"
+          >
+            <RiRefreshLine />
+          </IconButton>
         }
         right={
           <>
