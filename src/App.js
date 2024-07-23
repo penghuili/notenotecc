@@ -1,6 +1,6 @@
 import './theme.css';
 
-import React from 'react';
+import React, { StrictMode } from 'react';
 import { useLocation } from 'wouter';
 
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -10,10 +10,7 @@ import { Router } from './Router';
 import { apps } from './shared-private/js/apps';
 import { AppWrapper } from './shared-private/react/AppWrapper';
 import { useEffectOnce } from './shared-private/react/hooks/useEffectOnce';
-import {
-  HooksOutsieWrapper,
-  setHook,
-} from './shared-private/react/hooksOutside';
+import { HooksOutsieWrapper, setHook } from './shared-private/react/hooksOutside';
 import { initShared } from './shared-private/react/initShared';
 import { initEffect } from './shared-private/react/store/sharedEffects';
 import { Toast } from './shared-private/react/Toast';
@@ -41,15 +38,17 @@ function App() {
   useEffectOnce(initEffect);
 
   return (
-    <ErrorBoundary>
-      <AppWrapper>
-        <Router />
+    <StrictMode>
+      <ErrorBoundary>
+        <AppWrapper>
+          <Router />
 
-        <FullScreenImage />
-        <Toast />
-      </AppWrapper>
-      <HooksOutsieWrapper />
-    </ErrorBoundary>
+          <FullScreenImage />
+          <Toast />
+        </AppWrapper>
+        <HooksOutsieWrapper />
+      </ErrorBoundary>
+    </StrictMode>
   );
 }
 

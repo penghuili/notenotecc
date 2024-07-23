@@ -6,7 +6,7 @@ import {
   RiRestartLine,
   RiStopLine,
 } from '@remixicon/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { getCameraSize, renderError, VideoWrapper } from './TakePhoto';
@@ -51,8 +51,7 @@ export function TakeVideo({ onSelect }) {
 
       clearAllTimers();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [facingMode, requestStream]);
 
   const clearAllTimers = () => {
     if (progressIntervalRef.current) {
@@ -61,30 +60,33 @@ export function TakeVideo({ onSelect }) {
     }
   };
 
-  const requestStream = async mode => {
-    try {
-      if (streamRef.current && mode === facingMode) {
-        return;
-      }
-      if (streamRef.current) {
-        stopStream();
-      }
+  const requestStream = useCallback(
+    async mode => {
+      try {
+        if (streamRef.current && mode === facingMode) {
+          return;
+        }
+        if (streamRef.current) {
+          stopStream();
+        }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 720 },
-          height: { ideal: 720 },
-          frameRate: 30,
-          facingMode: { exact: mode },
-        },
-        audio: true,
-      });
-      streamRef.current = stream;
-      videoRef.current.srcObject = stream;
-    } catch (e) {
-      setError(e);
-    }
-  };
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 720 },
+            height: { ideal: 720 },
+            frameRate: 30,
+            facingMode: { exact: mode },
+          },
+          audio: true,
+        });
+        streamRef.current = stream;
+        videoRef.current.srcObject = stream;
+      } catch (e) {
+        setError(e);
+      }
+    },
+    [facingMode]
+  );
   const stopStream = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());

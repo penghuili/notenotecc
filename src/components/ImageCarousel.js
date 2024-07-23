@@ -1,6 +1,6 @@
 import './ImageCarousel.css';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image';
@@ -17,21 +17,21 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
     [currentIndex, images.length]
   );
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     if (isTransitioning) {
       return;
     }
     setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
-  };
+  }, [images.length, isTransitioning]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     if (isTransitioning) {
       return;
     }
     setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
-  };
+  }, [images.length, isTransitioning]);
 
   const handleTouchStart = e => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -94,8 +94,7 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [nextSlide, prevSlide]);
 
   if (!images?.length) {
     return null;
