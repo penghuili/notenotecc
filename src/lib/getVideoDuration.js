@@ -1,24 +1,30 @@
-export function getVideoDuration(videoBlob) {
+export function getVideoDuration(videoUrl) {
   return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(videoBlob);
-
     const video = document.createElement('video');
+    video.preload = 'metadata';
 
-    video.addEventListener('loadedmetadata', () => {
-      if (isFinite(video.duration)) {
+    video.onloadedmetadata = function () {
+      if (video.duration !== Infinity) {
         resolve(video.duration);
       } else {
-        reject(new Error('Unable to determine video duration.'));
+        // If duration is Infinity, we'll try to seek to the end to get the real duration
+        video.currentTime = Number.MAX_SAFE_INTEGER;
+        video.ontimeupdate = function () {
+          if (video.currentTime === 0) {
+            // Seeking failed, duration is not available
+            reject('Unable to determine video duration');
+          } else {
+            resolve(video.duration);
+          }
+          video.ontimeupdate = null;
+        };
       }
+    };
 
-      URL.revokeObjectURL(url);
-    });
+    video.onerror = function () {
+      reject('Error loading video');
+    };
 
-    video.addEventListener('error', error => {
-      reject(new Error(`Error loading video: ${error.message}`));
-      URL.revokeObjectURL(url);
-    });
-
-    video.src = url;
+    video.src = videoUrl;
   });
 }

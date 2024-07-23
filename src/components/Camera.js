@@ -61,6 +61,7 @@ export function Camera({ onSelect, onClose }) {
           onClick={() => {
             onSelect(images);
           }}
+          disabled={!images?.length}
         >
           <RiCheckLine />
         </IconButton>

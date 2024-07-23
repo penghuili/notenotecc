@@ -129,8 +129,8 @@ export function TakeVideo({ onSelect }) {
       clearInterval(progressIntervalRef.current);
     }
     progressIntervalRef.current = setInterval(() => {
-      const currentTime = Date.now();
-      const newElapsedTime = elapsedTimeRef.current + (currentTime - startTimeRef.current);
+      const timeChange = Date.now() - startTimeRef.current;
+      const newElapsedTime = elapsedTimeRef.current + timeChange;
       const newProgress = Math.min((newElapsedTime / RECORDING_DURATION) * 100, 100);
       setProgress(newProgress);
 
@@ -149,10 +149,9 @@ export function TakeVideo({ onSelect }) {
       mediaRecorderRef.current = null;
     }
 
-    const duration = (RECORDING_DURATION * progress) / 100;
     const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, duration });
+    onSelect({ blob, url });
 
     setIsRecording(false);
     setIsPaused(false);
@@ -166,9 +165,9 @@ export function TakeVideo({ onSelect }) {
   const pauseRecording = () => {
     if (mediaRecorderRef.current && !isPaused) {
       mediaRecorderRef.current.pause();
-      setIsPaused(true);
       clearAllTimers();
       elapsedTimeRef.current += Date.now() - startTimeRef.current;
+      setIsPaused(true);
     }
   };
 

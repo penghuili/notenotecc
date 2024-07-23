@@ -75,7 +75,6 @@ async function uploadImages(images) {
   return urls.map((u, i) => ({
     path: u.path,
     size: images[i].size,
-    duration: images[i].duration,
   }));
 }
 

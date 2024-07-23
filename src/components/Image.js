@@ -10,7 +10,7 @@ import { ImageActions } from './ImageActions';
 
 const VideoPlayer = React.lazy(() => import('./VideoPlayer'));
 
-export function Image({ noteId, imageUrl, imagePath, size, duration, isVideo, onDeleteLocal }) {
+export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -33,7 +33,6 @@ export function Image({ noteId, imageUrl, imagePath, size, duration, isVideo, on
         imageUrl={imageUrl}
         imagePath={imagePath}
         size={size}
-        duration={duration}
         isVideo={isVideo}
         onDeleteLocal={onDeleteLocal}
       />
@@ -55,10 +54,10 @@ export function Image({ noteId, imageUrl, imagePath, size, duration, isVideo, on
   );
 }
 
-function InnerImage({ noteId, imageUrl, imagePath, size, duration, isVideo, onDeleteLocal }) {
+function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
   const imageRef = useRef(null);
 
-  const [isLoading, setIsLoading] = useState(!isVideo);
+  const [isLoading, setIsLoading] = useState(true);
 
   const url = useMemo(() => {
     if (imagePath) {
@@ -74,7 +73,7 @@ function InnerImage({ noteId, imageUrl, imagePath, size, duration, isVideo, onDe
 
       {isVideo ? (
         <Suspense fallback={<Spinner />}>
-          <VideoPlayer src={url} duration={duration} />
+          <VideoPlayer src={url} onLoad={() => setIsLoading(false)} hidden={isLoading} />
         </Suspense>
       ) : (
         <img
@@ -97,25 +96,3 @@ function InnerImage({ noteId, imageUrl, imagePath, size, duration, isVideo, onDe
     </>
   );
 }
-
-// function VideoPlayer({ src }) {
-//   const ref = useRef(null);
-//   useEffectOnce(() => {
-//     function handleTimeUpdate() {
-//       console.log(ref.current.currentTime, ref.current.duration);
-//     }
-//     ref.current.addEventListener('timeupdate', handleTimeUpdate);
-//     ref.current.addEventListener('loadedmetadata', handleTimeUpdate);
-//     ref.current.addEventListener('durationchange', handleTimeUpdate);
-
-//     return () => {
-//       if (ref.current) {
-//         ref.current.removeEventListener('timeupdate', handleTimeUpdate);
-//         ref.current.removeEventListener('loadedmetadata', handleTimeUpdate);
-//         ref.current.removeEventListener('durationchange', handleTimeUpdate);
-//       }
-//     };
-//   });
-
-//   return <video ref={ref} src={src} style={{ width: '100%' }} controls muted />;
-// }
