@@ -33,33 +33,6 @@ export function TakeVideo({ onSelect }) {
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
 
-  useEffect(() => {
-    function handleStart() {
-      requestStream(facingMode);
-    }
-    function handleStop() {
-      stopStream();
-    }
-    window.addEventListener('focus', handleStart);
-    window.addEventListener('blur', handleStop);
-    requestStream('environment');
-
-    return () => {
-      stopStream();
-      window.removeEventListener('focus', handleStart);
-      window.removeEventListener('blur', handleStop);
-
-      clearAllTimers();
-    };
-  }, [facingMode, requestStream]);
-
-  const clearAllTimers = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-  };
-
   const requestStream = useCallback(
     async mode => {
       try {
@@ -87,6 +60,34 @@ export function TakeVideo({ onSelect }) {
     },
     [facingMode]
   );
+
+  useEffect(() => {
+    function handleStart() {
+      requestStream(facingMode);
+    }
+    function handleStop() {
+      stopStream();
+    }
+    window.addEventListener('focus', handleStart);
+    window.addEventListener('blur', handleStop);
+    requestStream('environment');
+
+    return () => {
+      stopStream();
+      window.removeEventListener('focus', handleStart);
+      window.removeEventListener('blur', handleStop);
+
+      clearAllTimers();
+    };
+  }, [facingMode, requestStream]);
+
+  const clearAllTimers = () => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+  };
+
   const stopStream = () => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
