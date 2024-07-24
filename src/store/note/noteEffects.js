@@ -1,4 +1,7 @@
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
+import {
+  getAtomValue,
+  updateAtomValue,
+} from '../../shared-private/react/store/atomHelpers';
 import {
   fetchSettingsEffect,
   goBackEffect,
@@ -68,7 +71,7 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 
   const { data } = await fetchNotes(null, startTime, endTime);
   if (data?.items) {
-    updateAtomValue(onThisDayNotesAtom, { ...onThisDayNotes, [type]: data.items });
+    updateAtomValue(onThisDayNotesAtom, { ...onThisDayNotes, [type]: data.items.reverse() });
   }
 
   updateAtomValue(isLoadingOnThisDayNotesAtom, false);

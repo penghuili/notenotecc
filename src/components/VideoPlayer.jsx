@@ -27,7 +27,7 @@ export default function VideoPlayer({ src, hidden, onLoad }) {
       controls
       muted
       onLoadedData={onLoad}
-      style={{ display: hidden ? 'none' : 'block' }}
+      style={{ display: hidden ? 'none' : 'block', width: '100%' }}
     >
       <source src={src} type="video/webm" />
     </video>
