@@ -1,6 +1,12 @@
 import './ImageCarousel.css';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image.jsx';
@@ -145,14 +151,8 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
               </button>
             </>
           )}
-          <div className="carousel-dots">
-            {images.map((_, index) => (
-              <span
-                key={index}
-                className={`dot ${index === innerIndex ? 'active' : ''}`}
-                onClick={() => setCurrentIndex(index)}
-              ></span>
-            ))}
+          <div className="carousel-indicator">
+            {innerIndex + 1}/{images.length}
           </div>
         </>
       )}

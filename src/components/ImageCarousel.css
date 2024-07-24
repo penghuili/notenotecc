@@ -53,23 +53,14 @@
   }
 }
 
-.carousel-dots {
+.carousel-indicator {
   position: absolute;
-  bottom: 50px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  margin: 0 5px;
-  cursor: pointer;
-}
-
-.dot.active {
-  background: white;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
 }

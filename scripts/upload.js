@@ -7,13 +7,10 @@ const timestamp = new Date()
   .toISOString()
   .replace(/[^0-9]/g, '')
   .slice(0, 14);
-const version = new Date()
-  .toISOString()
-  .replace(/[^0-9]/g, '')
-  .slice(2, 12);
+const version = timestamp.slice(2, 12);
 
-updateOrAddEnvVariable('PUBLIC_URL', `/${timestamp}`);
-updateOrAddEnvVariable('REACT_APP_VERSION', version);
+updateOrAddEnvVariable('TIMESTAMP', timestamp);
+updateOrAddEnvVariable('VITE_VERSION', version);
 
 require('dotenv').config();
 
@@ -26,6 +23,8 @@ uploadIndex();
 if (!process.env.DISABLE_VERSION_JSON) {
   uploadVersionJson();
 }
+
+deleteOldVersion();
 
 function updateOrAddEnvVariable(key, value) {
   const envPath = path.join(__dirname, '..', '.env.production'); // Adjust the path to your .env file
@@ -61,7 +60,7 @@ function buildApp() {
 function uploadStatic() {
   console.log('Uploading assets to S3...');
   execSync(
-    `aws s3 sync dist/assets ${process.env.S3_URL}/assets --delete --cache-control max-age=31536000,public`
+    `aws s3 sync dist/${timestamp} ${process.env.S3_URL}/${timestamp} --cache-control max-age=31536000,public`
   );
   console.log('Upload assets to S3 completed.');
 }
@@ -102,4 +101,28 @@ function uploadVersionJson() {
   }
 
   console.log('Upload version json to S3 completed.');
+}
+
+function deleteOldVersion() {
+  console.log('Deleting old versions ...');
+  // Retrieve the list of folder names (versions) from S3
+  const command = `aws s3 ls ${process.env.S3_URL} --recursive | awk '{print $4}' | grep '/' | cut -d/ -f1 | uniq`;
+  const result = execSync(command).toString();
+  // Split the result into an array, filter out 'index.html' and other non-versioned entries, and then sort
+  const versions = result
+    .split('\n')
+    .filter(v => v && v !== 'index.html' && /^\d{14}$/.test(v))
+    .sort();
+  // If there are more than 10 versions, remove the oldest ones
+  if (versions.length > 10) {
+    const toDelete = versions.slice(0, versions.length - 10); // Keep the last 10
+
+    toDelete.forEach(version => {
+      console.log(`Deleting version: ${version}`);
+      execSync(`aws s3 rm ${process.env.S3_URL}/${version} --recursive`);
+    });
+    console.log('Deleting old versions completed.');
+  } else {
+    console.log('No old versions to delete.');
+  }
 }
