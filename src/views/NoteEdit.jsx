@@ -8,6 +8,7 @@ import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { formatImages } from '../lib/formatImages';
+import { scrollToTop } from '../lib/scrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
@@ -17,7 +18,11 @@ import {
   isUpdatingNoteAtom,
   useNote,
 } from '../store/note/noteAtoms';
-import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  fetchNoteEffect,
+  updateNoteEffect,
+} from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
@@ -33,6 +38,10 @@ export function NoteEdit() {
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
   const [showCamera, setShowCamera] = useState(false);
+
+  useEffect(() => {
+    scrollToTop();
+  }, []);
 
   useEffect(() => {
     if (!noteItem) {
