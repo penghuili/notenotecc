@@ -150,6 +150,14 @@ export const DatePicker = ({ value, onChange }) => {
             {viewDate.getFullYear() - 5} - {viewDate.getFullYear() + 6}
           </HeaderTitle>
         )}
+        <HeaderTitle
+          onClick={() => {
+            onChange(new Date());
+            setViewMode('days');
+          }}
+        >
+          Today
+        </HeaderTitle>
         <NavButton onClick={navigateNext}>
           <RiArrowRightSLine />
         </NavButton>
