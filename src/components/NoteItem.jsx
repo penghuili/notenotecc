@@ -1,8 +1,8 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { formatDateWeekTime } from '../shared-private/js/date';
+import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { NoteActions } from './NoteActions.jsx';
@@ -15,11 +15,17 @@ const Description = styled.pre`
 `;
 
 export function NoteItem({ note, albums }) {
+  const dateTime = useMemo(() => {
+    const dt = formatDateWeekTime(note.createdAt);
+    const ago = getAgo(new Date(note.createdAt));
+    return `${dt}, ${ago}`;
+  }, [note?.createdAt]);
+
   return (
     <Box mb="8">
       <Flex justify="between" align="center" mb="2">
         <Text size="1" as="p">
-          {formatDateWeekTime(note.createdAt)}
+          {dateTime}
         </Text>
 
         <NoteActions note={note} />
