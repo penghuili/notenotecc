@@ -5,7 +5,6 @@
   "dependencies": {
     "@radix-ui/themes": "3.0.5",
     "@remixicon/react": "4.2.0",
-    "axios": "1.7.2",
     "copy-to-clipboard": "3.3.3",
     "date-fns": "3.6.0",
     "eventemitter3": "5.0.1",
