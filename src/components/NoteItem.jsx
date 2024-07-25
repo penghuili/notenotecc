@@ -24,7 +24,7 @@ export function NoteItem({ note, albums }) {
   return (
     <Box mb="8">
       <Flex justify="between" align="center" mb="2">
-        <Text size="1" as="p">
+        <Text size="2" as="p">
           {dateTime}
         </Text>
 
