@@ -1,4 +1,5 @@
-import { Tabs, Text } from '@radix-ui/themes';
+import { Flex, IconButton, Tabs, Text } from '@radix-ui/themes';
+import { RiRefreshLine } from '@remixicon/react';
 import {
   addDays,
   differenceInCalendarDays,
@@ -11,16 +12,21 @@ import {
   subYears,
 } from 'date-fns';
 import { useAtomValue } from 'jotai';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { DatePicker } from '../components/DatePicker.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
+import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { randomBetween } from '../shared-private/js/utils';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import { isLoadingOnThisDayNotesAtom, onThisDayNotesAtom } from '../store/note/noteAtoms';
+import {
+  isLoadingOnThisDayNotesAtom,
+  onThisDayNotesAtom,
+} from '../store/note/noteAtoms';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
 function parseStartTime(startTime) {
@@ -36,7 +42,14 @@ export function OnThisDay() {
   const isLoading = useAtomValue(isLoadingOnThisDayNotesAtom);
   const notes = useAtomValue(onThisDayNotesAtom);
 
+  const getRandomDate = useCallback(() => {
+    const createdDays = differenceInCalendarDays(new Date(), new Date(user.createdAt));
+    const randomDays = randomBetween(0, createdDays);
+    return addDays(new Date(user.createdAt), randomDays);
+  }, [user?.createdAt]);
+
   const [activeTab, setActiveTab] = useState('week');
+  const [randomDate, setRandomDate] = useState(getRandomDate());
 
   const tabs = useMemo(() => {
     if (!user?.createdAt) {
@@ -90,13 +103,9 @@ export function OnThisDay() {
         });
     }
 
-    const createdDays = differenceInCalendarDays(new Date(), new Date(user.createdAt));
-    const randomDays = randomBetween(0, createdDays);
     tabs.push({
       label: 'Random',
       value: 'random',
-      startTime: parseStartTime(addDays(new Date(user.createdAt), randomDays)),
-      endTime: parseEndTime(addDays(new Date(user.createdAt), randomDays)),
     });
 
     return tabs;
@@ -104,9 +113,37 @@ export function OnThisDay() {
 
   useEffect(() => {
     asyncForEach(tabs, async tabObj => {
-      await fetchOnThisDayNotesEffect(tabObj.value, tabObj.startTime, tabObj.endTime);
+      if (tabObj.startTime && tabObj.endTime) {
+        await fetchOnThisDayNotesEffect(tabObj.value, tabObj.startTime, tabObj.endTime);
+      }
     });
   }, [tabs]);
+
+  useEffect(() => {
+    if (activeTab === 'random') {
+      setRandomDate(getRandomDate());
+    }
+  }, [activeTab, getRandomDate]);
+
+  useEffect(() => {
+    if (!randomDate) {
+      return;
+    }
+
+    const formated = formatDate(randomDate);
+    fetchOnThisDayNotesEffect(formated, parseStartTime(randomDate), parseEndTime(randomDate));
+  }, [randomDate]);
+
+  function getTabNotes(tab) {
+    if (tab === 'random') {
+      const formated = formatDate(randomDate);
+      return notes[formated] || [];
+    }
+
+    return notes[tab] || [];
+  }
+
+  const currentTabNotes = getTabNotes(activeTab);
 
   return (
     <>
@@ -117,23 +154,33 @@ export function OnThisDay() {
         value={activeTab}
         onValueChange={async value => {
           setActiveTab(value);
-
-          const tabObj = tabs.find(t => t.value === value);
-          fetchOnThisDayNotesEffect(value, tabObj.startTime, tabObj.endTime);
         }}
         mb="4"
       >
         <Tabs.List>
           {tabs.map(tab => (
             <Tabs.Trigger key={tab.value} value={tab.value}>
-              {tab.label} ({notes[tab.value]?.length || 0})
+              {tab.label} ({getTabNotes(tab.value).length})
             </Tabs.Trigger>
           ))}
         </Tabs.List>
       </Tabs.Root>
 
-      {notes[activeTab]?.length ? (
-        notes[activeTab].map(note => (
+      {activeTab === 'random' && !!randomDate && (
+        <Flex direction="column" gap="2" mb="4">
+          <IconButton
+            onClick={() => {
+              setRandomDate(getRandomDate());
+            }}
+          >
+            <RiRefreshLine />
+          </IconButton>
+          <DatePicker value={randomDate} onChange={setRandomDate} />
+        </Flex>
+      )}
+
+      {currentTabNotes.length ? (
+        currentTabNotes.map(note => (
           <NoteItem
             key={note.sortKey}
             note={note}
