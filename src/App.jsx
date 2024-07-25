@@ -1,6 +1,6 @@
 import './theme.css';
 
-import React, { StrictMode, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'wouter';
 
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
@@ -39,7 +39,7 @@ function App() {
   }, []);
 
   return (
-    <StrictMode>
+    <React.StrictMode>
       <ErrorBoundary>
         <AppWrapper>
           <Router />
@@ -49,7 +49,7 @@ function App() {
         </AppWrapper>
         <HooksOutsieWrapper />
       </ErrorBoundary>
-    </StrictMode>
+    </React.StrictMode>
   );
 }
 

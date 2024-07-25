@@ -13,6 +13,7 @@
 /dist
 src/shared
 src/shared-private
+bundle-stats.html
 
 # misc
 .DS_Store
