@@ -10,7 +10,7 @@ export const albumCache = createItemsCache('notenotecc-album');
 export async function fetchAlbums() {
   try {
     const albums = await HTTP.get(appName, `/v1/albums`);
-    const sorted = orderByPosition(albums);
+    const sorted = orderByPosition(albums, true);
 
     await albumCache.cacheItems(sorted);
 
@@ -96,7 +96,8 @@ async function updateCache(album, type) {
   let newItems = cachedItems;
   if (type === 'update') {
     newItems = orderByPosition(
-      cachedItems.map(item => (item.sortKey === album.sortKey ? album : item))
+      cachedItems.map(item => (item.sortKey === album.sortKey ? album : item)),
+      true
     );
   } else if (type === 'delete') {
     newItems = cachedItems.filter(item => item.sortKey !== album.sortKey);

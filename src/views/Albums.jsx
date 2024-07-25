@@ -9,7 +9,11 @@ import { Reorder } from '../shared-private/react/Reorder.jsx';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { albumsAtom, isDeletingAlbumAtom, isLoadingAlbumsAtom } from '../store/album/albumAtoms';
+import {
+  albumsAtom,
+  isDeletingAlbumAtom,
+  isLoadingAlbumsAtom,
+} from '../store/album/albumAtoms';
 import {
   deleteAlbumEffect,
   fetchAlbumsEffect,
@@ -46,6 +50,7 @@ export function Albums() {
       <Box mt="6">
         <Reorder
           items={albums}
+          reverse
           onReorder={({ itemId, newPosition, onSucceeded }) => {
             updateAlbumEffect(itemId, {
               position: newPosition,

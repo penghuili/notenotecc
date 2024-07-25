@@ -16,7 +16,7 @@ const Video = styled.video`
   height: ${props => `${props.size}px`};
 `;
 
-const RECORDING_DURATION = 15000;
+const RECORDING_DURATION = 15600;
 
 export function TakeVideo({ onSelect }) {
   const [isRecording, setIsRecording] = useState(false);

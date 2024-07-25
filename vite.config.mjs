@@ -5,14 +5,19 @@ import { defineConfig } from 'vite';
 import { timestampPlugin } from './vite/viteTimestampPlugin';
 
 export default defineConfig({
-  plugins: [react(), timestampPlugin(), visualizer({ open: false, filename: 'bundle-stats.html' })],
+  plugins: [react(), timestampPlugin()],
   server: {
     port: 3000,
     open: false,
   },
   build: {
     rollupOptions: {
-      plugins: [visualizer()],
+      plugins: [
+        visualizer({
+          open: false,
+          filename: 'bundle-stats.html',
+        }),
+      ],
       output: {
         manualChunks: id => {
           if (id.includes('node_modules')) {

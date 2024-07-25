@@ -77,7 +77,8 @@ export async function updateAlbumEffect(albumId, { title, position, onSucceeded,
 
   if (data) {
     const newAlbums = orderByPosition(
-      (getAtomValue(albumsAtom) || []).map(album => (album.sortKey === albumId ? data : album))
+      (getAtomValue(albumsAtom) || []).map(album => (album.sortKey === albumId ? data : album)),
+      true
     );
     updateAtomValue(albumsAtom, newAlbums);
 
