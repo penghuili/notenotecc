@@ -1,20 +1,22 @@
 import { IconButton } from '@radix-ui/themes';
-import {
-  RiHashtag,
-  RiHistoryLine,
-  RiImageAddLine,
-  RiRefreshLine,
-  RiStickyNoteAddLine,
-} from '@remixicon/react';
+import { RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 
+import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
+import {
+  fetchSettingsEffect,
+  navigateEffect,
+} from '../shared-private/react/store/sharedEffects';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
-import { isAddingImagesAtom, isLoadingNotesAtom, notesAtom } from '../store/note/noteAtoms';
+import {
+  isAddingImagesAtom,
+  isLoadingNotesAtom,
+  notesAtom,
+} from '../store/note/noteAtoms';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {
@@ -46,14 +48,6 @@ export function Notes() {
         }
         right={
           <>
-            <IconButton onClick={() => navigateEffect('/notes/add')} mr="2">
-              <RiImageAddLine />
-            </IconButton>
-
-            <IconButton onClick={() => navigateEffect('/notes/add?image=0')} mr="2">
-              <RiStickyNoteAddLine />
-            </IconButton>
-
             <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2" variant="ghost">
               <RiHistoryLine />
             </IconButton>
@@ -79,6 +73,8 @@ export function Notes() {
           Load more
         </FormButton>
       )}
+
+      <Actions />
     </>
   );
 }

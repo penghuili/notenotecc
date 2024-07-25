@@ -11,7 +11,10 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import {
+  disableBodyScroll,
+  enableBodyScroll,
+} from '../shared-private/react/bodySccroll';
 import { LocalImages } from './LocalImages.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -31,14 +34,14 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const types = {
+export const cameraTypes = {
   takePhoto: 'takePhoto',
   takeVideo: 'takeVideo',
   pickPhoto: 'pickPhoto',
 };
 
-export function Camera({ onSelect, onClose }) {
-  const [activeTab, setActiveTab] = useState(types.takePhoto);
+export function Camera({ type, onSelect, onClose }) {
+  const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
   const [images, setImages] = useState([]);
 
   useEffect(() => {
@@ -66,7 +69,7 @@ export function Camera({ onSelect, onClose }) {
         </IconButton>
       </Flex>
 
-      {activeTab === types.takePhoto && (
+      {activeTab === cameraTypes.takePhoto && (
         <TakePhoto
           onSelect={value => {
             setImages([...images, value]);
@@ -74,7 +77,7 @@ export function Camera({ onSelect, onClose }) {
         />
       )}
 
-      {activeTab === types.takeVideo && (
+      {activeTab === cameraTypes.takeVideo && (
         <TakeVideo
           onSelect={value => {
             setImages([...images, value]);
@@ -82,7 +85,7 @@ export function Camera({ onSelect, onClose }) {
         />
       )}
 
-      {activeTab === types.pickPhoto && (
+      {activeTab === cameraTypes.pickPhoto && (
         <PickPhoto
           onSelect={value => {
             setImages([...images, value]);
@@ -92,13 +95,13 @@ export function Camera({ onSelect, onClose }) {
 
       <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
         <Tabs.List>
-          <Tabs.Trigger value={types.takePhoto}>
+          <Tabs.Trigger value={cameraTypes.takePhoto}>
             <RiCameraLine />
           </Tabs.Trigger>
-          <Tabs.Trigger value={types.takeVideo}>
+          <Tabs.Trigger value={cameraTypes.takeVideo}>
             <RiVideoOnLine />
           </Tabs.Trigger>
-          <Tabs.Trigger value={types.pickPhoto}>
+          <Tabs.Trigger value={cameraTypes.pickPhoto}>
             <RiImageLine />
           </Tabs.Trigger>
         </Tabs.List>

@@ -4,7 +4,7 @@ import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
-import { Camera } from '../components/Camera.jsx';
+import { Camera, cameraTypes } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { formatImages } from '../lib/formatImages';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
@@ -16,14 +16,17 @@ import { isCreatingNoteAtom } from '../store/note/noteAtoms';
 import { createNoteEffect } from '../store/note/noteEffects';
 
 export function NoteAdd() {
-  const { image } = getQueryParams();
+  const { cameraType } = getQueryParams();
   const isCreating = useAtomValue(isCreatingNoteAtom);
+
   const [images, setImages] = useState([]);
   const [note, setNote] = useState('');
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
-  const [showCamera, setShowCamera] = useState(image !== '0');
+  const [showCamera, setShowCamera] = useState(
+    [cameraTypes.takePhoto, cameraTypes.takeVideo, cameraTypes.pickPhoto].includes(cameraType)
+  );
 
   return (
     <>
@@ -84,6 +87,7 @@ export function NoteAdd() {
 
       {showCamera && (
         <Camera
+          type={cameraType}
           onSelect={newImages => {
             setImages([...images, ...newImages]);
             setShowCamera(false);

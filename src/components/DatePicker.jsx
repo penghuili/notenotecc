@@ -1,5 +1,9 @@
 import { Button } from '@radix-ui/themes/dist/cjs/index.js';
-import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
+import {
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+  RiCalendarLine,
+} from '@remixicon/react';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -156,7 +160,7 @@ export const DatePicker = ({ value, onChange }) => {
             setViewMode('days');
           }}
         >
-          Today
+          <RiCalendarLine />
         </HeaderTitle>
         <NavButton onClick={navigateNext}>
           <RiArrowRightSLine />

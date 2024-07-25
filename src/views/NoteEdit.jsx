@@ -88,6 +88,7 @@ export function NoteEdit() {
       <IconButton my="4" onClick={() => setShowCamera(true)}>
         <RiImageAddLine />
       </IconButton>
+
       <ItemsWrapper>
         <AreaField value={note} onChange={setNote} />
 
