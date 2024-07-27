@@ -35,7 +35,12 @@ import {
   updateNote,
 } from './noteNetwork';
 
-export async function fetchNotesEffect(startKey) {
+export async function fetchNotesEffect(startKey, force) {
+  const notesInState = getAtomValue(notesAtom);
+  if (notesInState?.items?.length && !force) {
+    return;
+  }
+
   updateAtomValue(isLoadingNotesAtom, true);
 
   if (!startKey) {

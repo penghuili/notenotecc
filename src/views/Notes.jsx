@@ -43,7 +43,7 @@ export function Notes() {
         title={
           <IconButton
             onClick={() => {
-              fetchNotesEffect();
+              fetchNotesEffect(null, true);
               fetchSettingsEffect(true);
             }}
             mr="2"
@@ -79,7 +79,7 @@ export function Notes() {
         ))}
 
       {hasMore && (
-        <FormButton onClick={() => fetchNotesEffect(startKey)} disabled={isLoading}>
+        <FormButton onClick={() => fetchNotesEffect(startKey, true)} disabled={isLoading}>
           Load more
         </FormButton>
       )}
