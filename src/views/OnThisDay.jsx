@@ -21,11 +21,13 @@ import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { randomBetween } from '../shared-private/js/utils';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { updateAtomValue } from '../shared-private/react/store/atomHelpers.js';
 import { userAtom } from '../shared-private/react/store/sharedAtoms';
 import { albumsObjectAtom } from '../store/album/albumAtoms';
 import {
   isLoadingOnThisDayNotesAtom,
   onThisDayNotesAtom,
+  randomDateAtom,
 } from '../store/note/noteAtoms';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
@@ -48,7 +50,7 @@ export function OnThisDay() {
     return addDays(new Date(user.createdAt), randomDays);
   }, [user?.createdAt]);
 
-  const [randomDate, setRandomDate] = useState(getRandomDate());
+  const randomDate = useAtomValue(randomDateAtom);
 
   const tabs = useMemo(() => {
     if (!user?.createdAt) {
@@ -112,18 +114,26 @@ export function OnThisDay() {
         });
     }
 
-    tabs.push({
-      label: 'Random',
-      value: 'random',
-      date: formatDate(randomDate),
-      startTime: parseStartTime(randomDate),
-      endTime: parseEndTime(randomDate),
-    });
+    if (randomDate) {
+      tabs.push({
+        label: 'Random',
+        value: 'random',
+        date: formatDate(randomDate),
+        startTime: parseStartTime(randomDate),
+        endTime: parseEndTime(randomDate),
+      });
+    }
 
     return tabs;
   }, [user?.createdAt, randomDate]);
 
   const [activeTab, setActiveTab] = useState(tabs[0].value);
+
+  useEffect(() => {
+    if (!randomDate) {
+      updateAtomValue(getRandomDate());
+    }
+  }, [getRandomDate, randomDate]);
 
   useEffect(() => {
     asyncForEach(tabs, async tabObj => {
@@ -166,12 +176,17 @@ export function OnThisDay() {
         <Flex direction="column" gap="2" mb="4">
           <IconButton
             onClick={() => {
-              setRandomDate(getRandomDate());
+              updateAtomValue(getRandomDate());
             }}
           >
             <RiRefreshLine />
           </IconButton>
-          <DatePicker value={randomDate} onChange={setRandomDate} />
+          <DatePicker
+            value={randomDate}
+            onChange={date => {
+              updateAtomValue(date);
+            }}
+          />
         </Flex>
       )}
 
