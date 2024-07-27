@@ -3,8 +3,10 @@ import { RiArrowDownDoubleLine, RiImageAddLine, RiSquareLine } from '@remixicon/
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
+import { canvasToBlob } from '../shared-private/react/canvasToBlob.js';
 import { ImageCropper } from '../shared-private/react/ImageCropper.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { getCameraSize, VideoWrapper } from './TakePhoto.jsx';
@@ -38,8 +40,9 @@ export function PickPhoto({ onSelect }) {
               size="4"
               onClick={async () => {
                 const canvas = cropperRef.current.crop(900);
+                const blob = await canvasToBlob(canvas, 'image/webp', 0.8);
                 const imageUrl = canvas.toDataURL('image/webp');
-                onSelect({ canvas, url: imageUrl });
+                onSelect({ blob, url: imageUrl, size: blob.size, type: cameraTypes.pickPhoto });
                 setPickedImage(null);
               }}
             >
@@ -50,8 +53,9 @@ export function PickPhoto({ onSelect }) {
               onClick={async () => {
                 const squareCanvas = await makeImageSquare(pickedImage);
                 const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
+                const blob = await canvasToBlob(resizedCanvas, 'image/webp', 0.8);
                 const imageUrl = resizedCanvas.toDataURL('image/webp');
-                onSelect({ canvas: resizedCanvas, url: imageUrl });
+                onSelect({ blob, url: imageUrl, type: cameraTypes.pickPhoto });
                 setPickedImage(null);
               }}
             >

@@ -1,3 +1,4 @@
+import { cameraTypes } from '../../lib/cameraTypes';
 import { convertPNG2Webp } from '../../lib/convertPNG2Webp';
 import { imagePathToUrl } from '../../lib/imagePathToUrl';
 import { asyncForEach } from '../../shared-private/js/asyncForEach';
@@ -47,13 +48,20 @@ export async function fetchNote(noteId) {
 }
 
 async function uploadImages(images) {
+  function getName(type, hash) {
+    if (type === cameraTypes.takePhoto || type === cameraTypes.pickPhoto) {
+      return { name: `${hash}.webp`, type: 'image/webp' };
+    }
+    if (type === cameraTypes.takeVideo) {
+      return { name: `${hash}.webm`, type: 'video/webm' };
+    }
+
+    return { name: `${hash}.weba`, type: 'audio/webm' };
+  }
   const names = await Promise.all(
     images.map(async b => {
       const hash = await md5(b.blob);
-      return {
-        name: b.isImage ? `${hash}.webp` : `${hash}.webm`,
-        type: b.isImage ? 'image/webp' : 'video/webm',
-      };
+      return getName(b.type, hash);
     })
   );
   const urls = await HTTP.post(appName, `/v1/upload-urls`, {
@@ -65,7 +73,7 @@ async function uploadImages(images) {
         method: 'PUT',
         body: image.blob,
         headers: {
-          'Content-Type': image.isImage ? 'image/webp' : 'video/webm',
+          'Content-Type': names[i].type,
           'Cache-Control': 'max-age=31536000,public',
         },
       });

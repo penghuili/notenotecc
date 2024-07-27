@@ -1,16 +1,18 @@
 import { Box, Spinner } from '@radix-ui/themes';
-import React, { Suspense, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useMemo, useState } from 'react';
 
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { imagePathToUrl } from '../lib/imagePathToUrl';
 import { useInView } from '../shared-private/react/hooks/useInView';
 import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton.jsx';
 import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
 import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
+import { AudioPlayer } from './AudioPlayer.jsx';
 import { ImageActions } from './ImageActions.jsx';
 
 const VideoPlayer = React.lazy(() => import('./VideoPlayer.jsx'));
 
-export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
+export function Image({ noteId, url, path, size, type, onDeleteLocal }) {
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -30,10 +32,10 @@ export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLoca
     return (
       <InnerImage
         noteId={noteId}
-        imageUrl={imageUrl}
-        imagePath={imagePath}
+        url={url}
+        path={path}
         size={size}
-        isVideo={isVideo}
+        type={type}
         onDeleteLocal={onDeleteLocal}
       />
     );
@@ -45,7 +47,7 @@ export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLoca
         ref={ref}
         style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
         onDoubleClick={() => {
-          updateAtomValue(fullScreenImageUrlAtom, imageUrl);
+          updateAtomValue(fullScreenImageUrlAtom, url);
         }}
       >
         {renderContent()}
@@ -54,31 +56,34 @@ export function Image({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLoca
   );
 }
 
-function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal }) {
-  const imageRef = useRef(null);
-
+function InnerImage({ noteId, url, path, size, type, onDeleteLocal }) {
   const [isLoading, setIsLoading] = useState(true);
 
-  const url = useMemo(() => {
-    if (imagePath) {
-      return imagePathToUrl(imagePath);
+  const innerUrl = useMemo(() => {
+    if (path) {
+      return imagePathToUrl(path);
     }
 
-    return imageUrl;
-  }, [imageUrl, imagePath]);
+    return url;
+  }, [url, path]);
 
   return (
     <>
       {isLoading && <LoadingSkeleton width="100%" height="100%" />}
 
-      {isVideo ? (
+      {type === cameraTypes.takeVideo && (
         <Suspense fallback={<Spinner />}>
-          <VideoPlayer src={url} onLoad={() => setIsLoading(false)} hidden={isLoading} />
+          <VideoPlayer src={innerUrl} onLoad={() => setIsLoading(false)} hidden={isLoading} />
         </Suspense>
-      ) : (
+      )}
+
+      {type === cameraTypes.takeAudio && (
+        <AudioPlayer src={innerUrl} onLoad={() => setIsLoading(false)} hidden={isLoading} />
+      )}
+
+      {(type === cameraTypes.takePhoto || type === cameraTypes.pickPhoto) && (
         <img
-          ref={imageRef}
-          src={url}
+          src={innerUrl}
           style={{ width: '100%', display: isLoading ? 'none' : 'block' }}
           onLoad={() => {
             setIsLoading(false);
@@ -89,7 +94,7 @@ function InnerImage({ noteId, imageUrl, imagePath, size, isVideo, onDeleteLocal 
       <Box position="absolute" top="2" right="2">
         <ImageActions
           noteId={noteId}
-          image={{ url: imageUrl, path: imagePath, size }}
+          image={{ url: innerUrl, path: path, size }}
           onDeleteLocal={onDeleteLocal}
         />
       </Box>

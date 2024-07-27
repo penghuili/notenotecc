@@ -1,10 +1,16 @@
 import { IconButton } from '@radix-ui/themes';
-import { RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
+import {
+  RiArrowUpSLine,
+  RiHashtag,
+  RiHistoryLine,
+  RiRefreshLine,
+} from '@remixicon/react';
 import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
+import { scrollToTop } from '../lib/scrollToTop.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import {
@@ -48,6 +54,10 @@ export function Notes() {
         }
         right={
           <>
+            <IconButton onClick={scrollToTop} mr="2" variant="ghost">
+              <RiArrowUpSLine />
+            </IconButton>
+
             <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2" variant="ghost">
               <RiHistoryLine />
             </IconButton>

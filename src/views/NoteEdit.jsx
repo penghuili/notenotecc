@@ -7,7 +7,6 @@ import { useParams } from 'wouter';
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { formatImages } from '../lib/formatImages';
 import { scrollToTop } from '../lib/scrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
@@ -18,11 +17,7 @@ import {
   isUpdatingNoteAtom,
   useNote,
 } from '../store/note/noteAtoms';
-import {
-  addImagesEffect,
-  fetchNoteEffect,
-  updateNoteEffect,
-} from '../store/note/noteEffects';
+import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
@@ -66,7 +61,7 @@ export function NoteEdit() {
         hasBack
         right={
           <IconButton
-            disabled={!note || isUpdating}
+            disabled={(!images?.length && !note) || isUpdating}
             onClick={() => {
               updateNoteEffect(noteId, {
                 note,
@@ -105,9 +100,8 @@ export function NoteEdit() {
       {showCamera && (
         <Camera
           onSelect={async newImages => {
-            const images = await formatImages(newImages);
             addImagesEffect(noteId, {
-              images,
+              images: newImages,
             });
             setShowCamera(false);
           }}

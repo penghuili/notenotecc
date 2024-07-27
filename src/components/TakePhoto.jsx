@@ -3,6 +3,9 @@ import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { cameraTypes } from '../lib/cameraTypes';
+import { canvasToBlob } from '../shared-private/react/canvasToBlob';
+
 export const VideoWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -114,7 +117,7 @@ export function TakePhoto({ onSelect }) {
     };
   }, []);
 
-  function handleCapture() {
+  async function handleCapture() {
     const tempCanvas = document.createElement('canvas');
     const width = videoRef.current.videoWidth;
     const height = videoRef.current.videoHeight;
@@ -122,9 +125,11 @@ export function TakePhoto({ onSelect }) {
     tempCanvas.height = height;
     const context = tempCanvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, width, height);
+
+    const blob = await canvasToBlob(tempCanvas, 'image/webp', 0.8);
     const imageUrl = tempCanvas.toDataURL('image/webp');
 
-    onSelect({ canvas: tempCanvas, url: imageUrl });
+    onSelect({ blob, url: imageUrl, size: blob.size, type: cameraTypes.takePhoto });
   }
 
   const size = getCameraSize();

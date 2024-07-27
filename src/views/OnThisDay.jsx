@@ -48,7 +48,6 @@ export function OnThisDay() {
     return addDays(new Date(user.createdAt), randomDays);
   }, [user?.createdAt]);
 
-  const [activeTab, setActiveTab] = useState('week');
   const [randomDate, setRandomDate] = useState(getRandomDate());
 
   const tabs = useMemo(() => {
@@ -56,36 +55,44 @@ export function OnThisDay() {
       return [];
     }
 
+    const lastWeek = subDays(new Date(), 7);
+    const lastMonth = subMonths(new Date(), 1);
     const tabs = [
       {
         label: 'Last week',
-        value: 'week',
-        startTime: parseStartTime(subDays(new Date(), 7)),
-        endTime: parseEndTime(subDays(new Date(), 7)),
+        value: formatDate(lastWeek),
+        date: formatDate(lastWeek),
+        startTime: parseStartTime(lastWeek),
+        endTime: parseEndTime(lastWeek),
       },
       {
         label: 'Last month',
-        value: 'month',
-        startTime: parseStartTime(subMonths(new Date(), 1)),
-        endTime: parseEndTime(subMonths(new Date(), 1)),
+        value: formatDate(lastMonth),
+        date: formatDate(lastMonth),
+        startTime: parseStartTime(lastMonth),
+        endTime: parseEndTime(lastMonth),
       },
     ];
 
     const months = differenceInMonths(new Date(), new Date(user.createdAt));
     if (months >= 3) {
+      const threeMonths = subMonths(new Date(), 3);
       tabs.push({
         label: '3 months ago',
-        value: 'threeMonths',
-        startTime: parseStartTime(subMonths(new Date(), 3)),
-        endTime: parseEndTime(subMonths(new Date(), 3)),
+        value: formatDate(threeMonths),
+        date: formatDate(threeMonths),
+        startTime: parseStartTime(threeMonths),
+        endTime: parseEndTime(threeMonths),
       });
     }
     if (months >= 6) {
+      const sixMonths = subMonths(new Date(), 6);
       tabs.push({
         label: '6 months ago',
-        value: 'sixMonths',
-        startTime: parseStartTime(subMonths(new Date(), 6)),
-        endTime: parseEndTime(subMonths(new Date(), 6)),
+        value: formatDate(sixMonths),
+        date: formatDate(sixMonths),
+        startTime: parseStartTime(sixMonths),
+        endTime: parseEndTime(sixMonths),
       });
     }
 
@@ -94,11 +101,13 @@ export function OnThisDay() {
       Array(years)
         .fill(0)
         .forEach((_, i) => {
+          const yearDate = subYears(new Date(), i + 1);
           tabs.push({
             label: `${i + 1} year(s) ago`,
-            value: '${i + 1}years',
-            startTime: parseStartTime(subYears(new Date(), i + 1)),
-            endTime: parseEndTime(subYears(new Date(), i + 1)),
+            value: formatDate(yearDate),
+            date: formatDate(yearDate),
+            startTime: parseStartTime(yearDate),
+            endTime: parseEndTime(yearDate),
           });
         });
     }
@@ -106,40 +115,27 @@ export function OnThisDay() {
     tabs.push({
       label: 'Random',
       value: 'random',
+      date: formatDate(randomDate),
+      startTime: parseStartTime(randomDate),
+      endTime: parseEndTime(randomDate),
     });
 
     return tabs;
-  }, [user?.createdAt]);
+  }, [user?.createdAt, randomDate]);
+
+  const [activeTab, setActiveTab] = useState(tabs[0].value);
 
   useEffect(() => {
     asyncForEach(tabs, async tabObj => {
-      if (tabObj.startTime && tabObj.endTime) {
-        await fetchOnThisDayNotesEffect(tabObj.value, tabObj.startTime, tabObj.endTime);
-      }
+      await fetchOnThisDayNotesEffect(tabObj.date, tabObj.startTime, tabObj.endTime);
     });
   }, [tabs]);
 
-  useEffect(() => {
-    if (activeTab === 'random') {
-      setRandomDate(getRandomDate());
-    }
-  }, [activeTab, getRandomDate]);
-
-  useEffect(() => {
-    if (!randomDate) {
-      return;
-    }
-
-    const formated = formatDate(randomDate);
-    fetchOnThisDayNotesEffect(formated, parseStartTime(randomDate), parseEndTime(randomDate));
-  }, [randomDate]);
-
   function getTabNotes(tab) {
     if (tab === 'random') {
-      const formated = formatDate(randomDate);
-      return notes[formated] || [];
+      const date = formatDate(randomDate);
+      return notes[date] || [];
     }
-
     return notes[tab] || [];
   }
 
@@ -159,14 +155,14 @@ export function OnThisDay() {
       >
         <Tabs.List>
           {tabs.map(tab => (
-            <Tabs.Trigger key={tab.value} value={tab.value}>
+            <Tabs.Trigger key={tab.label} value={tab.value}>
               {tab.label} ({getTabNotes(tab.value).length})
             </Tabs.Trigger>
           ))}
         </Tabs.List>
       </Tabs.Root>
 
-      {activeTab === 'random' && !!randomDate && (
+      {activeTab === 'random' && (
         <Flex direction="column" gap="2" mb="4">
           <IconButton
             onClick={() => {

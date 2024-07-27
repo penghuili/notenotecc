@@ -6,17 +6,17 @@ import {
   RiImageLine,
   RiSkipDownLine,
   RiSkipUpLine,
+  RiSpeakLine,
   RiVideoOnLine,
 } from '@remixicon/react';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import {
-  disableBodyScroll,
-  enableBodyScroll,
-} from '../shared-private/react/bodySccroll';
+import { cameraTypes } from '../lib/cameraTypes.js';
+import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
 import { LocalImages } from './LocalImages.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
+import { TakeAudio } from './TakeAudio.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { TakeVideo } from './TakeVideo.jsx';
 
@@ -33,12 +33,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
-
-export const cameraTypes = {
-  takePhoto: 'takePhoto',
-  takeVideo: 'takeVideo',
-  pickPhoto: 'pickPhoto',
-};
 
 export function Camera({ type, onSelect, onClose }) {
   const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
@@ -85,6 +79,14 @@ export function Camera({ type, onSelect, onClose }) {
         />
       )}
 
+      {activeTab === cameraTypes.takeAudio && (
+        <TakeAudio
+          onSelect={value => {
+            setImages([...images, value]);
+          }}
+        />
+      )}
+
       {activeTab === cameraTypes.pickPhoto && (
         <PickPhoto
           onSelect={value => {
@@ -100,6 +102,9 @@ export function Camera({ type, onSelect, onClose }) {
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.takeVideo}>
             <RiVideoOnLine />
+          </Tabs.Trigger>
+          <Tabs.Trigger value={cameraTypes.takeAudio}>
+            <RiSpeakLine />
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.pickPhoto}>
             <RiImageLine />
@@ -137,6 +142,7 @@ const PreviewWrapper = styled.div`
   width: ${props => `${props.width}px`};
 `;
 const PreviewImage = styled.img`
+  position: relative;
   width: 100px;
   height: 100px;
   border: 1px solid #ddd;
@@ -144,11 +150,27 @@ const PreviewImage = styled.img`
   cursor: pointer;
 `;
 const PreviewVideo = styled.video`
+  position: relative;
   width: 100px;
   height: 100px;
   border: 1px solid #ddd;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+`;
+const AudioWrapper = styled.div`
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border: 1px solid #ddd;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const PreviewAudio = styled.audio`
+  width: 100%;
 `;
 
 function ImagesPreview({ images, onDelete }) {
@@ -156,6 +178,48 @@ function ImagesPreview({ images, onDelete }) {
   const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
 
   if (!reversedImages.length) {
+    return null;
+  }
+
+  function renderMedia(item, translateX, zIndex) {
+    if (item.type === cameraTypes.takePhoto || item.type === cameraTypes.pickPhoto) {
+      return (
+        <PreviewImage
+          src={item.url}
+          style={{
+            transform: `translateX(${translateX}px)`,
+            zIndex: zIndex,
+          }}
+        />
+      );
+    }
+
+    if (item.type === cameraTypes.takeVideo) {
+      return (
+        <PreviewVideo
+          src={item.url}
+          controls
+          style={{
+            transform: `translateX(${translateX}px)`,
+            zIndex: zIndex,
+          }}
+        />
+      );
+    }
+
+    if (item.type === cameraTypes.takeAudio) {
+      return (
+        <AudioWrapper
+          style={{
+            transform: `translateX(${translateX}px)`,
+            zIndex: zIndex,
+          }}
+        >
+          <PreviewAudio src={item.url} controls />
+        </AudioWrapper>
+      );
+    }
+
     return null;
   }
 
@@ -179,26 +243,7 @@ function ImagesPreview({ images, onDelete }) {
           {reversedImages.map((image, index) => {
             const translateX = -index * 80;
             const zIndex = reversedImages.length - index;
-            return image.canvas ? (
-              <PreviewImage
-                key={image.url}
-                src={image.url}
-                style={{
-                  transform: `translateX(${translateX}px)`,
-                  zIndex: zIndex,
-                }}
-              />
-            ) : (
-              <PreviewVideo
-                key={image.url}
-                src={image.url}
-                controls
-                style={{
-                  transform: `translateX(${translateX}px)`,
-                  zIndex: zIndex,
-                }}
-              />
-            );
+            return <div key={image.url}>{renderMedia(image, translateX, zIndex)}</div>;
           })}
         </PreviewWrapper>
       )}

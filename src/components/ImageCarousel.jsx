@@ -1,13 +1,8 @@
 import './ImageCarousel.css';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image.jsx';
 
@@ -106,6 +101,22 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
     return null;
   }
 
+  function getMediaType(item) {
+    if (item.type) {
+      return item.type;
+    }
+
+    if (item.path.endsWith('.weba')) {
+      return cameraTypes.takeAudio;
+    }
+
+    if (item.path.endsWith('.webm')) {
+      return cameraTypes.takeVideo;
+    }
+
+    return cameraTypes.takePhoto;
+  }
+
   return (
     <div className="carousel-container" ref={containerRef}>
       <div
@@ -130,10 +141,10 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
           >
             <Image
               noteId={noteId}
-              imageUrl={image.url}
-              imagePath={image.path}
+              url={image.url}
+              path={image.path}
               size={image.size}
-              isVideo={image.blob || image?.path?.endsWith('.webm')}
+              type={getMediaType(image)}
               onDeleteLocal={onDeleteLocal}
             />
           </div>

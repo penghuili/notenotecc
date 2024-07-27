@@ -4,9 +4,9 @@ import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
-import { Camera, cameraTypes } from '../components/Camera.jsx';
+import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { formatImages } from '../lib/formatImages';
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
@@ -25,7 +25,12 @@ export function NoteAdd() {
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
   const [showCamera, setShowCamera] = useState(
-    [cameraTypes.takePhoto, cameraTypes.takeVideo, cameraTypes.pickPhoto].includes(cameraType)
+    [
+      cameraTypes.takePhoto,
+      cameraTypes.takeVideo,
+      cameraTypes.takeAudio,
+      cameraTypes.pickPhoto,
+    ].includes(cameraType)
   );
 
   return (
@@ -39,10 +44,9 @@ export function NoteAdd() {
           <IconButton
             disabled={(!images?.length && !note) || isCreating}
             onClick={async () => {
-              const formatedImages = await formatImages(images);
               createNoteEffect({
                 note,
-                images: formatedImages,
+                images,
                 albumDescription: newAlbumDescription || undefined,
                 albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
                 goBack: false,

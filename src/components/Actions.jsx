@@ -2,14 +2,15 @@ import { IconButton } from '@radix-ui/themes';
 import {
   RiCameraLine,
   RiImageAddLine,
+  RiSpeakLine,
   RiStickyNoteAddLine,
   RiVideoAddLine,
 } from '@remixicon/react';
 import React from 'react';
 import styled from 'styled-components';
 
+import { cameraTypes } from '../lib/cameraTypes';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { cameraTypes } from './Camera.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -39,6 +40,14 @@ export function Actions() {
         }}
       >
         <RiVideoAddLine />
+      </IconButton>
+      <IconButton
+        size="4"
+        onClick={() => {
+          navigateEffect(`/notes/add?cameraType=${cameraTypes.takeAudio}`);
+        }}
+      >
+        <RiSpeakLine />
       </IconButton>
       <IconButton
         size="4"

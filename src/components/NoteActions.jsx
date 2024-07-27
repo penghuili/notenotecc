@@ -11,7 +11,6 @@ import {
 import { useAtomValue } from 'jotai';
 import React, { useMemo, useState } from 'react';
 
-import { formatImages } from '../lib/formatImages';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
@@ -123,9 +122,8 @@ export function NoteActions({ note, goBackAfterDelete }) {
       {!!showCamera && (
         <Camera
           onSelect={async newImages => {
-            const images = await formatImages(newImages);
             addImagesEffect(note.sortKey, {
-              images,
+              images: newImages,
             });
             setShowCamera(false);
           }}

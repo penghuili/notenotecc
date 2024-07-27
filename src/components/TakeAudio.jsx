@@ -1,114 +1,95 @@
 import { Flex, IconButton, Progress } from '@radix-ui/themes';
-import {
-  RiPauseLine,
-  RiPlayLine,
-  RiRefreshLine,
-  RiRestartLine,
-  RiStopLine,
-} from '@remixicon/react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { RiPauseLine, RiPlayLine, RiRestartLine, RiStopLine } from '@remixicon/react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
 
-const Video = styled.video`
+const AnimationWrapper = styled.div`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const AudioAnimation = styled.div`
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #33b4ae;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+
+  animation: ${props => (props.isRecording ? 'pulse 1.5s infinite' : 'none')};
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(51, 180, 174, 0.7);
+    }
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(51, 180, 174, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(51, 180, 174, 0);
+    }
+  }
 `;
 
 const RECORDING_DURATION = 15600;
 
-export function TakeVideo({ onSelect }) {
+export function TakeAudio({ onSelect }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
-  const [facingMode, setFacingMode] = useState('environment');
 
-  const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
-  const streamRef = useRef(null);
   const recordedChunksRef = useRef([]);
   const progressIntervalRef = useRef(null);
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
 
-  const requestStream = useCallback(
-    async mode => {
-      try {
-        if (streamRef.current && mode === facingMode) {
-          return;
-        }
-        if (streamRef.current) {
-          stopStream();
-        }
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 720 },
-            height: { ideal: 720 },
-            frameRate: 30,
-            facingMode: { exact: mode },
-          },
-          audio: true,
-        });
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-      } catch (e) {
-        setError(e);
-      }
-    },
-    [facingMode]
-  );
-
   useEffect(() => {
-    function handleStart() {
-      requestStream(facingMode);
-    }
-    function handleStop() {
-      stopStream();
-    }
-    window.addEventListener('focus', handleStart);
-    window.addEventListener('blur', handleStop);
-    requestStream(facingMode);
-
     return () => {
-      stopStream();
-      window.removeEventListener('focus', handleStart);
-      window.removeEventListener('blur', handleStop);
-
-      clearAllTimers();
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
     };
-  }, [facingMode, requestStream]);
+  }, []);
 
-  const clearAllTimers = () => {
+  const clearTimers = () => {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
       progressIntervalRef.current = null;
     }
   };
 
-  const stopStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-  };
-
   const startRecording = async () => {
     try {
-      await requestStream(facingMode);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
 
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 1000000,
-      });
-      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorderRef.current.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
 
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.start(100);
-
+      mediaRecorderRef.current.start(100);
       setIsRecording(true);
       setIsPaused(false);
       setProgress(0);
@@ -119,12 +100,6 @@ export function TakeVideo({ onSelect }) {
       updateProgress();
     } catch (e) {
       setError(e);
-    }
-  };
-
-  const handleDataAvailable = event => {
-    if (event.data.size > 0) {
-      recordedChunksRef.current.push(event.data);
     }
   };
 
@@ -153,13 +128,14 @@ export function TakeVideo({ onSelect }) {
       mediaRecorderRef.current = null;
     }
 
-    const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+    const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, size: blob.size, type: cameraTypes.takeVideo });
+    console.log(url, blob.size, recordedChunksRef.current.length);
+    onSelect({ blob, url, size: blob.size, type: cameraTypes.takeAudio });
 
     setIsRecording(false);
     setIsPaused(false);
-    clearAllTimers();
+    clearTimers();
 
     recordedChunksRef.current = [];
     elapsedTimeRef.current = 0;
@@ -169,7 +145,7 @@ export function TakeVideo({ onSelect }) {
   const pauseRecording = () => {
     if (mediaRecorderRef.current && !isPaused) {
       mediaRecorderRef.current.pause();
-      clearAllTimers();
+      clearTimers();
       elapsedTimeRef.current += Date.now() - startTimeRef.current;
       setIsPaused(true);
     }
@@ -188,7 +164,10 @@ export function TakeVideo({ onSelect }) {
 
   return (
     <VideoWrapper>
-      <Video ref={videoRef} autoPlay muted size={size} />
+      <AnimationWrapper size={size}>
+        <AudioAnimation isRecording={isRecording} />
+      </AnimationWrapper>
+
       {!!mediaRecorderRef.current && (
         <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
           <Progress size="1" value={progress} />
@@ -199,22 +178,9 @@ export function TakeVideo({ onSelect }) {
 
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
-          <>
-            <IconButton size="4" onClick={startRecording} disabled={!!error}>
-              <RiPlayLine />
-            </IconButton>
-
-            <IconButton
-              size="4"
-              onClick={() => {
-                const mode = facingMode === 'user' ? 'environment' : 'user';
-                setFacingMode(mode);
-                requestStream(mode);
-              }}
-            >
-              <RiRefreshLine />
-            </IconButton>
-          </>
+          <IconButton size="4" onClick={startRecording} disabled={!!error}>
+            <RiPlayLine />
+          </IconButton>
         )}
 
         {isRecording && !isPaused && (
