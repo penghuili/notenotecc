@@ -144,6 +144,7 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
               url={image.url}
               path={image.path}
               size={image.size}
+              encryptedSize={image.encryptedSize}
               type={getMediaType(image)}
               onDeleteLocal={onDeleteLocal}
             />

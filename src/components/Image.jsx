@@ -13,7 +13,16 @@ import { ImageActions } from './ImageActions.jsx';
 
 const VideoPlayer = React.lazy(() => import('./VideoPlayer.jsx'));
 
-export function Image({ noteId, encryptedPassword, url, path, size, type, onDeleteLocal }) {
+export function Image({
+  noteId,
+  encryptedPassword,
+  url,
+  path,
+  size,
+  encryptedSize,
+  type,
+  onDeleteLocal,
+}) {
   const [showImage, setShowImage] = useState(false);
 
   const ref = useInView(
@@ -37,6 +46,7 @@ export function Image({ noteId, encryptedPassword, url, path, size, type, onDele
         url={url}
         path={path}
         size={size}
+        encryptedSize={encryptedSize}
         type={type}
         onDeleteLocal={onDeleteLocal}
       />
@@ -58,7 +68,16 @@ export function Image({ noteId, encryptedPassword, url, path, size, type, onDele
   );
 }
 
-function InnerImage({ noteId, encryptedPassword, url, path, size, type, onDeleteLocal }) {
+function InnerImage({
+  noteId,
+  encryptedPassword,
+  url,
+  path,
+  size,
+  encryptedSize,
+  type,
+  onDeleteLocal,
+}) {
   const [isLoading, setIsLoading] = useState(true);
   const [innerUrl, setInnerUrl] = useState(null);
 
@@ -114,7 +133,7 @@ function InnerImage({ noteId, encryptedPassword, url, path, size, type, onDelete
           <Box position="absolute" top="2" right="2">
             <ImageActions
               noteId={noteId}
-              image={{ url: innerUrl, path: path, size, type }}
+              image={{ url: innerUrl, path: path, size, encryptedSize, type }}
               onDeleteLocal={onDeleteLocal}
             />
           </Box>

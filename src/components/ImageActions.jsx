@@ -58,6 +58,12 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
                 <RiInformationLine />
                 {getFileSizeString(image.size)}
               </DropdownMenu.Item>
+              {!!image.encryptedSize && (
+                <DropdownMenu.Item>
+                  <RiInformationLine />
+                  {getFileSizeString(image.encryptedSize)}
+                </DropdownMenu.Item>
+              )}
             </>
           )}
         </DropdownMenu.Content>

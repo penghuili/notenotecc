@@ -89,9 +89,16 @@ export function Account() {
               </DataList.Item>
 
               <DataList.Item>
-                <DataList.Label minWidth="88px">Files size</DataList.Label>
+                <DataList.Label minWidth="88px">Original files size</DataList.Label>
                 <DataList.Value>
                   <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
+                </DataList.Value>
+              </DataList.Item>
+
+              <DataList.Item>
+                <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
+                <DataList.Value>
+                  <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
                 </DataList.Value>
               </DataList.Item>
             </DataList.Root>
