@@ -129,7 +129,7 @@ export async function createNoteEffect({
     const currentNotes = getAtomValue(notesAtom);
     updateAtomValue(notesAtom, { ...currentNotes, items: [data, ...(currentNotes.items || [])] });
 
-    setToastEffect('Created!');
+    setToastEffect('Encrypted and created!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -164,7 +164,7 @@ export async function updateNoteEffect(
 
     updateStates(data, 'update');
 
-    setToastEffect('Updated!');
+    setToastEffect('Encrypted and updated!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -185,7 +185,7 @@ export async function encryptExistingNoteEffect(note) {
   if (data) {
     updateStates(data, 'update');
 
-    setToastEffect('Updated!');
+    setToastEffect('Encrypted!');
   }
 
   updateAtomValue(isUpdatingNoteAtom, false);
@@ -222,7 +222,7 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
   if (data) {
     updateStates(data, 'update');
 
-    setToastEffect('Added!');
+    setToastEffect('Encrypted and added!');
 
     if (onSucceeded) {
       onSucceeded(data);

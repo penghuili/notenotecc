@@ -31,13 +31,12 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
             style={{
               flexDirection: 'row',
               flexWrap: 'wrap',
+              gap: '0.75rem',
             }}
           >
             {albums.map(album => (
               <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
-                <Text mr="3" style={{ userSelect: 'none' }}>
-                  {album.title}
-                </Text>
+                <Text style={{ userSelect: 'none' }}>{album.title}</Text>
               </CheckboxGroup.Item>
             ))}
           </CheckboxGroup.Root>

@@ -59,7 +59,9 @@ export function Image({
         ref={ref}
         style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
         onDoubleClick={() => {
-          updateAtomValue(fullScreenImageUrlAtom, url);
+          if (type === 'image/webp') {
+            updateAtomValue(fullScreenImageUrlAtom, url);
+          }
         }}
       >
         {renderContent()}

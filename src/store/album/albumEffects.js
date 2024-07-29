@@ -26,7 +26,6 @@ export async function fetchAlbumsEffect(force) {
 
   const { data } = await fetchAlbums();
   if (data) {
-    console.log('data', data);
     updateAtomValue(albumsAtom, data.items);
   }
 
@@ -40,7 +39,7 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   if (data) {
     updateAtomValue(albumsAtom, [data, ...getAtomValue(albumsAtom)]);
 
-    setToastEffect('Created!');
+    setToastEffect('Encrypted and created!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -72,7 +71,7 @@ export async function updateAlbumEffect(
     );
     updateAtomValue(albumsAtom, newAlbums);
 
-    setToastEffect('Updated!');
+    setToastEffect('Encrypted and updated!');
 
     if (onSucceeded) {
       onSucceeded(data);

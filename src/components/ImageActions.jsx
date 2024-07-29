@@ -58,12 +58,6 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
                 <RiInformationLine />
                 {getFileSizeString(image.size)}
               </DropdownMenu.Item>
-              {!!image.encryptedSize && (
-                <DropdownMenu.Item>
-                  <RiInformationLine />
-                  {getFileSizeString(image.encryptedSize)}
-                </DropdownMenu.Item>
-              )}
             </>
           )}
         </DropdownMenu.Content>
@@ -72,7 +66,7 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
       <Confirm
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        message="Are you sure you want to delete this photo?"
+        message="Are you sure you want to delete this file?"
         onConfirm={async () => {
           if (noteId) {
             await deleteImageEffect(noteId, { imagePath: image.path });

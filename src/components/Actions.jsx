@@ -14,7 +14,7 @@ import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 
 const Wrapper = styled.div`
   position: fixed;
-  bottom: 3rem;
+  bottom: 5rem;
   left: 50%;
   transform: translateX(-50%);
 
