@@ -64,6 +64,7 @@ export function NoteEdit() {
             disabled={(!images?.length && !note) || isUpdating}
             onClick={() => {
               updateNoteEffect(noteId, {
+                encryptedPassword: noteItem.encryptedPassword,
                 note,
                 albumDescription: newAlbumDescription || null,
                 albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
@@ -101,6 +102,7 @@ export function NoteEdit() {
         <Camera
           onSelect={async newImages => {
             addImagesEffect(noteId, {
+              encryptedPassword: noteItem.encryptedPassword,
               images: newImages,
             });
             setShowCamera(false);

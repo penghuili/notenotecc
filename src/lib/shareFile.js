@@ -32,17 +32,16 @@ export async function shareImageFromImgTag(imgElement) {
   }
 }
 
-export async function shareFileWithUrl(url) {
+export async function shareFileWithUrl(url, type) {
   try {
     const response = await fetch(url, { mode: 'cors' });
     const blob = await response.blob();
-    const fileSuffix = url.endsWith('.webp') ? 'webp' : 'webm';
-    const fileType = url.endsWith('.webp') ? 'image/webp' : 'video/webm';
+    const fileSuffix = fileTypeToSuffix(type);
     const file = new File(
       [blob],
       `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.${fileSuffix}`,
       {
-        type: fileType,
+        type,
       }
     );
 
@@ -59,4 +58,14 @@ export function supportShare() {
 
 export function blobToFile(blob, name, type) {
   return new File([blob], name, { type });
+}
+
+function fileTypeToSuffix(type) {
+  if (type === 'video/webm') {
+    return 'webm';
+  }
+  if (type === 'audio/webm') {
+    return 'weba';
+  }
+  return 'webp';
 }

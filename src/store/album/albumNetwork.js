@@ -20,9 +20,8 @@ export async function fetchAlbums() {
     const albums = await HTTP.get(appName, `/v1/albums`);
     const sorted = orderByPosition(albums, true);
 
-    await albumCache.cacheItems(sorted);
-
     const decrypted = await Promise.all(sorted.map(album => decryptAlbum(album)));
+    await albumCache.cacheItems(decrypted);
 
     return {
       data: { items: decrypted },
@@ -42,13 +41,13 @@ export async function fetchAlbumItems(albumId, { startKey }) {
       limit,
     } = await HTTP.get(appName, `/v1/albums/${albumId}/notes${query ? `?${query}` : ''}`);
 
-    if (!startKey) {
-      await idbStorage.setItem(albumId, items);
-    }
-
     const decrypted = await Promise.all(
       items.filter(item => !!item).map(note => decryptNote(note))
     );
+
+    if (!startKey) {
+      await idbStorage.setItem(albumId, decrypted);
+    }
 
     return {
       data: {
@@ -104,9 +103,9 @@ export async function createAlbum({ title }) {
       title: encryptedTitle,
     });
 
-    await updateCache(data, 'create');
-
     const decrypted = await decryptAlbum(data);
+
+    await updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -123,9 +122,9 @@ export async function updateAlbum(albumId, { encryptedPassword, title, position 
       position,
     });
 
-    await updateCache(data, 'update');
-
     const decrypted = await decryptAlbum(data);
+
+    await updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {

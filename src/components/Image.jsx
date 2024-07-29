@@ -114,7 +114,7 @@ function InnerImage({ noteId, encryptedPassword, url, path, size, type, onDelete
           <Box position="absolute" top="2" right="2">
             <ImageActions
               noteId={noteId}
-              image={{ url: innerUrl, path: path, size }}
+              image={{ url: innerUrl, path: path, size, type }}
               onDeleteLocal={onDeleteLocal}
             />
           </Box>

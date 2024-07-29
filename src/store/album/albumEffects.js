@@ -9,14 +9,7 @@ import {
   isLoadingAlbumsAtom,
   isUpdatingAlbumAtom,
 } from './albumAtoms';
-import {
-  albumCache,
-  createAlbum,
-  decryptAlbum,
-  deleteAlbum,
-  fetchAlbums,
-  updateAlbum,
-} from './albumNetwork';
+import { albumCache, createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
 
 export async function fetchAlbumsEffect(force) {
   const albumsInStore = getAtomValue(albumsAtom);
@@ -26,14 +19,14 @@ export async function fetchAlbumsEffect(force) {
 
   const cachedAlbums = await albumCache.getCachedItems();
   if (cachedAlbums?.length) {
-    const decrypted = await Promise.all(cachedAlbums.map(album => decryptAlbum(album)));
-    updateAtomValue(albumsAtom, decrypted);
+    updateAtomValue(albumsAtom, cachedAlbums);
   }
 
   updateAtomValue(isLoadingAlbumsAtom, true);
 
   const { data } = await fetchAlbums();
   if (data) {
+    console.log('data', data);
     updateAtomValue(albumsAtom, data.items);
   }
 

@@ -3,7 +3,6 @@ import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@r
 import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
-import { imagePathToUrl } from '../lib/imagePathToUrl';
 import { shareFileWithUrl, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
@@ -30,7 +29,7 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
             <>
               <DropdownMenu.Item
                 onClick={() => {
-                  shareFileWithUrl(imagePathToUrl(image.path));
+                  shareFileWithUrl(image.url, image.type);
                 }}
               >
                 <RiShareLine />

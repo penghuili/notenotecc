@@ -14,7 +14,7 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
-import { LocalImages } from './LocalImages.jsx';
+import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakeAudio } from './TakeAudio.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -182,7 +182,7 @@ function ImagesPreview({ images, onDelete }) {
   }
 
   function renderMedia(item, translateX, zIndex) {
-    if (item.type === cameraTypes.takePhoto || item.type === cameraTypes.pickPhoto) {
+    if (item.type === 'image/webp') {
       return (
         <PreviewImage
           src={item.url}
@@ -194,7 +194,7 @@ function ImagesPreview({ images, onDelete }) {
       );
     }
 
-    if (item.type === cameraTypes.takeVideo) {
+    if (item.type === 'video/webm') {
       return (
         <PreviewVideo
           src={item.url}
@@ -207,7 +207,7 @@ function ImagesPreview({ images, onDelete }) {
       );
     }
 
-    if (item.type === cameraTypes.takeAudio) {
+    if (item.type === 'audio/webm') {
       return (
         <AudioWrapper
           style={{
@@ -230,11 +230,7 @@ function ImagesPreview({ images, onDelete }) {
       </Button>
 
       {showImages ? (
-        <LocalImages
-          images={reversedImages}
-          onDelete={onDelete}
-          onClick={() => setShowImages(false)}
-        />
+        <ImageCarousel images={reversedImages} onDeleteLocal={image => onDelete(image)} />
       ) : (
         <PreviewWrapper
           width={(reversedImages.length - 1) * 20 + 100}

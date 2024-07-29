@@ -36,6 +36,7 @@ export function AlbumEdit() {
             disabled={!title || isUpdating}
             onClick={() => {
               updateAlbumEffect(albumId, {
+                encryptedPassword: album?.encryptedPassword,
                 title,
                 goBack: false,
               });

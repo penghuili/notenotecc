@@ -6,6 +6,7 @@ import {
 } from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsAtom } from '../album/albumItemAtoms';
+import { decryptNote } from '../album/albumNetwork';
 import {
   isAddingImagesAtom,
   isCreatingNoteAtom,
@@ -86,7 +87,8 @@ export async function fetchNoteEffect(noteId) {
 
   const cachedNote = await noteCache.getCachedItem(noteId);
   if (cachedNote?.sortKey === noteId) {
-    updateAtomValue(noteAtom, cachedNote);
+    const decrypted = await decryptNote(cachedNote);
+    updateAtomValue(noteAtom, decrypted);
   }
 
   updateAtomValue(isLoadingNoteAtom, true);
@@ -144,11 +146,16 @@ export async function createNoteEffect({
 
 export async function updateNoteEffect(
   noteId,
-  { note, albumIds, albumDescription, onSucceeded, goBack }
+  { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
 ) {
   updateAtomValue(isUpdatingNoteAtom, true);
 
-  const { data } = await updateNote(noteId, { note, albumIds, albumDescription });
+  const { data } = await updateNote(noteId, {
+    encryptedPassword,
+    note,
+    albumIds,
+    albumDescription,
+  });
 
   if (data) {
     if (albumDescription) {
@@ -207,10 +214,10 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
   updateAtomValue(isDeletingImageAtom, false);
 }
 
-export async function addImagesEffect(noteId, { images, onSucceeded, goBack }) {
+export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
   updateAtomValue(isAddingImagesAtom, true);
 
-  const { data } = await addImages(noteId, images);
+  const { data } = await addImages(noteId, { encryptedPassword, images });
 
   if (data) {
     updateStates(data, 'update');

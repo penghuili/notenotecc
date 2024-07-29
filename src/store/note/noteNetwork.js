@@ -33,11 +33,11 @@ export async function fetchNotes(startKey, startTime, endTime) {
       limit,
     } = await HTTP.get(appName, `/v1/notes${query ? `?${query}` : ''}`);
 
-    if (!startKey && !startTime && !endTime) {
-      await noteCache.cacheItems(items);
-    }
-
     const decrypted = await Promise.all(items.map(note => decryptNote(note)));
+
+    if (!startKey && !startTime && !endTime) {
+      await noteCache.cacheItems(decrypted);
+    }
 
     return {
       data: { items: decrypted, startKey: newStartKey, hasMore: items.length >= limit },
@@ -52,9 +52,9 @@ export async function fetchNote(noteId) {
   try {
     const note = await HTTP.get(appName, `/v1/notes/${noteId}`);
 
-    await noteCache.cacheItem(note.sortKey, note);
-
     const decrypted = await decryptNote(note);
+
+    await noteCache.cacheItem(note.sortKey, decrypted);
 
     return {
       data: decrypted,
@@ -157,9 +157,9 @@ export async function encryptExistingNote(note) {
       note: encryptedNote,
     });
 
-    await updateCache(encrypted, 'update');
-
     const decrypted = await decryptNote(encrypted);
+
+    await updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -197,9 +197,9 @@ export async function createNote({ note, images, albumIds, albumDescription }) {
       albumIds: updatedAlbumIds,
     });
 
-    await updateCache(data, 'create');
-
     const decrypted = await decryptNote(data);
+
+    await updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -218,9 +218,9 @@ export async function updateNote(noteId, { encryptedPassword, note, albumIds, al
       albumIds: updatedAlbumIds,
     });
 
-    await updateCache(data, 'update');
-
     const decrypted = await decryptNote(data);
+
+    await updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -234,9 +234,9 @@ export async function deleteImage(noteId, imagePath) {
       imagePath,
     });
 
-    await updateCache(data, 'update');
-
     const decrypted = await decryptNote(data);
+
+    await updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -252,9 +252,9 @@ export async function addImages(noteId, { encryptedPassword, images }) {
       images: uploadedImages,
     });
 
-    await updateCache(data, 'update');
-
     const decrypted = await decryptNote(data);
+
+    await updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {

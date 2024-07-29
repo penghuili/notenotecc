@@ -1,8 +1,5 @@
 import { idbStorage } from '../../shared-private/react/indexDB';
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
 import { albumItemsAtom, isLoadingAlbumItemsAtom } from './albumItemAtoms';
 import { fetchAlbumItems } from './albumNetwork';
 

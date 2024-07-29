@@ -123,6 +123,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
         <Camera
           onSelect={async newImages => {
             addImagesEffect(note.sortKey, {
+              encryptedPassword: note.encryptedPassword,
               images: newImages,
             });
             setShowCamera(false);
