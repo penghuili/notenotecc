@@ -86,7 +86,7 @@ export function NoteEdit() {
       </IconButton>
 
       <ItemsWrapper>
-        <AreaField value={note} onChange={setNote} />
+        <AreaField autofocus value={note} onChange={setNote} />
 
         <AlbumsSelector
           selectedAlbumSortKeys={selectedAlbumSortKeys}

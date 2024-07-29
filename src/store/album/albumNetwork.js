@@ -62,33 +62,6 @@ export async function fetchAlbumItems(albumId, { startKey }) {
   }
 }
 
-export async function encryptAlbums(albums) {
-  try {
-    const unencrypted = albums.filter(album => !album.encryptedPassword && !album.encrypted);
-    await Promise.all(
-      unencrypted.map(async album => {
-        const password = generatePassword(20, true);
-        const encryptedPassword = await encryptMessageAsymmetric(
-          LocalStorage.get(sharedLocalStorageKeys.publicKey),
-          password
-        );
-        const encryptedTitle = album.title
-          ? await encryptMessageSymmetric(password, album.title)
-          : album.title;
-
-        await HTTP.put(appName, `/v1/albums/${album.sortKey}/encrypt`, {
-          encryptedPassword,
-          title: encryptedTitle,
-        });
-      })
-    );
-
-    return { data: {}, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
 export async function createAlbum({ title }) {
   try {
     const password = generatePassword(20, true);

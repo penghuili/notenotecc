@@ -79,7 +79,7 @@ export function NoteAdd() {
         <IconButton size="4" onClick={() => setShowCamera(true)}>
           <RiImageAddLine />
         </IconButton>
-        <AreaField value={note} onChange={setNote} />
+        <AreaField autofocus={!cameraType} value={note} onChange={setNote} />
 
         <AlbumsSelector
           selectedAlbumSortKeys={selectedAlbumSortKeys}
