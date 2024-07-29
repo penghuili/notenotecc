@@ -96,7 +96,11 @@ export function NoteEdit() {
         />
       </ItemsWrapper>
 
-      <ImageCarousel noteId={noteId} images={images} />
+      <ImageCarousel
+        noteId={noteId}
+        encryptedPassword={noteItem?.encryptedPassword}
+        images={images}
+      />
 
       {showCamera && (
         <Camera
