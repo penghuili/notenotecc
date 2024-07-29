@@ -3,35 +3,32 @@ import {
   RiDeleteBinLine,
   RiImageAddLine,
   RiImageLine,
+  RiLockLine,
   RiMore2Line,
   RiPencilLine,
-  RiRestartLine,
   RiStickyNoteAddLine,
 } from '@remixicon/react';
 import { useAtomValue } from 'jotai';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { isDeletingNoteAtom } from '../store/note/noteAtoms';
+import { isDeletingNoteAtom, isUpdatingNoteAtom } from '../store/note/noteAtoms';
 import {
   addImagesEffect,
-  convertNoteImagesEffect,
   deleteNoteEffect,
+  encryptExistingNoteEffect,
   setNoteEffect,
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
 export function NoteActions({ note, goBackAfterDelete }) {
   const isDeleting = useAtomValue(isDeletingNoteAtom);
+  const isUpdating = useAtomValue(isUpdatingNoteAtom);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-
-  const hasPNG = useMemo(() => {
-    return !!note?.images?.find(img => img.path.endsWith('.png'));
-  }, [note]);
 
   function handleEidt() {
     setNoteEffect(note);
@@ -40,6 +37,21 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
   if (!note) {
     return null;
+  }
+
+  if (!note.encrypted) {
+    return (
+      <IconButton
+        variant="ghost"
+        onClick={() => {
+          encryptExistingNoteEffect(note);
+        }}
+        mr="2"
+        disabled={isUpdating}
+      >
+        <RiLockLine />
+      </IconButton>
+    );
   }
 
   return (
@@ -57,18 +69,6 @@ export function NoteActions({ note, goBackAfterDelete }) {
       <IconButton variant="ghost" onClick={handleEidt} mr="2">
         <RiStickyNoteAddLine />
       </IconButton>
-
-      {hasPNG && (
-        <IconButton
-          variant="ghost"
-          onClick={() => {
-            convertNoteImagesEffect(note, {});
-          }}
-          mr="2"
-        >
-          <RiRestartLine />
-        </IconButton>
-      )}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>

@@ -1,9 +1,5 @@
-import dotenv from 'dotenv';
-
-dotenv.config({ path: '.env.production' });
-
-export function timestampPlugin() {
-  const assetDir = `${process.env.TIMESTAMP}/`;
+export function timestampPlugin(env) {
+  const assetDir = `${env.TIMESTAMP}/`;
 
   return {
     name: 'timestamp-plugin',

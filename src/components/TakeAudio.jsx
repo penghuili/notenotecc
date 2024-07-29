@@ -3,7 +3,6 @@ import { RiPauseLine, RiPlayLine, RiRestartLine, RiStopLine } from '@remixicon/r
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { cameraTypes } from '../lib/cameraTypes.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
 
 const AnimationWrapper = styled.div`
@@ -131,7 +130,7 @@ export function TakeAudio({ onSelect }) {
     const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
     const url = URL.createObjectURL(blob);
     console.log(url, blob.size, recordedChunksRef.current.length);
-    onSelect({ blob, url, size: blob.size, type: cameraTypes.takeAudio });
+    onSelect({ blob, url, size: blob.size, type: 'audio/webm' });
 
     setIsRecording(false);
     setIsPaused(false);

@@ -1,7 +1,4 @@
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
 import {
   fetchSettingsEffect,
   goBackEffect,
@@ -11,7 +8,6 @@ import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsAtom } from '../album/albumItemAtoms';
 import {
   isAddingImagesAtom,
-  isConvertingImagesAtom,
   isCreatingNoteAtom,
   isDeletingImageAtom,
   isDeletingNoteAtom,
@@ -25,10 +21,10 @@ import {
 } from './noteAtoms';
 import {
   addImages,
-  convertNoteImages,
   createNote,
   deleteImage,
   deleteNote,
+  encryptExistingNote,
   fetchNote,
   fetchNotes,
   noteCache,
@@ -174,6 +170,20 @@ export async function updateNoteEffect(
   updateAtomValue(isUpdatingNoteAtom, false);
 }
 
+export async function encryptExistingNoteEffect(note) {
+  updateAtomValue(isUpdatingNoteAtom, true);
+
+  const { data } = await encryptExistingNote(note);
+
+  if (data) {
+    updateStates(data, 'update');
+
+    setToastEffect('Updated!');
+  }
+
+  updateAtomValue(isUpdatingNoteAtom, false);
+}
+
 export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack }) {
   updateAtomValue(isDeletingImageAtom, true);
 
@@ -218,29 +228,6 @@ export async function addImagesEffect(noteId, { images, onSucceeded, goBack }) {
   }
 
   updateAtomValue(isAddingImagesAtom, false);
-}
-
-export async function convertNoteImagesEffect(note, { onSucceeded, goBack }) {
-  updateAtomValue(isConvertingImagesAtom, true);
-
-  const { data } = await convertNoteImages(note);
-
-  if (data) {
-    updateStates(data, 'update');
-
-    setToastEffect('Converted!');
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
-
-    fetchSettingsEffect(true);
-  }
-
-  updateAtomValue(isConvertingImagesAtom, false);
 }
 
 export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {

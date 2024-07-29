@@ -131,7 +131,7 @@ export function OnThisDay() {
 
   useEffect(() => {
     if (!randomDate) {
-      updateAtomValue(getRandomDate());
+      updateAtomValue(randomDateAtom, getRandomDate());
     }
   }, [getRandomDate, randomDate]);
 
@@ -176,7 +176,7 @@ export function OnThisDay() {
         <Flex direction="column" gap="2" mb="4">
           <IconButton
             onClick={() => {
-              updateAtomValue(getRandomDate());
+              updateAtomValue(randomDateAtom, getRandomDate());
             }}
           >
             <RiRefreshLine />
@@ -184,7 +184,7 @@ export function OnThisDay() {
           <DatePicker
             value={randomDate}
             onChange={date => {
-              updateAtomValue(date);
+              updateAtomValue(randomDateAtom, date);
             }}
           />
         </Flex>

@@ -1,16 +1,7 @@
 import { orderByPosition } from '../../shared-private/js/position';
-import {
-  eventEmitter,
-  eventEmitterEvents,
-} from '../../shared-private/react/eventEmitter';
-import {
-  getAtomValue,
-  updateAtomValue,
-} from '../../shared-private/react/store/atomHelpers';
-import {
-  goBackEffect,
-  setToastEffect,
-} from '../../shared-private/react/store/sharedEffects';
+import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
+import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
+import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import {
   albumsAtom,
   isCreatingAlbumAtom,
@@ -21,6 +12,7 @@ import {
 import {
   albumCache,
   createAlbum,
+  decryptAlbum,
   deleteAlbum,
   fetchAlbums,
   updateAlbum,
@@ -34,7 +26,8 @@ export async function fetchAlbumsEffect(force) {
 
   const cachedAlbums = await albumCache.getCachedItems();
   if (cachedAlbums?.length) {
-    updateAtomValue(albumsAtom, cachedAlbums);
+    const decrypted = await Promise.all(cachedAlbums.map(album => decryptAlbum(album)));
+    updateAtomValue(albumsAtom, decrypted);
   }
 
   updateAtomValue(isLoadingAlbumsAtom, true);
@@ -67,10 +60,14 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   updateAtomValue(isCreatingAlbumAtom, false);
 }
 
-export async function updateAlbumEffect(albumId, { title, position, onSucceeded, goBack }) {
+export async function updateAlbumEffect(
+  albumId,
+  { encryptedPassword, title, position, onSucceeded, goBack }
+) {
   updateAtomValue(isUpdatingAlbumAtom, true);
 
   const { data } = await updateAlbum(albumId, {
+    encryptedPassword,
     title,
     position,
   });
@@ -119,4 +116,4 @@ export async function deleteAlbumEffect(albumId, { onSucceeded, goBack }) {
   updateAtomValue(isDeletingAlbumAtom, false);
 }
 
-eventEmitter.on(eventEmitterEvents.loggedIn, fetchAlbumsEffect);
+eventEmitter.on(eventEmitterEvents.loggedIn, () => fetchAlbumsEffect());

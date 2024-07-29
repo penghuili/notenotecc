@@ -3,7 +3,6 @@ import { RiArrowDownDoubleLine, RiImageAddLine, RiSquareLine } from '@remixicon/
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { cameraTypes } from '../lib/cameraTypes.js';
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob.js';
@@ -42,7 +41,7 @@ export function PickPhoto({ onSelect }) {
                 const canvas = cropperRef.current.crop(900);
                 const blob = await canvasToBlob(canvas, 'image/webp', 0.8);
                 const imageUrl = canvas.toDataURL('image/webp');
-                onSelect({ blob, url: imageUrl, size: blob.size, type: cameraTypes.pickPhoto });
+                onSelect({ blob, url: imageUrl, size: blob.size, type: 'image/webp' });
                 setPickedImage(null);
               }}
             >
@@ -55,7 +54,7 @@ export function PickPhoto({ onSelect }) {
                 const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
                 const blob = await canvasToBlob(resizedCanvas, 'image/webp', 0.8);
                 const imageUrl = resizedCanvas.toDataURL('image/webp');
-                onSelect({ blob, url: imageUrl, type: cameraTypes.pickPhoto });
+                onSelect({ blob, url: imageUrl, type: 'image/webp' });
                 setPickedImage(null);
               }}
             >

@@ -9,7 +9,6 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { cameraTypes } from '../lib/cameraTypes.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
 
 const Video = styled.video`
@@ -155,7 +154,7 @@ export function TakeVideo({ onSelect }) {
 
     const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, size: blob.size, type: cameraTypes.takeVideo });
+    onSelect({ blob, url, size: blob.size, type: 'video/webm' });
 
     setIsRecording(false);
     setIsPaused(false);

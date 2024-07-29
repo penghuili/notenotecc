@@ -31,7 +31,11 @@ export function NoteItem({ note, albums }) {
         <NoteActions note={note} />
       </Flex>
 
-      <ImageCarousel noteId={note.sortKey} images={note.images} />
+      <ImageCarousel
+        noteId={note.sortKey}
+        encryptedPassword={note.encryptedPassword}
+        images={note.images}
+      />
 
       {!!note.note && <Description>{note.note}</Description>}
 

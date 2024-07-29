@@ -2,11 +2,10 @@ import './ImageCarousel.css';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { cameraTypes } from '../lib/cameraTypes.js';
 import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image.jsx';
 
-export function ImageCarousel({ noteId, images, onDeleteLocal }) {
+export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -107,14 +106,14 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
     }
 
     if (item.path.endsWith('.weba')) {
-      return cameraTypes.takeAudio;
+      return 'audio/webm';
     }
 
     if (item.path.endsWith('.webm')) {
-      return cameraTypes.takeVideo;
+      return 'video/webm';
     }
 
-    return cameraTypes.takePhoto;
+    return 'image/webp';
   }
 
   return (
@@ -129,7 +128,7 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
       >
         {images.map(image => (
           <div
-            key={image.url}
+            key={image.url || image.path}
             className="carousel-slide"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -141,6 +140,7 @@ export function ImageCarousel({ noteId, images, onDeleteLocal }) {
           >
             <Image
               noteId={noteId}
+              encryptedPassword={encryptedPassword}
               url={image.url}
               path={image.path}
               size={image.size}

@@ -61,7 +61,7 @@
     "time": "sudo ntpdate time.nist.gov",
     "cc": "node scripts/commit.js",
     "cs": "rm -rf src/shared-private && mkdir src/shared-private && cp -a ../sharedjs-private/lib/js src/shared-private/js && cp -a ../sharedjs-private/lib/react src/shared-private/react && rm -f scripts/upload.js && cp -a ../sharedjs-private/scripts/upload.js scripts/upload.js",
-    "start": "npm run cs && ESLINT_NO_DEV_ERRORS=true BROWSER=none vite",
+    "start": "npm run cs && vite --mode development",
     "build": "vite build",
     "dd": "npm run cs && node ./scripts/upload.js",
     "lint": "eslint .",
