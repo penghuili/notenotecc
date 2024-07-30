@@ -1,5 +1,5 @@
 import { Flex, IconButton } from '@radix-ui/themes';
-import { RiArrowDownDoubleLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
+import { RiCropLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -45,7 +45,7 @@ export function PickPhoto({ onSelect }) {
                 setPickedImage(null);
               }}
             >
-              <RiArrowDownDoubleLine />
+              <RiCropLine />
             </IconButton>
             <IconButton
               size="4"
