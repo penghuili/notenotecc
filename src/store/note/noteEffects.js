@@ -1,25 +1,24 @@
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
 import {
   fetchSettingsEffect,
   goBackEffect,
   setToastEffect,
 } from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
-import { albumItemsAtom } from '../album/albumItemAtoms';
+import { albumItemsCat } from '../album/albumItemCats';
 import { decryptNote } from '../album/albumNetwork';
 import {
-  isAddingImagesAtom,
-  isCreatingNoteAtom,
-  isDeletingImageAtom,
-  isDeletingNoteAtom,
-  isLoadingNoteAtom,
-  isLoadingNotesAtom,
-  isLoadingOnThisDayNotesAtom,
-  isUpdatingNoteAtom,
-  noteAtom,
-  notesAtom,
-  onThisDayNotesAtom,
-} from './noteAtoms';
+  isAddingImagesCat,
+  isCreatingNoteCat,
+  isDeletingImageCat,
+  isDeletingNoteCat,
+  isLoadingNoteCat,
+  isLoadingNotesCat,
+  isLoadingOnThisDayNotesCat,
+  isUpdatingNoteCat,
+  noteCat,
+  notesCat,
+  onThisDayNotesCat,
+} from './noteCats';
 import {
   addImages,
   createNote,
@@ -33,17 +32,17 @@ import {
 } from './noteNetwork';
 
 export async function fetchNotesEffect(startKey, force) {
-  const notesInState = getAtomValue(notesAtom);
+  const notesInState = notesCat.get();
   if (notesInState?.items?.length && !force) {
     return;
   }
 
-  updateAtomValue(isLoadingNotesAtom, true);
+  isLoadingNotesCat.set(true);
 
   if (!startKey) {
     const cachedNotes = await noteCache.getCachedItems();
     if (cachedNotes?.length) {
-      updateAtomValue(notesAtom, {
+      notesCat.set({
         items: cachedNotes,
         startKey: null,
         hasMore: cachedNotes.length >= 20,
@@ -53,34 +52,34 @@ export async function fetchNotesEffect(startKey, force) {
 
   const { data } = await fetchNotes(startKey);
   if (data) {
-    updateAtomValue(notesAtom, {
-      items: startKey ? [...getAtomValue(notesAtom).items, ...data.items] : data.items,
+    notesCat.set({
+      items: startKey ? [...notesCat.get().items, ...data.items] : data.items,
       startKey: data.startKey,
       hasMore: data.hasMore,
     });
   }
 
-  updateAtomValue(isLoadingNotesAtom, false);
+  isLoadingNotesCat.set(false);
 }
 
 export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
-  const onThisDayNotes = getAtomValue(onThisDayNotesAtom);
+  const onThisDayNotes = onThisDayNotesCat.get();
   if (onThisDayNotes[type]) {
     return;
   }
 
-  updateAtomValue(isLoadingOnThisDayNotesAtom, true);
+  isLoadingOnThisDayNotesCat.set(true);
 
   const { data } = await fetchNotes(null, startTime, endTime);
   if (data?.items) {
-    updateAtomValue(onThisDayNotesAtom, { ...onThisDayNotes, [type]: data.items.reverse() });
+    onThisDayNotesCat.set({ ...onThisDayNotes, [type]: data.items.reverse() });
   }
 
-  updateAtomValue(isLoadingOnThisDayNotesAtom, false);
+  isLoadingOnThisDayNotesCat.set(false);
 }
 
 export async function fetchNoteEffect(noteId) {
-  const noteInState = getAtomValue(noteAtom);
+  const noteInState = noteCat.get();
   if (noteInState?.sortKey === noteId) {
     return;
   }
@@ -88,21 +87,21 @@ export async function fetchNoteEffect(noteId) {
   const cachedNote = await noteCache.getCachedItem(noteId);
   if (cachedNote?.sortKey === noteId) {
     const decrypted = await decryptNote(cachedNote);
-    updateAtomValue(noteAtom, decrypted);
+    noteCat.set(decrypted);
   }
 
-  updateAtomValue(isLoadingNoteAtom, true);
+  isLoadingNoteCat.set(true);
 
   const { data } = await fetchNote(noteId);
   if (data) {
-    updateAtomValue(noteAtom, data);
+    noteCat.set(data);
   }
 
-  updateAtomValue(isLoadingNoteAtom, false);
+  isLoadingNoteCat.set(false);
 }
 
 export function setNoteEffect(note) {
-  updateAtomValue(noteAtom, note);
+  noteCat.set(note);
 }
 
 export async function createNoteEffect({
@@ -113,7 +112,7 @@ export async function createNoteEffect({
   onSucceeded,
   goBack,
 }) {
-  updateAtomValue(isCreatingNoteAtom, true);
+  isCreatingNoteCat.set(true);
 
   const { data } = await createNote({
     note,
@@ -126,8 +125,8 @@ export async function createNoteEffect({
       await fetchAlbumsEffect(true);
     }
 
-    const currentNotes = getAtomValue(notesAtom);
-    updateAtomValue(notesAtom, { ...currentNotes, items: [data, ...(currentNotes.items || [])] });
+    const currentNotes = notesCat.get();
+    notesCat.set({ ...currentNotes, items: [data, ...(currentNotes.items || [])] });
 
     setToastEffect('Encrypted and created!');
 
@@ -141,14 +140,14 @@ export async function createNoteEffect({
     fetchSettingsEffect(true);
   }
 
-  updateAtomValue(isCreatingNoteAtom, false);
+  isCreatingNoteCat.set(false);
 }
 
 export async function updateNoteEffect(
   noteId,
   { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
 ) {
-  updateAtomValue(isUpdatingNoteAtom, true);
+  isUpdatingNoteCat.set(true);
 
   const { data } = await updateNote(noteId, {
     encryptedPassword,
@@ -174,11 +173,11 @@ export async function updateNoteEffect(
     }
   }
 
-  updateAtomValue(isUpdatingNoteAtom, false);
+  isUpdatingNoteCat.set(false);
 }
 
 export async function encryptExistingNoteEffect(note) {
-  updateAtomValue(isUpdatingNoteAtom, true);
+  isUpdatingNoteCat.set(true);
 
   const { data } = await encryptExistingNote(note);
 
@@ -188,11 +187,11 @@ export async function encryptExistingNoteEffect(note) {
     setToastEffect('Encrypted!');
   }
 
-  updateAtomValue(isUpdatingNoteAtom, false);
+  isUpdatingNoteCat.set(false);
 }
 
 export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack }) {
-  updateAtomValue(isDeletingImageAtom, true);
+  isDeletingImageCat.set(true);
 
   const { data } = await deleteImage(noteId, imagePath);
 
@@ -211,11 +210,11 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
     fetchSettingsEffect(true);
   }
 
-  updateAtomValue(isDeletingImageAtom, false);
+  isDeletingImageCat.set(false);
 }
 
 export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
-  updateAtomValue(isAddingImagesAtom, true);
+  isAddingImagesCat.set(true);
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
 
@@ -234,11 +233,11 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
     fetchSettingsEffect(true);
   }
 
-  updateAtomValue(isAddingImagesAtom, false);
+  isAddingImagesCat.set(false);
 }
 
 export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
-  updateAtomValue(isDeletingNoteAtom, true);
+  isDeletingNoteCat.set(true);
 
   const { error } = await deleteNote(noteId);
 
@@ -257,7 +256,7 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
     fetchSettingsEffect(true);
   }
 
-  updateAtomValue(isDeletingNoteAtom, false);
+  isDeletingNoteCat.set(false);
 }
 
 function updateStates(newNote, type) {
@@ -266,26 +265,26 @@ function updateStates(newNote, type) {
       ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? item : i))
       : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
 
-  const currentNotes = getAtomValue(notesAtom);
-  updateAtomValue(notesAtom, {
+  const currentNotes = notesCat.get();
+  notesCat.set({
     ...currentNotes,
     items: fn(currentNotes.items || [], newNote),
   });
 
-  const currentNote = getAtomValue(noteAtom);
+  const currentNote = noteCat.get();
   if (currentNote?.sortKey === newNote.sortKey) {
-    updateAtomValue(noteAtom, newNote);
+    noteCat.set(newNote);
   }
 
-  const albumItems = getAtomValue(albumItemsAtom);
+  const albumItems = albumItemsCat.get();
   if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
-    updateAtomValue(albumItemsAtom, {
+    albumItemsCat.set({
       ...albumItems,
       items: fn(albumItems.items || [], newNote),
     });
   }
 
-  const currentOnThisDayNotes = getAtomValue(onThisDayNotesAtom);
+  const currentOnThisDayNotes = onThisDayNotesCat.get();
   const types = Object.keys(currentOnThisDayNotes);
   if (types.length) {
     const updatedItems = types.map(type => ({
@@ -296,6 +295,6 @@ function updateStates(newNote, type) {
       (acc, item) => ({ ...acc, [item.type]: item.items }),
       {}
     );
-    updateAtomValue(onThisDayNotesAtom, newOnThisDayNotes);
+    onThisDayNotesCat.set(newOnThisDayNotes);
   }
 }

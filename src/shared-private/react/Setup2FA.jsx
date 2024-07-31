@@ -1,5 +1,4 @@
 import { Box, Text } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useState } from 'react';
 
@@ -8,19 +7,20 @@ import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
+import { useCat } from './store/cat.js';
 import {
-  isDisabling2FAAtom,
-  isEnabling2FAAtom,
-  isGenerating2FAAtom,
-  userAtom,
-} from './store/sharedAtoms';
+  isDisabling2FACat,
+  isEnabling2FACat,
+  isGenerating2FACat,
+  userCat,
+} from './store/sharedCats.js';
 import { disable2FAEffect, enable2FAEffect, generate2FASecretEffect } from './store/sharedEffects';
 
 export function Setup2FA() {
-  const user = useAtomValue(userAtom);
-  const isGenerating = useAtomValue(isGenerating2FAAtom);
-  const isEnabling = useAtomValue(isEnabling2FAAtom);
-  const isDisabling = useAtomValue(isDisabling2FAAtom);
+  const user = useCat(userCat);
+  const isGenerating = useCat(isGenerating2FACat);
+  const isEnabling = useCat(isEnabling2FACat);
+  const isDisabling = useCat(isDisabling2FACat);
 
   const [codeForEnable, setCodeForEnable] = useState('');
   const [codeForDisable, setCodeForDisable] = useState('');

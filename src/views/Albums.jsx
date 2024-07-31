@@ -1,15 +1,19 @@
 import { Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { Reorder } from '../shared-private/react/Reorder.jsx';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
-import { userAtom } from '../shared-private/react/store/sharedAtoms';
+import { useCat } from '../shared-private/react/store/cat.js';
+import { userCat } from '../shared-private/react/store/sharedCats.js';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { albumsAtom, isDeletingAlbumAtom, isLoadingAlbumsAtom } from '../store/album/albumAtoms';
+import {
+  albumsCat,
+  isDeletingAlbumCat,
+  isLoadingAlbumsCat,
+} from '../store/album/albumCats.js';
 import {
   deleteAlbumEffect,
   fetchAlbumsEffect,
@@ -17,10 +21,10 @@ import {
 } from '../store/album/albumEffects';
 
 export function Albums() {
-  const isLoading = useAtomValue(isLoadingAlbumsAtom);
-  const isDeleting = useAtomValue(isDeletingAlbumAtom);
-  const albums = useAtomValue(albumsAtom);
-  const account = useAtomValue(userAtom);
+  const isLoading = useCat(isLoadingAlbumsCat);
+  const isDeleting = useCat(isDeletingAlbumCat);
+  const albums = useCat(albumsCat);
+  const account = useCat(userCat);
 
   useEffect(() => {
     fetchAlbumsEffect();

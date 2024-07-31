@@ -5,34 +5,33 @@ import { isValidEmail } from '../../js/regex';
 import { eventEmitter, eventEmitterEvents } from '../eventEmitter';
 import { HTTP } from '../HTTP';
 import { idbStorage } from '../indexDB';
-import { appName, resetAtoms } from '../initShared';
+import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
 import { routeHelpers } from '../routeHelpers';
-import { getAtomValue, updateAtomValue } from './atomHelpers';
+import { resetAllCats } from './cat';
 import {
-  authErrorAtom,
-  isChangingEmailAtom,
-  isChangingPasswordAtom,
-  isCheckingRefreshTokenAtom,
-  isDeletingAccountAtom,
-  isDisabling2FAAtom,
-  isEnabling2FAAtom,
-  isGenerating2FAAtom,
-  isLoadingAccountAtom,
-  isLoadingSettingsAtom,
-  isLoggedInAtom,
-  isLoggingOutFromAllDevicesAtom,
-  isResendingVerificationCodeAtom,
-  isSigningInAtom,
-  isSigningUpAtom,
-  isSkipping2FAAtom,
-  isVerifying2FAAtom,
-  isVerifyingEmailAtom,
-  resetAtomsShared,
-  settingsAtom,
+  authErrorCat,
+  isChangingEmailCat,
+  isChangingPasswordCat,
+  isCheckingRefreshTokenCat,
+  isDeletingAccountCat,
+  isDisabling2FACat,
+  isEnabling2FACat,
+  isGenerating2FACat,
+  isLoadingAccountCat,
+  isLoadingSettingsCat,
+  isLoggedInCat,
+  isLoggingOutFromAllDevicesCat,
+  isResendingVerificationCodeCat,
+  isSigningInCat,
+  isSigningUpCat,
+  isSkipping2FACat,
+  isVerifying2FACat,
+  isVerifyingEmailCat,
+  settingsCat,
   toastTypes,
-  userAtom,
-} from './sharedAtoms';
+  userCat,
+} from './sharedCats';
 import {
   changeEmail,
   changePassword,
@@ -73,16 +72,16 @@ export function setToastEffect(message, type) {
 }
 
 export function clearAuthErrorEffect() {
-  updateAtomValue(authErrorAtom, null);
+  authErrorCat.set(null);
 }
 
 export function initEffect() {
-  updateAtomValue(isCheckingRefreshTokenAtom, true);
+  isCheckingRefreshTokenCat.set(true);
 
   const { isValid } = checkRefreshToken();
 
   isLoggedInEffect(isValid);
-  updateAtomValue(isCheckingRefreshTokenAtom, false);
+  isCheckingRefreshTokenCat.set(false);
 
   window.addEventListener('focus', async () => {
     try {
@@ -94,69 +93,69 @@ export function initEffect() {
 
 export async function signUpEffect(email, password) {
   if (email && !isValidEmail(email)) {
-    updateAtomValue(authErrorAtom, 'Please use a valid email.');
+    authErrorCat.set('Please use a valid email.');
     return;
   }
 
-  updateAtomValue(isSigningUpAtom, true);
+  isSigningUpCat.set(true);
   const { error } = await signUp(email, password);
 
   if (error) {
     if (error.errorCode === httpErrorCodes.NO_USERNAME_OR_EMAIL) {
-      updateAtomValue(authErrorAtom, 'Please enter your email.');
+      authErrorCat.set('Please enter your email.');
     } else if (error.errorCode === httpErrorCodes.ALREADY_EXISTS) {
-      updateAtomValue(authErrorAtom, 'This email is used.');
+      authErrorCat.set('This email is used.');
     } else {
-      updateAtomValue(authErrorAtom, 'Sign up failed.');
+      authErrorCat.set('Sign up failed.');
     }
   } else {
     isLoggedInEffect(true);
     navigateEffect('/');
   }
 
-  updateAtomValue(isSigningUpAtom, false);
+  isSigningUpCat.set(false);
 }
 
 export async function resendVerificationCodeEffect() {
-  updateAtomValue(isResendingVerificationCodeAtom, true);
+  isResendingVerificationCodeCat.set(true);
   const { data } = await resendVerificationCode();
 
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
 
     setToastEffect('Verification code is sent, you should get another email.');
   } else {
     setToastEffect('Something is wrong', toastTypes.critical);
   }
 
-  updateAtomValue(isResendingVerificationCodeAtom, false);
+  isResendingVerificationCodeCat.set(false);
 }
 
 export async function verifyEmailEffect(code) {
-  updateAtomValue(isVerifyingEmailAtom, true);
+  isVerifyingEmailCat.set(true);
   const { data } = await verifyEmail(code);
 
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
     setToastEffect('Your email is verified!');
   } else {
     setToastEffect('Something is wrong', toastTypes.critical);
   }
 
-  updateAtomValue(isVerifyingEmailAtom, false);
+  isVerifyingEmailCat.set(false);
 }
 
 export async function signInEffect(email, password) {
-  updateAtomValue(isSigningInAtom, true);
+  isSigningInCat.set(true);
 
   const { data, error } = await signIn(email, password);
   if (error) {
     if (error.errorCode === httpErrorCodes.NOT_FOUND) {
-      updateAtomValue(authErrorAtom, 'This user does not exist.');
+      authErrorCat.set('This user does not exist.');
     } else if (error.errorCode === httpErrorCodes.NO_PASSWORD) {
-      updateAtomValue(authErrorAtom, 'Please signup first.');
+      authErrorCat.set('Please signup first.');
     } else {
-      updateAtomValue(authErrorAtom, 'Sign in failed.');
+      authErrorCat.set('Sign in failed.');
     }
   } else {
     if (data.tempToken) {
@@ -167,11 +166,11 @@ export async function signInEffect(email, password) {
     }
   }
 
-  updateAtomValue(isSigningInAtom, false);
+  isSigningInCat.set(false);
 }
 
 export async function skip2FAEffect() {
-  updateAtomValue(isSkipping2FAAtom, true);
+  isSkipping2FACat.set(true);
 
   const { data } = await skip2FA();
   if (data) {
@@ -179,96 +178,92 @@ export async function skip2FAEffect() {
     setToastEffect('2FA is skipped.');
   }
 
-  updateAtomValue(isSkipping2FAAtom, false);
+  isSkipping2FACat.set(false);
 }
 
 export async function verify2FAEffect(code) {
-  updateAtomValue(isVerifying2FAAtom, true);
+  isVerifying2FACat.set(true);
 
   const { data, error } = await verify2FA(code);
   if (error) {
     if (error.errorCode === httpErrorCodes.UNAUTHORIZED) {
-      updateAtomValue(authErrorAtom, 'Your session is expired, please go back to sign in again.');
+      authErrorCat.set('Your session is expired, please go back to sign in again.');
     } else if (error.errorCode === httpErrorCodes.FORBIDDEN) {
-      updateAtomValue(authErrorAtom, 'Invalid code, please enter a new one.');
+      authErrorCat.set('Invalid code, please enter a new one.');
     } else {
-      updateAtomValue(authErrorAtom, 'Sign in failed.');
+      authErrorCat.set('Sign in failed.');
     }
   } else {
     isLoggedInEffect(!!data);
     navigateEffect('/');
   }
 
-  updateAtomValue(isVerifying2FAAtom, false);
+  isVerifying2FACat.set(false);
 }
 
 export async function generate2FASecretEffect() {
-  updateAtomValue(isGenerating2FAAtom, true);
+  isGenerating2FACat.set(true);
 
   const { data } = await generate2FASecret();
   if (data) {
-    updateAtomValue(userAtom, prev => ({ ...prev, twoFactorUri: data.uri }));
+    userCat.set(prev => ({ ...prev, twoFactorUri: data.uri }));
   }
 
-  updateAtomValue(isGenerating2FAAtom, false);
+  isGenerating2FACat.set(false);
 }
 
 export async function enable2FAEffect(code) {
-  updateAtomValue(isEnabling2FAAtom, true);
+  isEnabling2FACat.set(true);
 
   const { data } = await enable2FA(code);
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
     setToastEffect('2FA is enabled.');
   }
 
-  updateAtomValue(isEnabling2FAAtom, false);
+  isEnabling2FACat.set(false);
 }
 
 export async function disable2FAEffect(code) {
-  updateAtomValue(isDisabling2FAAtom, true);
+  isDisabling2FACat.set(true);
 
   const { data } = await disable2FA(code);
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
     setToastEffect('2FA is disabled.');
   }
 
-  updateAtomValue(isDisabling2FAAtom, false);
+  isDisabling2FACat.set(false);
 }
 
 export async function logOutEffect() {
-  resetAtomsShared();
-
-  await idbStorage.clear();
-  LocalStorage.clear();
+  resetEffect();
 }
 
 export async function resetEffect() {
-  resetAtomsShared();
-  resetAtoms();
+  resetAllCats();
 
   await idbStorage.clear();
   LocalStorage.clear();
 }
 
 export async function logOutFromAllDevicesEffect() {
-  updateAtomValue(isLoggingOutFromAllDevicesAtom, true);
+  isLoggingOutFromAllDevicesCat.set(true);
 
   const { data } = await logoutFromAllDevices();
   if (data) {
     await logOutEffect();
   }
 
-  updateAtomValue(isLoggingOutFromAllDevicesAtom, false);
+  isLoggingOutFromAllDevicesCat.set(false);
 }
 
 export function isLoggedInEffect(loggedIn) {
-  updateAtomValue(isLoggedInAtom, loggedIn);
+  isLoggedInCat.set(loggedIn);
 
   if (loggedIn) {
     eventEmitter.emit(eventEmitterEvents.loggedIn);
-    updateAtomValue(authErrorAtom, '');
+    authErrorCat.set('');
     fetchAccountEffect();
     if (appName) {
       fetchSettingsEffect();
@@ -279,47 +274,47 @@ export function isLoggedInEffect(loggedIn) {
 export async function fetchAccountEffect(silent) {
   const cachedAccount = LocalStorage.get(`${appName}-account`);
   if (cachedAccount) {
-    updateAtomValue(userAtom, cachedAccount);
+    userCat.set(cachedAccount);
   }
 
   if (!silent && !cachedAccount) {
-    updateAtomValue(isLoadingAccountAtom, true);
+    isLoadingAccountCat.set(true);
   }
 
   const { data } = await fetchAccount();
 
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
   }
 
-  updateAtomValue(isLoadingAccountAtom, false);
+  isLoadingAccountCat.set(false);
 }
 
 export async function fetchSettingsEffect(silent) {
   const cachedSettings = LocalStorage.get(`${appName}-settings`);
   if (cachedSettings) {
-    updateAtomValue(settingsAtom, cachedSettings);
+    settingsCat.set(cachedSettings);
   }
 
   if (!silent && !cachedSettings) {
-    updateAtomValue(isLoadingSettingsAtom, true);
+    isLoadingSettingsCat.set(true);
   }
 
   const { data } = await fetchSettings();
 
   if (data) {
-    updateAtomValue(settingsAtom, data);
+    settingsCat.set(data);
 
     eventEmitter.emit(eventEmitterEvents.settingsFetched, data);
   }
 
   if (!silent) {
-    updateAtomValue(isLoadingSettingsAtom, false);
+    isLoadingSettingsCat.set(false);
   }
 }
 
 export async function deleteAccountEffect() {
-  updateAtomValue(isDeletingAccountAtom, true);
+  isDeletingAccountCat.set(true);
 
   const { data } = await deleteAccount();
 
@@ -330,43 +325,43 @@ export async function deleteAccountEffect() {
     setToastEffect('Something went wrong, please try again.', toastTypes.critical);
   }
 
-  updateAtomValue(isDeletingAccountAtom, false);
+  isDeletingAccountCat.set(false);
 }
 
 export async function changeEmailEffect(newEmail, code, onSucceeded) {
-  updateAtomValue(isChangingEmailAtom, true);
+  isChangingEmailCat.set(true);
 
   const { data, error } = await changeEmail(newEmail, code);
 
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
     setToastEffect('Your email is changed!');
     if (onSucceeded) {
       onSucceeded();
     }
   } else {
     if (error.errorCode === httpErrorCodes.NO_USERNAME_OR_EMAIL) {
-      updateAtomValue(authErrorAtom, 'Please enter your email.');
+      authErrorCat.set('Please enter your email.');
     } else if (error.errorCode === httpErrorCodes.ALREADY_EXISTS) {
-      updateAtomValue(authErrorAtom, 'This email is used.');
+      authErrorCat.set('This email is used.');
     } else if (error.errorCode === httpErrorCodes.INVALID_CODE) {
-      updateAtomValue(authErrorAtom, 'Your code is invalid anymore, please trigger it again.');
+      authErrorCat.set('Your code is invalid anymore, please trigger it again.');
     } else {
-      updateAtomValue(authErrorAtom, 'Something went wrong, please try again.');
+      authErrorCat.set('Something went wrong, please try again.');
     }
   }
 
-  updateAtomValue(isChangingEmailAtom, false);
+  isChangingEmailCat.set(false);
 }
 
 export async function changePasswordEffect(currentPassword, newPassword) {
-  updateAtomValue(isChangingPasswordAtom, true);
+  isChangingPasswordCat.set(true);
 
-  const { email } = getAtomValue(userAtom);
+  const { email } = userCat.get();
   const { data } = await changePassword(email, currentPassword, newPassword);
 
   if (data) {
-    updateAtomValue(userAtom, data);
+    userCat.set(data);
     setToastEffect('Your password is changed! Please login again.');
     logOutEffect();
   } else {
@@ -376,5 +371,5 @@ export async function changePasswordEffect(currentPassword, newPassword) {
     );
   }
 
-  updateAtomValue(isChangingPasswordAtom, false);
+  isChangingPasswordCat.set(false);
 }

@@ -5,8 +5,7 @@ import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
 import { imagePathToUrl } from '../lib/imagePathToUrl';
 import { useInView } from '../shared-private/react/hooks/useInView';
 import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton.jsx';
-import { updateAtomValue } from '../shared-private/react/store/atomHelpers';
-import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
+import { fullScreenImageUrlCat } from '../store/note/noteCats.js';
 import { decryptBlob } from '../store/note/noteNetwork.js';
 import { AudioPlayer } from './AudioPlayer.jsx';
 import { ImageActions } from './ImageActions.jsx';
@@ -60,7 +59,7 @@ export function Image({
         style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
         onDoubleClick={() => {
           if (type === 'image/webp') {
-            updateAtomValue(fullScreenImageUrlAtom, url);
+            fullScreenImageUrlCat.set(url);
           }
         }}
       >

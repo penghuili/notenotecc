@@ -1,43 +1,54 @@
 import { orderByPosition } from '../../shared-private/js/position';
-import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
-import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import {
-  albumsAtom,
-  isCreatingAlbumAtom,
-  isDeletingAlbumAtom,
-  isLoadingAlbumsAtom,
-  isUpdatingAlbumAtom,
-} from './albumAtoms';
-import { albumCache, createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
+  eventEmitter,
+  eventEmitterEvents,
+} from '../../shared-private/react/eventEmitter';
+import {
+  goBackEffect,
+  setToastEffect,
+} from '../../shared-private/react/store/sharedEffects';
+import {
+  albumsCat,
+  isCreatingAlbumCat,
+  isDeletingAlbumCat,
+  isLoadingAlbumsCat,
+  isUpdatingAlbumCat,
+} from './albumCats';
+import {
+  albumCache,
+  createAlbum,
+  deleteAlbum,
+  fetchAlbums,
+  updateAlbum,
+} from './albumNetwork';
 
 export async function fetchAlbumsEffect(force) {
-  const albumsInStore = getAtomValue(albumsAtom);
+  const albumsInStore = albumsCat.get();
   if (albumsInStore?.length && !force) {
     return;
   }
 
   const cachedAlbums = await albumCache.getCachedItems();
   if (cachedAlbums?.length) {
-    updateAtomValue(albumsAtom, cachedAlbums);
+    albumsCat.set(cachedAlbums);
   }
 
-  updateAtomValue(isLoadingAlbumsAtom, true);
+  isLoadingAlbumsCat.set(true);
 
   const { data } = await fetchAlbums();
   if (data) {
-    updateAtomValue(albumsAtom, data.items);
+    albumsCat.set(data.items);
   }
 
-  updateAtomValue(isLoadingAlbumsAtom, false);
+  isLoadingAlbumsCat.set(false);
 }
 
 export async function createAlbumEffect({ title, onSucceeded, goBack }) {
-  updateAtomValue(isCreatingAlbumAtom, true);
+  isCreatingAlbumCat.set(true);
 
   const { data } = await createAlbum({ title });
   if (data) {
-    updateAtomValue(albumsAtom, [data, ...getAtomValue(albumsAtom)]);
+    albumsCat.set([data, ...albumsCat.get()]);
 
     setToastEffect('Encrypted and created!');
 
@@ -49,14 +60,14 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
     }
   }
 
-  updateAtomValue(isCreatingAlbumAtom, false);
+  isCreatingAlbumCat.set(false);
 }
 
 export async function updateAlbumEffect(
   albumId,
   { encryptedPassword, title, position, onSucceeded, goBack }
 ) {
-  updateAtomValue(isUpdatingAlbumAtom, true);
+  isUpdatingAlbumCat.set(true);
 
   const { data } = await updateAlbum(albumId, {
     encryptedPassword,
@@ -66,10 +77,10 @@ export async function updateAlbumEffect(
 
   if (data) {
     const newAlbums = orderByPosition(
-      (getAtomValue(albumsAtom) || []).map(album => (album.sortKey === albumId ? data : album)),
+      (albumsCat.get() || []).map(album => (album.sortKey === albumId ? data : album)),
       true
     );
-    updateAtomValue(albumsAtom, newAlbums);
+    albumsCat.set(newAlbums);
 
     setToastEffect('Encrypted and updated!');
 
@@ -81,19 +92,16 @@ export async function updateAlbumEffect(
     }
   }
 
-  updateAtomValue(isUpdatingAlbumAtom, false);
+  isUpdatingAlbumCat.set(false);
 }
 
 export async function deleteAlbumEffect(albumId, { onSucceeded, goBack }) {
-  updateAtomValue(isDeletingAlbumAtom, true);
+  isDeletingAlbumCat.set(true);
 
   const { data } = await deleteAlbum(albumId);
 
   if (data) {
-    updateAtomValue(
-      albumsAtom,
-      (getAtomValue(albumsAtom) || []).filter(album => album.sortKey !== albumId)
-    );
+    albumsCat.set((albumsCat.get() || []).filter(album => album.sortKey !== albumId));
 
     setToastEffect('Deleted!');
 
@@ -105,7 +113,7 @@ export async function deleteAlbumEffect(albumId, { onSucceeded, goBack }) {
     }
   }
 
-  updateAtomValue(isDeletingAlbumAtom, false);
+  isDeletingAlbumCat.set(false);
 }
 
 eventEmitter.on(eventEmitterEvents.loggedIn, () => fetchAlbumsEffect());

@@ -7,7 +7,7 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { toastTypes } from './store/sharedAtoms';
+import { toastTypes } from './store/sharedCats.js';
 import { navigateEffect, setToastEffect } from './store/sharedEffects';
 import { resetPasswordSave, resetPasswordTrigger } from './store/sharedNetwork';
 

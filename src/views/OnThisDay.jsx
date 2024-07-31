@@ -11,7 +11,6 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import { useAtomValue } from 'jotai';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DatePicker } from '../components/DatePicker.jsx';
@@ -21,14 +20,14 @@ import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { randomBetween } from '../shared-private/js/utils';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { updateAtomValue } from '../shared-private/react/store/atomHelpers.js';
-import { userAtom } from '../shared-private/react/store/sharedAtoms';
-import { albumsObjectAtom } from '../store/album/albumAtoms';
+import { useCat } from '../shared-private/react/store/cat.js';
+import { userCat } from '../shared-private/react/store/sharedCats.js';
+import { useAlbumsObject } from '../store/album/albumCats.js';
 import {
-  isLoadingOnThisDayNotesAtom,
-  onThisDayNotesAtom,
-  randomDateAtom,
-} from '../store/note/noteAtoms';
+  isLoadingOnThisDayNotesCat,
+  onThisDayNotesCat,
+  randomDateCat,
+} from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
 function parseStartTime(startTime) {
@@ -39,10 +38,10 @@ function parseEndTime(endTime) {
 }
 
 export function OnThisDay() {
-  const albumsObject = useAtomValue(albumsObjectAtom);
-  const user = useAtomValue(userAtom);
-  const isLoading = useAtomValue(isLoadingOnThisDayNotesAtom);
-  const notes = useAtomValue(onThisDayNotesAtom);
+  const albumsObject = useAlbumsObject();
+  const user = useCat(userCat);
+  const isLoading = useCat(isLoadingOnThisDayNotesCat);
+  const notes = useCat(onThisDayNotesCat);
 
   const getRandomDate = useCallback(() => {
     const createdDays = differenceInCalendarDays(new Date(), new Date(user.createdAt));
@@ -50,7 +49,7 @@ export function OnThisDay() {
     return addDays(new Date(user.createdAt), randomDays);
   }, [user?.createdAt]);
 
-  const randomDate = useAtomValue(randomDateAtom);
+  const randomDate = useCat(randomDateCat);
 
   const tabs = useMemo(() => {
     if (!user?.createdAt) {
@@ -131,7 +130,7 @@ export function OnThisDay() {
 
   useEffect(() => {
     if (!randomDate) {
-      updateAtomValue(randomDateAtom, getRandomDate());
+      randomDateCat.set(getRandomDate());
     }
   }, [getRandomDate, randomDate]);
 
@@ -176,7 +175,7 @@ export function OnThisDay() {
         <Flex direction="column" gap="2" mb="4">
           <IconButton
             onClick={() => {
-              updateAtomValue(randomDateAtom, getRandomDate());
+              randomDateCat.set(getRandomDate());
             }}
           >
             <RiRefreshLine />
@@ -184,7 +183,7 @@ export function OnThisDay() {
           <DatePicker
             value={randomDate}
             onChange={date => {
-              updateAtomValue(randomDateAtom, date);
+              randomDateCat.set(date);
             }}
           />
         </Flex>

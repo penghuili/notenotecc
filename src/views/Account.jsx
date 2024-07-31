@@ -1,9 +1,9 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { formatDateTime } from '../shared-private/js/date';
+import { AppVersion } from '../shared-private/react/AppVersion.jsx';
 import { themeCssColor } from '../shared-private/react/AppWrapper.jsx';
 import { copyToClipboard } from '../shared-private/react/copyToClipboard';
 import { getFileSizeString } from '../shared-private/react/file';
@@ -13,17 +13,18 @@ import { LogoutLink } from '../shared-private/react/LogoutLink.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { PaymentStatus } from '../shared-private/react/PaymentStatus.jsx';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
+import { useCat } from '../shared-private/react/store/cat.js';
 import {
-  isLoadingAccountAtom,
-  settingsAtom,
-  userAtom,
-} from '../shared-private/react/store/sharedAtoms';
+  isLoadingAccountCat,
+  settingsCat,
+  userCat,
+} from '../shared-private/react/store/sharedCats.js';
 import { setToastEffect } from '../shared-private/react/store/sharedEffects';
 
 export function Account() {
-  const account = useAtomValue(userAtom);
-  const isLoadingAccount = useAtomValue(isLoadingAccountAtom);
-  const settings = useAtomValue(settingsAtom);
+  const account = useCat(userCat);
+  const isLoadingAccount = useCat(isLoadingAccountCat);
+  const settings = useCat(settingsCat);
 
   return (
     <>
@@ -115,6 +116,10 @@ export function Account() {
 
       <ItemsWrapper align="start">
         <LogoutLink />
+      </ItemsWrapper>
+
+      <ItemsWrapper align="start">
+        <AppVersion />
       </ItemsWrapper>
     </>
   );

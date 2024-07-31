@@ -1,15 +1,14 @@
 import { idbStorage } from '../../shared-private/react/indexDB';
-import { getAtomValue, updateAtomValue } from '../../shared-private/react/store/atomHelpers';
-import { albumItemsAtom, isLoadingAlbumItemsAtom } from './albumItemAtoms';
+import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 
 export async function fetchAlbumItemsEffect(albumId, { startKey }) {
-  updateAtomValue(isLoadingAlbumItemsAtom, true);
+  isLoadingAlbumItemsCat.set(true);
 
   if (!startKey) {
     const cachedAlbumItems = await idbStorage.getItem(albumId);
     if (cachedAlbumItems?.length) {
-      updateAtomValue(albumItemsAtom, {
+      albumItemsCat.set({
         items: cachedAlbumItems,
         albumId,
         startKey: null,
@@ -20,13 +19,13 @@ export async function fetchAlbumItemsEffect(albumId, { startKey }) {
 
   const { data } = await fetchAlbumItems(albumId, { startKey });
   if (data) {
-    updateAtomValue(albumItemsAtom, {
-      items: startKey ? [...getAtomValue(albumItemsAtom).items, ...data.items] : data.items,
+    albumItemsCat.set({
+      items: startKey ? [...albumItemsCat.get().items, ...data.items] : data.items,
       startKey: data.startKey,
       hasMore: data.hasMore,
       albumId,
     });
   }
 
-  updateAtomValue(isLoadingAlbumItemsAtom, false);
+  isLoadingAlbumItemsCat.set(false);
 }

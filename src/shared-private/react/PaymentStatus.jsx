@@ -1,14 +1,13 @@
 import { Text } from '@radix-ui/themes';
 import { differenceInCalendarDays } from 'date-fns';
-import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
-import { expiresAtAtom } from './store/sharedAtoms';
+import { useExpiresAt } from './store/sharedCats.js';
 
 export function PaymentStatus() {
-  const expiresAt = useAtomValue(expiresAtAtom);
+  const expiresAt = useExpiresAt();
 
   if (!expiresAt) {
     return null;

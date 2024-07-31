@@ -1,22 +1,25 @@
-import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 import { useParams } from 'wouter';
 
 import { NoteItem } from '../components/NoteItem.jsx';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { albumsObjectAtom } from '../store/album/albumAtoms';
-import { isLoadingAlbumItemsAtom, useAlbumNotes } from '../store/album/albumItemAtoms';
+import { useCat } from '../shared-private/react/store/cat.js';
+import { useAlbumsObject } from '../store/album/albumCats.js';
+import {
+  isLoadingAlbumItemsCat,
+  useAlbumNotes,
+} from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
-import { isAddingImagesAtom } from '../store/note/noteAtoms';
+import { isAddingImagesCat } from '../store/note/noteCats.js';
 
 export function AlbumDetails() {
   const { albumId } = useParams();
 
-  const isLoading = useAtomValue(isLoadingAlbumItemsAtom);
-  const isAddingImages = useAtomValue(isAddingImagesAtom);
+  const isLoading = useCat(isLoadingAlbumItemsCat);
+  const isAddingImages = useCat(isAddingImagesCat);
   const { items: notes, startKey, hasMore } = useAlbumNotes(albumId);
-  const albumsObject = useAtomValue(albumsObjectAtom);
+  const albumsObject = useAlbumsObject();
 
   useEffect(() => {
     fetchAlbumItemsEffect(albumId, { startKey: null });

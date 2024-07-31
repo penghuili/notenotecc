@@ -8,13 +8,16 @@ import {
   RiPencilLine,
   RiStickyNoteAddLine,
 } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
+import { useCat } from '../shared-private/react/store/cat.js';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { isDeletingNoteAtom, isUpdatingNoteAtom } from '../store/note/noteAtoms';
+import {
+  isDeletingNoteCat,
+  isUpdatingNoteCat,
+} from '../store/note/noteCats.js';
 import {
   addImagesEffect,
   deleteNoteEffect,
@@ -24,8 +27,8 @@ import {
 import { Camera } from './Camera.jsx';
 
 export function NoteActions({ note, goBackAfterDelete }) {
-  const isDeleting = useAtomValue(isDeletingNoteAtom);
-  const isUpdating = useAtomValue(isUpdatingNoteAtom);
+  const isDeleting = useCat(isDeletingNoteCat);
+  const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);

@@ -1,15 +1,15 @@
-import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { FormButton } from './FormButton.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { isChangingPasswordAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isChangingPasswordCat } from './store/sharedCats.js';
 import { changePasswordEffect } from './store/sharedEffects';
 
 export function ChangePassword() {
-  const isChanging = useAtomValue(isChangingPasswordAtom);
+  const isChanging = useCat(isChangingPasswordCat);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

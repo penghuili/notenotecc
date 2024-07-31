@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
-import { updateAtomValue, useAtomValue } from '../shared-private/react/store/atomHelpers';
-import { fullScreenImageUrlAtom } from '../store/note/noteAtoms';
+import {
+  disableBodyScroll,
+  enableBodyScroll,
+} from '../shared-private/react/bodySccroll';
+import { useCat } from '../shared-private/react/store/cat';
+import { fullScreenImageUrlCat } from '../store/note/noteCats';
 
 const FullScreenWrapper = styled.div`
   position: fixed;
@@ -19,7 +22,7 @@ const FullScreenWrapper = styled.div`
 `;
 
 export function FullScreenImage() {
-  const url = useAtomValue(fullScreenImageUrlAtom);
+  const url = useCat(fullScreenImageUrlCat);
   useEffect(() => {
     if (url) {
       disableBodyScroll();
@@ -35,7 +38,7 @@ export function FullScreenImage() {
   const size = Math.min(window.innerWidth, window.innerHeight, 900);
 
   return (
-    <FullScreenWrapper onClick={() => updateAtomValue(fullScreenImageUrlAtom, null)}>
+    <FullScreenWrapper onClick={() => fullScreenImageUrlCat.set(null)}>
       <img src={url} style={{ width: size, height: size }} onClick={e => e.stopPropagation()} />
     </FullScreenWrapper>
   );

@@ -1,17 +1,22 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
+import {
+  RiDeleteBinLine,
+  RiInformationLine,
+  RiMore2Line,
+  RiShareLine,
+} from '@remixicon/react';
 import React, { useState } from 'react';
 
 import { shareFileWithUrl, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { getFileSizeString } from '../shared-private/react/file';
-import { isDeletingImageAtom } from '../store/note/noteAtoms';
+import { useCat } from '../shared-private/react/store/cat.js';
+import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
 export function ImageActions({ noteId, image, onDeleteLocal }) {
-  const isDeleting = useAtomValue(isDeletingImageAtom);
+  const isDeleting = useCat(isDeletingImageCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 

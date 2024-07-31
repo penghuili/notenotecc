@@ -1,5 +1,4 @@
 import { Flex, Text } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import React, { useEffect, useState } from 'react';
 
 import { errorColor } from './AppWrapper.jsx';
@@ -8,12 +7,13 @@ import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { authErrorAtom, isVerifying2FAAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { authErrorCat, isVerifying2FACat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, verify2FAEffect } from './store/sharedEffects';
 
 export function Verify2FA() {
-  const errorMessage = useAtomValue(authErrorAtom);
-  const isVerifying = useAtomValue(isVerifying2FAAtom);
+  const errorMessage = useCat(authErrorCat);
+  const isVerifying = useCat(isVerifying2FACat);
 
   const [code, setCode] = useState('');
 

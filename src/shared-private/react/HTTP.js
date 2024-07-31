@@ -2,7 +2,7 @@ import { apps } from '../js/apps';
 import { eventEmitter } from './eventEmitter';
 import { appName } from './initShared';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage';
-import { toastTypes } from './store/sharedAtoms';
+import { toastTypes } from './store/sharedCats';
 import { resetEffect, setToastEffect } from './store/sharedEffects';
 
 const serverToUrl = {

@@ -1,5 +1,4 @@
 import { Avatar, Heading, Text } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { FormButton } from './FormButton.jsx';
@@ -10,12 +9,13 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { isResendingVerificationCodeAtom, isVerifyingEmailAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 
 export function VerifyEmail() {
-  const isVerifying = useAtomValue(isVerifyingEmailAtom);
-  const isResending = useAtomValue(isResendingVerificationCodeAtom);
+  const isVerifying = useCat(isVerifyingEmailCat);
+  const isResending = useCat(isResendingVerificationCodeCat);
 
   const [code, setCode] = useState('');
 

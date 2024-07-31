@@ -1,22 +1,25 @@
 import { Flex, Spinner } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import React from 'react';
 import { Redirect, Route, Switch, useLocation } from 'wouter';
 
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
-import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
+import {
+  LocalStorage,
+  sharedLocalStorageKeys,
+} from './shared-private/react/LocalStorage';
 import { ResetPassword } from './shared-private/react/ResetPassword.jsx';
 import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
 import { SignIn } from './shared-private/react/SignIn.jsx';
 import { SignUp } from './shared-private/react/SignUp.jsx';
+import { useCat } from './shared-private/react/store/cat.js';
 import {
-  isCheckingRefreshTokenAtom,
-  isEmailVerifiedAtom,
-  isLoadingAccountAtom,
-  isLoggedInAtom,
-} from './shared-private/react/store/sharedAtoms';
+  isCheckingRefreshTokenCat,
+  isLoadingAccountCat,
+  isLoggedInCat,
+  useIsEmailVerified,
+} from './shared-private/react/store/sharedCats.js';
 import { Verify2FA } from './shared-private/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared-private/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
@@ -30,10 +33,10 @@ import { OnThisDay } from './views/OnThisDay.jsx';
 import { Welcome } from './views/Welcome.jsx';
 
 export function Router() {
-  const isCheckingRefreshToken = useAtomValue(isCheckingRefreshTokenAtom);
-  const isLoadingAccount = useAtomValue(isLoadingAccountAtom);
-  const isLoggedIn = useAtomValue(isLoggedInAtom);
-  const isVerified = useAtomValue(isEmailVerifiedAtom);
+  const isCheckingRefreshToken = useCat(isCheckingRefreshTokenCat);
+  const isLoadingAccount = useCat(isLoadingAccountCat);
+  const isLoggedIn = useCat(isLoggedInCat);
+  const isVerified = useIsEmailVerified();
 
   const [path] = useLocation();
 

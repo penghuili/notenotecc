@@ -1,5 +1,4 @@
 import { Flex, Text } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import React, { useEffect, useState } from 'react';
 
 import { errorColor } from './AppWrapper.jsx';
@@ -9,12 +8,13 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { authErrorAtom, isSigningInAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { authErrorCat, isSigningInCat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, signInEffect } from './store/sharedEffects';
 
 export function SignIn() {
-  const errorMessage = useAtomValue(authErrorAtom);
-  const isSigningIn = useAtomValue(isSigningInAtom);
+  const errorMessage = useCat(authErrorCat);
+  const isSigningIn = useCat(isSigningInCat);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

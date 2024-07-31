@@ -1,18 +1,18 @@
 import { Button, Flex, Text } from '@radix-ui/themes';
-import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { isChangingEmailAtom, toastTypes, userAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isChangingEmailCat, toastTypes, userCat } from './store/sharedCats.js';
 import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
 import { changeEmailTrigger } from './store/sharedNetwork';
 
 export function ChangeEmail() {
-  const user = useAtomValue(userAtom);
-  const isChanging = useAtomValue(isChangingEmailAtom);
+  const user = useCat(userCat);
+  const isChanging = useCat(isChangingEmailCat);
 
   const [newEmail, setNewEmail] = useState('');
   const [isTriggering, setIsTriggering] = useState(false);

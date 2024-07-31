@@ -5,7 +5,6 @@ import {
   RiHistoryLine,
   RiRefreshLine,
 } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React, { useEffect } from 'react';
 
 import { Actions } from '../components/Actions.jsx';
@@ -13,23 +12,24 @@ import { NoteItem } from '../components/NoteItem.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { useCat } from '../shared-private/react/store/cat.js';
 import {
   fetchSettingsEffect,
   navigateEffect,
 } from '../shared-private/react/store/sharedEffects';
-import { albumsObjectAtom } from '../store/album/albumAtoms';
+import { useAlbumsObject } from '../store/album/albumCats.js';
 import {
-  isAddingImagesAtom,
-  isLoadingNotesAtom,
-  notesAtom,
-} from '../store/note/noteAtoms';
+  isAddingImagesCat,
+  isLoadingNotesCat,
+  notesCat,
+} from '../store/note/noteCats.js';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {
-  const isLoading = useAtomValue(isLoadingNotesAtom);
-  const isAddingImages = useAtomValue(isAddingImagesAtom);
-  const { items: notes, startKey, hasMore } = useAtomValue(notesAtom);
-  const albumsObject = useAtomValue(albumsObjectAtom);
+  const isLoading = useCat(isLoadingNotesCat);
+  const isAddingImages = useCat(isAddingImagesCat);
+  const { items: notes, startKey, hasMore } = useCat(notesCat);
+  const albumsObject = useAlbumsObject();
 
   useEffect(() => {
     fetchNotesEffect();

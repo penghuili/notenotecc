@@ -1,4 +1,3 @@
-import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
@@ -7,12 +6,13 @@ import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { isDeletingAccountAtom, isLoggingOutFromAllDevicesAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 
 export function Security() {
-  const isLoggingOutFromAllDevices = useAtomValue(isLoggingOutFromAllDevicesAtom);
-  const isDeletingAccount = useAtomValue(isDeletingAccountAtom);
+  const isLoggingOutFromAllDevices = useCat(isLoggingOutFromAllDevicesCat);
+  const isDeletingAccount = useCat(isDeletingAccountCat);
 
   return (
     <>

@@ -1,15 +1,15 @@
 import { Avatar, Flex, Heading, IconButton, Spinner } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiUserSmileLine } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React from 'react';
 
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo } from './initShared';
-import { isLoggedInAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 
 export function PageHeader({ fixed, title, right, isLoading, hasBack, onCustomBack }) {
-  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const isLoggedIn = useCat(isLoggedInCat);
 
   const showUserIcon = isLoggedIn && !hasBack;
 

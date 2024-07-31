@@ -1,14 +1,14 @@
-import { useAtomValue } from 'jotai';
 import React, { useState } from 'react';
 
 import { errorColor } from './AppWrapper.jsx';
 import { Confirm } from './Confirm.jsx';
 import { LinkButton } from './LinkButton.jsx';
-import { isDeletingAccountAtom } from './store/sharedAtoms';
+import { useCat } from './store/cat.js';
+import { isDeletingAccountCat } from './store/sharedCats.js';
 import { deleteAccountEffect } from './store/sharedEffects';
 
 export function DeleteAccountLink() {
-  const isDeleting = useAtomValue(isDeletingAccountAtom);
+  const isDeleting = useCat(isDeletingAccountCat);
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (

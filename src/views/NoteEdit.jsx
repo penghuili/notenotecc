@@ -1,6 +1,5 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
-import { useAtomValue } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'wouter';
 
@@ -11,20 +10,25 @@ import { scrollToTop } from '../lib/scrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { useCat } from '../shared-private/react/store/cat.js';
 import {
-  isAddingImagesAtom,
-  isLoadingNoteAtom,
-  isUpdatingNoteAtom,
+  isAddingImagesCat,
+  isLoadingNoteCat,
+  isUpdatingNoteCat,
   useNote,
-} from '../store/note/noteAtoms';
-import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+} from '../store/note/noteCats.js';
+import {
+  addImagesEffect,
+  fetchNoteEffect,
+  updateNoteEffect,
+} from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();
 
-  const isLoading = useAtomValue(isLoadingNoteAtom);
-  const isUpdating = useAtomValue(isUpdatingNoteAtom);
-  const isAddingImages = useAtomValue(isAddingImagesAtom);
+  const isLoading = useCat(isLoadingNoteCat);
+  const isUpdating = useCat(isUpdatingNoteCat);
+  const isAddingImages = useCat(isAddingImagesCat);
   const noteItem = useNote(noteId);
 
   const [images, setImages] = useState([]);
