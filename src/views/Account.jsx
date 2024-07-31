@@ -1,6 +1,7 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
 import React from 'react';
+import { useCat } from 'usecat';
 
 import { formatDateTime } from '../shared-private/js/date';
 import { AppVersion } from '../shared-private/react/AppVersion.jsx';
@@ -13,7 +14,6 @@ import { LogoutLink } from '../shared-private/react/LogoutLink.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { PaymentStatus } from '../shared-private/react/PaymentStatus.jsx';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import {
   isLoadingAccountCat,
   settingsCat,

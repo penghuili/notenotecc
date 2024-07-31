@@ -1,17 +1,12 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import {
-  RiDeleteBinLine,
-  RiInformationLine,
-  RiMore2Line,
-  RiShareLine,
-} from '@remixicon/react';
+import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@remixicon/react';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { shareFileWithUrl, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { getFileSizeString } from '../shared-private/react/file';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 

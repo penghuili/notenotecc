@@ -1,4 +1,4 @@
-import { createCat, useCat } from './cat';
+import { createCat, useCat } from 'usecat';
 
 export const toastTypes = {
   normal: 'normal',

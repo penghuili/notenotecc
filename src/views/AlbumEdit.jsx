@@ -1,11 +1,11 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiSendPlaneLine } from '@remixicon/react';
 import React, { useEffect, useState } from 'react';
+import { useCat } from 'usecat';
 import { useParams } from 'wouter';
 
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { updateAlbumEffect } from '../store/album/albumEffects';
 

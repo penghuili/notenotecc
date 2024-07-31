@@ -1,5 +1,6 @@
 import { Flex, Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
+import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
 import { FormButton } from './FormButton.jsx';
@@ -7,7 +8,6 @@ import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { useCat } from './store/cat.js';
 import { authErrorCat, isVerifying2FACat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, verify2FAEffect } from './store/sharedEffects';
 

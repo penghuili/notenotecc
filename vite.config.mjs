@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       open: false,
     },
     build: {
+      chunkSizeWarningLimit: 800,
       rollupOptions: {
         plugins: [
           visualizer({

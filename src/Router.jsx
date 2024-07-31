@@ -1,19 +1,16 @@
 import { Flex, Spinner } from '@radix-ui/themes';
 import React from 'react';
+import { useCat } from 'usecat';
 import { Redirect, Route, Switch, useLocation } from 'wouter';
 
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
-import {
-  LocalStorage,
-  sharedLocalStorageKeys,
-} from './shared-private/react/LocalStorage';
+import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
 import { ResetPassword } from './shared-private/react/ResetPassword.jsx';
 import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
 import { SignIn } from './shared-private/react/SignIn.jsx';
 import { SignUp } from './shared-private/react/SignUp.jsx';
-import { useCat } from './shared-private/react/store/cat.js';
 import {
   isCheckingRefreshTokenCat,
   isLoadingAccountCat,

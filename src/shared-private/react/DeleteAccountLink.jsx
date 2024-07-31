@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
 import { Confirm } from './Confirm.jsx';
 import { LinkButton } from './LinkButton.jsx';
-import { useCat } from './store/cat.js';
 import { isDeletingAccountCat } from './store/sharedCats.js';
 import { deleteAccountEffect } from './store/sharedEffects';
 

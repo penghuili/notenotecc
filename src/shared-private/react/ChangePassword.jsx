@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { useCat } from './store/cat.js';
 import { isChangingPasswordCat } from './store/sharedCats.js';
 import { changePasswordEffect } from './store/sharedEffects';
 

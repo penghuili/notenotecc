@@ -12,6 +12,7 @@ import {
   subYears,
 } from 'date-fns';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
@@ -20,7 +21,6 @@ import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { randomBetween } from '../shared-private/js/utils.js';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { userCat } from '../shared-private/react/store/sharedCats.js';
 import { useAlbumsObject } from '../store/album/albumCats.js';
 import {

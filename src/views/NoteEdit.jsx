@@ -1,6 +1,7 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useEffect, useState } from 'react';
+import { useCat } from 'usecat';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -10,18 +11,13 @@ import { scrollToTop } from '../lib/scrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import {
   isAddingImagesCat,
   isLoadingNoteCat,
   isUpdatingNoteCat,
   useNote,
 } from '../store/note/noteCats.js';
-import {
-  addImagesEffect,
-  fetchNoteEffect,
-  updateNoteEffect,
-} from '../store/note/noteEffects';
+import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 export function NoteEdit() {
   const { noteId } = useParams();

@@ -1,15 +1,12 @@
 import React, { useEffect } from 'react';
+import { useCat } from 'usecat';
 import { useParams } from 'wouter';
 
 import { NoteItem } from '../components/NoteItem.jsx';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { useAlbumsObject } from '../store/album/albumCats.js';
-import {
-  isLoadingAlbumItemsCat,
-  useAlbumNotes,
-} from '../store/album/albumItemCats.js';
+import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
 

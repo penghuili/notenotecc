@@ -1,4 +1,4 @@
-import { createCat, useCat } from '../../shared-private/react/store/cat';
+import { createCat, useCat } from 'usecat';
 
 const defaultAlbumItems = { items: [], startKey: null, hasMore: false, albumId: null };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCat } from 'usecat';
 
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
@@ -6,7 +7,6 @@ import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { useCat } from './store/cat.js';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 

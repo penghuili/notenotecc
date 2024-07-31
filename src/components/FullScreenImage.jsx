@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useCat } from 'usecat';
 
 import {
   disableBodyScroll,
   enableBodyScroll,
 } from '../shared-private/react/bodySccroll';
-import { useCat } from '../shared-private/react/store/cat';
 import { fullScreenImageUrlCat } from '../store/note/noteCats';
 
 const FullScreenWrapper = styled.div`

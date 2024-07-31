@@ -1,4 +1,4 @@
-import { createCat, useCat } from '../../shared-private/react/store/cat';
+import { createCat, useCat } from 'usecat';
 
 export const notesCat = createCat({});
 export const isLoadingNotesCat = createCat(false);

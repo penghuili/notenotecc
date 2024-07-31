@@ -1,6 +1,7 @@
 import { Box, IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
@@ -10,7 +11,6 @@ import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { getQueryParams } from '../shared-private/react/routeHelpers';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';

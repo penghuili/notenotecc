@@ -1,11 +1,11 @@
 import { Button, Flex, Text } from '@radix-ui/themes';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { useCat } from './store/cat.js';
 import { isChangingEmailCat, toastTypes, userCat } from './store/sharedCats.js';
 import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
 import { changeEmailTrigger } from './store/sharedNetwork';

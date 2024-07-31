@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { resetAllCats } from 'usecat';
 
 import { httpErrorCodes } from '../../js/httpErrorCodes';
 import { isValidEmail } from '../../js/regex';
@@ -8,7 +9,6 @@ import { idbStorage } from '../indexDB';
 import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
 import { routeHelpers } from '../routeHelpers';
-import { resetAllCats } from './cat';
 import {
   authErrorCat,
   isChangingEmailCat,

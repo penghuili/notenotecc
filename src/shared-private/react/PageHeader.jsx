@@ -1,10 +1,10 @@
 import { Avatar, Flex, Heading, IconButton, Spinner } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiUserSmileLine } from '@remixicon/react';
 import React from 'react';
+import { useCat } from 'usecat';
 
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo } from './initShared';
-import { useCat } from './store/cat.js';
 import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 

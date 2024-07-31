@@ -1,8 +1,8 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
 import React, { useEffect } from 'react';
+import { useCat } from 'usecat';
 
 import { InputField } from '../shared-private/react/InputField.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { albumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 

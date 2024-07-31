@@ -9,15 +9,12 @@ import {
   RiStickyNoteAddLine,
 } from '@remixicon/react';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
-import {
-  isDeletingNoteCat,
-  isUpdatingNoteCat,
-} from '../store/note/noteCats.js';
+import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
   deleteNoteEffect,

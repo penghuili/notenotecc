@@ -1,28 +1,16 @@
 import { IconButton } from '@radix-ui/themes';
-import {
-  RiArrowUpSLine,
-  RiHashtag,
-  RiHistoryLine,
-  RiRefreshLine,
-} from '@remixicon/react';
+import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
+import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { useCat } from '../shared-private/react/store/cat.js';
-import {
-  fetchSettingsEffect,
-  navigateEffect,
-} from '../shared-private/react/store/sharedEffects';
+import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { useAlbumsObject } from '../store/album/albumCats.js';
-import {
-  isAddingImagesCat,
-  isLoadingNotesCat,
-  notesCat,
-} from '../store/note/noteCats.js';
+import { isAddingImagesCat, isLoadingNotesCat, notesCat } from '../store/note/noteCats.js';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {

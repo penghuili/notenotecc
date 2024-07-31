@@ -1,13 +1,13 @@
 import { Box, Text } from '@radix-ui/themes';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { useCat } from './store/cat.js';
 import {
   isDisabling2FACat,
   isEnabling2FACat,

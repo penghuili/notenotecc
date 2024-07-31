@@ -1,5 +1,6 @@
 import { Avatar, Heading, Text } from '@radix-ui/themes';
 import React, { useState } from 'react';
+import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
@@ -9,7 +10,6 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { useCat } from './store/cat.js';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 

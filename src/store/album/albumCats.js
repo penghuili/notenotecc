@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
+import { createCat, useCat } from 'usecat';
 
 import { arrayToObject } from '../../shared-private/js/object';
-import { createCat, useCat } from '../../shared-private/react/store/cat';
 
 export const albumsCat = createCat([]);
 export const isLoadingAlbumsCat = createCat(false);
