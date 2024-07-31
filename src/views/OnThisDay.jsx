@@ -11,14 +11,14 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { DatePicker } from '../components/DatePicker.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
-import { randomBetween } from '../shared-private/js/utils';
+import { randomBetween } from '../shared-private/js/utils.js';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { useCat } from '../shared-private/react/store/cat.js';
 import { userCat } from '../shared-private/react/store/sharedCats.js';
@@ -30,125 +30,23 @@ import {
 } from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
 
-function parseStartTime(startTime) {
-  return startTime ? getUTCTimeNumber(startOfDay(new Date(startTime))) : null;
-}
-function parseEndTime(endTime) {
-  return endTime ? getUTCTimeNumber(endOfDay(new Date(endTime))) : null;
-}
-
 export function OnThisDay() {
   const albumsObject = useAlbumsObject();
   const user = useCat(userCat);
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
   const notes = useCat(onThisDayNotesCat);
-
-  const getRandomDate = useCallback(() => {
-    const createdDays = differenceInCalendarDays(new Date(), new Date(user.createdAt));
-    const randomDays = randomBetween(0, createdDays);
-    return addDays(new Date(user.createdAt), randomDays);
-  }, [user?.createdAt]);
-
   const randomDate = useCat(randomDateCat);
 
-  const tabs = useMemo(() => {
-    if (!user?.createdAt) {
-      return [];
-    }
-
-    const lastWeek = subDays(new Date(), 7);
-    const lastMonth = subMonths(new Date(), 1);
-    const tabs = [
-      {
-        label: 'Last week',
-        value: formatDate(lastWeek),
-        date: formatDate(lastWeek),
-        startTime: parseStartTime(lastWeek),
-        endTime: parseEndTime(lastWeek),
-      },
-      {
-        label: 'Last month',
-        value: formatDate(lastMonth),
-        date: formatDate(lastMonth),
-        startTime: parseStartTime(lastMonth),
-        endTime: parseEndTime(lastMonth),
-      },
-    ];
-
-    const months = differenceInMonths(new Date(), new Date(user.createdAt));
-    if (months >= 3) {
-      const threeMonths = subMonths(new Date(), 3);
-      tabs.push({
-        label: '3 months ago',
-        value: formatDate(threeMonths),
-        date: formatDate(threeMonths),
-        startTime: parseStartTime(threeMonths),
-        endTime: parseEndTime(threeMonths),
-      });
-    }
-    if (months >= 6) {
-      const sixMonths = subMonths(new Date(), 6);
-      tabs.push({
-        label: '6 months ago',
-        value: formatDate(sixMonths),
-        date: formatDate(sixMonths),
-        startTime: parseStartTime(sixMonths),
-        endTime: parseEndTime(sixMonths),
-      });
-    }
-
-    const years = differenceInYears(new Date(), new Date(user.createdAt));
-    if (years >= 1) {
-      Array(years)
-        .fill(0)
-        .forEach((_, i) => {
-          const yearDate = subYears(new Date(), i + 1);
-          tabs.push({
-            label: `${i + 1} year(s) ago`,
-            value: formatDate(yearDate),
-            date: formatDate(yearDate),
-            startTime: parseStartTime(yearDate),
-            endTime: parseEndTime(yearDate),
-          });
-        });
-    }
-
-    if (randomDate) {
-      tabs.push({
-        label: 'Random',
-        value: 'random',
-        date: formatDate(randomDate),
-        startTime: parseStartTime(randomDate),
-        endTime: parseEndTime(randomDate),
-      });
-    }
-
-    return tabs;
-  }, [user?.createdAt, randomDate]);
-
+  const tabs = useMemo(() => getTabs(user?.createdAt), [user?.createdAt]);
   const [activeTab, setActiveTab] = useState(tabs[0].value);
+  const currentTabNotes = useMemo(
+    () => getTabNotes(notes, activeTab, randomDate),
+    [notes, activeTab, randomDate]
+  );
 
   useEffect(() => {
-    if (!randomDate) {
-      randomDateCat.set(getRandomDate());
-    }
-  }, [getRandomDate, randomDate]);
-
-  useEffect(() => {
-    asyncForEach(tabs, async tabObj => {
-      await fetchOnThisDayNotesEffect(tabObj.date, tabObj.startTime, tabObj.endTime);
-    });
+    fetchNotes(tabs);
   }, [tabs]);
-
-  function getTabNotes(tab) {
-    if (tab === 'random') {
-      const date = formatDate(randomDate);
-      return notes[date] || [];
-    }
-    return notes[tab] || [];
-  }
-
-  const currentTabNotes = getTabNotes(activeTab);
 
   return (
     <>
@@ -165,7 +63,7 @@ export function OnThisDay() {
         <Tabs.List>
           {tabs.map(tab => (
             <Tabs.Trigger key={tab.label} value={tab.value}>
-              {tab.label} ({getTabNotes(tab.value).length})
+              {tab.label} ({getTabNotes(notes, tab.value, randomDate).length})
             </Tabs.Trigger>
           ))}
         </Tabs.List>
@@ -175,7 +73,9 @@ export function OnThisDay() {
         <Flex direction="column" gap="2" mb="4">
           <IconButton
             onClick={() => {
-              randomDateCat.set(getRandomDate());
+              const date = getRandomDate(user.createdAt);
+              randomDateCat.set(date);
+              fetchNotesForDate(date);
             }}
           >
             <RiRefreshLine />
@@ -184,6 +84,7 @@ export function OnThisDay() {
             value={randomDate}
             onChange={date => {
               randomDateCat.set(date);
+              fetchNotesForDate(date);
             }}
           />
         </Flex>
@@ -202,4 +103,104 @@ export function OnThisDay() {
       )}
     </>
   );
+}
+
+function parseStartTime(startTime) {
+  return startTime ? getUTCTimeNumber(startOfDay(new Date(startTime))) : null;
+}
+function parseEndTime(endTime) {
+  return endTime ? getUTCTimeNumber(endOfDay(new Date(endTime))) : null;
+}
+function getTabs(createdAt) {
+  if (!createdAt) {
+    return [];
+  }
+
+  const lastWeek = subDays(new Date(), 7);
+  const tabs = [
+    {
+      label: 'Last week',
+      value: formatDate(lastWeek),
+      date: lastWeek,
+    },
+  ];
+
+  const months = differenceInMonths(new Date(), new Date(createdAt));
+  if (months >= 1) {
+    const lastMonth = subMonths(new Date(), 1);
+    tabs.push({
+      label: 'Last month',
+      value: formatDate(lastMonth),
+      date: lastMonth,
+    });
+  }
+  if (months >= 3) {
+    const threeMonths = subMonths(new Date(), 3);
+    tabs.push({
+      label: '3 months ago',
+      value: formatDate(threeMonths),
+      date: threeMonths,
+    });
+  }
+  if (months >= 6) {
+    const sixMonths = subMonths(new Date(), 6);
+    tabs.push({
+      label: '6 months ago',
+      value: formatDate(sixMonths),
+      date: sixMonths,
+    });
+  }
+
+  const years = differenceInYears(new Date(), new Date(createdAt));
+  if (years >= 1) {
+    Array(years)
+      .fill(0)
+      .forEach((_, i) => {
+        const yearDate = subYears(new Date(), i + 1);
+        tabs.push({
+          label: `${i + 1} year(s) ago`,
+          value: formatDate(yearDate),
+          date: yearDate,
+        });
+      });
+  }
+
+  let randomDate = randomDateCat.get();
+  if (!randomDate) {
+    randomDate = getRandomDate(createdAt);
+    randomDateCat.set(randomDate);
+  }
+
+  tabs.push({
+    label: 'Random',
+    value: 'random',
+    date: randomDate,
+  });
+
+  return tabs;
+}
+function getRandomDate(createdAt) {
+  if (!createdAt) {
+    return new Date();
+  }
+
+  const createdDays = differenceInCalendarDays(new Date(), new Date(createdAt));
+  const randomDays = randomBetween(0, createdDays);
+  return addDays(new Date(createdAt), randomDays);
+}
+
+async function fetchNotes(tabs) {
+  await asyncForEach(tabs, async tabObj => {
+    await fetchNotesForDate(tabObj.date);
+  });
+}
+async function fetchNotesForDate(date) {
+  await fetchOnThisDayNotesEffect(formatDate(date), parseStartTime(date), parseEndTime(date));
+}
+function getTabNotes(notes, tab, randomDate) {
+  if (tab === 'random') {
+    const date = formatDate(randomDate || new Date());
+    return notes[date] || [];
+  }
+  return notes[tab] || [];
 }
