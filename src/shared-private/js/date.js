@@ -1,7 +1,5 @@
 import {
   differenceInCalendarDays,
-  differenceInCalendarMonths,
-  differenceInCalendarYears,
   differenceInDays,
   differenceInMonths,
   differenceInYears,
@@ -71,8 +69,8 @@ export function formatDateDifference(startDate, endDate) {
 export function getAgo(date) {
   const dateObject = new Date(date);
   const now = new Date();
-  const years = differenceInCalendarYears(now, dateObject);
-  const months = differenceInCalendarMonths(now, dateObject) % 12;
+  const years = differenceInYears(now, dateObject);
+  const months = differenceInMonths(now, dateObject) % 12;
   const adjustedStartDate = new Date(dateObject);
   adjustedStartDate.setFullYear(adjustedStartDate.getFullYear() + years);
   adjustedStartDate.setMonth(adjustedStartDate.getMonth() + months);

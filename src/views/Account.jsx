@@ -34,14 +34,6 @@ export function Account() {
         <>
           <ItemsWrapper align="start">
             <DataList.Root>
-              {!!account?.username && (
-                <DataList.Item>
-                  <DataList.Label minWidth="88px">Username</DataList.Label>
-                  <DataList.Value>
-                    <Text size="3">{account.username}</Text>
-                  </DataList.Value>
-                </DataList.Item>
-              )}
               <DataList.Item>
                 <DataList.Label minWidth="88px">Email</DataList.Label>
                 <DataList.Value>
@@ -90,7 +82,7 @@ export function Account() {
               </DataList.Item>
 
               <DataList.Item>
-                <DataList.Label minWidth="88px">Original files size</DataList.Label>
+                <DataList.Label minWidth="88px">Files size</DataList.Label>
                 <DataList.Value>
                   <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
                 </DataList.Value>
