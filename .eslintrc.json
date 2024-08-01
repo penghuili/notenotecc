@@ -21,6 +21,7 @@
   "rules": {
     "react/prop-types": 0,
     "react/no-unescaped-entities": 0,
-    "react-compiler/react-compiler": "error"
+    "react-compiler/react-compiler": "error",
+    "react/display-name": 0
   }
 }

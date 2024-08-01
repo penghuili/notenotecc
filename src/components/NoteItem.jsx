@@ -14,7 +14,7 @@ const Description = styled.pre`
   font-family: var(--default-font-family);
 `;
 
-export function NoteItem({ note, albums }) {
+export const NoteItem = React.memo(({ note, albums }) => {
   const dateTime = useMemo(() => {
     const dt = formatDateWeekTime(note.createdAt);
     const ago = getAgo(new Date(note.createdAt));
@@ -50,4 +50,4 @@ export function NoteItem({ note, albums }) {
       )}
     </Box>
   );
-}
+});

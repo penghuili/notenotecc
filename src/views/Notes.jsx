@@ -1,6 +1,6 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
@@ -19,9 +19,26 @@ export function Notes() {
   const { items: notes, startKey, hasMore } = useCat(notesCat);
   const albumsObject = useAlbumsObject();
 
+  const albumsForNotes = useRef({});
+
   useEffect(() => {
     fetchNotesEffect();
   }, []);
+
+  function getNoteAlbums(note) {
+    const key = note?.albumIds?.map(a => a.albumId).join('-');
+    if (!key) {
+      return [];
+    }
+
+    if (!albumsForNotes.current[key]) {
+      const noteAlbums = note.albumIds.map(a => albumsObject[a.albumId]).filter(Boolean);
+      albumsForNotes.current[key] = noteAlbums;
+      return noteAlbums;
+    }
+
+    return albumsForNotes.current[key];
+  }
 
   return (
     <>
@@ -58,13 +75,7 @@ export function Notes() {
       />
 
       {!!notes?.length &&
-        notes.map(note => (
-          <NoteItem
-            key={note.sortKey}
-            note={note}
-            albums={note?.albumIds?.map(a => albumsObject[a.albumId])?.filter(Boolean)}
-          />
-        ))}
+        notes.map(note => <NoteItem key={note.sortKey} note={note} albums={getNoteAlbums(note)} />)}
 
       {hasMore && (
         <FormButton onClick={() => fetchNotesEffect(startKey, true)} disabled={isLoading}>

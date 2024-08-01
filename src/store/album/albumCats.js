@@ -11,7 +11,8 @@ export const isDeletingAlbumCat = createCat(false);
 
 export function useAlbumsObject() {
   const albums = useCat(albumsCat);
-  return arrayToObject(albums, 'sortKey');
+  const obj = useMemo(() => arrayToObject(albums, 'sortKey'), [albums]);
+  return obj;
 }
 
 export function useAlbum(albumId) {
