@@ -1,4 +1,3 @@
-import MillionLint from '@million/lint';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
@@ -14,7 +13,6 @@ export default defineConfig(({ mode }) => {
     plugins:
       mode === 'production'
         ? [
-            MillionLint.vite(),
             react({
               babel: {
                 plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
@@ -23,7 +21,6 @@ export default defineConfig(({ mode }) => {
             timestampPlugin(env),
           ]
         : [
-            MillionLint.vite(),
             react({
               babel: {
                 plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],

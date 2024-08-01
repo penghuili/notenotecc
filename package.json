@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@million/lint": "^1.0.0-rc.84",
     "@radix-ui/themes": "3.0.5",
     "@remixicon/react": "4.2.0",
     "copy-to-clipboard": "3.3.3",
@@ -29,12 +28,12 @@
   "devDependencies": {
     "@craco/craco": "7.1.0",
     "@vitejs/plugin-react": "4.3.1",
-    "babel-plugin-react-compiler": "^0.0.0-experimental-334f00b-20240725",
+    "babel-plugin-react-compiler": "0.0.0-experimental-334f00b-20240725",
     "dotenv": "16.4.5",
     "eslint": "8.57.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-react": "7.34.2",
-    "eslint-plugin-react-compiler": "0.0.0-experimental-0998c1e-20240625",
+    "eslint-plugin-react-compiler": "0.0.0-experimental-9ed098e-20240725",
     "eslint-plugin-react-hooks": "4.6.2",
     "prettier": "3.3.1",
     "rollup-plugin-visualizer": "5.12.0",

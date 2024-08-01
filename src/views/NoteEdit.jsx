@@ -64,7 +64,7 @@ export function NoteEdit() {
             disabled={(!images?.length && !note) || isUpdating}
             onClick={() => {
               updateNoteEffect(noteId, {
-                encryptedPassword: noteItem.encryptedPassword,
+                encryptedPassword: noteItem?.encryptedPassword,
                 note,
                 albumDescription: newAlbumDescription || null,
                 albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,

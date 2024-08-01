@@ -5,7 +5,6 @@ import {
 } from '../../shared-private/react/store/sharedEffects';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsCat } from '../album/albumItemCats';
-import { decryptNote } from '../album/albumNetwork';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -86,8 +85,7 @@ export async function fetchNoteEffect(noteId) {
 
   const cachedNote = await noteCache.getCachedItem(noteId);
   if (cachedNote?.sortKey === noteId) {
-    const decrypted = await decryptNote(cachedNote);
-    noteCat.set(decrypted);
+    noteCat.set(cachedNote);
   }
 
   isLoadingNoteCat.set(true);
