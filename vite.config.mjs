@@ -1,14 +1,35 @@
+import MillionLint from '@million/lint';
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 
 import { timestampPlugin } from './vite/viteTimestampPlugin';
 
+const ReactCompilerConfig = {};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    plugins: mode === 'production' ? [react(), timestampPlugin(env)] : [react()],
+    plugins:
+      mode === 'production'
+        ? [
+            MillionLint.vite(),
+            react({
+              babel: {
+                plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+              },
+            }),
+            timestampPlugin(env),
+          ]
+        : [
+            MillionLint.vite(),
+            react({
+              babel: {
+                plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+              },
+            }),
+          ],
     server: {
       port: 3000,
       open: false,

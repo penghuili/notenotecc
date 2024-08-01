@@ -6,6 +6,13 @@ import { InputField } from '../shared-private/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 
+const titleStyle = { userSelect: 'none' };
+const checkboxRootStyle = {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: '0.75rem',
+};
+
 export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKeys, onSelect }) {
   const albums = useCat(albumsCat);
 
@@ -15,7 +22,7 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
 
   return (
     <div>
-      <Text style={{ userSelect: 'none' }}>Albums</Text>
+      <Text style={titleStyle}>Albums</Text>
 
       <Box p="1.5px">
         <InputField placeholder="New album name" value={newAlbum} onChange={onNewAlbumChange} />
@@ -28,15 +35,11 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
             name="album"
             value={selectedAlbumSortKeys}
             onValueChange={onSelect}
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-            }}
+            style={checkboxRootStyle}
           >
             {albums.map(album => (
               <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
-                <Text style={{ userSelect: 'none' }}>{album.title}</Text>
+                <Text style={titleStyle}>{album.title}</Text>
               </CheckboxGroup.Item>
             ))}
           </CheckboxGroup.Root>

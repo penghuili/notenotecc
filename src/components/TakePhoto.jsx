@@ -1,6 +1,6 @@
 import { Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { canvasToBlob } from '../shared-private/react/canvasToBlob';
@@ -131,6 +131,12 @@ export function TakePhoto({ onSelect }) {
     onSelect({ blob, url: imageUrl, size: blob.size, type: 'image/webp' });
   }
 
+  const handleChangeFacingMode = useCallback(() => {
+    const mode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(mode);
+    requestCameraPermission(mode);
+  }, [facingMode]);
+
   const size = getCameraSize();
 
   return (
@@ -144,14 +150,7 @@ export function TakePhoto({ onSelect }) {
           <RiCameraLine />
         </IconButton>
 
-        <IconButton
-          size="4"
-          onClick={() => {
-            const mode = facingMode === 'user' ? 'environment' : 'user';
-            setFacingMode(mode);
-            requestCameraPermission(mode);
-          }}
-        >
+        <IconButton size="4" onClick={handleChangeFacingMode}>
           <RiRefreshLine />
         </IconButton>
       </Flex>
