@@ -1,12 +1,6 @@
 import { orderByPosition } from '../../shared-private/js/position';
-import {
-  eventEmitter,
-  eventEmitterEvents,
-} from '../../shared-private/react/eventEmitter';
-import {
-  goBackEffect,
-  setToastEffect,
-} from '../../shared-private/react/store/sharedEffects';
+import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
+import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import {
   albumsCat,
   isCreatingAlbumCat,
@@ -14,13 +8,7 @@ import {
   isLoadingAlbumsCat,
   isUpdatingAlbumCat,
 } from './albumCats';
-import {
-  albumCache,
-  createAlbum,
-  deleteAlbum,
-  fetchAlbums,
-  updateAlbum,
-} from './albumNetwork';
+import { albumCache, createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
 
 export async function fetchAlbumsEffect(force) {
   const albumsInStore = albumsCat.get();
@@ -48,7 +36,7 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
 
   const { data } = await createAlbum({ title });
   if (data) {
-    albumsCat.set([data, ...albumsCat.get()]);
+    albumsCat.set([...albumsCat.get(), data]);
 
     setToastEffect('Encrypted and created!');
 
