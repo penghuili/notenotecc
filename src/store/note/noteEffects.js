@@ -1,3 +1,5 @@
+import { LocalStorage } from '../../shared-private/react/LocalStorage';
+import { settingsCat } from '../../shared-private/react/store/sharedCats';
 import {
   fetchSettingsEffect,
   goBackEffect,
@@ -30,24 +32,28 @@ import {
   updateNote,
 } from './noteNetwork';
 
+const notesChangedAtKey = 'notenote-notesChangedAt';
+
 export async function fetchNotesEffect(startKey, force) {
   const notesInState = notesCat.get();
   if (notesInState?.items?.length && !force) {
     return;
   }
 
-  isLoadingNotesCat.set(true);
-
+  const settings = settingsCat.get();
   if (!startKey) {
     const cachedNotes = await noteCache.getCachedItems();
-    if (cachedNotes?.length) {
-      notesCat.set({
-        items: cachedNotes,
-        startKey: null,
-        hasMore: cachedNotes.length >= 20,
-      });
+    if (cachedNotes?.items?.length) {
+      notesCat.set(cachedNotes);
+
+      const lastChangedAt = LocalStorage.get(notesChangedAtKey);
+      if (lastChangedAt && settings?.notesChangedAt <= lastChangedAt) {
+        return;
+      }
     }
   }
+
+  isLoadingNotesCat.set(true);
 
   const { data } = await fetchNotes(startKey);
   if (data) {
@@ -56,6 +62,8 @@ export async function fetchNotesEffect(startKey, force) {
       startKey: data.startKey,
       hasMore: data.hasMore,
     });
+
+    LocalStorage.set(notesChangedAtKey, Date.now());
   }
 
   isLoadingNotesCat.set(false);

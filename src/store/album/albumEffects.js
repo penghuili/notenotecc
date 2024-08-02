@@ -1,5 +1,7 @@
 import { orderByPosition } from '../../shared-private/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
+import { LocalStorage } from '../../shared-private/react/LocalStorage';
+import { settingsCat } from '../../shared-private/react/store/sharedCats';
 import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import {
   albumsCat,
@@ -10,15 +12,23 @@ import {
 } from './albumCats';
 import { albumCache, createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
 
+const albumsChangedAtKey = 'notenote-albumsChangedAt';
+
 export async function fetchAlbumsEffect(force) {
   const albumsInStore = albumsCat.get();
   if (albumsInStore?.length && !force) {
     return;
   }
 
+  const settings = settingsCat.get();
   const cachedAlbums = await albumCache.getCachedItems();
   if (cachedAlbums?.length) {
     albumsCat.set(cachedAlbums);
+
+    const lastChangedAt = LocalStorage.get(albumsChangedAtKey);
+    if (lastChangedAt && settings?.albumsChangedAt <= lastChangedAt) {
+      return;
+    }
   }
 
   isLoadingAlbumsCat.set(true);
@@ -26,6 +36,8 @@ export async function fetchAlbumsEffect(force) {
   const { data } = await fetchAlbums();
   if (data) {
     albumsCat.set(data.items);
+
+    LocalStorage.set(albumsChangedAtKey, settings?.albumsChangedAt);
   }
 
   isLoadingAlbumsCat.set(false);
@@ -104,4 +116,4 @@ export async function deleteAlbumEffect(albumId, { onSucceeded, goBack }) {
   isDeletingAlbumCat.set(false);
 }
 
-eventEmitter.on(eventEmitterEvents.loggedIn, () => fetchAlbumsEffect());
+eventEmitter.on(eventEmitterEvents.settingsFetched, () => fetchAlbumsEffect());

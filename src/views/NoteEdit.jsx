@@ -1,6 +1,6 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCat } from 'usecat';
 import { useParams } from 'wouter';
 
@@ -8,6 +8,7 @@ import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
+import { useWhyDidYouUpdate } from '../lib/useWhyDidYouChange.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
@@ -29,14 +30,21 @@ export function NoteEdit() {
 
   const [images, setImages] = useState([]);
   const [note, setNote] = useState('');
+  const [currentSelectedKeys, setCurrentSelectedKeys] = useState('');
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
 
   const [showCamera, setShowCamera] = useState(false);
 
+  useWhyDidYouUpdate('selectedAlbumSortKeys', selectedAlbumSortKeys);
+
   useEffect(() => {
     scrollToTop();
   }, []);
+
+  useEffect(() => {
+    fetchNoteEffect(noteId);
+  }, [noteId]);
 
   useEffect(() => {
     if (!noteItem) {
@@ -45,12 +53,18 @@ export function NoteEdit() {
 
     setImages(noteItem.images || []);
     setNote(noteItem.note || '');
-    setSelectedAlbumSortKeys((noteItem.albumIds || []).map(a => a.albumId));
+    setCurrentSelectedKeys((noteItem.albumIds || []).map(a => a.albumId).join('/'));
   }, [noteItem]);
 
-  useEffect(() => {
-    fetchNoteEffect(noteId);
-  }, [noteId]);
+  const handleAlbumChange = useCallback(({ newAlbum, selectedKeys }) => {
+    if (newAlbum !== undefined) {
+      setNewAlbumDescription(newAlbum);
+    }
+
+    if (selectedKeys !== undefined) {
+      setSelectedAlbumSortKeys(selectedKeys);
+    }
+  }, []);
 
   return (
     <>
@@ -67,7 +81,7 @@ export function NoteEdit() {
                 encryptedPassword: noteItem?.encryptedPassword,
                 note,
                 albumDescription: newAlbumDescription || null,
-                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : null,
+                albumIds: selectedAlbumSortKeys,
                 goBack: false,
                 onSucceeded: () => {
                   setNewAlbumDescription('');
@@ -88,12 +102,7 @@ export function NoteEdit() {
       <ItemsWrapper>
         <AreaField autofocus value={note} onChange={setNote} />
 
-        <AlbumsSelector
-          selectedAlbumSortKeys={selectedAlbumSortKeys}
-          onSelect={setSelectedAlbumSortKeys}
-          newAlbum={newAlbumDescription}
-          onNewAlbumChange={setNewAlbumDescription}
-        />
+        <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumChange} />
       </ItemsWrapper>
 
       <ImageCarousel

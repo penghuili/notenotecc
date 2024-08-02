@@ -14,6 +14,10 @@ export function createItemsCache(prefix) {
       const key = value.getCacheItemsKey();
       await idbStorage.setItem(key, items);
     },
+    deleteCachedItems: async () => {
+      const key = value.getCacheItemsKey();
+      await idbStorage.removeItem(key);
+    },
     getCacheItemKey: itemId => {
       return `${prefix}-item-cache-${itemId}`;
     },
@@ -25,10 +29,6 @@ export function createItemsCache(prefix) {
       const key = value.getCacheItemKey(itemId);
       const item = await idbStorage.getItem(key);
       return item;
-    },
-    deleteCachedItems: async () => {
-      const key = value.getCacheItemsKey();
-      await idbStorage.removeItem(key);
     },
     deleteCachedItem: async itemId => {
       const key = value.getCacheItemKey(itemId);

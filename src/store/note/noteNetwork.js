@@ -35,14 +35,16 @@ export async function fetchNotes(startKey, startTime, endTime) {
 
     const decrypted = await Promise.all(items.map(note => decryptNote(note)));
 
+    const data = {
+      items: decrypted,
+      startKey: newStartKey,
+      hasMore: items.length >= limit,
+    };
     if (!startKey && !startTime && !endTime) {
-      await noteCache.cacheItems(decrypted);
+      await noteCache.cacheItems(data);
     }
 
-    return {
-      data: { items: decrypted, startKey: newStartKey, hasMore: items.length >= limit },
-      error: null,
-    };
+    return { data, error: null };
   } catch (error) {
     return { data: null, error };
   }
@@ -277,7 +279,11 @@ export async function deleteNote(noteId) {
 async function updateCache(note, type) {
   const cachedItems = (await noteCache.getCachedItems()) || [];
 
-  let newItems = cachedItems;
+  let newItems = cachedItems?.items;
+  if (!newItems) {
+    return;
+  }
+
   if (type === 'update') {
     newItems = cachedItems.map(item => (item.sortKey === note.sortKey ? note : item));
   } else if (type === 'delete') {
@@ -286,7 +292,7 @@ async function updateCache(note, type) {
     newItems = [note, ...cachedItems];
   }
 
-  await noteCache.cacheItems(newItems);
+  await noteCache.cacheItems({ ...cachedItems, items: newItems });
 }
 
 export async function encryptBlob(password, blob) {

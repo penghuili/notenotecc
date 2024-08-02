@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -33,6 +33,16 @@ export function NoteAdd() {
     ].includes(cameraType)
   );
 
+  const handleAlbumChange = useCallback(({ newAlbum, selectedKeys }) => {
+    if (newAlbum !== undefined) {
+      setNewAlbumDescription(newAlbum);
+    }
+
+    if (selectedKeys !== undefined) {
+      setSelectedAlbumSortKeys(selectedKeys);
+    }
+  }, []);
+
   return (
     <>
       <PageHeader
@@ -48,7 +58,7 @@ export function NoteAdd() {
                 note,
                 images,
                 albumDescription: newAlbumDescription || undefined,
-                albumIds: selectedAlbumSortKeys?.length ? selectedAlbumSortKeys : undefined,
+                albumIds: selectedAlbumSortKeys,
                 goBack: false,
                 onSucceeded: () => {
                   setImages([]);
@@ -81,12 +91,7 @@ export function NoteAdd() {
         </IconButton>
         <AreaField autofocus={!cameraType} value={note} onChange={setNote} />
 
-        <AlbumsSelector
-          selectedAlbumSortKeys={selectedAlbumSortKeys}
-          onSelect={setSelectedAlbumSortKeys}
-          newAlbum={newAlbumDescription}
-          onNewAlbumChange={setNewAlbumDescription}
-        />
+        <AlbumsSelector onSelect={handleAlbumChange} />
       </ItemsWrapper>
 
       {showCamera && (

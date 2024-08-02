@@ -1,10 +1,10 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useCat } from 'usecat';
 
+import { checkRerender } from '../lib/checkRerender.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
-import { fetchAlbumsEffect } from '../store/album/albumEffects';
 
 const titleStyle = { userSelect: 'none' };
 const checkboxRootStyle = {
@@ -13,19 +13,39 @@ const checkboxRootStyle = {
   gap: '0.75rem',
 };
 
-export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKeys, onSelect }) {
+export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => {
+  checkRerender('AlbumsSelector');
+
+  const [newAlbum, setNewAlbum] = useState('');
+  const [selectedKeys, setSelectedKeys] = useState([]);
+
   const albums = useCat(albumsCat);
 
+  const handleNewAlbumChange = useCallback(
+    value => {
+      setNewAlbum(value);
+      onChange({ newAlbum: value });
+    },
+    [onChange]
+  );
+  const handleSelectedKeysChange = useCallback(
+    value => {
+      setSelectedKeys(value);
+      onChange({ selectedKeys: value });
+    },
+    [onChange]
+  );
+
   useEffect(() => {
-    fetchAlbumsEffect();
-  }, []);
+    setSelectedKeys((currentSelectedKeys || '').split('/'));
+  }, [currentSelectedKeys]);
 
   return (
     <div>
       <Text style={titleStyle}>Albums</Text>
 
       <Box p="1.5px">
-        <InputField placeholder="New album name" value={newAlbum} onChange={onNewAlbumChange} />
+        <InputField placeholder="New album name" value={newAlbum} onChange={handleNewAlbumChange} />
       </Box>
 
       {!!albums?.length && (
@@ -33,8 +53,8 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
           <Text>Existing albums</Text>
           <CheckboxGroup.Root
             name="album"
-            value={selectedAlbumSortKeys}
-            onValueChange={onSelect}
+            value={selectedKeys}
+            onValueChange={handleSelectedKeysChange}
             style={checkboxRootStyle}
           >
             {albums.map(album => (
@@ -47,4 +67,4 @@ export function AlbumsSelector({ newAlbum, onNewAlbumChange, selectedAlbumSortKe
       )}
     </div>
   );
-}
+});

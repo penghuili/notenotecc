@@ -1,6 +1,6 @@
 import { Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useCat } from 'usecat';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
@@ -10,21 +10,13 @@ import { RouteLink } from '../shared-private/react/RouteLink.jsx';
 import { userCat } from '../shared-private/react/store/sharedCats.js';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
-import {
-  deleteAlbumEffect,
-  fetchAlbumsEffect,
-  updateAlbumEffect,
-} from '../store/album/albumEffects';
+import { deleteAlbumEffect, updateAlbumEffect } from '../store/album/albumEffects';
 
 export function Albums() {
   const isLoading = useCat(isLoadingAlbumsCat);
   const isDeleting = useCat(isDeletingAlbumCat);
   const albums = useCat(albumsCat);
   const account = useCat(userCat);
-
-  useEffect(() => {
-    fetchAlbumsEffect();
-  }, []);
 
   const noalbumSortKey = `album_noalbum_${account?.id}`;
   return (
