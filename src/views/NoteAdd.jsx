@@ -11,7 +11,7 @@ import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { getQueryParams } from '../shared-private/react/routeHelpers';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { goBackEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';
 
@@ -23,7 +23,6 @@ export function NoteAdd() {
   const [note, setNote] = useState('');
   const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
-
   const [showCamera, setShowCamera] = useState(
     [
       cameraTypes.takePhoto,
@@ -41,6 +40,25 @@ export function NoteAdd() {
     if (selectedKeys !== undefined) {
       setSelectedAlbumSortKeys(selectedKeys);
     }
+  }, []);
+
+  const handleDeleteLocalImage = useCallback(
+    image => {
+      setImages(images.filter(i => i.url !== image.url));
+    },
+    [images]
+  );
+
+  const handleAddImages = useCallback(
+    newImages => {
+      setImages([...images, ...newImages]);
+      setShowCamera(false);
+    },
+    [images]
+  );
+
+  const handleCloseCamera = useCallback(() => {
+    goBackEffect();
   }, []);
 
   return (
@@ -78,10 +96,7 @@ export function NoteAdd() {
 
       {!!images?.length && (
         <Box mb="2">
-          <ImageCarousel
-            images={images}
-            onDeleteLocal={image => setImages(images.filter(i => i.url !== image.url))}
-          />
+          <ImageCarousel images={images} onDeleteLocal={handleDeleteLocalImage} />
         </Box>
       )}
 
@@ -95,14 +110,7 @@ export function NoteAdd() {
       </ItemsWrapper>
 
       {showCamera && (
-        <Camera
-          type={cameraType}
-          onSelect={newImages => {
-            setImages([...images, ...newImages]);
-            setShowCamera(false);
-          }}
-          onClose={() => setShowCamera(false)}
-        />
+        <Camera type={cameraType} onSelect={handleAddImages} onClose={handleCloseCamera} />
       )}
     </>
   );

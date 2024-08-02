@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { isMobile } from '../shared-private/react/device';
 import { Image } from './Image.jsx';
 
-export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal }) {
+export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDeleteLocal }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
@@ -17,7 +17,7 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
     [currentIndex, images.length]
   );
 
-  const nextSlide = useCallback(() => {
+  const handleNextSlide = useCallback(() => {
     if (isTransitioning) {
       return;
     }
@@ -25,7 +25,7 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
     setCurrentIndex(prevIndex => (prevIndex + 1) % images.length);
   }, [images.length, isTransitioning]);
 
-  const prevSlide = useCallback(() => {
+  const handlePrevSlide = useCallback(() => {
     if (isTransitioning) {
       return;
     }
@@ -33,60 +33,69 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
     setCurrentIndex(prevIndex => (prevIndex - 1 + images.length) % images.length);
   }, [images.length, isTransitioning]);
 
-  const handleTouchStart = e => {
+  const handleTouchStart = useCallback(e => {
     setTouchStart(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchMove = e => {
+  const handleTouchMove = useCallback(e => {
     setTouchEnd(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStart || !touchEnd) {
+      return;
+    }
+
     const distance = touchStart - touchEnd;
     const minSwipeDistance = 50;
     if (distance > minSwipeDistance) {
-      nextSlide();
+      handleNextSlide();
     } else if (distance < -minSwipeDistance) {
-      prevSlide();
+      handlePrevSlide();
     }
     setTouchStart(0);
     setTouchEnd(0);
-  };
+  }, [handleNextSlide, handlePrevSlide, touchEnd, touchStart]);
 
-  const handleMouseDown = e => {
+  const handleMouseDown = useCallback(e => {
     setTouchStart(e.clientX);
-  };
+  }, []);
 
-  const handleMouseMove = e => {
-    if (!touchStart) return;
-    setTouchEnd(e.clientX);
-  };
+  const handleMouseMove = useCallback(
+    e => {
+      if (!touchStart) return;
+      setTouchEnd(e.clientX);
+    },
+    [touchStart]
+  );
 
-  const handleMouseUp = () => {
-    if (!touchStart || !touchEnd) return;
+  const handleMouseUp = useCallback(() => {
+    if (!touchStart || !touchEnd) {
+      return;
+    }
+
     const distance = touchStart - touchEnd;
     const minSwipeDistance = 50;
     if (distance > minSwipeDistance) {
-      nextSlide();
+      handleNextSlide();
     } else if (distance < -minSwipeDistance) {
-      prevSlide();
+      handlePrevSlide();
     }
     setTouchStart(0);
     setTouchEnd(0);
-  };
+  }, [handleNextSlide, handlePrevSlide, touchEnd, touchStart]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setTouchStart(0);
     setTouchEnd(0);
-  };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = event => {
       if (event.key === 'ArrowLeft') {
-        prevSlide();
+        handlePrevSlide();
       } else if (event.key === 'ArrowRight') {
-        nextSlide();
+        handleNextSlide();
       }
     };
 
@@ -94,7 +103,7 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [nextSlide, prevSlide]);
+  }, [handleNextSlide, handlePrevSlide]);
 
   if (!images?.length) {
     return null;
@@ -155,10 +164,10 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
         <>
           {!isMobile() && (
             <>
-              <button className="carousel-button prev" onClick={prevSlide}>
+              <button className="carousel-button prev" onClick={handlePrevSlide}>
                 &#10094;
               </button>
-              <button className="carousel-button next" onClick={nextSlide}>
+              <button className="carousel-button next" onClick={handleNextSlide}>
                 &#10095;
               </button>
             </>
@@ -170,4 +179,4 @@ export function ImageCarousel({ noteId, encryptedPassword, images, onDeleteLocal
       )}
     </div>
   );
-}
+});

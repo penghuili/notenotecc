@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useCat } from 'usecat';
 import { useParams } from 'wouter';
 
+import { scrollToTop } from '../lib/scrollToTop.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
@@ -15,6 +16,10 @@ export function AlbumEdit() {
   const album = useAlbum(albumId);
 
   const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    scrollToTop();
+  }, []);
 
   useEffect(() => {
     if (!album) {

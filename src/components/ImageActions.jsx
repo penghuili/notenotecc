@@ -10,7 +10,7 @@ import { getFileSizeString } from '../shared-private/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
-export function ImageActions({ noteId, image, onDeleteLocal }) {
+export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
   const isDeleting = useCat(isDeletingImageCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -81,4 +81,4 @@ export function ImageActions({ noteId, image, onDeleteLocal }) {
       />
     </>
   );
-}
+});

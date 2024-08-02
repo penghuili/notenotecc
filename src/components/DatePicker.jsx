@@ -1,13 +1,15 @@
-import { Button } from '@radix-ui/themes/dist/cjs/index.js';
-import {
-  RiArrowLeftSLine,
-  RiArrowRightSLine,
-  RiCalendarLine,
-} from '@remixicon/react';
-import React, { useEffect, useState } from 'react';
+import { Button } from '@radix-ui/themes';
+import { RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine } from '@remixicon/react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-export const DatePicker = ({ value, onChange }) => {
+const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+const startOfMonth = (year, month) => {
+  const start = new Date(year, month, 1).getDay();
+  return start === 0 ? 6 : start - 1; // Adjust to make Monday 0 and Sunday 6
+};
+
+export const DatePicker = React.memo(({ value, onChange }) => {
   const [selectedDate, setSelectedDate] = useState(value || new Date());
   const [viewDate, setViewDate] = useState(value || new Date());
   const [viewMode, setViewMode] = useState('days'); // 'days', 'months', 'years'
@@ -19,34 +21,57 @@ export const DatePicker = ({ value, onChange }) => {
     }
   }, [value]);
 
-  const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-  const startOfMonth = (year, month) => {
-    const start = new Date(year, month, 1).getDay();
-    return start === 0 ? 6 : start - 1; // Adjust to make Monday 0 and Sunday 6
-  };
+  const handleDateClick = useCallback(
+    day => {
+      const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+      setSelectedDate(newDate);
+      onChange(newDate);
+    },
+    [onChange, viewDate]
+  );
 
-  const handleDateClick = day => {
-    const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
-    setSelectedDate(newDate);
-    onChange(newDate);
-  };
+  const handleMonthClick = useCallback(
+    month => {
+      setViewDate(new Date(viewDate.getFullYear(), month, 1));
+      setViewMode('days');
+    },
+    [viewDate]
+  );
 
-  const handleMonthClick = month => {
-    setViewDate(new Date(viewDate.getFullYear(), month, 1));
-    setViewMode('days');
-  };
+  const handleYearClick = useCallback(
+    year => {
+      setViewDate(new Date(year, viewDate.getMonth(), 1));
+      setViewMode('months');
+    },
+    [viewDate]
+  );
 
-  const handleYearClick = year => {
-    setViewDate(new Date(year, viewDate.getMonth(), 1));
-    setViewMode('months');
-  };
+  const handleNavigatePrev = useCallback(() => {
+    if (viewMode === 'days') {
+      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+    } else if (viewMode === 'months') {
+      setViewDate(new Date(viewDate.getFullYear() - 1, viewDate.getMonth(), 1));
+    } else {
+      setViewDate(new Date(viewDate.getFullYear() - 12, viewDate.getMonth(), 1));
+    }
+  }, [viewDate, viewMode]);
 
-  const renderWeekdays = () => {
+  const handleNavigateNext = useCallback(() => {
+    if (viewMode === 'days') {
+      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+    } else if (viewMode === 'months') {
+      setViewDate(new Date(viewDate.getFullYear() + 1, viewDate.getMonth(), 1));
+    } else {
+      setViewDate(new Date(viewDate.getFullYear() + 12, viewDate.getMonth(), 1));
+    }
+  }, [viewDate, viewMode]);
+
+  const weekDays = useMemo(() => {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return weekdays.map(day => <WeekdayLabel key={day}>{day}</WeekdayLabel>);
-  };
+  }, []);
 
-  const renderDays = () => {
+  const daysElements = useMemo(() => {
     const days = [];
     const daysCount = daysInMonth(viewDate.getFullYear(), viewDate.getMonth());
     const startDay = startOfMonth(viewDate.getFullYear(), viewDate.getMonth());
@@ -73,9 +98,9 @@ export const DatePicker = ({ value, onChange }) => {
     }
 
     return days;
-  };
+  }, [handleDateClick, selectedDate, viewDate]);
 
-  const renderMonths = () => {
+  const monthsElements = useMemo(() => {
     const months = [
       'Jan',
       'Feb',
@@ -100,9 +125,9 @@ export const DatePicker = ({ value, onChange }) => {
         {month}
       </Button>
     ));
-  };
+  }, [handleMonthClick]);
 
-  const renderYears = () => {
+  const yearsElements = useMemo(() => {
     const currentYear = viewDate.getFullYear();
     const years = [];
     for (let i = currentYear - 5; i <= currentYear + 6; i++) {
@@ -113,32 +138,12 @@ export const DatePicker = ({ value, onChange }) => {
       );
     }
     return years;
-  };
-
-  const navigatePrev = () => {
-    if (viewMode === 'days') {
-      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-    } else if (viewMode === 'months') {
-      setViewDate(new Date(viewDate.getFullYear() - 1, viewDate.getMonth(), 1));
-    } else {
-      setViewDate(new Date(viewDate.getFullYear() - 12, viewDate.getMonth(), 1));
-    }
-  };
-
-  const navigateNext = () => {
-    if (viewMode === 'days') {
-      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-    } else if (viewMode === 'months') {
-      setViewDate(new Date(viewDate.getFullYear() + 1, viewDate.getMonth(), 1));
-    } else {
-      setViewDate(new Date(viewDate.getFullYear() + 12, viewDate.getMonth(), 1));
-    }
-  };
+  }, [handleYearClick, viewDate]);
 
   return (
     <Wrapper>
       <Header>
-        <NavButton onClick={navigatePrev}>
+        <NavButton onClick={handleNavigatePrev}>
           <RiArrowLeftSLine />
         </NavButton>
         {viewMode === 'days' && (
@@ -162,23 +167,23 @@ export const DatePicker = ({ value, onChange }) => {
         >
           <RiCalendarLine />
         </HeaderTitle>
-        <NavButton onClick={navigateNext}>
+        <NavButton onClick={handleNavigateNext}>
           <RiArrowRightSLine />
         </NavButton>
       </Header>
       <Content>
         {viewMode === 'days' && (
           <>
-            {renderWeekdays()}
-            {renderDays()}
+            {weekDays}
+            {daysElements}
           </>
         )}
-        {viewMode === 'months' && renderMonths()}
-        {viewMode === 'years' && renderYears()}
+        {viewMode === 'months' && monthsElements}
+        {viewMode === 'years' && yearsElements}
       </Content>
     </Wrapper>
   );
-};
+});
 
 const Wrapper = styled.div`
   width: 330px;

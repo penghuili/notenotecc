@@ -285,11 +285,11 @@ async function updateCache(note, type) {
   }
 
   if (type === 'update') {
-    newItems = cachedItems.map(item => (item.sortKey === note.sortKey ? note : item));
+    newItems = newItems.map(item => (item.sortKey === note.sortKey ? note : item));
   } else if (type === 'delete') {
-    newItems = cachedItems.filter(item => item.sortKey !== note.sortKey);
+    newItems = newItems.filter(item => item.sortKey !== note.sortKey);
   } else if (type === 'create') {
-    newItems = [note, ...cachedItems];
+    newItems = [note, ...newItems];
   }
 
   await noteCache.cacheItems({ ...cachedItems, items: newItems });

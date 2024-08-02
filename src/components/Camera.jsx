@@ -9,7 +9,7 @@ import {
   RiSpeakLine,
   RiVideoOnLine,
 } from '@remixicon/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
@@ -33,10 +33,31 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
 `;
+const Top = styled(Flex)`
+  max-width: 600px;
+`;
 
-export function Camera({ type, onSelect, onClose }) {
+export const Camera = React.memo(({ type, onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
   const [images, setImages] = useState([]);
+
+  const handleSelect = useCallback(() => {
+    onSelect(images);
+  }, [images, onSelect]);
+
+  const handleAddNewImage = useCallback(
+    newImage => {
+      setImages([...images, newImage]);
+    },
+    [images]
+  );
+
+  const handleDeleteImage = useCallback(
+    image => {
+      setImages(images.filter(i => i.url !== image.url));
+    },
+    [images]
+  );
 
   useEffect(() => {
     disableBodyScroll();
@@ -48,52 +69,23 @@ export function Camera({ type, onSelect, onClose }) {
 
   return (
     <Wrapper>
-      <Flex justify="between" width="100%" p="2" style={{ maxWidth: '600px' }}>
+      <Top justify="between" width="100%" p="2">
         <IconButton variant="soft" onClick={onClose}>
           <RiCloseLine />
         </IconButton>
 
-        <IconButton
-          onClick={() => {
-            onSelect(images);
-          }}
-          disabled={!images?.length}
-        >
+        <IconButton onClick={handleSelect} disabled={!images?.length}>
           <RiCheckLine />
         </IconButton>
-      </Flex>
+      </Top>
 
-      {activeTab === cameraTypes.takePhoto && (
-        <TakePhoto
-          onSelect={value => {
-            setImages([...images, value]);
-          }}
-        />
-      )}
+      {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.takeVideo && (
-        <TakeVideo
-          onSelect={value => {
-            setImages([...images, value]);
-          }}
-        />
-      )}
+      {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.takeAudio && (
-        <TakeAudio
-          onSelect={value => {
-            setImages([...images, value]);
-          }}
-        />
-      )}
+      {activeTab === cameraTypes.takeAudio && <TakeAudio onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.pickPhoto && (
-        <PickPhoto
-          onSelect={value => {
-            setImages([...images, value]);
-          }}
-        />
-      )}
+      {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
 
       <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
         <Tabs.List>
@@ -112,17 +104,10 @@ export function Camera({ type, onSelect, onClose }) {
         </Tabs.List>
       </Tabs.Root>
 
-      {!!images?.length && (
-        <ImagesWrapper>
-          <ImagesPreview
-            images={images}
-            onDelete={item => setImages(images.filter(i => i.url !== item.url))}
-          />
-        </ImagesWrapper>
-      )}
+      {!!images?.length && <ImagesPreview images={images} onDelete={handleDeleteImage} />}
     </Wrapper>
   );
-}
+});
 
 const ImagesWrapper = styled.div`
   position: absolute;
@@ -148,6 +133,9 @@ const PreviewImage = styled.img`
   border: 1px solid #ddd;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+
+  transform: ${props => `translateX(${props.translateX}px)`};
+  z-index: ${props => `${props.zIndex}`};
 `;
 const PreviewVideo = styled.video`
   position: relative;
@@ -156,6 +144,9 @@ const PreviewVideo = styled.video`
   border: 1px solid #ddd;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+
+  transform: ${props => `translateX(${props.translateX}px)`};
+  z-index: ${props => `${props.zIndex}`};
 `;
 const AudioWrapper = styled.div`
   position: relative;
@@ -168,69 +159,41 @@ const AudioWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  transform: ${props => `translateX(${props.translateX}px)`};
+  z-index: ${props => `${props.zIndex}`};
 `;
 const PreviewAudio = styled.audio`
   width: 100%;
 `;
 
-function ImagesPreview({ images, onDelete }) {
+const ImagesPreview = React.memo(({ images, onDelete }) => {
   const [showImages, setShowImages] = useState(false);
   const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
+
+  const handleDeleteLocalImage = useCallback(
+    image => {
+      onDelete(image);
+    },
+    [onDelete]
+  );
+
+  const handleToggleImages = useCallback(() => {
+    setShowImages(!showImages);
+  }, [showImages]);
 
   if (!reversedImages.length) {
     return null;
   }
 
-  function renderMedia(item, translateX, zIndex) {
-    if (item.type === 'image/webp') {
-      return (
-        <PreviewImage
-          src={item.url}
-          style={{
-            transform: `translateX(${translateX}px)`,
-            zIndex: zIndex,
-          }}
-        />
-      );
-    }
-
-    if (item.type === 'video/webm') {
-      return (
-        <PreviewVideo
-          src={item.url}
-          controls
-          style={{
-            transform: `translateX(${translateX}px)`,
-            zIndex: zIndex,
-          }}
-        />
-      );
-    }
-
-    if (item.type === 'audio/webm') {
-      return (
-        <AudioWrapper
-          style={{
-            transform: `translateX(${translateX}px)`,
-            zIndex: zIndex,
-          }}
-        >
-          <PreviewAudio src={item.url} controls />
-        </AudioWrapper>
-      );
-    }
-
-    return null;
-  }
-
   return (
-    <>
-      <Button onClick={() => setShowImages(!showImages)} variant="ghost">
+    <ImagesWrapper>
+      <Button onClick={handleToggleImages} variant="ghost">
         {showImages ? <RiSkipDownLine /> : <RiSkipUpLine />} ({images.length})
       </Button>
 
       {showImages ? (
-        <ImageCarousel images={reversedImages} onDeleteLocal={image => onDelete(image)} />
+        <ImageCarousel images={reversedImages} onDeleteLocal={handleDeleteLocalImage} />
       ) : (
         <PreviewWrapper
           width={(reversedImages.length - 1) * 20 + 100}
@@ -239,10 +202,32 @@ function ImagesPreview({ images, onDelete }) {
           {reversedImages.map((image, index) => {
             const translateX = -index * 80;
             const zIndex = reversedImages.length - index;
-            return <div key={image.url}>{renderMedia(image, translateX, zIndex)}</div>;
+            return (
+              <PreviewItem key={image.url} image={image} translateX={translateX} zIndex={zIndex} />
+            );
           })}
         </PreviewWrapper>
       )}
-    </>
+    </ImagesWrapper>
   );
-}
+});
+
+const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
+  return (
+    <div>
+      {image.type === 'image/webp' && (
+        <PreviewImage src={image.url} translateX={translateX} zIndex={zIndex} />
+      )}
+
+      {image.type === 'video/webm' && (
+        <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
+      )}
+
+      {image.type === 'audio/webm' && (
+        <AudioWrapper translateX={translateX} zIndex={zIndex}>
+          <PreviewAudio src={image.url} controls />
+        </AudioWrapper>
+      )}
+    </div>
+  );
+});

@@ -1,20 +1,21 @@
 import React from 'react';
+import styled from 'styled-components';
 
-export function AudioPlayer({ src, hidden, onLoad }) {
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: ${props => (props.hidden ? 'none' : 'flex')};
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+`;
+
+export const AudioPlayer = React.memo(({ src, hidden, onLoad }) => {
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: hidden ? 'none' : 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '0.5rem',
-      }}
-    >
+    <Wrapper hidden={hidden}>
       <audio controls preload="metadata" onLoadedData={onLoad}>
         <source src={src} type="audio/webm" />
       </audio>
-    </div>
+    </Wrapper>
   );
-}
+});

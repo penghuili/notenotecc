@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
-import {
-  disableBodyScroll,
-  enableBodyScroll,
-} from '../shared-private/react/bodySccroll';
+import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
 import { fullScreenImageUrlCat } from '../store/note/noteCats';
 
 const FullScreenWrapper = styled.div`
@@ -21,8 +18,22 @@ const FullScreenWrapper = styled.div`
   align-items: center;
 `;
 
+const Img = styled.img`
+  width: ${props => `${props.size}px`};
+  height: ${props => `${props.size}px`};
+`;
+
 export function FullScreenImage() {
   const url = useCat(fullScreenImageUrlCat);
+
+  const size = useMemo(() => {
+    return Math.min(window.innerWidth, window.innerHeight, 900);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    fullScreenImageUrlCat.set(null);
+  }, []);
+
   useEffect(() => {
     if (url) {
       disableBodyScroll();
@@ -35,11 +46,9 @@ export function FullScreenImage() {
     return null;
   }
 
-  const size = Math.min(window.innerWidth, window.innerHeight, 900);
-
   return (
-    <FullScreenWrapper onClick={() => fullScreenImageUrlCat.set(null)}>
-      <img src={url} style={{ width: size, height: size }} onClick={e => e.stopPropagation()} />
+    <FullScreenWrapper onClick={handleClose}>
+      <Img src={url} size={size} onClick={e => e.stopPropagation()} />
     </FullScreenWrapper>
   );
 }

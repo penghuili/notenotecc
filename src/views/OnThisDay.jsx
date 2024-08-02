@@ -11,7 +11,7 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
@@ -43,6 +43,11 @@ export function OnThisDay() {
     () => getTabNotes(notes, activeTab, randomDate),
     [notes, activeTab, randomDate]
   );
+
+  const handleDatePickerChange = useCallback(date => {
+    randomDateCat.set(date);
+    fetchNotesForDate(date);
+  }, []);
 
   useEffect(() => {
     fetchNotes(tabs);
@@ -80,13 +85,7 @@ export function OnThisDay() {
           >
             <RiRefreshLine />
           </IconButton>
-          <DatePicker
-            value={randomDate}
-            onChange={date => {
-              randomDateCat.set(date);
-              fetchNotesForDate(date);
-            }}
-          />
+          <DatePicker value={randomDate} onChange={handleDatePickerChange} />
         </Flex>
       )}
 

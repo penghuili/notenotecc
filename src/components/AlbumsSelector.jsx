@@ -1,5 +1,5 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { checkRerender } from '../lib/checkRerender.js';
@@ -17,7 +17,7 @@ export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => 
   checkRerender('AlbumsSelector');
 
   const [newAlbum, setNewAlbum] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [selectedKeys, setSelectedKeys] = useState((currentSelectedKeys || '').split('/'));
 
   const albums = useCat(albumsCat);
 
@@ -35,10 +35,6 @@ export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => 
     },
     [onChange]
   );
-
-  useEffect(() => {
-    setSelectedKeys((currentSelectedKeys || '').split('/'));
-  }, [currentSelectedKeys]);
 
   return (
     <div>

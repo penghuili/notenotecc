@@ -8,7 +8,7 @@ import {
   RiPencilLine,
   RiStickyNoteAddLine,
 } from '@remixicon/react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
@@ -30,10 +30,25 @@ export function NoteActions({ note, goBackAfterDelete }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
 
-  function handleEidt() {
+  const handleEidt = useCallback(() => {
     setNoteEffect(note);
     navigateEffect(`/notes/${note.sortKey}`);
-  }
+  }, [note]);
+
+  const handleAddImages = useCallback(
+    async newImages => {
+      addImagesEffect(note.sortKey, {
+        encryptedPassword: note.encryptedPassword,
+        images: newImages,
+      });
+      setShowCamera(false);
+    },
+    [note.encryptedPassword, note.sortKey]
+  );
+
+  const handleHideCamera = useCallback(() => {
+    setShowCamera(false);
+  }, []);
 
   if (!note) {
     return null;
@@ -119,18 +134,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
           });
         }}
       />
-      {!!showCamera && (
-        <Camera
-          onSelect={async newImages => {
-            addImagesEffect(note.sortKey, {
-              encryptedPassword: note.encryptedPassword,
-              images: newImages,
-            });
-            setShowCamera(false);
-          }}
-          onClose={() => setShowCamera(false)}
-        />
-      )}
+      {!!showCamera && <Camera onSelect={handleAddImages} onClose={handleHideCamera} />}
     </Flex>
   );
 }

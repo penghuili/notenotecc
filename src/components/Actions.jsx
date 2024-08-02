@@ -6,7 +6,7 @@ import {
   RiStickyNoteAddLine,
   RiVideoAddLine,
 } from '@remixicon/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
@@ -22,49 +22,44 @@ const Wrapper = styled.div`
   gap: 0.5rem;
 `;
 
-export function Actions() {
+export const Actions = React.memo(() => {
+  const handleTakePhoto = useCallback(() => {
+    navigateEffect(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
+  }, []);
+
+  const handleTakeVideo = useCallback(() => {
+    navigateEffect(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
+  }, []);
+
+  const handleTakeAudio = useCallback(() => {
+    navigateEffect(`/notes/add?cameraType=${cameraTypes.takeAudio}`);
+  }, []);
+
+  const handlePickPhoto = useCallback(() => {
+    navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
+  }, []);
+
+  const handleTakeNote = useCallback(() => {
+    navigateEffect(`/notes/add`);
+  }, []);
+
   return (
     <Wrapper>
-      <IconButton
-        size="4"
-        onClick={() => {
-          navigateEffect(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
-        }}
-      >
+      <IconButton size="4" onClick={handleTakePhoto}>
         <RiCameraLine />
       </IconButton>
-      <IconButton
-        size="4"
-        onClick={() => {
-          navigateEffect(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
-        }}
-      >
+      <IconButton size="4" onClick={handleTakeVideo}>
         <RiVideoAddLine />
       </IconButton>
-      <IconButton
-        size="4"
-        onClick={() => {
-          navigateEffect(`/notes/add?cameraType=${cameraTypes.takeAudio}`);
-        }}
-      >
+      <IconButton size="4" onClick={handleTakeAudio}>
         <RiSpeakLine />
       </IconButton>
-      <IconButton
-        size="4"
-        onClick={() => {
-          navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
-        }}
-      >
+      <IconButton size="4" onClick={handlePickPhoto}>
         <RiImageAddLine />
       </IconButton>
-      <IconButton
-        size="4"
-        onClick={() => {
-          navigateEffect(`/notes/add`);
-        }}
-      >
+      <IconButton size="4" onClick={handleTakeNote}>
         <RiStickyNoteAddLine />
       </IconButton>
     </Wrapper>
   );
-}
+});

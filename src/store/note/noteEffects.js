@@ -1,3 +1,4 @@
+import { formatDate } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
 import { settingsCat } from '../../shared-private/react/store/sharedCats';
 import {
@@ -63,7 +64,7 @@ export async function fetchNotesEffect(startKey, force) {
       hasMore: data.hasMore,
     });
 
-    LocalStorage.set(notesChangedAtKey, Date.now());
+    LocalStorage.set(notesChangedAtKey, settings?.notesChangedAt);
   }
 
   isLoadingNotesCat.set(false);
@@ -291,16 +292,11 @@ function updateStates(newNote, type) {
   }
 
   const currentOnThisDayNotes = onThisDayNotesCat.get();
-  const types = Object.keys(currentOnThisDayNotes);
-  if (types.length) {
-    const updatedItems = types.map(type => ({
-      type,
-      items: fn(currentOnThisDayNotes[type] || [], newNote),
-    }));
-    const newOnThisDayNotes = updatedItems.reduce(
-      (acc, item) => ({ ...acc, [item.type]: item.items }),
-      {}
-    );
-    onThisDayNotesCat.set(newOnThisDayNotes);
+  const date = formatDate(newNote.createdAt);
+  if (currentOnThisDayNotes?.[date]?.find(i => i.sortKey === newNote.sortKey)) {
+    onThisDayNotesCat.set({
+      ...currentOnThisDayNotes,
+      [date]: fn(currentOnThisDayNotes[date] || [], newNote),
+    });
   }
 }

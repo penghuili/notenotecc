@@ -31,11 +31,13 @@ export const NoteItem = React.memo(({ note, albums }) => {
         <NoteActions note={note} />
       </Flex>
 
-      <ImageCarousel
-        noteId={note.sortKey}
-        encryptedPassword={note.encryptedPassword}
-        images={note.images}
-      />
+      {!!note.images?.length && (
+        <ImageCarousel
+          noteId={note.sortKey}
+          encryptedPassword={note.encryptedPassword}
+          images={note.images}
+        />
+      )}
 
       {!!note.note && <Description>{note.note}</Description>}
 
