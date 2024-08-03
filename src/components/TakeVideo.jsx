@@ -1,4 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { Flex, IconButton, Text } from '@radix-ui/themes';
 import {
   RiPauseLine,
   RiPlayLine,
@@ -10,15 +10,69 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
-import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
+import { useWindowBlur } from '../lib/useWindowBlur.js';
+import { useWindowFocus } from '../lib/useWindowFocus.js';
 import { TimeProgress } from './TimeProgress.jsx';
+
+export const VideoWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const ErrorWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: ${props => `${props.size}px`};
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export function renderError(mediaError, size) {
+  if (!mediaError) {
+    return null;
+  }
+
+  let errorMessage = 'Camera error';
+  if (mediaError.name === 'NotFoundError' || mediaError.name === 'DevicesNotFoundError') {
+    errorMessage = 'Camera not found';
+  }
+  if (mediaError.name === 'NotAllowedError' || mediaError.name === 'PermissionDeniedError') {
+    errorMessage = 'Camera access not allowed';
+  }
+  if (mediaError.name === 'NotReadableError' || mediaError.name === 'TrackStartError') {
+    errorMessage = 'Camera in use';
+  }
+
+  return (
+    <ErrorWrapper size={size}>
+      <Text as="p">{errorMessage}</Text>
+    </ErrorWrapper>
+  );
+}
+
+export function getCameraSize() {
+  let size = Math.min(600, window.innerWidth, window.innerHeight);
+  if (window.innerWidth > window.innerHeight) {
+    size = size - 230 - 48;
+  }
+
+  return size;
+}
 
 const Video = styled.video`
   width: ${props => `${props.size}px`};
   height: ${props => `${props.size}px`};
 `;
 
-const RECORDING_DURATION = 15600;
+export const RECORDING_DURATION = 15600;
 
 export const TakeVideo = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -59,7 +113,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
   const clearTimers = useCallback(() => {
     if (timerIdRef.current) {
-      clearInterval(timerIdRef.current);
+      clearTimeout(timerIdRef.current);
       timerIdRef.current = null;
     }
   }, []);
@@ -87,18 +141,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     elapsedTimeRef.current = 0;
     progressElementRef.current.stop();
   }, [clearTimers, onSelect, stopMediaRecorder]);
-
-  const handleCancleRecording = useCallback(() => {
-    stopMediaRecorder();
-
-    setIsRecording(false);
-    setIsPaused(false);
-    clearTimers();
-
-    recordedChunksRef.current = [];
-    elapsedTimeRef.current = 0;
-    progressElementRef.current.stop();
-  }, [clearTimers, stopMediaRecorder]);
 
   const handleSetupTimer = useCallback(() => {
     clearTimers();
@@ -159,12 +201,43 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const handleResumeRecording = useCallback(() => {
     if (mediaRecorderRef.current && isPaused) {
       mediaRecorderRef.current.resume();
-      setIsPaused(false);
       startTimeRef.current = Date.now();
       progressElementRef.current.resume();
       handleSetupTimer();
+      setIsPaused(false);
     }
   }, [handleSetupTimer, isPaused]);
+
+  const handleWindowFocus = useCallback(async () => {
+    if (streamRef.current) {
+      stopStream(streamRef.current);
+      streamRef.current = null;
+    }
+
+    const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
+    if (stream) {
+      streamRef.current = stream;
+      videoRef.current.srcObject = stream;
+    }
+    if (requestError) {
+      setError(requestError);
+    }
+  }, []);
+
+  const handleWindowBlur = useCallback(() => {
+    stopStream(streamRef.current);
+    streamRef.current = null;
+
+    stopMediaRecorder();
+
+    setIsRecording(false);
+    setIsPaused(false);
+    clearTimers();
+
+    recordedChunksRef.current = [];
+    elapsedTimeRef.current = 0;
+    progressElementRef.current.stop();
+  }, [clearTimers, stopMediaRecorder]);
 
   useEffect(() => {
     requestStream(facingModeRef.current).then(({ data, error }) => {
@@ -184,47 +257,14 @@ export const TakeVideo = React.memo(({ onSelect }) => {
         clearTimeout(timerIdRef.current);
         timerIdRef.current = null;
       }
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
     };
   }, []);
 
-  useEffect(() => {
-    async function handleFocus() {
-      if (streamRef.current) {
-        stopStream(streamRef.current);
-        streamRef.current = null;
-      }
-
-      const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
-      if (stream) {
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-      }
-      if (requestError) {
-        setError(requestError);
-      }
-    }
-
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  useEffect(() => {
-    function handleBlur() {
-      stopStream(streamRef.current);
-      streamRef.current = null;
-
-      handleCancleRecording();
-    }
-
-    window.addEventListener('blur', handleBlur);
-
-    return () => {
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [handleCancleRecording]);
+  useWindowFocus(handleWindowFocus);
+  useWindowBlur(handleWindowBlur);
 
   const size = getCameraSize();
 
@@ -292,7 +332,7 @@ async function requestStream(mode) {
   }
 }
 
-function stopStream(stream) {
+export function stopStream(stream) {
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
   }

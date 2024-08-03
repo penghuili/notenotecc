@@ -1,9 +1,11 @@
-import { Flex, IconButton, Progress } from '@radix-ui/themes';
+import { Flex, IconButton } from '@radix-ui/themes';
 import { RiPauseLine, RiPlayLine, RiRestartLine, RiStopLine } from '@remixicon/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
+import { useWindowBlur } from '../lib/useWindowBlur.js';
+import { getCameraSize, RECORDING_DURATION, renderError, VideoWrapper } from './TakeVideo.jsx';
+import { TimeProgress } from './TimeProgress.jsx';
 
 const AnimationWrapper = styled.div`
   width: ${props => `${props.size}px`};
@@ -48,9 +50,7 @@ const AudioAnimation = styled.div`
   }
 `;
 
-const RECORDING_DURATION = 15600;
-
-export function TakeAudio({ onSelect }) {
+export const TakeAudio = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -58,37 +58,38 @@ export function TakeAudio({ onSelect }) {
 
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
-  const progressIntervalRef = useRef(null);
+  const timerIdRef = useRef(null);
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
+  const progressElementRef = useRef(null);
 
-  useEffect(() => {
-    return () => {
-      if (mediaRecorderRef.current) {
-        mediaRecorderRef.current.stop();
-      }
-    };
+  const clearTimers = useCallback(() => {
+    if (timerIdRef.current) {
+      clearTimeout(timerIdRef.current);
+      timerIdRef.current = null;
+    }
   }, []);
 
-  const clearTimers = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-  };
+  const handleSetupTimer = useCallback(() => {
+    clearTimers();
 
-  const startRecording = async () => {
+    timerIdRef.current = setTimeout(() => {
+      handleStopRecording();
+      clearTimers();
+    }, RECORDING_DURATION - elapsedTimeRef.current);
+  }, [clearTimers, handleStopRecording]);
+
+  const handleStartRecording = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
-
       mediaRecorderRef.current.ondataavailable = event => {
         if (event.data.size > 0) {
           recordedChunksRef.current.push(event.data);
         }
       };
-
       mediaRecorderRef.current.start(100);
+
       setIsRecording(true);
       setIsPaused(false);
       setProgress(0);
@@ -96,31 +97,13 @@ export function TakeAudio({ onSelect }) {
       startTimeRef.current = Date.now();
       elapsedTimeRef.current = 0;
 
-      updateProgress();
+      handleSetupTimer();
     } catch (e) {
       setError(e);
     }
-  };
+  }, [handleSetupTimer]);
 
-  const updateProgress = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    progressIntervalRef.current = setInterval(() => {
-      const timeChange = Date.now() - startTimeRef.current;
-      const newElapsedTime = elapsedTimeRef.current + timeChange;
-      const newProgress = Math.min((newElapsedTime / RECORDING_DURATION) * 100, 100);
-      setProgress(newProgress);
-
-      if (newProgress >= 100) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-        stopRecording();
-      }
-    }, 100);
-  };
-
-  const stopRecording = () => {
+  const handleStopRecording = useCallback(() => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.ondataavailable = null;
@@ -137,28 +120,60 @@ export function TakeAudio({ onSelect }) {
 
     recordedChunksRef.current = [];
     elapsedTimeRef.current = 0;
-    setProgress(0);
-  };
+    progressElementRef.current.stop();
+  }, [clearTimers, onSelect]);
 
-  const pauseRecording = () => {
+  const handlePauseRecording = useCallback(() => {
     if (mediaRecorderRef.current && !isPaused) {
       mediaRecorderRef.current.pause();
       clearTimers();
       elapsedTimeRef.current += Date.now() - startTimeRef.current;
+      progressElementRef.current.pause();
       setIsPaused(true);
     }
-  };
+  }, [clearTimers, isPaused]);
 
-  const resumeRecording = () => {
+  const handleResumeRecording = useCallback(() => {
     if (mediaRecorderRef.current && isPaused) {
       mediaRecorderRef.current.resume();
-      setIsPaused(false);
       startTimeRef.current = Date.now();
-      updateProgress();
+      progressElementRef.current.resume();
+      handleSetupTimer();
+      setIsPaused(false);
     }
-  };
+  }, [handleSetupTimer, isPaused]);
+
+  const handleWindowBlur = useCallback(() => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.ondataavailable = null;
+      mediaRecorderRef.current = null;
+    }
+
+    setIsRecording(false);
+    setIsPaused(false);
+    clearTimers();
+
+    recordedChunksRef.current = [];
+    elapsedTimeRef.current = 0;
+    progressElementRef.current.stop();
+  }, [clearTimers]);
+
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.ondataavailable = null;
+        mediaRecorderRef.current = null;
+      }
+    };
+  }, []);
+
+  useWindowBlur(handleWindowBlur);
 
   const size = getCameraSize();
+
+  const errorElement = useMemo(() => renderError(error, size), [error, size]);
 
   return (
     <VideoWrapper>
@@ -168,37 +183,37 @@ export function TakeAudio({ onSelect }) {
 
       {!!mediaRecorderRef.current && (
         <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
-          <Progress size="1" value={progress} />
+          <TimeProgress ref={progressElementRef} totalTime={RECORDING_DURATION} />
         </div>
       )}
 
-      {renderError(error, size)}
+      {errorElement}
 
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
-          <IconButton size="4" onClick={startRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handleStartRecording} disabled={!!error}>
             <RiPlayLine />
           </IconButton>
         )}
 
         {isRecording && !isPaused && (
-          <IconButton size="4" onClick={pauseRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handlePauseRecording} disabled={!!error}>
             <RiPauseLine />
           </IconButton>
         )}
 
         {isRecording && isPaused && (
-          <IconButton size="4" onClick={resumeRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handleResumeRecording} disabled={!!error}>
             <RiRestartLine />
           </IconButton>
         )}
 
         {isRecording && progress < 100 && (
-          <IconButton size="4" onClick={stopRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handleStopRecording} disabled={!!error}>
             <RiStopLine />
           </IconButton>
         )}
       </Flex>
     </VideoWrapper>
   );
-}
+});

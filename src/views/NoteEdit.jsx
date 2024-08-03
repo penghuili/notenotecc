@@ -35,7 +35,7 @@ export function NoteEdit() {
   const [newAlbumDescription, setNewAlbumDescription] = useState('');
   const [showCamera, setShowCamera] = useState(false);
 
-  const handleAlbumChange = useCallback(({ newAlbum, selectedKeys }) => {
+  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
     if (newAlbum !== undefined) {
       setNewAlbumDescription(newAlbum);
     }
@@ -80,6 +80,7 @@ export function NoteEdit() {
     setImages(noteItem.images || []);
     setNote(noteItem.note || '');
     setCurrentSelectedKeys((noteItem.albumIds || []).map(a => a.albumId).join('/'));
+    setSelectedAlbumSortKeys((noteItem.albumIds || []).map(a => a.albumId));
   }, [noteItem]);
 
   const submitButton = useMemo(
@@ -132,7 +133,7 @@ export function NoteEdit() {
         <AreaField autofocus value={note} onChange={setNote} />
 
         {currentSelectedKeys !== null && (
-          <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumChange} />
+          <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumsChange} />
         )}
       </ItemsWrapper>
 

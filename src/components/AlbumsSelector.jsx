@@ -15,7 +15,9 @@ const checkboxRootStyle = {
 
 export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => {
   const [newAlbum, setNewAlbum] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState((currentSelectedKeys || '').split('/'));
+  const [selectedKeys, setSelectedKeys] = useState(
+    (currentSelectedKeys || '').split('/').filter(Boolean)
+  );
 
   const albums = useCat(albumsCat);
 

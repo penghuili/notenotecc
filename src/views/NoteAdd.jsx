@@ -32,7 +32,7 @@ export function NoteAdd() {
     ].includes(cameraType)
   );
 
-  const handleAlbumChange = useCallback(({ newAlbum, selectedKeys }) => {
+  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
     if (newAlbum !== undefined) {
       setNewAlbumDescription(newAlbum);
     }
@@ -106,7 +106,7 @@ export function NoteAdd() {
         </IconButton>
         <AreaField autofocus={!cameraType} value={note} onChange={setNote} />
 
-        <AlbumsSelector onSelect={handleAlbumChange} />
+        <AlbumsSelector onChange={handleAlbumsChange} />
       </ItemsWrapper>
 
       {showCamera && (
