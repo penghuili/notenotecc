@@ -2,7 +2,7 @@ import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
-import { useWhyDidYouUpdate } from '../lib/useWhyDidYouChange.js';
+import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
 
@@ -19,7 +19,7 @@ export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => 
 
   const albums = useCat(albumsCat);
 
-  useWhyDidYouUpdate('AlbumsSelector', {
+  useRerenderDetector('AlbumsSelector', {
     currentSelectedKeys,
     onChange,
     newAlbum,

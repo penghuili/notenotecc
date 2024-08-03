@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-export function useWhyDidYouUpdate(componentName, props) {
+export function useRerenderDetector(componentName, props) {
   const renderCount = useRef(0);
   const previousProps = useRef(props);
 
