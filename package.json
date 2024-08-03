@@ -16,14 +16,18 @@
     "plyr": "3.7.8",
     "qrcode.react": "3.1.0",
     "ramda": "0.30.1",
-    "react": "19.0.0-rc-a7d1240c-20240731",
-    "react-dom": "19.0.0-rc-a7d1240c-20240731",
+    "react": "19.0.0-rc-8269d55d-20240802",
+    "react-dom": "19.0.0-rc-8269d55d-20240802",
     "react-error-boundary": "4.0.13",
     "react-hot-toast": "2.4.1",
     "spark-md5": "3.0.2",
     "styled-components": "5.3.11",
     "usecat": "0.0.2",
     "wouter": "3.3.0"
+  },
+  "overrides": {
+    "react": "19.0.0-rc-8269d55d-20240802",
+    "react-dom": "19.0.0-rc-8269d55d-20240802"
   },
   "devDependencies": {
     "@craco/craco": "7.1.0",
@@ -35,10 +39,10 @@
     "eslint-plugin-react": "7.34.2",
     "eslint-plugin-react-compiler": "0.0.0-experimental-9ed098e-20240725",
     "eslint-plugin-react-hooks": "4.6.2",
+    "patch-package": "^8.0.0",
     "prettier": "3.3.1",
     "rollup-plugin-visualizer": "5.12.0",
-    "vite": "5.3.5",
-    "webpack-bundle-analyzer": "4.10.2"
+    "vite": "5.3.5"
   },
   "eslintConfig": {
     "extends": [
@@ -66,6 +70,7 @@
     "build": "vite build",
     "dd": "npm run cs && node ./scripts/upload.js",
     "lint": "eslint .",
-    "ana": "vite --profile"
+    "ana": "vite --profile",
+    "postinstall": "patch-package"
   }
 }

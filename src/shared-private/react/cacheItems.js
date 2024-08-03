@@ -18,6 +18,7 @@ export function createItemsCache(prefix) {
       const key = value.getCacheItemsKey();
       await idbStorage.removeItem(key);
     },
+
     getCacheItemKey: itemId => {
       return `${prefix}-item-cache-${itemId}`;
     },
