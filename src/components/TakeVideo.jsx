@@ -1,4 +1,4 @@
-import { Flex, IconButton, Progress } from '@radix-ui/themes';
+import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiPauseLine,
   RiPlayLine,
@@ -9,7 +9,9 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakePhoto.jsx';
+import { TimeProgress } from './TimeProgress.jsx';
 
 const Video = styled.video`
   width: ${props => `${props.size}px`};
@@ -18,134 +20,50 @@ const Video = styled.video`
 
 const RECORDING_DURATION = 15600;
 
-export function TakeVideo({ onSelect }) {
+export const TakeVideo = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
-  const [facingMode, setFacingMode] = useState('environment');
 
+  useRerenderDetector('TakeVideo', {
+    isRecording,
+    isPaused,
+    error,
+    onSelect,
+  });
+
+  const facingModeRef = useRef('environment');
+  const streamRef = useRef(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
-  const streamRef = useRef(null);
   const recordedChunksRef = useRef([]);
-  const progressIntervalRef = useRef(null);
+  const timerIdRef = useRef(null);
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
+  const progressElementRef = useRef(null);
 
-  const requestStream = useCallback(
-    async mode => {
-      try {
-        if (streamRef.current && mode === facingMode) {
-          return;
-        }
-        if (streamRef.current) {
-          stopStream();
-        }
+  const handleSwitchCamera = useCallback(async () => {
+    stopStream(streamRef.current);
 
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 720 },
-            height: { ideal: 720 },
-            frameRate: 30,
-            facingMode: { exact: mode },
-          },
-          audio: true,
-        });
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-      } catch (e) {
-        setError(e);
-      }
-    },
-    [facingMode]
-  );
-
-  useEffect(() => {
-    function handleStart() {
-      requestStream(facingMode);
+    const newMode = facingModeRef.current === 'user' ? 'environment' : 'user';
+    facingModeRef.current = newMode;
+    const { data: stream, error: requestError } = await requestStream(newMode);
+    if (stream) {
+      streamRef.current = stream;
+      videoRef.current.srcObject = stream;
+    } else {
+      setError(requestError);
     }
-    function handleStop() {
-      stopStream();
+  }, []);
+
+  const clearAllTimers = useCallback(() => {
+    if (timerIdRef.current) {
+      clearInterval(timerIdRef.current);
+      timerIdRef.current = null;
     }
-    window.addEventListener('focus', handleStart);
-    window.addEventListener('blur', handleStop);
-    requestStream(facingMode);
+  }, []);
 
-    return () => {
-      stopStream();
-      window.removeEventListener('focus', handleStart);
-      window.removeEventListener('blur', handleStop);
-
-      clearAllTimers();
-    };
-  }, [facingMode, requestStream]);
-
-  const clearAllTimers = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-      progressIntervalRef.current = null;
-    }
-  };
-
-  const stopStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-  };
-
-  const startRecording = async () => {
-    try {
-      await requestStream(facingMode);
-
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 1000000,
-      });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.start(100);
-
-      setIsRecording(true);
-      setIsPaused(false);
-      setProgress(0);
-      recordedChunksRef.current = [];
-      startTimeRef.current = Date.now();
-      elapsedTimeRef.current = 0;
-
-      updateProgress();
-    } catch (e) {
-      setError(e);
-    }
-  };
-
-  const handleDataAvailable = event => {
-    if (event.data.size > 0) {
-      recordedChunksRef.current.push(event.data);
-    }
-  };
-
-  const updateProgress = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    progressIntervalRef.current = setInterval(() => {
-      const timeChange = Date.now() - startTimeRef.current;
-      const newElapsedTime = elapsedTimeRef.current + timeChange;
-      const newProgress = Math.min((newElapsedTime / RECORDING_DURATION) * 100, 100);
-      setProgress(newProgress);
-
-      if (newProgress >= 100) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-        stopRecording();
-      }
-    }, 100);
-  };
-
-  const stopRecording = () => {
+  const handleStopRecording = useCallback(() => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.ondataavailable = null;
@@ -162,78 +80,164 @@ export function TakeVideo({ onSelect }) {
 
     recordedChunksRef.current = [];
     elapsedTimeRef.current = 0;
-    setProgress(0);
-  };
+  }, [clearAllTimers, onSelect]);
 
-  const pauseRecording = () => {
+  const handleSetupTimer = useCallback(() => {
+    clearAllTimers();
+
+    timerIdRef.current = setTimeout(() => {
+      handleStopRecording();
+      clearAllTimers();
+    }, RECORDING_DURATION - elapsedTimeRef.current);
+  }, [clearAllTimers, handleStopRecording]);
+
+  const handleStartRecording = useCallback(async () => {
+    try {
+      const mediaRecorder = new MediaRecorder(streamRef.current, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 1000000,
+      });
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+      mediaRecorder.start(100);
+
+      setIsRecording(true);
+      setIsPaused(false);
+
+      recordedChunksRef.current = [];
+      startTimeRef.current = Date.now();
+      elapsedTimeRef.current = 0;
+
+      handleSetupTimer();
+    } catch (e) {
+      setError(e);
+    }
+  }, [handleSetupTimer]);
+
+  const handlePauseRecording = useCallback(() => {
     if (mediaRecorderRef.current && !isPaused) {
       mediaRecorderRef.current.pause();
       clearAllTimers();
       elapsedTimeRef.current += Date.now() - startTimeRef.current;
       setIsPaused(true);
     }
-  };
+  }, [clearAllTimers, isPaused]);
 
-  const resumeRecording = () => {
+  const handleResumeRecording = useCallback(() => {
     if (mediaRecorderRef.current && isPaused) {
       mediaRecorderRef.current.resume();
       setIsPaused(false);
       startTimeRef.current = Date.now();
-      updateProgress();
+      handleSetupTimer();
     }
-  };
+  }, [handleSetupTimer, isPaused]);
+
+  useEffect(() => {
+    async function handleStart() {
+      if (streamRef.current) {
+        stopStream(streamRef.current);
+      }
+
+      const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
+      if (stream) {
+        streamRef.current = stream;
+        videoRef.current.srcObject = stream;
+      } else {
+        setError(requestError);
+      }
+    }
+    function handleStop() {
+      stopStream(streamRef.current);
+      if (timerIdRef.current) {
+        clearTimeout(timerIdRef.current);
+        timerIdRef.current = null;
+      }
+    }
+
+    window.addEventListener('focus', handleStart);
+    window.addEventListener('blur', handleStop);
+
+    handleStart();
+
+    return () => {
+      handleStop();
+
+      window.removeEventListener('focus', handleStart);
+      window.removeEventListener('blur', handleStop);
+    };
+  }, []);
 
   const size = getCameraSize();
 
   return (
     <VideoWrapper>
       <Video ref={videoRef} autoPlay muted size={size} />
-      {!!mediaRecorderRef.current && (
-        <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
-          <Progress size="1" value={progress} />
-        </div>
-      )}
+      <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
+        <TimeProgress ref={progressElementRef} />
+      </div>
 
       {renderError(error, size)}
 
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
           <>
-            <IconButton size="4" onClick={startRecording} disabled={!!error}>
+            <IconButton size="4" onClick={handleStartRecording} disabled={!!error}>
               <RiPlayLine />
             </IconButton>
 
-            <IconButton
-              size="4"
-              onClick={() => {
-                const mode = facingMode === 'user' ? 'environment' : 'user';
-                setFacingMode(mode);
-                requestStream(mode);
-              }}
-            >
+            <IconButton size="4" onClick={handleSwitchCamera}>
               <RiRefreshLine />
             </IconButton>
           </>
         )}
 
         {isRecording && !isPaused && (
-          <IconButton size="4" onClick={pauseRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handlePauseRecording} disabled={!!error}>
             <RiPauseLine />
           </IconButton>
         )}
 
         {isRecording && isPaused && (
-          <IconButton size="4" onClick={resumeRecording} disabled={!!error}>
+          <IconButton size="4" onClick={handleResumeRecording} disabled={!!error}>
             <RiRestartLine />
           </IconButton>
         )}
 
-        {isRecording && progress < 100 && (
-          <IconButton size="4" onClick={stopRecording} disabled={!!error}>
+        {isRecording && (
+          <IconButton size="4" onClick={handleStopRecording} disabled={!!error}>
             <RiStopLine />
           </IconButton>
         )}
       </Flex>
     </VideoWrapper>
   );
+});
+
+async function requestStream(mode) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 720 },
+        height: { ideal: 720 },
+        frameRate: 30,
+        facingMode: { exact: mode },
+      },
+      audio: true,
+    });
+
+    return { data: stream, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+function stopStream(stream) {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
 }

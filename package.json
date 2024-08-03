@@ -65,7 +65,7 @@
   "scripts": {
     "time": "sudo ntpdate time.nist.gov",
     "cc": "node scripts/commit.js",
-    "cs": "rm -rf src/shared-private && mkdir src/shared-private && cp -a ../sharedjs-private/lib/js src/shared-private/js && cp -a ../sharedjs-private/lib/react src/shared-private/react && rm -f scripts/upload.js && cp -a ../sharedjs-private/scripts/upload.js scripts/upload.js",
+    "cs": "rm -rf src/shared-private && mkdir src/shared-private && cp -a ../private-sharedjs/lib/js src/shared-private/js && cp -a ../private-sharedjs/lib/react src/shared-private/react && rm -f scripts/upload.js && cp -a ../private-sharedjs/scripts/upload.js scripts/upload.js",
     "start": "npm run cs && vite",
     "build": "vite build",
     "dd": "npm run cs && node ./scripts/upload.js",

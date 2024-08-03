@@ -129,7 +129,6 @@ export function TakeAudio({ onSelect }) {
 
     const blob = new Blob(recordedChunksRef.current, { type: 'audio/webm' });
     const url = URL.createObjectURL(blob);
-    console.log(url, blob.size, recordedChunksRef.current.length);
     onSelect({ blob, url, size: blob.size, type: 'audio/webm' });
 
     setIsRecording(false);
