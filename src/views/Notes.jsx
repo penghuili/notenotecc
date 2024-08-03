@@ -26,15 +26,23 @@ export function Notes() {
   }, []);
 
   function getNoteAlbums(note) {
-    const key = note?.albumIds?.map(a => a.albumId).join('-');
+    const key = note?.albumIds
+      ?.map(a => a.albumId)
+      ?.filter(id => !id.startsWith('album_noalbum_'))
+      ?.join('-');
+
     if (!key) {
-      return [];
+      return undefined;
     }
 
     if (!albumsForNotes.current[key]) {
       const noteAlbums = note.albumIds.map(a => albumsObject[a.albumId]).filter(Boolean);
-      albumsForNotes.current[key] = noteAlbums;
-      return noteAlbums;
+      if (noteAlbums.length) {
+        albumsForNotes.current[key] = noteAlbums;
+        return noteAlbums;
+      }
+
+      return undefined;
     }
 
     return albumsForNotes.current[key];
