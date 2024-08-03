@@ -46,6 +46,22 @@ export default defineConfig(({ mode }) => {
               if (id.includes('openpgp')) {
                 return 'openpgp';
               }
+              if (id.includes('plyr')) {
+                return 'plyr';
+              }
+              if (id.includes('wouter')) {
+                return 'wouter';
+              }
+              if (id.includes('styled-components')) {
+                return 'styled-components';
+              }
+              if (id.includes('spark-md5')) {
+                return 'spark-md5';
+              }
+              if (id.includes('date-fns')) {
+                return 'date-fns';
+              }
+
               return 'vendor';
             }
           },

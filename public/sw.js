@@ -8,8 +8,3 @@ self.addEventListener('activate', () => {
   console.log('Service worker activating...');
   // Put your activate step here
 });
-
-self.addEventListener('fetch', event => {
-  // Always fetch the request from the network
-  event.respondWith(fetch(event.request));
-});
