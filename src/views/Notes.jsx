@@ -1,6 +1,6 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
@@ -14,8 +14,6 @@ import { isAddingImagesCat, isLoadingNotesCat, notesCat } from '../store/note/no
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 export function Notes() {
-  const { items: notes, startKey, hasMore } = useCat(notesCat);
-
   useEffect(() => {
     fetchNotesEffect();
   }, []);
@@ -24,9 +22,9 @@ export function Notes() {
     <>
       <Header />
 
-      <NotesList notes={notes} />
+      <NotesItems />
 
-      <LoadMore hasMore={hasMore} startKey={startKey} />
+      <LoadMore />
 
       <Actions />
     </>
@@ -37,39 +35,55 @@ const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
 
+  const handleNavigateToHistory = useCallback(() => {
+    navigateEffect('/on-this-day');
+  }, []);
+
+  const handleNavigateToAlbums = useCallback(() => {
+    navigateEffect('/albums');
+  }, []);
+
+  const handleFetch = useCallback(() => {
+    fetchNotesEffect(null, true);
+    fetchSettingsEffect(true);
+  }, []);
+
+  const rightElement = useMemo(
+    () => (
+      <>
+        <IconButton onClick={scrollToTop} mr="2" variant="ghost">
+          <RiArrowUpSLine />
+        </IconButton>
+
+        <IconButton onClick={handleNavigateToHistory} mr="2" variant="ghost">
+          <RiHistoryLine />
+        </IconButton>
+
+        <IconButton onClick={handleNavigateToAlbums} mr="2" variant="ghost">
+          <RiHashtag />
+        </IconButton>
+      </>
+    ),
+    [handleNavigateToAlbums, handleNavigateToHistory]
+  );
+
   return (
     <PageHeader
       isLoading={isLoading || isAddingImages}
       fixed
       title={
-        <IconButton
-          onClick={() => {
-            fetchNotesEffect(null, true);
-            fetchSettingsEffect(true);
-          }}
-          mr="2"
-          variant="soft"
-        >
+        <IconButton onClick={handleFetch} mr="2" variant="soft">
           <RiRefreshLine />
         </IconButton>
       }
-      right={
-        <>
-          <IconButton onClick={scrollToTop} mr="2" variant="ghost">
-            <RiArrowUpSLine />
-          </IconButton>
-
-          <IconButton onClick={() => navigateEffect('/on-this-day')} mr="2" variant="ghost">
-            <RiHistoryLine />
-          </IconButton>
-
-          <IconButton onClick={() => navigateEffect('/albums')} mr="2" variant="ghost">
-            <RiHashtag />
-          </IconButton>
-        </>
-      }
+      right={rightElement}
     />
   );
+});
+
+const NotesItems = React.memo(() => {
+  const { items: notes } = useCat(notesCat);
+  return <NotesList notes={notes} />;
 });
 
 export const NotesList = React.memo(({ notes }) => {
@@ -84,8 +98,9 @@ export const NotesList = React.memo(({ notes }) => {
   ));
 });
 
-const LoadMore = React.memo(({ hasMore, startKey }) => {
+const LoadMore = React.memo(() => {
   const isLoading = useCat(isLoadingNotesCat);
+  const { startKey, hasMore } = useCat(notesCat);
 
   const handleFetch = useCallback(() => {
     fetchNotesEffect(startKey, true);

@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
+import { isMobile } from '../shared-private/react/device.js';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -86,7 +87,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     onSelect,
   });
 
-  const facingModeRef = useRef('environment');
+  const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
   const streamRef = useRef(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -321,13 +322,14 @@ async function requestStream(mode) {
         width: { ideal: 720 },
         height: { ideal: 720 },
         frameRate: 30,
-        facingMode: { exact: mode },
+        facingMode: { ideal: mode },
       },
       audio: true,
     });
 
     return { data: stream, error: null };
   } catch (error) {
+    console.log(error);
     return { data: null, error };
   }
 }

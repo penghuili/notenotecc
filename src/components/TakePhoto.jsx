@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useWindowBlur } from '../lib/useWindowBlur';
 import { useWindowFocus } from '../lib/useWindowFocus';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob';
+import { isMobile } from '../shared-private/react/device.js';
 import { getCameraSize, renderError, stopStream, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`
@@ -18,7 +19,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   const videoRef = useRef(null);
   const [error, setError] = useState(null);
 
-  const facingModeRef = useRef('environment');
+  const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
 
   const handleRequestCamera = useCallback(async mode => {
     setError(null);
@@ -113,7 +114,7 @@ async function requestStream(mode) {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: {
-        facingMode: { exact: mode },
+        facingMode: { ideal: mode },
         width: { ideal: 900 },
         height: { ideal: 900 },
       },

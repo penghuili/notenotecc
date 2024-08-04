@@ -1,6 +1,7 @@
 import { Avatar, Flex, Heading, IconButton, Spinner } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiUserSmileLine } from '@remixicon/react';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
+import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { HorizontalCenter } from './HorizontalCenter.jsx';
@@ -8,69 +9,83 @@ import { logo } from './initShared';
 import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 
-export function PageHeader({ fixed, title, right, isLoading, hasBack, onCustomBack }) {
+const Wrapper = styled(Flex)`
+  width: ${props => props.width}px;
+  height: 56px;
+  padding: 0.5rem;
+  z-index: ${props => props.zindex};
+  left: 0;
+  top: 0;
+
+  background-color: white;
+`;
+const Content = styled(Flex)`
+  width: 100%;
+  max-width: 600px;
+  padding: 0 0.5rem;
+  z-index: 1;
+`;
+const Placeholder = styled.div`
+  height: 56px;
+`;
+
+export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
   const isLoggedIn = useCat(isLoggedInCat);
 
-  const showUserIcon = isLoggedIn && !hasBack;
+  const handleNavigateToAccount = useCallback(() => navigateEffect('/account'), []);
 
-  function handleBack() {
-    if (onCustomBack) {
-      onCustomBack();
-    } else {
-      goBackEffect();
+  const iconElement = useMemo(() => {
+    if (hasBack) {
+      return (
+        <IconButton onClick={goBackEffect} variant="ghost">
+          <RiArrowLeftLine />
+        </IconButton>
+      );
     }
-  }
+
+    return <Avatar src={logo} />;
+  }, [hasBack]);
+
+  const userElement = useMemo(() => {
+    if (!isLoggedIn || hasBack) {
+      return null;
+    }
+
+    return (
+      <IconButton onClick={handleNavigateToAccount} variant="ghost">
+        <RiUserSmileLine />
+      </IconButton>
+    );
+  }, [handleNavigateToAccount, hasBack, isLoggedIn]);
 
   return (
     <>
-      <Flex
+      <Wrapper
         justify="center"
+        align="center"
         position={fixed ? 'fixed' : 'static'}
-        left="0"
-        mb="2"
-        style={{
-          zIndex: 2000,
-          width: Math.min(window.innerWidth, document.documentElement.clientWidth),
-        }}
+        zindex={2000}
+        width={document.documentElement.clientWidth}
       >
-        <Flex
-          direction="row"
-          justify="between"
-          pt="3"
-          pb="4"
-          style={{
-            zIndex: 1,
-            backgroundColor: 'white',
-            width: '100%',
-            maxWidth: '600px',
-            paddingLeft: '4px',
-            paddingRight: '4px',
-          }}
-        >
+        <Content direction="row" justify="between" pt="3" pb="4">
           <HorizontalCenter gap="2">
-            {hasBack ? (
-              <IconButton onClick={handleBack} variant="ghost">
-                <RiArrowLeftLine />
-              </IconButton>
-            ) : (
-              <Avatar src={logo} />
-            )}
+            {iconElement}
+
             <Heading size="4" as="h1">
               {title}
             </Heading>
+
             {!!isLoading && <Spinner />}
           </HorizontalCenter>
+
           <HorizontalCenter gap="1">
             {right}
-            {showUserIcon && (
-              <IconButton onClick={() => navigateEffect('/account')} variant="ghost">
-                <RiUserSmileLine />
-              </IconButton>
-            )}
+            {userElement}
           </HorizontalCenter>
-        </Flex>
-      </Flex>
-      {fixed && <div style={{ height: '74px' }} />}
+        </Content>
+      </Wrapper>
+
+      {fixed && <Placeholder />}
     </>
   );
 }

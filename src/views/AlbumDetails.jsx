@@ -12,27 +12,37 @@ import { NotesList } from './Notes.jsx';
 export const AlbumDetails = React.memo(() => {
   const { albumId } = useParams();
 
-  const isLoading = useCat(isLoadingAlbumItemsCat);
-  const isAddingImages = useCat(isAddingImagesCat);
-  const { items: notes, startKey, hasMore } = useAlbumNotes(albumId);
-
   useEffect(() => {
     fetchAlbumItemsEffect(albumId, { startKey: null });
   }, [albumId]);
 
   return (
     <>
-      <PageHeader title="Album details" isLoading={isLoading || isAddingImages} fixed hasBack />
+      <Header />
 
-      <NotesList notes={notes} />
+      <Notes albumId={albumId} />
 
-      <LoadMore albumId={albumId} startKey={startKey} hasMore={hasMore} />
+      <LoadMore albumId={albumId} />
     </>
   );
 });
 
-const LoadMore = React.memo(({ hasMore, albumId, startKey }) => {
+const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
+  const isAddingImages = useCat(isAddingImagesCat);
+
+  return <PageHeader title="Album details" isLoading={isLoading || isAddingImages} fixed hasBack />;
+});
+
+const Notes = React.memo(({ albumId }) => {
+  const { items: notes } = useAlbumNotes(albumId);
+
+  return <NotesList notes={notes} />;
+});
+
+const LoadMore = React.memo(({ albumId }) => {
+  const isLoading = useCat(isLoadingAlbumItemsCat);
+  const { startKey, hasMore } = useAlbumNotes(albumId);
 
   const handleFetch = useCallback(() => {
     fetchAlbumItemsEffect(albumId, { startKey });

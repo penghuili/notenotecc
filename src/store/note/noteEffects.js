@@ -47,9 +47,11 @@ export async function fetchNotesEffect(startKey, force) {
     if (cachedNotes?.items?.length) {
       notesCat.set(cachedNotes);
 
-      const lastChangedAt = LocalStorage.get(notesChangedAtKey);
-      if (lastChangedAt && settings?.notesChangedAt <= lastChangedAt) {
-        return;
+      if (!force) {
+        const lastChangedAt = LocalStorage.get(notesChangedAtKey);
+        if (lastChangedAt && settings?.notesChangedAt <= lastChangedAt) {
+          return;
+        }
       }
     }
   }

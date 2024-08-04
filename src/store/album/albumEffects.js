@@ -25,9 +25,11 @@ export async function fetchAlbumsEffect(force) {
   if (cachedAlbums?.length) {
     albumsCat.set(cachedAlbums);
 
-    const lastChangedAt = LocalStorage.get(albumsChangedAtKey);
-    if (lastChangedAt && settings?.albumsChangedAt <= lastChangedAt) {
-      return;
+    if (!force) {
+      const lastChangedAt = LocalStorage.get(albumsChangedAtKey);
+      if (lastChangedAt && settings?.albumsChangedAt <= lastChangedAt) {
+        return;
+      }
     }
   }
 
