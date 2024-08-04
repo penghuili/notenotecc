@@ -1,6 +1,6 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { formatDateTime } from '../shared-private/js/date';
@@ -21,83 +21,12 @@ import {
 } from '../shared-private/react/store/sharedCats.js';
 import { setToastEffect } from '../shared-private/react/store/sharedEffects';
 
-export function Account() {
-  const account = useCat(userCat);
-  const isLoadingAccount = useCat(isLoadingAccountCat);
-  const settings = useCat(settingsCat);
-
+export const Account = React.memo(() => {
   return (
     <>
-      <PageHeader title="Account" isLoading={isLoadingAccount} fixed hasBack />
+      <Header />
 
-      {!!account?.id && (
-        <>
-          <ItemsWrapper align="start">
-            <DataList.Root>
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Email</DataList.Label>
-                <DataList.Value>
-                  <Text size="3">{account.email}</Text>
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">User Id</DataList.Label>
-                <DataList.Value>
-                  <Flex align="center" gap="2">
-                    <Text size="3">{account.id}</Text>
-                    <IconButton
-                      color="gray"
-                      variant="ghost"
-                      onClick={() => {
-                        copyToClipboard(account.id);
-                        setToastEffect('Copied!');
-                      }}
-                    >
-                      <RiFileCopyLine />
-                    </IconButton>
-                  </Flex>
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Created at</DataList.Label>
-                <DataList.Value>
-                  <Text size="3">{formatDateTime(account.createdAt)}</Text>
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Valid until</DataList.Label>
-                <DataList.Value>
-                  <PaymentStatus />
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Notes count</DataList.Label>
-                <DataList.Value>
-                  <Text size="3">{settings?.notesCount || 0}</Text>
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Files size</DataList.Label>
-                <DataList.Value>
-                  <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
-                </DataList.Value>
-              </DataList.Item>
-
-              <DataList.Item>
-                <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
-                <DataList.Value>
-                  <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
-                </DataList.Value>
-              </DataList.Item>
-            </DataList.Root>
-          </ItemsWrapper>
-        </>
-      )}
+      <AccountInfo />
 
       <ItemsWrapper align="start">
         <HorizontalCenter gap="1">
@@ -115,4 +44,84 @@ export function Account() {
       </ItemsWrapper>
     </>
   );
-}
+});
+
+const Header = React.memo(() => {
+  const isLoadingAccount = useCat(isLoadingAccountCat);
+
+  return <PageHeader title="Account" isLoading={isLoadingAccount} fixed hasBack />;
+});
+
+const AccountInfo = React.memo(() => {
+  const account = useCat(userCat);
+  const settings = useCat(settingsCat);
+
+  const handleCopyUserId = useCallback(() => {
+    copyToClipboard(account.id);
+    setToastEffect('Copied!');
+  }, [account.id]);
+
+  if (!account?.id) {
+    return null;
+  }
+
+  return (
+    <ItemsWrapper align="start">
+      <DataList.Root>
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Email</DataList.Label>
+          <DataList.Value>
+            <Text size="3">{account.email}</Text>
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">User Id</DataList.Label>
+          <DataList.Value>
+            <Flex align="center" gap="2">
+              <Text size="3">{account.id}</Text>
+              <IconButton color="gray" variant="ghost" onClick={handleCopyUserId}>
+                <RiFileCopyLine />
+              </IconButton>
+            </Flex>
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Created at</DataList.Label>
+          <DataList.Value>
+            <Text size="3">{formatDateTime(account.createdAt)}</Text>
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Valid until</DataList.Label>
+          <DataList.Value>
+            <PaymentStatus />
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Notes count</DataList.Label>
+          <DataList.Value>
+            <Text size="3">{settings?.notesCount || 0}</Text>
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Files size</DataList.Label>
+          <DataList.Value>
+            <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
+          </DataList.Value>
+        </DataList.Item>
+
+        <DataList.Item>
+          <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
+          <DataList.Value>
+            <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
+          </DataList.Value>
+        </DataList.Item>
+      </DataList.Root>
+    </ItemsWrapper>
+  );
+});
