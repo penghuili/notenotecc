@@ -5,7 +5,7 @@ import React, { useEffect, useRef } from 'react';
 
 import { getVideoDuration } from '../lib/getVideoDuration';
 
-export default function VideoPlayer({ src, hidden, onLoad }) {
+export const VideoPlayer = React.memo(({ src, hidden, onLoad }) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -18,19 +18,19 @@ export default function VideoPlayer({ src, hidden, onLoad }) {
           muted: true,
           duration: duration || undefined,
         });
+        onLoad();
       });
-  }, [src]);
+  }, [onLoad, src]);
 
   return (
     <video
       ref={ref}
       controls
       muted
-      onLoadedData={onLoad}
       style={{ display: hidden ? 'none' : 'block', width: '100%' }}
       preload="metadata"
     >
       <source src={src} type="video/webm" />
     </video>
   );
-}
+});

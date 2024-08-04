@@ -34,6 +34,10 @@ export function FullScreenImage() {
     fullScreenImageUrlCat.set(null);
   }, []);
 
+  const handleClickImage = useCallback(e => {
+    e.stopPropagation();
+  }, []);
+
   useEffect(() => {
     if (url) {
       disableBodyScroll();
@@ -48,7 +52,7 @@ export function FullScreenImage() {
 
   return (
     <FullScreenWrapper onClick={handleClose}>
-      <Img src={url} size={size} onClick={e => e.stopPropagation()} />
+      <Img src={url} size={size} onClick={handleClickImage} />
     </FullScreenWrapper>
   );
 }

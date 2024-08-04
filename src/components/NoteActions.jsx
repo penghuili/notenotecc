@@ -11,8 +11,8 @@ import {
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
+import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
-import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
@@ -23,12 +23,14 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export function NoteActions({ note, goBackAfterDelete }) {
-  const isDeleting = useCat(isDeletingNoteCat);
+export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+
+  const handleEncrypt = useCallback(() => {
+    encryptExistingNoteEffect(note);
+  }, [note]);
 
   const handleEidt = useCallback(() => {
     setNoteEffect(note);
@@ -46,6 +48,10 @@ export function NoteActions({ note, goBackAfterDelete }) {
     [note.encryptedPassword, note.sortKey]
   );
 
+  const handleShowCamera = useCallback(() => {
+    setShowCamera(true);
+  }, []);
+
   const handleHideCamera = useCallback(() => {
     setShowCamera(false);
   }, []);
@@ -56,14 +62,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
   if (!note.encrypted) {
     return (
-      <IconButton
-        variant="ghost"
-        onClick={() => {
-          encryptExistingNoteEffect(note);
-        }}
-        mr="2"
-        disabled={isUpdating}
-      >
+      <IconButton variant="ghost" onClick={handleEncrypt} mr="2" disabled={isUpdating}>
         <RiLockLine />
       </IconButton>
     );
@@ -71,13 +70,7 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
   return (
     <Flex align="center" gap="2">
-      <IconButton
-        variant="ghost"
-        onClick={() => {
-          setShowCamera(true);
-        }}
-        mr="2"
-      >
+      <IconButton variant="ghost" onClick={handleShowCamera} mr="2">
         <RiImageAddLine />
       </IconButton>
 
@@ -100,41 +93,41 @@ export function NoteActions({ note, goBackAfterDelete }) {
 
           <DropdownMenu.Separator />
 
-          <DropdownMenu.Item
-            onClick={() => {
-              setShowCamera(true);
-            }}
-          >
+          <DropdownMenu.Item onClick={handleShowCamera}>
             <RiImageLine />
             Add images
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator />
 
-          <DropdownMenu.Item
-            onClick={() => {
-              setShowDeleteConfirm(true);
-            }}
-            color={errorColor}
-            disabled={isDeleting}
-          >
-            <RiDeleteBinLine />
-            Delete
-          </DropdownMenu.Item>
+          <DeleteAction noteId={note.sortKey} goBackAfterDelete={goBackAfterDelete} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
-      <Confirm
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        message="Are you sure you want to delete this note?"
-        onConfirm={() => {
-          setShowDeleteConfirm(false);
-          deleteNoteEffect(note.sortKey, {
-            goBack: !!goBackAfterDelete,
-          });
-        }}
-      />
+
       {!!showCamera && <Camera onSelect={handleAddImages} onClose={handleHideCamera} />}
     </Flex>
   );
-}
+});
+
+const DeleteAction = React.memo(({ noteId, goBackAfterDelete }) => {
+  const isDeleting = useCat(isDeletingNoteCat);
+
+  useRerenderDetector('DeleteAction', {
+    noteId,
+    goBackAfterDelete,
+    isDeleting,
+  });
+
+  const handleDelete = useCallback(async () => {
+    deleteNoteEffect(noteId, {
+      goBack: !!goBackAfterDelete,
+    });
+  }, [noteId, goBackAfterDelete]);
+
+  return (
+    <DropdownMenu.Item onClick={handleDelete} color={errorColor} disabled={isDeleting}>
+      <RiDeleteBinLine />
+      Delete
+    </DropdownMenu.Item>
+  );
+});

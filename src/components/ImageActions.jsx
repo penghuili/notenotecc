@@ -1,6 +1,6 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@remixicon/react';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { shareFileWithUrl, supportShare } from '../lib/shareFile';
@@ -15,6 +15,25 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  const handleShare = useCallback(() => {
+    shareFileWithUrl(image.url, image.type);
+  }, [image]);
+
+  const handleShowDeleteConfirm = useCallback(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+
+  const handleDelete = useCallback(async () => {
+    if (noteId) {
+      await deleteImageEffect(noteId, { imagePath: image.path });
+    } else {
+      if (onDeleteLocal) {
+        onDeleteLocal(image);
+      }
+    }
+    setShowDeleteConfirm(false);
+  }, [noteId, image, onDeleteLocal]);
+
   return (
     <>
       <DropdownMenu.Root>
@@ -27,11 +46,7 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
         <DropdownMenu.Content variant="soft">
           {supportShare() && !!noteId && (
             <>
-              <DropdownMenu.Item
-                onClick={() => {
-                  shareFileWithUrl(image.url, image.type);
-                }}
-              >
+              <DropdownMenu.Item onClick={handleShare}>
                 <RiShareLine />
                 Share
               </DropdownMenu.Item>
@@ -41,9 +56,7 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
           )}
 
           <DropdownMenu.Item
-            onClick={() => {
-              setShowDeleteConfirm(true);
-            }}
+            onClick={handleShowDeleteConfirm}
             color={errorColor}
             disabled={isDeleting}
           >
@@ -67,16 +80,7 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
         message="Are you sure you want to delete this file?"
-        onConfirm={async () => {
-          if (noteId) {
-            await deleteImageEffect(noteId, { imagePath: image.path });
-          } else {
-            if (onDeleteLocal) {
-              onDeleteLocal(image);
-            }
-          }
-          setShowDeleteConfirm(false);
-        }}
+        onConfirm={handleDelete}
         isSaving={isDeleting}
       />
     </>

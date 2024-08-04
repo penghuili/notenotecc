@@ -1,7 +1,7 @@
-import React from 'react';
 import { Button, Flex } from '@radix-ui/themes';
+import React from 'react';
 
-export function FormButton({ disabled, isLoading, onClick, children, p }) {
+export const FormButton = React.memo(({ disabled, isLoading, onClick, children, p }) => {
   return (
     <Flex p={p}>
       <Button onClick={onClick} disabled={disabled} loading={isLoading}>
@@ -9,4 +9,4 @@ export function FormButton({ disabled, isLoading, onClick, children, p }) {
       </Button>
     </Flex>
   );
-}
+});

@@ -1,19 +1,18 @@
-import { Box, Spinner } from '@radix-ui/themes';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box } from '@radix-ui/themes';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
-import { imagePathToUrl } from '../lib/imagePathToUrl';
-import { useInView } from '../shared-private/react/hooks/useInView';
+import { imagePathToUrl } from '../lib/imagePathToUrl.js';
+import { useInView } from '../shared-private/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared-private/react/LoadingSkeleton.jsx';
 import { fullScreenImageUrlCat } from '../store/note/noteCats.js';
 import { decryptBlob } from '../store/note/noteNetwork.js';
 import { AudioPlayer } from './AudioPlayer.jsx';
 import { ImageActions } from './ImageActions.jsx';
+import { VideoPlayer } from './VideoPlayer.jsx';
 
-const VideoPlayer = React.lazy(() => import('./VideoPlayer.jsx'));
-
-export const Image = React.memo(
+export const MediaItem = React.memo(
   ({ noteId, encryptedPassword, url, path, size, encryptedSize, type, onDeleteLocal }) => {
     const [showImage, setShowImage] = useState(false);
 
@@ -115,9 +114,7 @@ const InnerImage = React.memo(
         {!!innerUrl && (
           <>
             {type === 'video/webm' && (
-              <Suspense fallback={<Spinner />}>
-                <VideoPlayer src={innerUrl} onLoad={handleLoaded} hidden={isLoading} />
-              </Suspense>
+              <VideoPlayer src={innerUrl} onLoad={handleLoaded} hidden={isLoading} />
             )}
 
             {type === 'audio/webm' && (

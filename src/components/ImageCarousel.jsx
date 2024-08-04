@@ -3,7 +3,7 @@ import './ImageCarousel.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { isMobile } from '../shared-private/react/device';
-import { Image } from './Image.jsx';
+import { MediaItem } from './MediaItem.jsx';
 
 export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDeleteLocal }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -147,7 +147,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           >
-            <Image
+            <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
               url={image.url}

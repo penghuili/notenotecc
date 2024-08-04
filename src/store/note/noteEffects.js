@@ -246,10 +246,10 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
 export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
   isDeletingNoteCat.set(true);
 
-  const { error } = await deleteNote(noteId);
+  const { data } = await deleteNote(noteId);
 
-  if (!error) {
-    updateStates({ sortKey: noteId }, 'delete');
+  if (data) {
+    updateStates(data, 'delete');
 
     setToastEffect('Deleted!');
 
