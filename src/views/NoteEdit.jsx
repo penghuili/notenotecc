@@ -1,17 +1,16 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCat } from 'usecat';
+import { createCat, useCat } from 'usecat';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { scrollToTop } from '../lib/scrollToTop.js';
+import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { goBackEffect } from '../shared-private/react/store/sharedEffects.js';
 import {
   isAddingImagesCat,
   isLoadingNoteCat,
@@ -23,27 +22,81 @@ import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/not
 export function NoteEdit() {
   const { noteId } = useParams();
 
+  useScrollToTop();
+
+  useEffect(() => {
+    fetchNoteEffect(noteId);
+  }, [noteId]);
+
+  return (
+    <>
+      <Header noteId={noteId} />
+
+      <AddImage noteId={noteId} />
+
+      <Form noteId={noteId} />
+
+      <Images noteId={noteId} />
+    </>
+  );
+}
+
+const descriptionCat = createCat('');
+const albumDescriptionCat = createCat('');
+const selectedAlbumSortKeysCat = createCat([]);
+
+const Header = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
   const isLoading = useCat(isLoadingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
+
+  const description = useCat(descriptionCat);
+  const albumDescription = useCat(albumDescriptionCat);
+  const selectedAlbumSortKeys = useCat(selectedAlbumSortKeysCat);
+
+  const isDisabled = useMemo(
+    () => (!noteItem?.images?.length && !description) || isUpdating,
+    [noteItem?.images?.length, description, isUpdating]
+  );
+
+  const handleSend = useCallback(() => {
+    updateNoteEffect(noteId, {
+      encryptedPassword: noteItem?.encryptedPassword,
+      note: description || null,
+      albumDescription: albumDescription || null,
+      albumIds: selectedAlbumSortKeys,
+      goBack: false,
+      onSucceeded: () => {
+        albumDescriptionCat.set('');
+      },
+    });
+  }, [albumDescription, description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
+
+  const submitButton = useMemo(
+    () => (
+      <IconButton disabled={isDisabled} onClick={handleSend} mr="2">
+        <RiSendPlaneLine />
+      </IconButton>
+    ),
+    [handleSend, isDisabled]
+  );
+
+  return (
+    <PageHeader
+      title="Update note"
+      isLoading={isLoading || isAddingImages || isUpdating}
+      fixed
+      hasBack
+      right={submitButton}
+    />
+  );
+});
+
+const AddImage = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
-  const [images, setImages] = useState([]);
-  const [note, setNote] = useState('');
-  const [currentSelectedKeys, setCurrentSelectedKeys] = useState(null);
-  const [selectedAlbumSortKeys, setSelectedAlbumSortKeys] = useState([]);
-  const [newAlbumDescription, setNewAlbumDescription] = useState('');
   const [showCamera, setShowCamera] = useState(false);
-
-  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
-    if (newAlbum !== undefined) {
-      setNewAlbumDescription(newAlbum);
-    }
-
-    if (selectedKeys !== undefined) {
-      setSelectedAlbumSortKeys(selectedKeys);
-    }
-  }, []);
 
   const handleShowCamera = useCallback(() => {
     setShowCamera(true);
@@ -52,7 +105,7 @@ export function NoteEdit() {
   const handleAddNewImages = useCallback(
     newImages => {
       addImagesEffect(noteId, {
-        encryptedPassword: noteItem.encryptedPassword,
+        encryptedPassword: noteItem?.encryptedPassword,
         images: newImages,
       });
       setShowCamera(false);
@@ -61,91 +114,70 @@ export function NoteEdit() {
   );
 
   const handleCloseCamera = useCallback(() => {
-    goBackEffect();
+    setShowCamera(false);
   }, []);
 
-  useEffect(() => {
-    scrollToTop();
-  }, []);
+  return (
+    <>
+      <IconButton my="4" onClick={handleShowCamera}>
+        <RiImageAddLine />
+      </IconButton>
 
-  useEffect(() => {
-    fetchNoteEffect(noteId);
-  }, [noteId]);
+      {showCamera && <Camera onSelect={handleAddNewImages} onClose={handleCloseCamera} />}
+    </>
+  );
+});
+
+const Form = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
+
+  const description = useCat(descriptionCat);
+
+  const [currentSelectedKeys, setCurrentSelectedKeys] = useState(null);
+
+  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
+    if (newAlbum !== undefined) {
+      albumDescriptionCat.set(newAlbum);
+    }
+
+    if (selectedKeys !== undefined) {
+      selectedAlbumSortKeysCat.set(selectedKeys);
+    }
+  }, []);
 
   useEffect(() => {
     if (!noteItem) {
       return;
     }
 
-    setImages(noteItem.images || []);
-    setNote(noteItem.note || '');
+    descriptionCat.set(noteItem.note || '');
+    selectedAlbumSortKeysCat.set((noteItem.albumIds || []).map(a => a.albumId));
     setCurrentSelectedKeys((noteItem.albumIds || []).map(a => a.albumId).join('/'));
-    setSelectedAlbumSortKeys((noteItem.albumIds || []).map(a => a.albumId));
   }, [noteItem]);
 
-  const submitButton = useMemo(
-    () => (
-      <IconButton
-        disabled={(!images?.length && !note) || isUpdating}
-        onClick={() => {
-          updateNoteEffect(noteId, {
-            encryptedPassword: noteItem?.encryptedPassword,
-            note,
-            albumDescription: newAlbumDescription || null,
-            albumIds: selectedAlbumSortKeys,
-            goBack: false,
-            onSucceeded: () => {
-              setNewAlbumDescription('');
-            },
-          });
-        }}
-        mr="2"
-      >
-        <RiSendPlaneLine />
-      </IconButton>
-    ),
-    [
-      images?.length,
-      isUpdating,
-      newAlbumDescription,
-      note,
-      noteId,
-      noteItem?.encryptedPassword,
-      selectedAlbumSortKeys,
-    ]
+  return (
+    <ItemsWrapper>
+      <AreaField autofocus value={description} onChange={descriptionCat.set} />
+
+      {currentSelectedKeys !== null && (
+        <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumsChange} />
+      )}
+    </ItemsWrapper>
   );
+});
+
+const Images = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
+
+  if (!noteItem?.images?.length) {
+    return null;
+  }
 
   return (
-    <>
-      <PageHeader
-        title="Update note"
-        isLoading={isLoading || isAddingImages || isUpdating}
-        fixed
-        hasBack
-        right={submitButton}
-      />
-
-      <IconButton my="4" onClick={handleShowCamera}>
-        <RiImageAddLine />
-      </IconButton>
-
-      <ItemsWrapper>
-        <AreaField autofocus value={note} onChange={setNote} />
-
-        {currentSelectedKeys !== null && (
-          <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumsChange} />
-        )}
-      </ItemsWrapper>
-
-      {!!images?.length && (
-        <ImageCarousel
-          noteId={noteId}
-          encryptedPassword={noteItem?.encryptedPassword}
-          images={images}
-        />
-      )}
-
-      {showCamera && <Camera onSelect={handleAddNewImages} onCancel={handleCloseCamera} />}
-    </>
+    <ImageCarousel
+      noteId={noteId}
+      encryptedPassword={noteItem?.encryptedPassword}
+      images={noteItem.images}
+    />
   );
-}
+});

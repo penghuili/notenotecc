@@ -1,10 +1,10 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiSendPlaneLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useCat } from 'usecat';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { createCat, useCat } from 'usecat';
 import { useParams } from 'wouter';
 
-import { scrollToTop } from '../lib/scrollToTop.js';
+import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
@@ -13,33 +13,26 @@ import { updateAlbumEffect } from '../store/album/albumEffects';
 export const AlbumEdit = React.memo(() => {
   const { albumId } = useParams();
 
-  const album = useAlbum(albumId);
-
-  const [title, setTitle] = useState('');
-
-  useEffect(() => {
-    scrollToTop();
-  }, []);
-
-  useEffect(() => {
-    if (!album) {
-      return;
-    }
-
-    setTitle(album.title);
-  }, [album]);
+  useScrollToTop();
 
   return (
     <>
-      <Header albumId={albumId} title={title} encryptedPassword={album?.encryptedPassword} />
+      <Header albumId={albumId} />
 
-      <InputField value={title} onChange={setTitle} />
+      <Form albumId={albumId} />
     </>
   );
 });
 
-const Header = React.memo(({ albumId, encryptedPassword, title }) => {
+const titleCat = createCat('');
+const encryptedPasswordCat = createCat('');
+
+const Header = React.memo(({ albumId }) => {
   const isUpdating = useCat(isUpdatingAlbumCat);
+  const title = useCat(titleCat);
+  const encryptedPassword = useCat(encryptedPasswordCat);
+
+  const hasTitle = useMemo(() => !!title, [title]);
 
   const handleSend = useCallback(() => {
     updateAlbumEffect(albumId, {
@@ -49,17 +42,43 @@ const Header = React.memo(({ albumId, encryptedPassword, title }) => {
     });
   }, [albumId, encryptedPassword, title]);
 
-  return (
-    <PageHeader
-      title="Edit album"
-      isLoading={isUpdating}
-      fixed
-      hasBack
-      right={
-        <IconButton disabled={isUpdating || !title} onClick={handleSend} mr="2">
-          <RiSendPlaneLine />
-        </IconButton>
-      }
-    />
+  const rightElement = useMemo(
+    () => (
+      <IconButton disabled={isUpdating || !hasTitle} onClick={handleSend} mr="2">
+        <RiSendPlaneLine />
+      </IconButton>
+    ),
+    [handleSend, isUpdating, hasTitle]
   );
+
+  return (
+    <PageHeader title="Edit album" isLoading={isUpdating} fixed hasBack right={rightElement} />
+  );
+});
+
+const Form = React.memo(({ albumId }) => {
+  const album = useAlbum(albumId);
+  const title = useCat(titleCat);
+
+  const handleChange = useCallback(title => {
+    titleCat.set(title);
+  }, []);
+
+  useEffect(() => {
+    if (!album) {
+      return;
+    }
+
+    titleCat.set(album.title);
+    encryptedPasswordCat.set(album.encryptedPassword);
+  }, [album]);
+
+  useEffect(() => {
+    return () => {
+      titleCat.set('');
+      encryptedPasswordCat.set('');
+    };
+  }, []);
+
+  return <InputField value={title} onChange={handleChange} />;
 });

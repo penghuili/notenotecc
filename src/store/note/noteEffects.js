@@ -122,6 +122,7 @@ export async function createNoteEffect({
   goBack,
 }) {
   isCreatingNoteCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await createNote({
     note,
@@ -157,6 +158,7 @@ export async function updateNoteEffect(
   { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
 ) {
   isUpdatingNoteCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await updateNote(noteId, {
     encryptedPassword,
@@ -187,6 +189,7 @@ export async function updateNoteEffect(
 
 export async function encryptExistingNoteEffect(note) {
   isUpdatingNoteCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await encryptExistingNote(note);
 
@@ -224,6 +227,7 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
 
 export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
   isAddingImagesCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
 

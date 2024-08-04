@@ -47,6 +47,7 @@ export async function fetchAlbumsEffect(force) {
 
 export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   isCreatingAlbumCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await createAlbum({ title });
   if (data) {
@@ -70,6 +71,7 @@ export async function updateAlbumEffect(
   { encryptedPassword, title, position, onSucceeded, goBack }
 ) {
   isUpdatingAlbumCat.set(true);
+  setToastEffect('Encrypting ...');
 
   const { data } = await updateAlbum(albumId, {
     encryptedPassword,

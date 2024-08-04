@@ -3,6 +3,7 @@ import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React from 'react';
 import { useCat } from 'usecat';
 
+import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { Reorder } from '../shared-private/react/Reorder.jsx';
@@ -17,6 +18,8 @@ export function Albums() {
   const isDeleting = useCat(isDeletingAlbumCat);
   const albums = useCat(albumsCat);
   const account = useCat(userCat);
+
+  useScrollToTop();
 
   const noalbumSortKey = `album_noalbum_${account?.id}`;
   return (

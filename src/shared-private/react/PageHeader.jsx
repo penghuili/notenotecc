@@ -26,7 +26,7 @@ const Content = styled(Flex)`
   z-index: 1;
 `;
 const Placeholder = styled.div`
-  height: 58px;
+  height: 60px;
 `;
 
 export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
