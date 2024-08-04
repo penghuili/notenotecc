@@ -75,6 +75,18 @@ export function clearAuthErrorEffect() {
   authErrorCat.set(null);
 }
 
+async function handleWindowFocus() {
+  try {
+    await HTTP.refreshTokenIfNecessary(2 * 60 * 1000);
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+
+  const isLogged = isLoggedInCat.get();
+  if (isLogged) {
+    await fetchSettingsEffect(true);
+  }
+}
+
 export function initEffect() {
   isCheckingRefreshTokenCat.set(true);
 
@@ -83,12 +95,7 @@ export function initEffect() {
   isLoggedInEffect(isValid);
   isCheckingRefreshTokenCat.set(false);
 
-  window.addEventListener('focus', async () => {
-    try {
-      await HTTP.refreshTokenIfNecessary(2 * 60 * 1000);
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  });
+  window.addEventListener('focus', handleWindowFocus);
 }
 
 export async function signUpEffect(email, password) {

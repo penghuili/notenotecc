@@ -1,3 +1,4 @@
+import { isNewer } from '../../lib/isNewer';
 import { formatDate } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
 import { settingsCat } from '../../shared-private/react/store/sharedCats';
@@ -36,22 +37,17 @@ import {
 const notesChangedAtKey = 'notenote-notesChangedAt';
 
 export async function fetchNotesEffect(startKey, force) {
-  const notesInState = notesCat.get();
-  if (notesInState?.items?.length && !force) {
+  if (!force && notesCat.get()?.items?.length) {
     return;
   }
 
-  const settings = settingsCat.get();
-  if (!startKey) {
+  if (!force && !startKey) {
     const cachedNotes = await noteCache.getCachedItems();
     if (cachedNotes?.items?.length) {
       notesCat.set(cachedNotes);
 
-      if (!force) {
-        const lastChangedAt = LocalStorage.get(notesChangedAtKey);
-        if (lastChangedAt && settings?.notesChangedAt <= lastChangedAt) {
-          return;
-        }
+      if (!isNewer(settingsCat.get()?.notesChangedAt, LocalStorage.get(notesChangedAtKey))) {
+        return;
       }
     }
   }
@@ -66,7 +62,7 @@ export async function fetchNotesEffect(startKey, force) {
       hasMore: data.hasMore,
     });
 
-    LocalStorage.set(notesChangedAtKey, settings?.notesChangedAt);
+    LocalStorage.set(notesChangedAtKey, settingsCat.get()?.notesChangedAt);
   }
 
   isLoadingNotesCat.set(false);
@@ -89,20 +85,19 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 }
 
 export async function fetchNoteEffect(noteId) {
-  const noteInState = noteCat.get();
-  if (noteInState?.sortKey === noteId) {
+  if (noteCat.get()?.sortKey === noteId) {
     return;
   }
 
   const cachedNote = await noteCache.getCachedItem(noteId);
-  if (cachedNote?.sortKey === noteId) {
+  if (cachedNote?.sortKey === noteId && isNewer(cachedNote?.updatedAt, noteCat.get()?.updatedAt)) {
     noteCat.set(cachedNote);
   }
 
   isLoadingNoteCat.set(true);
 
   const { data } = await fetchNote(noteId);
-  if (data) {
+  if (data && isNewer(data.updatedAt, noteCat.get()?.updatedAt)) {
     noteCat.set(data);
   }
 
