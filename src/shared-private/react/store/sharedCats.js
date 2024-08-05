@@ -2,10 +2,10 @@ import { createCat, useCat } from 'usecat';
 
 export const toastTypes = {
   normal: 'normal',
+  info: 'info',
   critical: 'critical',
 };
 
-export const isCheckingRefreshTokenCat = createCat(true);
 export const isLoggedInCat = createCat(false);
 export const authErrorCat = createCat(null);
 export const isSigningUpCat = createCat(false);
@@ -27,6 +27,10 @@ export const isDeletingAccountCat = createCat(false);
 export const isChangingEmailCat = createCat(false);
 export const isChangingPasswordCat = createCat(false);
 
+export function useUserCreatedAt() {
+  const user = useCat(userCat);
+  return user?.createdAt;
+}
 export function useExpiresAt() {
   const settings = useCat(settingsCat);
   return settings?.expiresAt;

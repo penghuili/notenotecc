@@ -17,7 +17,11 @@ export function useAlbumsObject() {
 
 export function useAlbum(albumId) {
   const albums = useCat(albumsCat);
-  const album = useMemo(() => albums?.find(album => album?.sortKey === albumId), [albums, albumId]);
+  const album = useMemo(() => findAlbum(albums, albumId), [albums, albumId]);
 
   return album;
+}
+
+export function findAlbum(albums, albumId) {
+  return albums?.find(album => album?.sortKey === albumId);
 }

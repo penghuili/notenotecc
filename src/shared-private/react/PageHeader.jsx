@@ -12,7 +12,7 @@ import { goBackEffect, navigateEffect } from './store/sharedEffects';
 const Wrapper = styled(Flex)`
   width: ${props => props.width}px;
   height: 56px;
-  padding: 0.5rem;
+  padding: 0.5rem 0.25rem;
   z-index: ${props => props.zindex};
   left: 0;
   top: 0;

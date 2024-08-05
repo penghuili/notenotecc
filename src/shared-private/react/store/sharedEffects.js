@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast';
 import { resetAllCats } from 'usecat';
 
+import { isNewer } from '../../js/date';
 import { httpErrorCodes } from '../../js/httpErrorCodes';
 import { isValidEmail } from '../../js/regex';
 import { eventEmitter, eventEmitterEvents } from '../eventEmitter';
@@ -13,7 +14,6 @@ import {
   authErrorCat,
   isChangingEmailCat,
   isChangingPasswordCat,
-  isCheckingRefreshTokenCat,
   isDeletingAccountCat,
   isDisabling2FACat,
   isEnabling2FACat,
@@ -64,8 +64,14 @@ export function navigateEffect(path, isReplace) {
 }
 
 export function setToastEffect(message, type) {
+  toast.dismiss();
+
   if (type === toastTypes.critical) {
     toast.error(message);
+  } else if (type === toastTypes.info) {
+    toast.success(message, {
+      icon: '⌛',
+    });
   } else {
     toast.success(message);
   }
@@ -83,19 +89,19 @@ async function handleWindowFocus() {
 
   const isLogged = isLoggedInCat.get();
   if (isLogged) {
-    await fetchSettingsEffect(true);
+    await fetchSettingsEffect();
   }
 }
 
-export function initEffect() {
-  isCheckingRefreshTokenCat.set(true);
-
+export async function initEffect() {
   const { isValid } = checkRefreshToken();
-
   isLoggedInEffect(isValid);
-  isCheckingRefreshTokenCat.set(false);
 
   window.addEventListener('focus', handleWindowFocus);
+
+  if (isValid) {
+    await fetchAccountEffect();
+  }
 }
 
 export async function signUpEffect(email, password) {
@@ -278,45 +284,66 @@ export function isLoggedInEffect(loggedIn) {
   }
 }
 
-export async function fetchAccountEffect(silent) {
-  const cachedAccount = LocalStorage.get(`${appName}-account`);
-  if (cachedAccount) {
-    userCat.set(cachedAccount);
+async function forceFetchAccountEffect() {
+  if (isLoadingAccountCat.get()) {
+    return;
   }
 
-  if (!silent && !cachedAccount) {
-    isLoadingAccountCat.set(true);
-  }
+  isLoadingAccountCat.set(true);
 
   const { data } = await fetchAccount();
 
   if (data) {
-    userCat.set(data);
+    if (isNewer(data.updatedAt, userCat.get()?.updatedAt)) {
+      userCat.set(data);
+    }
   }
 
   isLoadingAccountCat.set(false);
 }
 
-export async function fetchSettingsEffect(silent) {
+export async function fetchAccountEffect() {
+  const cachedAccount = LocalStorage.get(`${appName}-account`);
+  if (cachedAccount) {
+    userCat.set(cachedAccount);
+  }
+
+  if (cachedAccount) {
+    forceFetchAccountEffect();
+  } else {
+    await forceFetchAccountEffect();
+  }
+}
+
+async function forceFetchSettingsEffect() {
+  if (isLoadingSettingsCat.get()) {
+    return;
+  }
+
+  isLoadingSettingsCat.set(true);
+
+  const { data } = await fetchSettings();
+
+  if (data) {
+    if (isNewer(data.updatedAt, settingsCat.get()?.updatedAt)) {
+      settingsCat.set(data);
+    }
+    eventEmitter.emit(eventEmitterEvents.settingsFetched, data);
+  }
+
+  isLoadingSettingsCat.set(false);
+}
+
+export async function fetchSettingsEffect() {
   const cachedSettings = LocalStorage.get(`${appName}-settings`);
   if (cachedSettings) {
     settingsCat.set(cachedSettings);
   }
 
-  if (!silent && !cachedSettings) {
-    isLoadingSettingsCat.set(true);
-  }
-
-  const { data } = await fetchSettings();
-
-  if (data) {
-    settingsCat.set(data);
-
-    eventEmitter.emit(eventEmitterEvents.settingsFetched, data);
-  }
-
-  if (!silent) {
-    isLoadingSettingsCat.set(false);
+  if (cachedSettings) {
+    forceFetchSettingsEffect();
+  } else {
+    await forceFetchSettingsEffect();
   }
 }
 

@@ -1,31 +1,41 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiSendPlaneLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 import { useParams } from 'wouter';
 
+import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
-import { updateAlbumEffect } from '../store/album/albumEffects';
+import { albumsCat, findAlbum, isUpdatingAlbumCat } from '../store/album/albumCats.js';
+import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
+
+const titleCat = createCat('');
+const encryptedPasswordCat = createCat('');
 
 export const AlbumEdit = React.memo(() => {
   const { albumId } = useParams();
 
+  const load = useCallback(async () => {
+    await fetchAlbumsEffect();
+    const album = findAlbum(albumsCat.get(), albumId);
+    if (album) {
+      titleCat.set(album.title);
+      encryptedPasswordCat.set(album.encryptedPassword);
+    }
+  }, [albumId]);
+
   useScrollToTop();
 
   return (
-    <>
+    <PrepareData load={load}>
       <Header albumId={albumId} />
 
       <Form albumId={albumId} />
-    </>
+    </PrepareData>
   );
 });
-
-const titleCat = createCat('');
-const encryptedPasswordCat = createCat('');
 
 const Header = React.memo(({ albumId }) => {
   const isUpdating = useCat(isUpdatingAlbumCat);
@@ -56,28 +66,11 @@ const Header = React.memo(({ albumId }) => {
   );
 });
 
-const Form = React.memo(({ albumId }) => {
-  const album = useAlbum(albumId);
+const Form = React.memo(() => {
   const title = useCat(titleCat);
 
   const handleChange = useCallback(title => {
     titleCat.set(title);
-  }, []);
-
-  useEffect(() => {
-    if (!album) {
-      return;
-    }
-
-    titleCat.set(album.title);
-    encryptedPasswordCat.set(album.encryptedPassword);
-  }, [album]);
-
-  useEffect(() => {
-    return () => {
-      titleCat.set('');
-      encryptedPasswordCat.set('');
-    };
   }, []);
 
   return <InputField value={title} onChange={handleChange} />;

@@ -12,7 +12,6 @@ export const isDeletingNoteCat = createCat(false);
 export const fullScreenImageUrlCat = createCat(null);
 export const onThisDayNotesCat = createCat({});
 export const isLoadingOnThisDayNotesCat = createCat(false);
-export const randomDateCat = createCat(null);
 
 export function useNote(noteId) {
   const note = useCat(noteCat);

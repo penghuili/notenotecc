@@ -1,7 +1,7 @@
 import { orderByPosition } from '../../shared-private/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
-import { settingsCat } from '../../shared-private/react/store/sharedCats';
+import { settingsCat, toastTypes } from '../../shared-private/react/store/sharedCats';
 import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
 import {
   albumsCat,
@@ -39,7 +39,7 @@ export async function fetchAlbumsEffect(force) {
   if (data) {
     albumsCat.set(data.items);
 
-    LocalStorage.set(albumsChangedAtKey, settings?.albumsChangedAt);
+    LocalStorage.set(albumsChangedAtKey, settingsCat.get()?.albumsChangedAt);
   }
 
   isLoadingAlbumsCat.set(false);
@@ -47,7 +47,7 @@ export async function fetchAlbumsEffect(force) {
 
 export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   isCreatingAlbumCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await createAlbum({ title });
   if (data) {
@@ -71,7 +71,7 @@ export async function updateAlbumEffect(
   { encryptedPassword, title, position, onSucceeded, goBack }
 ) {
   isUpdatingAlbumCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await updateAlbum(albumId, {
     encryptedPassword,

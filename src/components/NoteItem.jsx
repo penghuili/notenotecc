@@ -2,6 +2,7 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
+import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/RouteLink.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
@@ -20,6 +21,16 @@ export const NoteItem = React.memo(({ note, albums }) => {
     const ago = getAgo(new Date(note.createdAt));
     return `${dt}, ${ago}`;
   }, [note?.createdAt]);
+
+  useRerenderDetector(
+    'NoteItem',
+    {
+      note,
+      albums,
+      dateTime,
+    },
+    data => data?.sortKey === 'note_20240805065109_p2nIT3yUr31'
+  );
 
   return (
     <Box mb="8">

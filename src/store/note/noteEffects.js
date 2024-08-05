@@ -1,7 +1,6 @@
-import { isNewer } from '../../lib/isNewer';
-import { formatDate } from '../../shared-private/js/date';
+import { formatDate, isNewer } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
-import { settingsCat } from '../../shared-private/react/store/sharedCats';
+import { settingsCat, toastTypes } from '../../shared-private/react/store/sharedCats';
 import {
   fetchSettingsEffect,
   goBackEffect,
@@ -84,6 +83,17 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
   isLoadingOnThisDayNotesCat.set(false);
 }
 
+async function forceFetchNoteEffect(noteId) {
+  isLoadingNoteCat.set(true);
+
+  const { data } = await fetchNote(noteId);
+  if (data && isNewer(data.updatedAt, noteCat.get()?.updatedAt)) {
+    noteCat.set(data);
+  }
+
+  isLoadingNoteCat.set(false);
+}
+
 export async function fetchNoteEffect(noteId) {
   if (noteCat.get()?.sortKey === noteId) {
     return;
@@ -94,14 +104,7 @@ export async function fetchNoteEffect(noteId) {
     noteCat.set(cachedNote);
   }
 
-  isLoadingNoteCat.set(true);
-
-  const { data } = await fetchNote(noteId);
-  if (data && isNewer(data.updatedAt, noteCat.get()?.updatedAt)) {
-    noteCat.set(data);
-  }
-
-  isLoadingNoteCat.set(false);
+  forceFetchNoteEffect(noteId);
 }
 
 export function setNoteEffect(note) {
@@ -117,7 +120,7 @@ export async function createNoteEffect({
   goBack,
 }) {
   isCreatingNoteCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await createNote({
     note,
@@ -153,7 +156,7 @@ export async function updateNoteEffect(
   { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
 ) {
   isUpdatingNoteCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await updateNote(noteId, {
     encryptedPassword,
@@ -184,7 +187,7 @@ export async function updateNoteEffect(
 
 export async function encryptExistingNoteEffect(note) {
   isUpdatingNoteCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await encryptExistingNote(note);
 
@@ -222,7 +225,7 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
 
 export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
   isAddingImagesCat.set(true);
-  setToastEffect('Encrypting ...');
+  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
 

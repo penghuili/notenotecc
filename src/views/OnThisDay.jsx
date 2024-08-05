@@ -1,4 +1,4 @@
-import { Flex, IconButton, Tabs, Text } from '@radix-ui/themes';
+import { Flex, IconButton, Spinner, Tabs, Text } from '@radix-ui/themes';
 import { RiArrowUpSLine, RiRefreshLine } from '@remixicon/react';
 import {
   addDays,
@@ -11,48 +11,57 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCat } from 'usecat';
+import React, { useCallback, useMemo } from 'react';
+import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
-import { NoteItem } from '../components/NoteItem.jsx';
+import { PrepareData } from '../components/PrepareData.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
 import { randomBetween } from '../shared-private/js/utils.js';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { userCat } from '../shared-private/react/store/sharedCats.js';
-import { useAlbumsObject } from '../store/album/albumCats.js';
-import {
-  isLoadingOnThisDayNotesCat,
-  onThisDayNotesCat,
-  randomDateCat,
-} from '../store/note/noteCats.js';
+import { useUserCreatedAt } from '../shared-private/react/store/sharedCats.js';
+import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
+import { NotesList } from './Notes.jsx';
+
+const tabsCat = createCat([]);
+const activeTabCat = createCat(null);
+const randomDateCat = createCat(null);
 
 export function OnThisDay() {
-  const albumsObject = useAlbumsObject();
-  const user = useCat(userCat);
-  const isLoading = useCat(isLoadingOnThisDayNotesCat);
-  const notes = useCat(onThisDayNotesCat);
-  const randomDate = useCat(randomDateCat);
+  const userCreatedAt = useUserCreatedAt();
 
-  const tabs = useMemo(() => getTabs(user?.createdAt), [user?.createdAt]);
-  const [activeTab, setActiveTab] = useState(tabs[0].value);
-  const currentTabNotes = useMemo(
-    () => getTabNotes(notes, activeTab, randomDate),
-    [notes, activeTab, randomDate]
+  const load = useCallback(async () => {
+    const tabs = getTabs(userCreatedAt);
+
+    tabsCat.set(tabs);
+    activeTabCat.set(tabs[0].value);
+
+    await fetchNotesForDate(tabs[0].date);
+
+    asyncForEach(tabs.slice(1), async tabObj => {
+      await fetchNotesForDate(tabObj.date);
+    });
+  }, [userCreatedAt]);
+
+  return (
+    <PrepareData load={load}>
+      <Header />
+
+      <HistoryTabs />
+
+      <DatePickerForRandomDate />
+
+      <Notes />
+    </PrepareData>
   );
+}
 
-  const handleDatePickerChange = useCallback(date => {
-    randomDateCat.set(date);
-    fetchNotesForDate(date);
-  }, []);
-
-  useEffect(() => {
-    fetchNotes(tabs);
-  }, [tabs]);
+const Header = React.memo(() => {
+  const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
   const rightElement = useMemo(
     () => (
@@ -64,55 +73,83 @@ export function OnThisDay() {
   );
 
   return (
-    <>
-      <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={rightElement} />
-
-      <Tabs.Root
-        defaultValue="account"
-        value={activeTab}
-        onValueChange={async value => {
-          setActiveTab(value);
-        }}
-        mb="4"
-      >
-        <Tabs.List>
-          {tabs.map(tab => (
-            <Tabs.Trigger key={tab.label} value={tab.value}>
-              {tab.label} ({getTabNotes(notes, tab.value, randomDate).length})
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-      </Tabs.Root>
-
-      {activeTab === 'random' && (
-        <Flex direction="column" gap="2" mb="4">
-          <IconButton
-            onClick={() => {
-              const date = getRandomDate(user.createdAt);
-              randomDateCat.set(date);
-              fetchNotesForDate(date);
-            }}
-          >
-            <RiRefreshLine />
-          </IconButton>
-          <DatePicker value={randomDate} onChange={handleDatePickerChange} />
-        </Flex>
-      )}
-
-      {currentTabNotes.length ? (
-        currentTabNotes.map(note => (
-          <NoteItem
-            key={note.sortKey}
-            note={note}
-            albums={note?.albumIds?.map(a => albumsObject[a.albumId])?.filter(Boolean)}
-          />
-        ))
-      ) : (
-        <Text my="2">No notes on this day.</Text>
-      )}
-    </>
+    <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={rightElement} />
   );
-}
+});
+
+const HistoryTabs = React.memo(() => {
+  const notes = useCat(onThisDayNotesCat);
+
+  const tabs = useCat(tabsCat);
+  const activeTab = useCat(activeTabCat);
+  const randomDate = useCat(randomDateCat);
+
+  return (
+    <Tabs.Root defaultValue="account" value={activeTab} onValueChange={activeTabCat.set} mb="4">
+      <Tabs.List>
+        {tabs.map(tab => (
+          <Tabs.Trigger key={tab.label} value={tab.value}>
+            {tab.label} ({getTabNotes(notes, tab.value, randomDate).length})
+          </Tabs.Trigger>
+        ))}
+      </Tabs.List>
+    </Tabs.Root>
+  );
+});
+
+const DatePickerForRandomDate = React.memo(() => {
+  const createdAt = useUserCreatedAt();
+
+  const activeTab = useCat(activeTabCat);
+  const randomDate = useCat(randomDateCat);
+
+  const handleRefreshDate = useCallback(() => {
+    const date = getRandomDate(createdAt);
+    randomDateCat.set(date);
+    fetchNotesForDate(date);
+  }, [createdAt]);
+
+  const handleDatePickerChange = useCallback(date => {
+    randomDateCat.set(date);
+    fetchNotesForDate(date);
+  }, []);
+
+  if (activeTab !== 'random') {
+    return null;
+  }
+
+  return (
+    <Flex direction="column" gap="2" mb="4">
+      <IconButton onClick={handleRefreshDate}>
+        <RiRefreshLine />
+      </IconButton>
+      <DatePicker value={randomDate} onChange={handleDatePickerChange} />
+    </Flex>
+  );
+});
+
+const Notes = React.memo(() => {
+  const isLoading = useCat(isLoadingOnThisDayNotesCat);
+  const notes = useCat(onThisDayNotesCat);
+
+  const activeTab = useCat(activeTabCat);
+  const randomDate = useCat(randomDateCat);
+
+  const currentTabNotes = useMemo(
+    () => getTabNotes(notes, activeTab, randomDate),
+    [notes, activeTab, randomDate]
+  );
+
+  if (currentTabNotes?.length) {
+    return <NotesList notes={currentTabNotes} />;
+  }
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  return <Text my="2">No notes on this day.</Text>;
+});
 
 function parseStartTime(startTime) {
   return startTime ? getUTCTimeNumber(startOfDay(new Date(startTime))) : null;
@@ -198,11 +235,6 @@ function getRandomDate(createdAt) {
   return addDays(new Date(createdAt), randomDays);
 }
 
-async function fetchNotes(tabs) {
-  await asyncForEach(tabs, async tabObj => {
-    await fetchNotesForDate(tabObj.date);
-  });
-}
 async function fetchNotesForDate(date) {
   await fetchOnThisDayNotesEffect(formatDate(date), parseStartTime(date), parseEndTime(date));
 }

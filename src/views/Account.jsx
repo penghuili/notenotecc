@@ -3,6 +3,7 @@ import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
+import { PrepareData } from '../components/PrepareData.jsx';
 import { formatDateTime } from '../shared-private/js/date';
 import { AppVersion } from '../shared-private/react/AppVersion.jsx';
 import { themeCssColor } from '../shared-private/react/AppWrapper.jsx';
@@ -19,11 +20,15 @@ import {
   settingsCat,
   userCat,
 } from '../shared-private/react/store/sharedCats.js';
-import { setToastEffect } from '../shared-private/react/store/sharedEffects';
+import { fetchSettingsEffect, setToastEffect } from '../shared-private/react/store/sharedEffects';
+
+async function load() {
+  await fetchSettingsEffect();
+}
 
 export const Account = React.memo(() => {
   return (
-    <>
+    <PrepareData load={load}>
       <Header />
 
       <AccountInfo />
@@ -42,7 +47,7 @@ export const Account = React.memo(() => {
       <ItemsWrapper align="start">
         <AppVersion />
       </ItemsWrapper>
-    </>
+    </PrepareData>
   );
 });
 

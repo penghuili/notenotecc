@@ -1,8 +1,9 @@
-import { Flex, Spinner } from '@radix-ui/themes';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
-import { Redirect, Route, Switch, useLocation } from 'wouter';
+import { Redirect, Route, Switch } from 'wouter';
 
+import { PrepareData } from './components/PrepareData.jsx';
+import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
@@ -11,12 +12,8 @@ import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
 import { SignIn } from './shared-private/react/SignIn.jsx';
 import { SignUp } from './shared-private/react/SignUp.jsx';
-import {
-  isCheckingRefreshTokenCat,
-  isLoadingAccountCat,
-  isLoggedInCat,
-  useIsEmailVerified,
-} from './shared-private/react/store/sharedCats.js';
+import { isLoggedInCat, useIsEmailVerified } from './shared-private/react/store/sharedCats.js';
+import { initEffect } from './shared-private/react/store/sharedEffects.js';
 import { Verify2FA } from './shared-private/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared-private/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
@@ -30,20 +27,24 @@ import { OnThisDay } from './views/OnThisDay.jsx';
 import { Welcome } from './views/Welcome.jsx';
 
 export function Router() {
-  const isCheckingRefreshToken = useCat(isCheckingRefreshTokenCat);
-  const isLoadingAccount = useCat(isLoadingAccountCat);
+  const prepareData = useCallback(async () => {
+    await initEffect();
+  }, []);
+
+  return (
+    <PrepareData load={prepareData}>
+      <Routes />
+    </PrepareData>
+  );
+}
+
+const Routes = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const isVerified = useIsEmailVerified();
 
-  const [path] = useLocation();
+  const path = `${location.pathname}${location.search}`;
 
-  if (isCheckingRefreshToken || isLoadingAccount) {
-    return (
-      <Flex justify="center" py="8">
-        <Spinner size="3" />
-      </Flex>
-    );
-  }
+  useRerenderDetector('Router', { isLoggedIn, isVerified, path });
 
   if (isLoggedIn) {
     if (!isVerified) {
@@ -100,4 +101,4 @@ export function Router() {
       <Route>{() => <Redirect to="/" />}</Route>
     </Switch>
   );
-}
+});

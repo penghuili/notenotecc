@@ -1,12 +1,14 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
 import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
+import { PrepareData } from '../components/PrepareData.jsx';
+import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
@@ -15,21 +17,32 @@ import {
   isAddingImagesCat,
   isLoadingNoteCat,
   isUpdatingNoteCat,
+  noteCat,
   useNote,
 } from '../store/note/noteCats.js';
 import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
+const descriptionCat = createCat('');
+const albumDescriptionCat = createCat('');
+const selectedAlbumSortKeysCat = createCat([]);
+
 export function NoteEdit() {
   const { noteId } = useParams();
 
-  useScrollToTop();
+  const prepareData = useCallback(async () => {
+    await fetchNoteEffect(noteId);
 
-  useEffect(() => {
-    fetchNoteEffect(noteId);
+    const note = noteCat.get();
+    if (note) {
+      descriptionCat.set(note.note);
+      selectedAlbumSortKeysCat.set(note.selectedAlbumSortKeys);
+    }
   }, [noteId]);
 
+  useScrollToTop();
+
   return (
-    <>
+    <PrepareData load={prepareData}>
       <Header noteId={noteId} />
 
       <AddImage noteId={noteId} />
@@ -37,13 +50,9 @@ export function NoteEdit() {
       <Form noteId={noteId} />
 
       <Images noteId={noteId} />
-    </>
+    </PrepareData>
   );
 }
-
-const descriptionCat = createCat('');
-const albumDescriptionCat = createCat('');
-const selectedAlbumSortKeysCat = createCat([]);
 
 const Header = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
@@ -133,7 +142,15 @@ const Form = React.memo(({ noteId }) => {
 
   const description = useCat(descriptionCat);
 
-  const [currentSelectedKeys, setCurrentSelectedKeys] = useState(null);
+  const currentSelectedKeys = useMemo(() => {
+    return (noteItem?.albumIds || []).map(a => a.albumId).join('/');
+  }, [noteItem?.albumIds]);
+
+  useRerenderDetector('NoteEditForm', {
+    noteItem,
+    description,
+    currentSelectedKeys,
+  });
 
   const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
     if (newAlbum !== undefined) {
@@ -144,16 +161,6 @@ const Form = React.memo(({ noteId }) => {
       selectedAlbumSortKeysCat.set(selectedKeys);
     }
   }, []);
-
-  useEffect(() => {
-    if (!noteItem) {
-      return;
-    }
-
-    descriptionCat.set(noteItem.note || '');
-    selectedAlbumSortKeysCat.set((noteItem.albumIds || []).map(a => a.albumId));
-    setCurrentSelectedKeys((noteItem.albumIds || []).map(a => a.albumId).join('/'));
-  }, [noteItem]);
 
   return (
     <ItemsWrapper>

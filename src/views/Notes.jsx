@@ -1,10 +1,11 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
+import { PrepareData } from '../components/PrepareData.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
@@ -13,13 +14,13 @@ import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/sto
 import { isAddingImagesCat, isLoadingNotesCat, notesCat } from '../store/note/noteCats.js';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
-export function Notes() {
-  useEffect(() => {
-    fetchNotesEffect();
-  }, []);
+async function load() {
+  await fetchNotesEffect();
+}
 
+export function Notes() {
   return (
-    <>
+    <PrepareData load={load}>
       <Header />
 
       <NotesItems />
@@ -27,7 +28,7 @@ export function Notes() {
       <LoadMore />
 
       <Actions />
-    </>
+    </PrepareData>
   );
 }
 
