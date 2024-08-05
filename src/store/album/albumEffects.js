@@ -53,7 +53,7 @@ export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   if (data) {
     albumsCat.set([...albumsCat.get(), data]);
 
-    setToastEffect('Encrypted and created!');
+    setToastEffect('Saved!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -86,7 +86,7 @@ export async function updateAlbumEffect(
     );
     albumsCat.set(newAlbums);
 
-    setToastEffect('Encrypted and updated!');
+    setToastEffect('Saved!');
 
     if (onSucceeded) {
       onSucceeded(data);

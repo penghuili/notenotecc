@@ -136,7 +136,7 @@ export async function createNoteEffect({
     const currentNotes = notesCat.get();
     notesCat.set({ ...currentNotes, items: [data, ...(currentNotes.items || [])] });
 
-    setToastEffect('Encrypted and created!');
+    setToastEffect('Saved!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -172,7 +172,7 @@ export async function updateNoteEffect(
 
     updateStates(data, 'update');
 
-    setToastEffect('Encrypted and updated!');
+    setToastEffect('Saved!');
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -232,7 +232,7 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
   if (data) {
     updateStates(data, 'update');
 
-    setToastEffect('Encrypted and added!');
+    setToastEffect('Saved!');
 
     if (onSucceeded) {
       onSucceeded(data);
