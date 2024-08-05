@@ -1,5 +1,5 @@
 import { Flex, IconButton, Tabs, Text } from '@radix-ui/themes';
-import { RiRefreshLine } from '@remixicon/react';
+import { RiArrowUpSLine, RiRefreshLine } from '@remixicon/react';
 import {
   addDays,
   differenceInCalendarDays,
@@ -16,6 +16,7 @@ import { useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
+import { scrollToTop } from '../lib/scrollToTop.js';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
@@ -53,9 +54,18 @@ export function OnThisDay() {
     fetchNotes(tabs);
   }, [tabs]);
 
+  const rightElement = useMemo(
+    () => (
+      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
+        <RiArrowUpSLine />
+      </IconButton>
+    ),
+    []
+  );
+
   return (
     <>
-      <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />
+      <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={rightElement} />
 
       <Tabs.Root
         defaultValue="account"

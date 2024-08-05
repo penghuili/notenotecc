@@ -1,10 +1,14 @@
 import { useRef } from 'react';
 
-export function useRerenderDetector(componentName, props) {
+export function useRerenderDetector(componentName, props, shouldLog = () => true) {
   const renderCount = useRef(0);
   const previousProps = useRef(props);
 
   if (!import.meta.env.DEV || !import.meta.env.VITE_RERENDER_LOGS) {
+    return;
+  }
+
+  if (!shouldLog(props)) {
     return;
   }
 
