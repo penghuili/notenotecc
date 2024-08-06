@@ -1,11 +1,11 @@
 import { Link } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 export const currentPathCat = createCat(window.location.pathname);
 export const queryParamsCat = createCat(parseSearch(window.location.search));
 
-const routesState = {};
+listenToPopStateChange();
 
 export const navigate = to => {
   window.history.pushState({}, '', to);
@@ -15,23 +15,6 @@ export const navigate = to => {
 };
 
 export const goBack = () => window.history.back();
-
-export function useSetupRouter() {
-  useEffect(() => {
-    const handleLocationChange = () => {
-      console.log('handleLocationChange');
-      const { pathname, search } = window.location;
-      currentPathCat.set(pathname);
-      queryParamsCat.set(parseSearch(search));
-    };
-
-    window.addEventListener('popstate', handleLocationChange);
-
-    return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-    };
-  }, []);
-}
 
 export const RouteLink = React.memo(({ to, children }) => {
   const handleClick = useCallback(
@@ -49,45 +32,6 @@ export const RouteLink = React.memo(({ to, children }) => {
   );
 });
 
-export const Route = React.memo(({ path, component: Component }) => {
-  const currentPath = useCat(currentPathCat);
-  const queryParams = useCat(queryParamsCat);
-
-  const routePath = useMemo(() => path.split('?')[0], [path]);
-  const params = useMemo(() => getPathParams(currentPath, routePath), [currentPath, routePath]);
-
-  if (params) {
-    // eslint-disable-next-line react-compiler/react-compiler
-    routesState[path] = true;
-
-    return <Component pathParams={params} queryParams={queryParams} />;
-  }
-
-  routesState[path] = false;
-
-  return null;
-});
-
-export const DefaultRoute = React.memo(({ to }) => {
-  const currentPath = useCat(currentPathCat);
-
-  const [showDefault, setShowDefault] = useState(false);
-
-  useEffect(() => {
-    if (Object.values(routesState).every(value => !value)) {
-      setShowDefault(true);
-    } else {
-      setShowDefault(false);
-    }
-  }, [currentPath]);
-
-  if (showDefault) {
-    return <Redirect to={to} />;
-  }
-
-  return null;
-});
-
 export const Redirect = React.memo(({ to }) => {
   useEffect(() => {
     navigate(to);
@@ -96,24 +40,58 @@ export const Redirect = React.memo(({ to }) => {
   return null;
 });
 
-function getPathParams(pathname, routePath) {
+export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
+  const currentPath = useCat(currentPathCat);
+  const queryParams = useCat(queryParamsCat);
+
+  const route = useMemo(() => {
+    const route = routes.find(({ path }) => matchPath(currentPath, path));
+    if (!route) {
+      return <Redirect to={defaultRoute} />;
+    }
+
+    const { path, component: Component } = route;
+    const pathParams = getPathParams(currentPath, path);
+    return <Component pathParams={pathParams} queryParams={queryParams} />;
+  }, [currentPath, defaultRoute, queryParams, routes]);
+
+  return route;
+});
+
+function matchPath(realPath, routePath) {
   const routeParts = routePath.split('/');
-  const pathParts = pathname.split('/');
+  const pathParts = realPath.split('/');
 
   if (routeParts.length !== pathParts.length) {
-    return null;
+    return false;
   }
 
-  const params = {};
   const match = routeParts.every((routePart, index) => {
     if (routePart.startsWith(':')) {
-      params[routePart.slice(1)] = pathParts[index];
       return true;
     }
     return routePart === pathParts[index];
   });
 
-  return match ? params : null;
+  return match;
+}
+
+function getPathParams(pathname, routePath) {
+  const routeParts = routePath.split('/');
+  const pathParts = pathname.split('/');
+
+  if (routeParts.length !== pathParts.length) {
+    return {};
+  }
+
+  const params = {};
+  routeParts.forEach((routePart, index) => {
+    if (routePart.startsWith(':')) {
+      params[routePart.slice(1)] = pathParts[index];
+    }
+  });
+
+  return params;
 }
 
 function parseSearch(search) {
@@ -127,4 +105,14 @@ function parseSearch(search) {
   }
 
   return obj;
+}
+
+function listenToPopStateChange() {
+  const handleLocationChange = () => {
+    const { pathname, search } = window.location;
+    currentPathCat.set(pathname);
+    queryParamsCat.set(parseSearch(search));
+  };
+
+  window.addEventListener('popstate', handleLocationChange);
 }

@@ -10,6 +10,7 @@ import { scrollToTop } from '../lib/scrollToTop.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { isLoadingSettingsCat } from '../shared-private/react/store/sharedCats.js';
 import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isAddingImagesCat, isLoadingNotesCat, notesCat } from '../store/note/noteCats.js';
 import { fetchNotesEffect } from '../store/note/noteEffects';
@@ -35,6 +36,7 @@ export function Notes() {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
+  const isLoadingSettings = useCat(isLoadingSettingsCat);
 
   const handleNavigateToHistory = useCallback(() => {
     navigateEffect('/on-this-day');
@@ -44,9 +46,9 @@ const Header = React.memo(() => {
     navigateEffect('/albums');
   }, []);
 
-  const handleFetch = useCallback(() => {
-    fetchNotesEffect(null, true);
-    fetchSettingsEffect(true);
+  const handleFetch = useCallback(async () => {
+    await fetchSettingsEffect(true);
+    await fetchNotesEffect(null, true);
   }, []);
 
   const rightElement = useMemo(
@@ -70,7 +72,7 @@ const Header = React.memo(() => {
 
   return (
     <PageHeader
-      isLoading={isLoading || isAddingImages}
+      isLoading={isLoading || isAddingImages || isLoadingSettings}
       fixed
       title={
         <IconButton onClick={handleFetch} mr="2" variant="soft">

@@ -1,17 +1,13 @@
 import React from 'react';
 import { useCat } from 'usecat';
 
+import { PageLoading } from './components/PageLoading.jsx';
 import { PrepareData } from './components/PrepareData.jsx';
 import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
-import {
-  DefaultRoute,
-  Redirect,
-  Route,
-  useSetupRouter,
-} from './shared-private/react/my-router.jsx';
+import { Redirect, Routes } from './shared-private/react/my-router.jsx';
 import { ResetPassword } from './shared-private/react/ResetPassword.jsx';
 import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
@@ -36,16 +32,43 @@ async function load() {
 }
 
 export function Router() {
-  useSetupRouter();
-
   return (
     <PrepareData load={load}>
-      <Routes />
+      <AllRoutes />
     </PrepareData>
   );
 }
 
-const Routes = React.memo(() => {
+const verifyEmailRoutes = [
+  { path: '/security/email', component: VerifyEmail },
+  { path: '/', component: VerifyEmail },
+];
+const loggedRoutes = [
+  { path: '/notes/add', component: NoteAdd },
+  { path: '/notes/:noteId', component: NoteEdit },
+
+  { path: '/albums/:albumId/edit', component: AlbumEdit },
+  { path: '/albums/:albumId', component: AlbumDetails },
+  { path: '/albums', component: Albums },
+
+  { path: '/account', component: Account },
+  { path: '/on-this-day', component: OnThisDay },
+  { path: '/security', component: Security },
+  { path: '/security/2fa', component: Setup2FA },
+  { path: '/security/email', component: ChangeEmail },
+  { path: '/security/password', component: ChangePassword },
+
+  { path: '/', component: Notes },
+];
+const publicRoutes = [
+  { path: '/sign-up', component: SignUp },
+  { path: '/sign-in', component: SignIn },
+  { path: '/sign-in/2fa', component: Verify2FA },
+  { path: '/reset-password', component: ResetPassword },
+  { path: '/', component: Welcome },
+];
+
+const AllRoutes = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const isVerified = useIsEmailVerified();
 
@@ -55,16 +78,12 @@ const Routes = React.memo(() => {
   useRerenderDetector('Routes', { isLoggedIn, isVerified, pathWithQuery });
 
   if (isLoggedIn) {
+    if (isVerified === undefined) {
+      return <PageLoading />;
+    }
+
     if (!isVerified) {
-      return (
-        <>
-          <Route path="/security/email" component={ChangeEmail} />
-
-          <Route path="/" component={VerifyEmail} />
-
-          <DefaultRoute to="/" />
-        </>
-      );
+      return <Routes routes={verifyEmailRoutes} />;
     }
 
     const redirectUrl = LocalStorage.get(sharedLocalStorageKeys.redirectUrl);
@@ -73,42 +92,12 @@ const Routes = React.memo(() => {
       return <Redirect to={redirectUrl} />;
     }
 
-    return (
-      <>
-        <Route path="/notes/add" component={NoteAdd} />
-        <Route path="/notes/:noteId" component={NoteEdit} />
-
-        <Route path="/albums/:albumId/edit" component={AlbumEdit} />
-        <Route path="/albums/:albumId" component={AlbumDetails} />
-        <Route path="/albums" component={Albums} />
-
-        <Route path="/account" component={Account} />
-        <Route path="/on-this-day" component={OnThisDay} />
-        <Route path="/security" component={Security} />
-        <Route path="/security/2fa" component={Setup2FA} />
-        <Route path="/security/email" component={ChangeEmail} />
-        <Route path="/security/password" component={ChangePassword} />
-
-        <Route path="/" component={Notes} />
-
-        <DefaultRoute to="/" />
-      </>
-    );
+    return <Routes routes={loggedRoutes} />;
   }
 
-  if (!['/', '/sign-up', '/sign-in', '/sign-in/2fa', '/reset-password'].includes(pathname)) {
+  if (!publicRoutes.map(route => route.path).includes(pathname)) {
     LocalStorage.set(sharedLocalStorageKeys.redirectUrl, pathWithQuery);
   }
 
-  return (
-    <>
-      <Route path="/sign-up" component={SignUp} />
-      <Route path="/sign-in" component={SignIn} />
-      <Route path="/sign-in/2fa" component={Verify2FA} />
-      <Route path="/reset-password" component={ResetPassword} />
-      <Route path="/" component={Welcome} />
-
-      <DefaultRoute to="/" />
-    </>
-  );
+  return <Routes routes={publicRoutes} />;
 });

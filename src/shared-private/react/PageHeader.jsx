@@ -10,9 +10,11 @@ import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 
 const Wrapper = styled(Flex)`
-  width: ${props => props.width}px;
+  width: ${props => (props.fixed ? `${props.width}px` : '100%')};
   height: 56px;
-  padding: 0.5rem 0.25rem;
+
+  position: ${props => (props.fixed ? 'fixed' : 'static')};
+  padding: ${props => (props.fixed ? '0.5rem 0.25rem' : '0.5rem 0')};
   z-index: ${props => props.zindex};
   left: 0;
   top: 0;
@@ -22,7 +24,6 @@ const Wrapper = styled(Flex)`
 const Content = styled(Flex)`
   width: 100%;
   max-width: 600px;
-  padding: 0 0.5rem;
   z-index: 1;
 `;
 const Placeholder = styled.div`
@@ -63,9 +64,9 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
       <Wrapper
         justify="center"
         align="center"
-        position={fixed ? 'fixed' : 'static'}
         zindex={2000}
         width={document.documentElement.clientWidth}
+        fixed={fixed ? 'fixed' : ''}
       >
         <Content direction="row" justify="between" pt="3" pb="4">
           <HorizontalCenter gap="2">

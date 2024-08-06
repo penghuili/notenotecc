@@ -299,12 +299,14 @@ async function forceFetchAccountEffect() {
 }
 
 export async function fetchAccountEffect() {
-  const cachedAccount = LocalStorage.get(`${appName}-account`);
-  if (cachedAccount) {
-    userCat.set(cachedAccount);
+  if (!userCat.get()) {
+    const cachedAccount = LocalStorage.get(`${appName}-account`);
+    if (cachedAccount) {
+      userCat.set(cachedAccount);
+    }
   }
 
-  if (cachedAccount) {
+  if (userCat.get()) {
     forceFetchAccountEffect();
   } else {
     await forceFetchAccountEffect();
@@ -330,16 +332,18 @@ async function forceFetchSettingsEffect() {
   isLoadingSettingsCat.set(false);
 }
 
-export async function fetchSettingsEffect() {
-  const cachedSettings = LocalStorage.get(`${appName}-settings`);
-  if (cachedSettings) {
-    settingsCat.set(cachedSettings);
+export async function fetchSettingsEffect(force) {
+  if (!settingsCat.get()) {
+    const cachedSettings = LocalStorage.get(`${appName}-settings`);
+    if (cachedSettings) {
+      settingsCat.set(cachedSettings);
+    }
   }
 
-  if (cachedSettings) {
-    forceFetchSettingsEffect();
-  } else {
+  if (!settingsCat.get() || force) {
     await forceFetchSettingsEffect();
+  } else {
+    forceFetchSettingsEffect();
   }
 }
 

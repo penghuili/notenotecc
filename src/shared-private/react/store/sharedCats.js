@@ -28,18 +28,18 @@ export const isChangingEmailCat = createCat(false);
 export const isChangingPasswordCat = createCat(false);
 
 export function useUserCreatedAt() {
-  const user = useCat(userCat);
-  return user?.createdAt;
+  const createdAt = useCat(userCat, user => user?.createdAt);
+  return createdAt;
 }
 export function useExpiresAt() {
-  const settings = useCat(settingsCat);
-  return settings?.expiresAt;
+  const expiresAt = useCat(settingsCat, settings => settings?.expiresAt);
+  return expiresAt;
 }
 export function useTwoFactorEnabled() {
-  const user = useCat(userCat);
-  return user?.twoFactorEnabled;
+  const twoFactorEnabled = useCat(userCat, user => user?.twoFactorEnabled);
+  return twoFactorEnabled;
 }
 export function useIsEmailVerified() {
-  const user = useCat(userCat);
-  return user?.verified;
+  const verified = useCat(userCat, user => user?.verified);
+  return verified;
 }

@@ -1,5 +1,7 @@
-import { Flex, Spinner, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
+
+import { PageLoading } from './PageLoading.jsx';
 
 const PrepareDataStatus = {
   pending: 'pending',
@@ -22,11 +24,7 @@ export const PrepareData = React.memo(({ load, children }) => {
   }, [load]);
 
   if (status === PrepareDataStatus.pending) {
-    return (
-      <Flex justify="center" py="8">
-        <Spinner size="3" />
-      </Flex>
-    );
+    return <PageLoading />;
   }
 
   if (status === PrepareDataStatus.error) {

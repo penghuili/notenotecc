@@ -145,7 +145,7 @@ export async function createNoteEffect({
       goBackEffect();
     }
 
-    fetchSettingsEffect(true);
+    fetchSettingsEffect();
   }
 
   isCreatingNoteCat.set(false);
@@ -217,7 +217,7 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
       goBackEffect();
     }
 
-    fetchSettingsEffect(true);
+    fetchSettingsEffect();
   }
 
   isDeletingImageCat.set(false);
@@ -241,7 +241,7 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
       goBackEffect();
     }
 
-    fetchSettingsEffect(true);
+    fetchSettingsEffect();
   }
 
   isAddingImagesCat.set(false);
@@ -264,7 +264,7 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
       goBackEffect();
     }
 
-    fetchSettingsEffect(true);
+    fetchSettingsEffect();
   }
 
   isDeletingNoteCat.set(false);
