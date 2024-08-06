@@ -2,7 +2,6 @@ import { IconButton } from '@radix-ui/themes';
 import { RiSendPlaneLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
-import { useParams } from 'wouter';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
@@ -14,9 +13,7 @@ import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffect
 const titleCat = createCat('');
 const encryptedPasswordCat = createCat('');
 
-export const AlbumEdit = React.memo(() => {
-  const { albumId } = useParams();
-
+export const AlbumEdit = React.memo(({ pathParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumsEffect();
     const album = findAlbum(albumsCat.get(), albumId);

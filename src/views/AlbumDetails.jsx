@@ -2,7 +2,6 @@ import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
-import { useParams } from 'wouter';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { scrollToTop } from '../lib/scrollToTop.js';
@@ -14,9 +13,7 @@ import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
 import { NotesList } from './Notes.jsx';
 
-export const AlbumDetails = React.memo(() => {
-  const { albumId } = useParams();
-
+export const AlbumDetails = React.memo(({ pathParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumItemsEffect(albumId, { startKey: null });
   }, [albumId]);

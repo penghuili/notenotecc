@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
-import { RouteLink } from '../shared-private/react/RouteLink.jsx';
+import { RouteLink } from '../shared-private/react/my-router.jsx';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isDeletingAlbumCat } from '../store/album/albumCats';
 import { deleteAlbumEffect } from '../store/album/albumEffects';

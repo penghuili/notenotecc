@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
-import { RouteLink } from '../shared-private/react/RouteLink.jsx';
+import { RouteLink } from '../shared-private/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { NoteActions } from './NoteActions.jsx';
 

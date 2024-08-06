@@ -49,9 +49,6 @@ export default defineConfig(({ mode }) => {
               if (id.includes('plyr')) {
                 return 'plyr';
               }
-              if (id.includes('wouter')) {
-                return 'wouter';
-              }
               if (id.includes('styled-components')) {
                 return 'styled-components';
               }

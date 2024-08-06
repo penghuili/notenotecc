@@ -11,14 +11,11 @@ import { cameraTypes } from '../lib/cameraTypes.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { getQueryParams } from '../shared-private/react/routeHelpers';
 import { goBackEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { isCreatingNoteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';
 
-export function NoteAdd() {
-  const { cameraType } = getQueryParams();
-
+export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
   return (
     <PrepareData>
       <Header />
@@ -28,7 +25,7 @@ export function NoteAdd() {
       <Form cameraType={cameraType} />
     </PrepareData>
   );
-}
+});
 
 const imagesCat = createCat([]);
 const descriptionCat = createCat('');

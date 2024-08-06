@@ -1,12 +1,17 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useCat } from 'usecat';
-import { Redirect, Route, Switch } from 'wouter';
 
 import { PrepareData } from './components/PrepareData.jsx';
 import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
+import {
+  DefaultRoute,
+  Redirect,
+  Route,
+  useSetupRouter,
+} from './shared-private/react/my-router.jsx';
 import { ResetPassword } from './shared-private/react/ResetPassword.jsx';
 import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
@@ -26,13 +31,15 @@ import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
 import { Welcome } from './views/Welcome.jsx';
 
+async function load() {
+  await initEffect();
+}
+
 export function Router() {
-  const prepareData = useCallback(async () => {
-    await initEffect();
-  }, []);
+  useSetupRouter();
 
   return (
-    <PrepareData load={prepareData}>
+    <PrepareData load={load}>
       <Routes />
     </PrepareData>
   );
@@ -42,19 +49,21 @@ const Routes = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const isVerified = useIsEmailVerified();
 
-  const path = `${location.pathname}${location.search}`;
+  const pathname = location.pathname;
+  const pathWithQuery = `${pathname}${location.search}`;
 
-  useRerenderDetector('Router', { isLoggedIn, isVerified, path });
+  useRerenderDetector('Routes', { isLoggedIn, isVerified, pathWithQuery });
 
   if (isLoggedIn) {
     if (!isVerified) {
       return (
-        <Switch>
+        <>
           <Route path="/security/email" component={ChangeEmail} />
 
           <Route path="/" component={VerifyEmail} />
-          <Route>{() => <Redirect to="/" />}</Route>
-        </Switch>
+
+          <DefaultRoute to="/" />
+        </>
       );
     }
 
@@ -65,7 +74,7 @@ const Routes = React.memo(() => {
     }
 
     return (
-      <Switch>
+      <>
         <Route path="/notes/add" component={NoteAdd} />
         <Route path="/notes/:noteId" component={NoteEdit} />
 
@@ -81,24 +90,25 @@ const Routes = React.memo(() => {
         <Route path="/security/password" component={ChangePassword} />
 
         <Route path="/" component={Notes} />
-        <Route>{() => <Redirect to="/" />}</Route>
-      </Switch>
+
+        <DefaultRoute to="/" />
+      </>
     );
   }
 
-  if (!['/sign-up', '/sign-in', '/sign-in/2fa', '/', '/reset-password'].includes(path)) {
-    LocalStorage.set(sharedLocalStorageKeys.redirectUrl, path);
+  if (!['/', '/sign-up', '/sign-in', '/sign-in/2fa', '/reset-password'].includes(pathname)) {
+    LocalStorage.set(sharedLocalStorageKeys.redirectUrl, pathWithQuery);
   }
 
   return (
-    <Switch>
+    <>
       <Route path="/sign-up" component={SignUp} />
       <Route path="/sign-in" component={SignIn} />
       <Route path="/sign-in/2fa" component={Verify2FA} />
       <Route path="/reset-password" component={ResetPassword} />
-
       <Route path="/" component={Welcome} />
-      <Route>{() => <Redirect to="/" />}</Route>
-    </Switch>
+
+      <DefaultRoute to="/" />
+    </>
   );
 });

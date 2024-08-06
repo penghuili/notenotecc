@@ -9,7 +9,7 @@ import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
-import { RouteLink } from './RouteLink.jsx';
+import { RouteLink } from './my-router.jsx';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 

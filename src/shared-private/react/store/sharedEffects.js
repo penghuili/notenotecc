@@ -9,7 +9,7 @@ import { HTTP } from '../HTTP';
 import { idbStorage } from '../indexDB';
 import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
-import { routeHelpers } from '../routeHelpers';
+import { goBack, navigate } from '../my-router.jsx';
 import {
   authErrorCat,
   isChangingEmailCat,
@@ -52,15 +52,11 @@ import {
 } from './sharedNetwork';
 
 export function goBackEffect() {
-  routeHelpers.goBack();
+  goBack();
 }
 
-export function navigateEffect(path, isReplace) {
-  if (isReplace) {
-    routeHelpers.replace(path);
-  } else {
-    routeHelpers.navigate(path);
-  }
+export function navigateEffect(path) {
+  navigate(path);
 }
 
 export function setToastEffect(message, type) {

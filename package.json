@@ -22,8 +22,7 @@
     "react-hot-toast": "2.4.1",
     "spark-md5": "3.0.2",
     "styled-components": "5.3.11",
-    "usecat": "1.0.1",
-    "wouter": "3.3.0"
+    "usecat": "1.0.1"
   },
   "overrides": {
     "react": "19.0.0-rc-8269d55d-20240802",

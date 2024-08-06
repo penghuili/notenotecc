@@ -12,9 +12,9 @@ import { getFileSizeString } from '../shared-private/react/file';
 import { HorizontalCenter } from '../shared-private/react/HorizontalCenter.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared-private/react/LogoutLink.jsx';
+import { RouteLink } from '../shared-private/react/my-router.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { PaymentStatus } from '../shared-private/react/PaymentStatus.jsx';
-import { RouteLink } from '../shared-private/react/RouteLink.jsx';
 import {
   isLoadingAccountCat,
   settingsCat,

@@ -2,7 +2,6 @@ import { IconButton } from '@radix-ui/themes';
 import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
-import { useParams } from 'wouter';
 
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
@@ -26,9 +25,7 @@ const descriptionCat = createCat('');
 const albumDescriptionCat = createCat('');
 const selectedAlbumSortKeysCat = createCat([]);
 
-export function NoteEdit() {
-  const { noteId } = useParams();
-
+export const NoteEdit = React.memo(({ pathParams: { noteId } }) => {
   const prepareData = useCallback(async () => {
     await fetchNoteEffect(noteId);
 
@@ -52,7 +49,7 @@ export function NoteEdit() {
       <Images noteId={noteId} />
     </PrepareData>
   );
-}
+});
 
 const Header = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);

@@ -5,8 +5,8 @@ import { DeleteAccountLink } from './DeleteAccountLink.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
+import { RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { RouteLink } from './RouteLink.jsx';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 

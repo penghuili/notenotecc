@@ -6,9 +6,9 @@ import { errorColor } from './AppWrapper.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
+import { RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { RouteLink } from './RouteLink.jsx';
 import { authErrorCat, isSigningInCat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, signInEffect } from './store/sharedEffects';
 
