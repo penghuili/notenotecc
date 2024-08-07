@@ -14,6 +14,6 @@ export const onThisDayNotesCat = createCat({});
 export const isLoadingOnThisDayNotesCat = createCat(false);
 
 export function useNote(noteId) {
-  const note = useCat(noteCat);
-  return note?.sortKey === noteId ? note : null;
+  const note = useCat(noteCat, data => (data?.sortKey === noteId ? data : null));
+  return note;
 }

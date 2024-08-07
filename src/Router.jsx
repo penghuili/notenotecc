@@ -7,14 +7,14 @@ import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared-private/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared-private/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared-private/react/LocalStorage';
-import { Redirect, Routes } from './shared-private/react/my-router.jsx';
+import { Routes } from './shared-private/react/my-router.jsx';
 import { ResetPassword } from './shared-private/react/ResetPassword.jsx';
 import { Security } from './shared-private/react/Security.jsx';
 import { Setup2FA } from './shared-private/react/Setup2FA.jsx';
 import { SignIn } from './shared-private/react/SignIn.jsx';
 import { SignUp } from './shared-private/react/SignUp.jsx';
 import { isLoggedInCat, useIsEmailVerified } from './shared-private/react/store/sharedCats.js';
-import { initEffect } from './shared-private/react/store/sharedEffects.js';
+import { initEffect, navigateEffect } from './shared-private/react/store/sharedEffects.js';
 import { Verify2FA } from './shared-private/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared-private/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
@@ -75,23 +75,27 @@ const AllRoutes = React.memo(() => {
   const pathname = location.pathname;
   const pathWithQuery = `${pathname}${location.search}`;
 
-  useRerenderDetector('Routes', { isLoggedIn, isVerified, pathWithQuery });
+  useRerenderDetector('AllRoutes', { isLoggedIn, isVerified, pathWithQuery });
 
   if (isLoggedIn) {
     if (isVerified === undefined) {
+      console.log('page loading');
       return <PageLoading />;
     }
 
     if (!isVerified) {
+      console.log('verify email');
       return <Routes routes={verifyEmailRoutes} />;
     }
 
     const redirectUrl = LocalStorage.get(sharedLocalStorageKeys.redirectUrl);
     if (redirectUrl) {
+      console.log('redirecting to', redirectUrl);
       LocalStorage.remove(sharedLocalStorageKeys.redirectUrl);
-      return <Redirect to={redirectUrl} />;
+      navigateEffect(redirectUrl);
     }
 
+    console.log('logged in');
     return <Routes routes={loggedRoutes} />;
   }
 
@@ -99,5 +103,6 @@ const AllRoutes = React.memo(() => {
     LocalStorage.set(sharedLocalStorageKeys.redirectUrl, pathWithQuery);
   }
 
+  console.log('public');
   return <Routes routes={publicRoutes} />;
 });

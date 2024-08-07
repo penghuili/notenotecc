@@ -16,8 +16,7 @@ export function useAlbumsObject() {
 }
 
 export function useAlbum(albumId) {
-  const albums = useCat(albumsCat);
-  const album = useMemo(() => findAlbum(albums, albumId), [albums, albumId]);
+  const album = useCat(albumsCat, albums => findAlbum(albums, albumId));
 
   return album;
 }

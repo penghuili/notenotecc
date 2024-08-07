@@ -94,10 +94,6 @@ export async function initEffect() {
   isLoggedInEffect(isValid);
 
   window.addEventListener('focus', handleWindowFocus);
-
-  if (isValid) {
-    await fetchAccountEffect();
-  }
 }
 
 export async function signUpEffect(email, password) {
@@ -119,7 +115,6 @@ export async function signUpEffect(email, password) {
     }
   } else {
     isLoggedInEffect(true);
-    navigateEffect('/');
   }
 
   isSigningUpCat.set(false);
@@ -170,8 +165,7 @@ export async function signInEffect(email, password) {
     if (data.tempToken) {
       navigateEffect('/sign-in/2fa');
     } else {
-      isLoggedInEffect(!!data);
-      navigateEffect('/');
+      isLoggedInEffect(true);
     }
   }
 
@@ -183,7 +177,7 @@ export async function skip2FAEffect() {
 
   const { data } = await skip2FA();
   if (data) {
-    isLoggedInEffect(!!data);
+    isLoggedInEffect(true);
     setToastEffect('2FA is skipped.');
   }
 
@@ -193,7 +187,7 @@ export async function skip2FAEffect() {
 export async function verify2FAEffect(code) {
   isVerifying2FACat.set(true);
 
-  const { data, error } = await verify2FA(code);
+  const { error } = await verify2FA(code);
   if (error) {
     if (error.errorCode === httpErrorCodes.UNAUTHORIZED) {
       authErrorCat.set('Your session is expired, please go back to sign in again.');
@@ -203,8 +197,7 @@ export async function verify2FAEffect(code) {
       authErrorCat.set('Sign in failed.');
     }
   } else {
-    isLoggedInEffect(!!data);
-    navigateEffect('/');
+    isLoggedInEffect(true);
   }
 
   isVerifying2FACat.set(false);
@@ -274,9 +267,7 @@ export function isLoggedInEffect(loggedIn) {
     eventEmitter.emit(eventEmitterEvents.loggedIn);
     authErrorCat.set('');
     fetchAccountEffect();
-    if (appName) {
-      fetchSettingsEffect();
-    }
+    fetchSettingsEffect();
   }
 }
 

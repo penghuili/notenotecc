@@ -32,14 +32,6 @@ export const RouteLink = React.memo(({ to, children }) => {
   );
 });
 
-export const Redirect = React.memo(({ to }) => {
-  useEffect(() => {
-    navigate(to);
-  }, [to]);
-
-  return null;
-});
-
 export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
   const currentPath = useCat(currentPathCat);
   const queryParams = useCat(queryParamsCat);
@@ -47,13 +39,19 @@ export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
   const route = useMemo(() => {
     const route = routes.find(({ path }) => matchPath(currentPath, path));
     if (!route) {
-      return <Redirect to={defaultRoute} />;
+      return null;
     }
 
     const { path, component: Component } = route;
     const pathParams = getPathParams(currentPath, path);
     return <Component pathParams={pathParams} queryParams={queryParams} />;
-  }, [currentPath, defaultRoute, queryParams, routes]);
+  }, [currentPath, queryParams, routes]);
+
+  useEffect(() => {
+    if (!route) {
+      navigate(defaultRoute);
+    }
+  }, [defaultRoute, route]);
 
   return route;
 });
