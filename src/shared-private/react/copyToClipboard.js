@@ -1,5 +1,10 @@
-import copy from 'copy-to-clipboard';
+export async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
 
-export function copyToClipboard(text) {
-  copy(text);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 }

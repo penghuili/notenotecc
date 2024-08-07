@@ -1,5 +1,5 @@
 import { apps } from '../js/apps';
-import { eventEmitter } from './eventEmitter';
+import { eventEmitter, eventEmitterEvents } from './eventEmitter';
 import { appName } from './initShared';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage';
 import { toastTypes } from './store/sharedCats';
@@ -158,14 +158,10 @@ export const HTTP = {
     });
     LocalStorage.saveTokens(data);
     isRefreshing = false;
-    eventEmitter.emit('refreshed');
+    eventEmitter.emit(eventEmitterEvents.refreshed);
   },
 
   async waitForRefresh() {
-    return new Promise(resolve => {
-      eventEmitter.once('refreshed', () => {
-        resolve(true);
-      });
-    });
+    await eventEmitter.wait(eventEmitterEvents.refreshed);
   },
 };

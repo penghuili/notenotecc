@@ -61,8 +61,8 @@ const AccountInfo = React.memo(() => {
   const account = useCat(userCat);
   const settings = useCat(settingsCat);
 
-  const handleCopyUserId = useCallback(() => {
-    copyToClipboard(account.id);
+  const handleCopyUserId = useCallback(async () => {
+    await copyToClipboard(account.id);
     setToastEffect('Copied!');
   }, [account.id]);
 
