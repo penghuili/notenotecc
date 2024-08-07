@@ -9,7 +9,7 @@ const PrepareDataStatus = {
   ready: 'ready',
 };
 
-export const PrepareData = React.memo(({ load, children }) => {
+export const PrepareData = React.memo(({ load, children, source }) => {
   const [status, setStatus] = useState(PrepareDataStatus.pending);
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export const PrepareData = React.memo(({ load, children }) => {
   }, [load]);
 
   if (status === PrepareDataStatus.pending) {
+    console.log('PrepareData loading source:', source);
     return <PageLoading />;
   }
 

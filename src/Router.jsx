@@ -33,7 +33,7 @@ async function load() {
 
 export function Router() {
   return (
-    <PrepareData load={load}>
+    <PrepareData load={load} source="Router">
       <AllRoutes />
     </PrepareData>
   );
@@ -84,18 +84,15 @@ const AllRoutes = React.memo(() => {
     }
 
     if (!isVerified) {
-      console.log('verify email');
       return <Routes routes={verifyEmailRoutes} />;
     }
 
     const redirectUrl = LocalStorage.get(sharedLocalStorageKeys.redirectUrl);
     if (redirectUrl) {
-      console.log('redirecting to', redirectUrl);
       LocalStorage.remove(sharedLocalStorageKeys.redirectUrl);
       navigateEffect(redirectUrl);
     }
 
-    console.log('logged in');
     return <Routes routes={loggedRoutes} />;
   }
 
@@ -103,6 +100,5 @@ const AllRoutes = React.memo(() => {
     LocalStorage.set(sharedLocalStorageKeys.redirectUrl, pathWithQuery);
   }
 
-  console.log('public');
   return <Routes routes={publicRoutes} />;
 });

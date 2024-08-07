@@ -20,7 +20,7 @@ async function load() {
 
 export function Notes() {
   return (
-    <PrepareData load={load}>
+    <PrepareData load={load} source="Notes">
       <Header />
 
       <NotesItems />
