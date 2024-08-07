@@ -6,9 +6,9 @@ import { createCat, useCat } from 'usecat';
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
+import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { cameraTypes } from '../lib/cameraTypes.js';
-import { AreaField } from '../shared-private/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { goBackEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
@@ -110,7 +110,11 @@ const Form = React.memo(({ cameraType }) => {
     <ItemsWrapper>
       <AddImage cameraType={cameraType} />
 
-      <AreaField autofocus={!cameraType} value={description} onChange={descriptionCat.set} />
+      <MarkdownEditor
+        autofocus={!cameraType}
+        defaultValue={description}
+        onChange={descriptionCat.set}
+      />
 
       <AlbumsSelector onChange={handleAlbumsChange} />
     </ItemsWrapper>

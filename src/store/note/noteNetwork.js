@@ -54,7 +54,7 @@ export async function fetchNote(noteId) {
 
     const decrypted = await decryptNote(note);
 
-    LocalStorage.set(localStorageKeys.note, note.sortKey);
+    LocalStorage.set(localStorageKeys.note, decrypted);
 
     return {
       data: decrypted,

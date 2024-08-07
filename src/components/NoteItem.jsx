@@ -1,19 +1,12 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
+import { MarkdownEditor } from './MarkdownEditor/index.jsx';
 import { NoteActions } from './NoteActions.jsx';
-
-const Description = styled.pre`
-  margin: 0;
-  padding: 0;
-  white-space: pre-wrap;
-  font-family: var(--default-font-family);
-`;
 
 export const NoteItem = React.memo(({ note, albums }) => {
   const dateTime = useMemo(() => {
@@ -50,7 +43,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
         />
       )}
 
-      {!!note.note && <Description>{note.note}</Description>}
+      {!!note.note && <MarkdownEditor defaultValue={note.note} readOnly />}
 
       {!!albums?.length && (
         <Flex wrap="wrap">
