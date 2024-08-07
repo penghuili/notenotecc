@@ -1,3 +1,4 @@
+import { localStorageKeys } from '../../lib/constants';
 import { orderByPosition } from '../../shared-private/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
@@ -10,7 +11,7 @@ import {
   isLoadingAlbumsCat,
   isUpdatingAlbumCat,
 } from './albumCats';
-import { albumCache, createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
+import { createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
 
 const albumsChangedAtKey = 'notenote-albumsChangedAt';
 
@@ -21,7 +22,7 @@ export async function fetchAlbumsEffect(force) {
   }
 
   const settings = settingsCat.get();
-  const cachedAlbums = await albumCache.getCachedItems();
+  const cachedAlbums = LocalStorage.get(localStorageKeys.albums);
   if (cachedAlbums?.length) {
     albumsCat.set(cachedAlbums);
 

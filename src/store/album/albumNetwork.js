@@ -1,3 +1,4 @@
+import { localStorageKeys } from '../../lib/constants';
 import {
   decryptMessageAsymmetric,
   decryptMessageSymmetric,
@@ -6,14 +7,10 @@ import {
 } from '../../shared-private/js/encryption';
 import { generatePassword } from '../../shared-private/js/generatePassword';
 import { orderByPosition } from '../../shared-private/js/position';
-import { createItemsCache } from '../../shared-private/react/cacheItems';
 import { HTTP } from '../../shared-private/react/HTTP';
-import { idbStorage } from '../../shared-private/react/indexDB';
 import { appName } from '../../shared-private/react/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared-private/react/LocalStorage';
 import { objectToQueryString } from '../../shared-private/react/routeHelpers';
-
-export const albumCache = createItemsCache('notenotecc-album');
 
 export async function fetchAlbums() {
   try {
@@ -21,7 +18,7 @@ export async function fetchAlbums() {
     const sorted = orderByPosition(albums, true);
 
     const decrypted = await Promise.all(sorted.map(album => decryptAlbum(album)));
-    await albumCache.cacheItems(decrypted);
+    LocalStorage.set(localStorageKeys.albums, decrypted);
 
     return {
       data: { items: decrypted },
@@ -46,7 +43,7 @@ export async function fetchAlbumItems(albumId, { startKey }) {
     );
 
     if (!startKey) {
-      await idbStorage.setItem(albumId, decrypted);
+      LocalStorage.set(albumId, decrypted);
     }
 
     return {
@@ -78,7 +75,7 @@ export async function createAlbum({ title }) {
 
     const decrypted = await decryptAlbum(data);
 
-    await updateCache(decrypted, 'create');
+    updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -97,7 +94,7 @@ export async function updateAlbum(albumId, { encryptedPassword, title, position 
 
     const decrypted = await decryptAlbum(data);
 
-    await updateCache(decrypted, 'update');
+    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -109,7 +106,7 @@ export async function deleteAlbum(albumId) {
   try {
     const data = await HTTP.delete(appName, `/v1/albums/${albumId}`);
 
-    await updateCache({ sortKey: albumId }, 'delete');
+    updateCache({ sortKey: albumId }, 'delete');
 
     return { data, error: null };
   } catch (error) {
@@ -117,8 +114,8 @@ export async function deleteAlbum(albumId) {
   }
 }
 
-async function updateCache(album, type) {
-  const cachedItems = (await albumCache.getCachedItems()) || [];
+function updateCache(album, type) {
+  const cachedItems = LocalStorage.get(localStorageKeys.albums) || [];
 
   let newItems = cachedItems;
   if (type === 'update') {
@@ -132,7 +129,7 @@ async function updateCache(album, type) {
     newItems = [album, ...cachedItems];
   }
 
-  await albumCache.cacheItems(newItems);
+  LocalStorage.set(localStorageKeys.albums, newItems);
 }
 
 export async function decryptAlbum(album) {

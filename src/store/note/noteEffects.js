@@ -1,3 +1,4 @@
+import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
 import { settingsCat, toastTypes } from '../../shared-private/react/store/sharedCats';
@@ -29,7 +30,6 @@ import {
   encryptExistingNote,
   fetchNote,
   fetchNotes,
-  noteCache,
   updateNote,
 } from './noteNetwork';
 
@@ -41,7 +41,7 @@ export async function fetchNotesEffect(startKey, force) {
   }
 
   if (!force && !startKey) {
-    const cachedNotes = await noteCache.getCachedItems();
+    const cachedNotes = LocalStorage.get(localStorageKeys.notes);
     if (cachedNotes?.items?.length) {
       notesCat.set(cachedNotes);
 
@@ -99,7 +99,7 @@ export async function fetchNoteEffect(noteId) {
     return;
   }
 
-  const cachedNote = await noteCache.getCachedItem(noteId);
+  const cachedNote = LocalStorage.get(localStorageKeys.note);
   if (cachedNote?.sortKey === noteId && isNewer(cachedNote?.updatedAt, noteCat.get()?.updatedAt)) {
     noteCat.set(cachedNote);
   }
@@ -291,7 +291,7 @@ function updateStates(newNote, type) {
   if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
     albumItemsCat.set({
       ...albumItems,
-      items: fn(albumItems.items || [], newNote),
+      items: fn(albumItems.items, newNote),
     });
   }
 

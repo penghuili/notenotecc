@@ -1,12 +1,10 @@
-import { idbStorage } from '../../shared-private/react/indexDB';
+import { LocalStorage } from '../../shared-private/react/LocalStorage';
 import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 
 export async function fetchAlbumItemsEffect(albumId, { startKey }) {
-  isLoadingAlbumItemsCat.set(true);
-
   if (!startKey) {
-    const cachedAlbumItems = await idbStorage.getItem(albumId);
+    const cachedAlbumItems = LocalStorage.get(albumId);
     if (cachedAlbumItems?.length) {
       albumItemsCat.set({
         items: cachedAlbumItems,
@@ -17,13 +15,23 @@ export async function fetchAlbumItemsEffect(albumId, { startKey }) {
     }
   }
 
+  if (albumItemsCat.get()?.items?.length) {
+    forceFetchAlbumItemsEffect(albumId, { startKey });
+  } else {
+    await fetchAlbumItemsEffect(albumId, { startKey });
+  }
+}
+
+async function forceFetchAlbumItemsEffect(albumId, { startKey }) {
+  isLoadingAlbumItemsCat.set(true);
+
   const { data } = await fetchAlbumItems(albumId, { startKey });
   if (data) {
     albumItemsCat.set({
       items: startKey ? [...albumItemsCat.get().items, ...data.items] : data.items,
+      albumId,
       startKey: data.startKey,
       hasMore: data.hasMore,
-      albumId,
     });
   }
 

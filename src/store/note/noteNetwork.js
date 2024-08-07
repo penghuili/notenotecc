@@ -1,3 +1,4 @@
+import { localStorageKeys } from '../../lib/constants';
 import { fetchFileWithUrl } from '../../lib/fetchFileWithUrl';
 import { imagePathToUrl } from '../../lib/imagePathToUrl';
 import { asyncForEach } from '../../shared-private/js/asyncForEach';
@@ -8,7 +9,6 @@ import {
   encryptMessageSymmetric,
 } from '../../shared-private/js/encryption';
 import { generatePassword } from '../../shared-private/js/generatePassword';
-import { createItemsCache } from '../../shared-private/react/cacheItems';
 import { blobToUint8Array, uint8ArrayToBlob } from '../../shared-private/react/file';
 import { HTTP } from '../../shared-private/react/HTTP';
 import { appName } from '../../shared-private/react/initShared';
@@ -21,8 +21,6 @@ import {
   decryptPassword,
   encryptMessageWithEncryptedPassword,
 } from '../album/albumNetwork';
-
-export const noteCache = createItemsCache('notenotecc-note');
 
 export async function fetchNotes(startKey, startTime, endTime) {
   try {
@@ -41,7 +39,7 @@ export async function fetchNotes(startKey, startTime, endTime) {
       hasMore: items.length >= limit,
     };
     if (!startKey && !startTime && !endTime) {
-      await noteCache.cacheItems(data);
+      LocalStorage.set(localStorageKeys.notes, data);
     }
 
     return { data, error: null };
@@ -56,7 +54,7 @@ export async function fetchNote(noteId) {
 
     const decrypted = await decryptNote(note);
 
-    await noteCache.cacheItem(note.sortKey, decrypted);
+    LocalStorage.set(localStorageKeys.note, note.sortKey);
 
     return {
       data: decrypted,
@@ -161,7 +159,7 @@ export async function encryptExistingNote(note) {
 
     const decrypted = await decryptNote(encrypted);
 
-    await updateCache(decrypted, 'update');
+    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -201,7 +199,7 @@ export async function createNote({ note, images, albumIds, albumDescription }) {
 
     const decrypted = await decryptNote(data);
 
-    await updateCache(decrypted, 'create');
+    updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -222,7 +220,7 @@ export async function updateNote(noteId, { encryptedPassword, note, albumIds, al
 
     const decrypted = await decryptNote(data);
 
-    await updateCache(decrypted, 'update');
+    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -238,7 +236,7 @@ export async function deleteImage(noteId, imagePath) {
 
     const decrypted = await decryptNote(data);
 
-    await updateCache(decrypted, 'update');
+    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -256,7 +254,7 @@ export async function addImages(noteId, { encryptedPassword, images }) {
 
     const decrypted = await decryptNote(data);
 
-    await updateCache(decrypted, 'update');
+    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -268,7 +266,7 @@ export async function deleteNote(noteId) {
   try {
     const data = await HTTP.delete(appName, `/v1/notes/${noteId}`);
 
-    await updateCache({ sortKey: noteId }, 'delete');
+    updateCache({ sortKey: noteId }, 'delete');
 
     return { data, error: null };
   } catch (error) {
@@ -276,8 +274,8 @@ export async function deleteNote(noteId) {
   }
 }
 
-async function updateCache(note, type) {
-  const cachedItems = (await noteCache.getCachedItems()) || [];
+function updateCache(note, type) {
+  const cachedItems = LocalStorage.get(localStorageKeys.notes) || [];
 
   let newItems = cachedItems?.items;
   if (!newItems) {
@@ -292,7 +290,7 @@ async function updateCache(note, type) {
     newItems = [note, ...newItems];
   }
 
-  await noteCache.cacheItems({ ...cachedItems, items: newItems });
+  LocalStorage.set(localStorageKeys.notes, { ...cachedItems, items: newItems });
 }
 
 export async function encryptBlob(password, blob) {
