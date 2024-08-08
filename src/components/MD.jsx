@@ -36,7 +36,8 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
   useEffect(() => {
     if (editorRef.current) {
       const parsed = parseMarkdown(text);
-      if (parsed !== editorRef.current.innerHTML) {
+      const noTrailingSpaces = removeTrailingSpacesFromMarkdownTags(parsed);
+      if (noTrailingSpaces !== editorRef.current.innerHTML) {
         editorRef.current.innerHTML = parsed;
         restoreCursorPosition(editorRef.current, cursorPositionRef.current);
         editorRef.current.focus();
@@ -74,7 +75,7 @@ export const convertToMarkdown = html => {
 
 export function renderMarkdown(markdown) {
   const html = parseMarkdown(markdown);
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 const Wrapper = styled.div`
@@ -145,6 +146,13 @@ const parseMarkdown = input => {
   return parsed;
 };
 
+const removeTrailingSpacesFromMarkdownTags = input => {
+  // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
+  const parsed = input.replace(/(<(strong|em|del|code)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
+
+  return parsed;
+};
+
 const handleEnterKey = () => {
   const selection = window.getSelection();
   if (selection.rangeCount > 0) {
@@ -175,10 +183,14 @@ const handleSpaceKey = () => {
     let currentNode =
       startContainer.nodeType === Node.TEXT_NODE ? startContainer.parentNode : startContainer;
 
-    if (supportedTags.includes(currentNode.nodeName)) {
+    if (
+      supportedTags.includes(currentNode.nodeName) &&
+      has1TrailingSpaces(currentNode.textContent)
+    ) {
+      currentNode.textContent = currentNode.textContent.replace(/(\s|&nbsp;){1,}$/, '');
+
       const span = document.createElement('span');
       span.innerHTML = '&nbsp;';
-      span.setAttribute('data-markdown-space', 'true');
       currentNode.parentNode.insertBefore(span, currentNode.nextSibling);
 
       const newRange = document.createRange();
@@ -281,9 +293,43 @@ const restoreCursorPosition = (element, position) => {
   traverseNodes(element);
 
   if (targetNode) {
+    let currentNode = targetNode;
+    while (currentNode !== element) {
+      if (supportedTags.includes(currentNode.nodeName)) {
+        const textContent = targetNode.textContent;
+
+        // Check for two or more spaces (including non-breaking spaces) at the end
+        if (has2TrailingSpaces(textContent)) {
+          // Remove the trailing spaces
+          targetNode.textContent = textContent.replace(/(\s|&nbsp;){2,}$/, '');
+        }
+        // Move the cursor outside the formatted element
+        if (currentNode.nextSibling) {
+          targetNode = currentNode.nextSibling;
+          targetOffset = 1;
+        } else {
+          const span = document.createElement('span');
+          span.innerHTML = '&nbsp;'; // Non-breaking space inside a span
+          currentNode.parentNode.insertBefore(span, currentNode.nextSibling);
+          targetNode = span.firstChild;
+          targetOffset = 1;
+        }
+        break;
+      }
+      currentNode = currentNode.parentNode;
+    }
+
     range.setStart(targetNode, targetOffset);
     range.collapse(true);
     selection.removeAllRanges();
     selection.addRange(range);
   }
+};
+
+const has1TrailingSpaces = text => {
+  return /\s{1,}$/.test(text) || /(&nbsp;){1,}$/.test(text);
+};
+
+const has2TrailingSpaces = text => {
+  return /\s{2,}$/.test(text) || /(&nbsp;){2,}$/.test(text);
 };

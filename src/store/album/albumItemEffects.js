@@ -18,7 +18,7 @@ export async function fetchAlbumItemsEffect(albumId, { startKey }) {
   if (albumItemsCat.get()?.items?.length) {
     forceFetchAlbumItemsEffect(albumId, { startKey });
   } else {
-    await fetchAlbumItemsEffect(albumId, { startKey });
+    await forceFetchAlbumItemsEffect(albumId, { startKey });
   }
 }
 

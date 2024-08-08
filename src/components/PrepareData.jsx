@@ -20,7 +20,10 @@ export const PrepareData = React.memo(({ load, children, source }) => {
 
     load()
       .then(() => setStatus(PrepareDataStatus.ready))
-      .catch(() => setStatus(PrepareDataStatus.error));
+      .catch(e => {
+        console.log(e);
+        setStatus(PrepareDataStatus.error);
+      });
   }, [load]);
 
   if (status === PrepareDataStatus.pending) {

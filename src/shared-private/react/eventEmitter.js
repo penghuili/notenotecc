@@ -15,6 +15,9 @@ export const eventEmitter = {
     };
     document.addEventListener(type, handleEvent);
   },
+  off: (type, callback) => {
+    document.removeEventListener(type, callback);
+  },
   wait: async type => {
     return new Promise(resolve => {
       const handleEvent = event => {
