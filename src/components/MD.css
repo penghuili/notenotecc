@@ -1,0 +1,36 @@
+/* src/MarkdownEditor.css */
+.markdown-editor {
+  width: 100%;
+}
+
+.editor {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.editor[contenteditable='true'] {
+  box-shadow: inset 0 0 0 1px var(--gray-a7);
+  border-radius: var(--radius-2);
+  padding: 10px;
+  min-height: 200px;
+}
+
+.editor[contenteditable='true']:focus {
+  outline: 2px solid var(--focus-8);
+  outline-offset: -1px;
+  border-radius: var(--radius-2);
+}
+
+.editor h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.editor h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.editor ul {
+  margin-left: 20px;
+}

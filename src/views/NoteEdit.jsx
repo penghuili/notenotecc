@@ -6,7 +6,7 @@ import { createCat, useCat } from 'usecat';
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
+import { MarkdownEditor } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
@@ -161,7 +161,7 @@ const Form = React.memo(({ noteId }) => {
 
   return (
     <ItemsWrapper>
-      <MarkdownEditor autoFocus defaultValue={description} onChange={descriptionCat.set} />
+      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
 
       {currentSelectedKeys !== null && (
         <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumsChange} />

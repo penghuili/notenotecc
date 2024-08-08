@@ -6,7 +6,7 @@ import { createCat, useCat } from 'usecat';
 import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
+import { MarkdownEditor } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
@@ -112,7 +112,7 @@ const Form = React.memo(({ cameraType }) => {
 
       <MarkdownEditor
         autofocus={!cameraType}
-        defaultValue={description}
+        defaultText={description}
         onChange={descriptionCat.set}
       />
 
