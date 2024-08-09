@@ -11,6 +11,8 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { FilePicker } from './FilePicker.jsx';
+import { pickedPhotoCat } from './PickPhoto.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -35,8 +37,12 @@ export const Actions = React.memo(() => {
     navigateEffect(`/notes/add?cameraType=${cameraTypes.takeAudio}`);
   }, []);
 
-  const handlePickPhoto = useCallback(() => {
-    navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
+  const handlePickPhoto = useCallback(photo => {
+    if (photo) {
+      pickedPhotoCat.set(photo);
+
+      navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
+    }
   }, []);
 
   const handleTakeNote = useCallback(() => {
@@ -54,9 +60,13 @@ export const Actions = React.memo(() => {
       <IconButton size="4" onClick={handleTakeAudio}>
         <RiSpeakLine />
       </IconButton>
-      <IconButton size="4" onClick={handlePickPhoto}>
-        <RiImageAddLine />
-      </IconButton>
+
+      <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
+        <IconButton size="4">
+          <RiImageAddLine />
+        </IconButton>
+      </FilePicker>
+
       <IconButton size="4" onClick={handleTakeNote}>
         <RiStickyNoteAddLine />
       </IconButton>

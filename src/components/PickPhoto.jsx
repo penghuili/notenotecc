@@ -1,7 +1,8 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import { RiCropLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
 
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
@@ -19,8 +20,10 @@ const CropperWrapper = styled.div`
   justify-content: center;
 `;
 
+export const pickedPhotoCat = createCat(null);
+
 export const PickPhoto = React.memo(({ onSelect }) => {
-  const [pickedImage, setPickedImage] = useState(null);
+  const pickedPhoto = useCat(pickedPhotoCat);
 
   const cropperRef = useRef(null);
 
@@ -29,28 +32,28 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const blob = await canvasToBlob(canvas, 'image/webp', 0.8);
     const imageUrl = canvas.toDataURL('image/webp');
     onSelect({ blob, url: imageUrl, size: blob.size, type: 'image/webp' });
-    setPickedImage(null);
+    pickedPhotoCat.set(null);
   }, [onSelect]);
 
   const handleSquare = useCallback(async () => {
-    const squareCanvas = await makeImageSquare(pickedImage);
+    const squareCanvas = await makeImageSquare(pickedPhoto);
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, 'image/webp', 0.8);
     const imageUrl = resizedCanvas.toDataURL('image/webp');
     onSelect({ blob, url: imageUrl, type: 'image/webp' });
-    setPickedImage(null);
-  }, [onSelect, pickedImage]);
+    pickedPhotoCat.set(null);
+  }, [onSelect, pickedPhoto]);
 
   const size = getCameraSize();
 
   return (
     <VideoWrapper>
       <CropperWrapper size={size}>
-        <ImageCropper ref={cropperRef} width={size} pickedImage={pickedImage} />
+        <ImageCropper ref={cropperRef} width={size} pickedImage={pickedPhoto} />
       </CropperWrapper>
 
       <Flex justify="center" align="center" py="2" gap="2">
-        {pickedImage ? (
+        {pickedPhoto ? (
           <>
             <IconButton size="4" onClick={handleCrop}>
               <RiCropLine />
@@ -60,7 +63,12 @@ export const PickPhoto = React.memo(({ onSelect }) => {
             </IconButton>
           </>
         ) : (
-          <FilePicker accept="image/*" takePhoto={false} onSelect={setPickedImage} height="auto">
+          <FilePicker
+            accept="image/*"
+            takePhoto={false}
+            onSelect={pickedPhotoCat.set}
+            height="auto"
+          >
             <IconButton size="4">
               <RiImageAddLine />
             </IconButton>
