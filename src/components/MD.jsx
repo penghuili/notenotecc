@@ -2,8 +2,6 @@ import { Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { setToastEffect } from '../shared-private/react/store/sharedEffects';
-
 const supportedTags = ['EM', 'STRONG', 'B', 'DEL', 'CODE', 'I'];
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
@@ -14,7 +12,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
 
   const handleKeyDown = useCallback(e => {
     if (e.key === 'Enter') {
-      setToastEffect('enter key pressed');
       e.preventDefault();
       handleEnterKey();
     }

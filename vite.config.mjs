@@ -31,6 +31,9 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: false,
     },
+    optimizeDeps: {
+      exclude: ['@ffmpeg/ffmpeg'],
+    },
     build: {
       chunkSizeWarningLimit: 800,
       rollupOptions: {
@@ -46,8 +49,14 @@ export default defineConfig(({ mode }) => {
               if (id.includes('openpgp')) {
                 return 'openpgp';
               }
+              if (id.includes('@ffmpeg/ffmpeg')) {
+                return 'ffmpeg';
+              }
               if (id.includes('plyr')) {
                 return 'plyr';
+              }
+              if (id.includes('file-saver')) {
+                return 'file-saver';
               }
               if (id.includes('styled-components')) {
                 return 'styled-components';
