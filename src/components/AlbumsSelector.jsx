@@ -1,6 +1,6 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
-import React, { useCallback, useState } from 'react';
-import { useCat } from 'usecat';
+import React, { useCallback } from 'react';
+import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { InputField } from '../shared-private/react/InputField.jsx';
@@ -13,43 +13,38 @@ const checkboxRootStyle = {
   gap: '0.75rem',
 };
 
-export const AlbumsSelector = React.memo(({ currentSelectedKeys, onChange }) => {
-  const [newAlbum, setNewAlbum] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState(
-    (currentSelectedKeys || '').split('/').filter(Boolean)
-  );
+export const albumDescriptionCat = createCat('');
+export const albumSelectedKeysCat = createCat([]);
+
+export const AlbumsSelector = React.memo(() => {
+  const description = useCat(albumDescriptionCat);
+  const selectedKeys = useCat(albumSelectedKeysCat);
 
   const albums = useCat(albumsCat);
 
   useRerenderDetector('AlbumsSelector', {
-    currentSelectedKeys,
-    onChange,
-    newAlbum,
+    description,
     selectedKeys,
     albums,
   });
 
-  const handleNewAlbumChange = useCallback(
-    value => {
-      setNewAlbum(value);
-      onChange({ newAlbum: value });
-    },
-    [onChange]
-  );
-  const handleSelectedKeysChange = useCallback(
-    value => {
-      setSelectedKeys(value);
-      onChange({ selectedKeys: value });
-    },
-    [onChange]
-  );
+  const handleNewAlbumChange = useCallback(value => {
+    albumDescriptionCat.set(value);
+  }, []);
+  const handleSelectedKeysChange = useCallback(value => {
+    albumSelectedKeysCat.set(value);
+  }, []);
 
   return (
     <div>
       <Text style={titleStyle}>Albums</Text>
 
       <Box p="1.5px">
-        <InputField placeholder="New album name" value={newAlbum} onChange={handleNewAlbumChange} />
+        <InputField
+          placeholder="New album name"
+          value={description}
+          onChange={handleNewAlbumChange}
+        />
       </Box>
 
       {!!albums?.length && (

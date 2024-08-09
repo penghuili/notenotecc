@@ -126,7 +126,7 @@ function updateCache(album, type) {
   } else if (type === 'delete') {
     newItems = cachedItems.filter(item => item.sortKey !== album.sortKey);
   } else if (type === 'create') {
-    newItems = [album, ...cachedItems];
+    newItems = [...cachedItems, album];
   }
 
   LocalStorage.set(localStorageKeys.albums, newItems);

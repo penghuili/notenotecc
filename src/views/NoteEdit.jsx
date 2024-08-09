@@ -3,7 +3,11 @@ import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
+import {
+  albumDescriptionCat,
+  albumSelectedKeysCat,
+  AlbumsSelector,
+} from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MD.jsx';
@@ -22,8 +26,6 @@ import {
 import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
-const albumDescriptionCat = createCat('');
-const selectedAlbumSortKeysCat = createCat([]);
 
 export const NoteEdit = React.memo(({ pathParams: { noteId } }) => {
   const prepareData = useCallback(async () => {
@@ -32,7 +34,7 @@ export const NoteEdit = React.memo(({ pathParams: { noteId } }) => {
     const note = noteCat.get();
     if (note) {
       descriptionCat.set(note.note);
-      selectedAlbumSortKeysCat.set(note.selectedAlbumSortKeys);
+      albumSelectedKeysCat.set((note?.albumIds || []).map(a => a.albumId));
     }
   }, [noteId]);
 
@@ -59,7 +61,7 @@ const Header = React.memo(({ noteId }) => {
 
   const description = useCat(descriptionCat);
   const albumDescription = useCat(albumDescriptionCat);
-  const selectedAlbumSortKeys = useCat(selectedAlbumSortKeysCat);
+  const selectedAlbumSortKeys = useCat(albumSelectedKeysCat);
 
   const isDisabled = useMemo(
     () => (!noteItem?.images?.length && !description) || isUpdating,
@@ -149,23 +151,11 @@ const Form = React.memo(({ noteId }) => {
     currentSelectedKeys,
   });
 
-  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
-    if (newAlbum !== undefined) {
-      albumDescriptionCat.set(newAlbum);
-    }
-
-    if (selectedKeys !== undefined) {
-      selectedAlbumSortKeysCat.set(selectedKeys);
-    }
-  }, []);
-
   return (
     <ItemsWrapper>
       <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
 
-      {currentSelectedKeys !== null && (
-        <AlbumsSelector currentSelectedKeys={currentSelectedKeys} onChange={handleAlbumsChange} />
-      )}
+      <AlbumsSelector />
     </ItemsWrapper>
   );
 });

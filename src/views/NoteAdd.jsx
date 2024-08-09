@@ -3,7 +3,11 @@ import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { AlbumsSelector } from '../components/AlbumsSelector.jsx';
+import {
+  albumDescriptionCat,
+  albumSelectedKeysCat,
+  AlbumsSelector,
+} from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MD.jsx';
@@ -29,15 +33,13 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
 
 const imagesCat = createCat([]);
 const descriptionCat = createCat('');
-const albumDescriptionCat = createCat('');
-const selectedAlbumSortKeysCat = createCat([]);
 
 const Header = React.memo(() => {
   const isCreating = useCat(isCreatingNoteCat);
   const images = useCat(imagesCat);
   const description = useCat(descriptionCat);
   const albumDescription = useCat(albumDescriptionCat);
-  const selectedAlbumSortKeys = useCat(selectedAlbumSortKeysCat);
+  const selectedAlbumSortKeys = useCat(albumSelectedKeysCat);
 
   const handleSend = useCallback(async () => {
     await createNoteEffect({
@@ -49,7 +51,7 @@ const Header = React.memo(() => {
       onSucceeded: () => {
         imagesCat.reset();
         descriptionCat.reset();
-        selectedAlbumSortKeysCat.reset();
+        albumSelectedKeysCat.reset();
         albumDescriptionCat.reset();
         navigateEffect('/');
       },
@@ -96,16 +98,6 @@ const Images = React.memo(() => {
 const Form = React.memo(({ cameraType }) => {
   const description = useCat(descriptionCat);
 
-  const handleAlbumsChange = useCallback(({ newAlbum, selectedKeys }) => {
-    if (newAlbum !== undefined) {
-      albumDescriptionCat.set(newAlbum);
-    }
-
-    if (selectedKeys !== undefined) {
-      selectedAlbumSortKeysCat.set(selectedKeys);
-    }
-  }, []);
-
   return (
     <ItemsWrapper>
       <AddImage cameraType={cameraType} />
@@ -116,7 +108,7 @@ const Form = React.memo(({ cameraType }) => {
         onChange={descriptionCat.set}
       />
 
-      <AlbumsSelector onChange={handleAlbumsChange} />
+      <AlbumsSelector />
     </ItemsWrapper>
   );
 });
