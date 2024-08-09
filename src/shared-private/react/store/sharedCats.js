@@ -1,11 +1,5 @@
 import { createCat, useCat } from 'usecat';
 
-export const toastTypes = {
-  normal: 'normal',
-  info: 'info',
-  critical: 'critical',
-};
-
 export const isLoggedInCat = createCat(false);
 export const authErrorCat = createCat(null);
 export const isSigningUpCat = createCat(false);

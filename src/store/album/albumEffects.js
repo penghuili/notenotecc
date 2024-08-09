@@ -2,8 +2,9 @@ import { localStorageKeys } from '../../lib/constants';
 import { orderByPosition } from '../../shared-private/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared-private/react/eventEmitter';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
-import { settingsCat, toastTypes } from '../../shared-private/react/store/sharedCats';
+import { settingsCat } from '../../shared-private/react/store/sharedCats';
 import { goBackEffect, setToastEffect } from '../../shared-private/react/store/sharedEffects';
+import { toastTypes } from '../../shared-private/react/Toast.jsx';
 import {
   albumsCat,
   isCreatingAlbumCat,

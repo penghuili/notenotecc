@@ -1,12 +1,13 @@
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
-import { settingsCat, toastTypes } from '../../shared-private/react/store/sharedCats';
+import { settingsCat } from '../../shared-private/react/store/sharedCats';
 import {
   fetchSettingsEffect,
   goBackEffect,
   setToastEffect,
 } from '../../shared-private/react/store/sharedEffects';
+import { toastTypes } from '../../shared-private/react/Toast.jsx';
 import { fetchAlbumsEffect } from '../album/albumEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import {

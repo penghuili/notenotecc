@@ -7,9 +7,9 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { toastTypes } from './store/sharedCats.js';
 import { navigateEffect, setToastEffect } from './store/sharedEffects';
 import { resetPasswordSave, resetPasswordTrigger } from './store/sharedNetwork';
+import { toastTypes } from './Toast.jsx';
 
 export function ResetPassword() {
   const [email, setEmail] = useState('');
@@ -26,7 +26,7 @@ export function ResetPassword() {
       setIsTriggered(true);
       setToastEffect('You should get a code in your email if your account exists.');
     } else {
-      setToastEffect('Something went wrong, please try again.', toastTypes.critical);
+      setToastEffect('Something went wrong, please try again.', toastTypes.error);
     }
     setIsTriggering(false);
   }
@@ -89,7 +89,7 @@ export function ResetPassword() {
             } else {
               setToastEffect(
                 'Something went wrong, your code may be invalid. Please try again.',
-                toastTypes.critical
+                toastTypes.error
               );
             }
             setIsSaving(false);

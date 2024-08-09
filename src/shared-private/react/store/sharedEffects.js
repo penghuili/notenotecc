@@ -1,4 +1,3 @@
-import toast from 'react-hot-toast';
 import { resetAllCats } from 'usecat';
 
 import { isNewer } from '../../js/date';
@@ -10,6 +9,7 @@ import { idbStorage } from '../indexDB';
 import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
 import { goBack, navigate } from '../my-router.jsx';
+import { toastCat, toastTypes } from '../Toast.jsx';
 import {
   authErrorCat,
   isChangingEmailCat,
@@ -29,7 +29,6 @@ import {
   isVerifying2FACat,
   isVerifyingEmailCat,
   settingsCat,
-  toastTypes,
   userCat,
 } from './sharedCats';
 import {
@@ -60,17 +59,11 @@ export function navigateEffect(path) {
 }
 
 export function setToastEffect(message, type) {
-  toast.dismiss();
-
-  if (type === toastTypes.critical) {
-    toast.error(message);
-  } else if (type === toastTypes.info) {
-    toast.success(message, {
-      icon: '⌛',
-    });
-  } else {
-    toast.success(message);
-  }
+  toastCat.set({
+    ...toastCat.get(),
+    message,
+    type: type || toastTypes.success,
+  });
 }
 
 export function clearAuthErrorEffect() {
@@ -129,7 +122,7 @@ export async function resendVerificationCodeEffect() {
 
     setToastEffect('Verification code is sent, you should get another email.');
   } else {
-    setToastEffect('Something is wrong', toastTypes.critical);
+    setToastEffect('Something is wrong', toastTypes.error);
   }
 
   isResendingVerificationCodeCat.set(false);
@@ -143,7 +136,7 @@ export async function verifyEmailEffect(code) {
     userCat.set(data);
     setToastEffect('Your email is verified!');
   } else {
-    setToastEffect('Something is wrong', toastTypes.critical);
+    setToastEffect('Something is wrong', toastTypes.error);
   }
 
   isVerifyingEmailCat.set(false);
@@ -347,7 +340,7 @@ export async function deleteAccountEffect() {
     logOutEffect();
     setToastEffect('Your account is deleted.');
   } else {
-    setToastEffect('Something went wrong, please try again.', toastTypes.critical);
+    setToastEffect('Something went wrong, please try again.', toastTypes.error);
   }
 
   isDeletingAccountCat.set(false);
@@ -390,10 +383,7 @@ export async function changePasswordEffect(currentPassword, newPassword) {
     setToastEffect('Your password is changed! Please login again.');
     logOutEffect();
   } else {
-    setToastEffect(
-      'Something went wrong, your current password may be wrong.',
-      toastTypes.critical
-    );
+    setToastEffect('Something went wrong, your current password may be wrong.', toastTypes.error);
   }
 
   isChangingPasswordCat.set(false);

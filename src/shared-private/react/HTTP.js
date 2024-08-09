@@ -2,8 +2,8 @@ import { apps } from '../js/apps';
 import { eventEmitter, eventEmitterEvents } from './eventEmitter';
 import { appName } from './initShared';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage';
-import { toastTypes } from './store/sharedCats';
 import { resetEffect, setToastEffect } from './store/sharedEffects';
+import { toastTypes } from './Toast.jsx';
 
 const serverToUrl = {
   [apps['100rejections'].name]: import.meta.env.VITE_100REJECTIONS_API_URL,
@@ -129,7 +129,7 @@ export const HTTP = {
     }
 
     if (status === 403) {
-      setToastEffect('You do not have access.', toastTypes.critical);
+      setToastEffect('You do not have access.', toastTypes.error);
     }
 
     return { status, errorCode };

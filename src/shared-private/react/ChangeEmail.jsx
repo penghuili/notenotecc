@@ -6,9 +6,10 @@ import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { isChangingEmailCat, toastTypes, userCat } from './store/sharedCats.js';
+import { isChangingEmailCat, userCat } from './store/sharedCats.js';
 import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
 import { changeEmailTrigger } from './store/sharedNetwork';
+import { toastTypes } from './Toast.jsx';
 
 export function ChangeEmail() {
   const user = useCat(userCat);
@@ -26,7 +27,7 @@ export function ChangeEmail() {
       setIsTriggered(true);
       setToastEffect('You should get a code in your email if your account exists.');
     } else {
-      setToastEffect('Something went wrong, please try again.', toastTypes.critical);
+      setToastEffect('Something went wrong, please try again.', toastTypes.error);
     }
     setIsTriggering(false);
   }
