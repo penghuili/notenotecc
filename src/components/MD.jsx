@@ -87,7 +87,7 @@ const Editor = styled.div`
     box-shadow: inset 0 0 0 1px var(--gray-a7);
     border-radius: var(--radius-2);
     padding: 10px;
-    min-height: 200px;
+    min-height: 80px;
   }
 
   &[contenteditable='true']:focus {
