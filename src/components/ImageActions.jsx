@@ -13,8 +13,6 @@ import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shar
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { getFileSizeString } from '../shared-private/react/file';
-import { setToastEffect } from '../shared-private/react/store/sharedEffects.js';
-import { toastTypes } from '../shared-private/react/Toast.jsx';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
@@ -27,20 +25,8 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
     shareFileWithUrl(image.url, image.type);
   }, [image]);
 
-  const handleShareMP4 = useCallback(async () => {
-    setToastEffect('This will take some time.', toastTypes.info);
-    await shareFileWithUrl(image.url, image.type, true);
-    setToastEffect('Done!');
-  }, [image]);
-
   const handleDownload = useCallback(() => {
     downloadFileWithUrl(image.url, image.type);
-  }, [image]);
-
-  const handleDownloadMP4 = useCallback(async () => {
-    setToastEffect('This will take some time.', toastTypes.info);
-    await downloadFileWithUrl(image.url, image.type, true);
-    setToastEffect('Done!');
   }, [image]);
 
   const handleShowDeleteConfirm = useCallback(() => {
@@ -74,13 +60,6 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
                 <RiShareLine />
                 Share
               </DropdownMenu.Item>
-
-              {image.type === 'image/webm' && (
-                <DropdownMenu.Item onClick={handleShareMP4}>
-                  <RiShareLine />
-                  Share (MP4)
-                </DropdownMenu.Item>
-              )}
             </>
           )}
 
@@ -88,13 +67,6 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
             <RiDownloadLine />
             Download
           </DropdownMenu.Item>
-
-          {image.type === 'image/webm' && (
-            <DropdownMenu.Item onClick={handleDownloadMP4}>
-              <RiDownloadLine />
-              Download (MP4)
-            </DropdownMenu.Item>
-          )}
 
           <DropdownMenu.Separator />
 
