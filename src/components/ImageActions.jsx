@@ -1,9 +1,15 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiInformationLine, RiMore2Line, RiShareLine } from '@remixicon/react';
+import {
+  RiDeleteBinLine,
+  RiDownloadLine,
+  RiInformationLine,
+  RiMore2Line,
+  RiShareLine,
+} from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
-import { shareFileWithUrl, supportShare } from '../lib/shareFile';
+import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
 import { errorColor } from '../shared-private/react/AppWrapper.jsx';
 import { Confirm } from '../shared-private/react/Confirm.jsx';
 import { getFileSizeString } from '../shared-private/react/file';
@@ -17,6 +23,10 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
 
   const handleShare = useCallback(() => {
     shareFileWithUrl(image.url, image.type);
+  }, [image]);
+
+  const handleDownload = useCallback(() => {
+    downloadFileWithUrl(image.url, image.type);
   }, [image]);
 
   const handleShowDeleteConfirm = useCallback(() => {
@@ -50,10 +60,15 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
                 <RiShareLine />
                 Share
               </DropdownMenu.Item>
-
-              <DropdownMenu.Separator />
             </>
           )}
+
+          <DropdownMenu.Item onClick={handleDownload}>
+            <RiDownloadLine />
+            Download
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator />
 
           <DropdownMenu.Item
             onClick={handleShowDeleteConfirm}

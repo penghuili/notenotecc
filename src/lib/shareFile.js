@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { saveAs } from 'file-saver';
 
 export async function shareFile(file) {
   try {
@@ -26,6 +27,26 @@ export async function shareImageFromImgTag(imgElement) {
     });
 
     return await shareFile(file);
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+
+export async function downloadFileWithUrl(url, type) {
+  try {
+    const response = await fetch(url, { mode: 'cors' });
+    const blob = await response.blob();
+    const fileSuffix = fileTypeToSuffix(type);
+    const file = new File(
+      [blob],
+      `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}.${fileSuffix}`,
+      {
+        type,
+      }
+    );
+
+    saveAs(file);
   } catch (e) {
     console.log(e);
     return false;

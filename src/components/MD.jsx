@@ -2,12 +2,23 @@ import { Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-const supportedTags = ['EM', 'STRONG', 'DEL', 'CODE'];
+import { setToastEffect } from '../shared-private/react/store/sharedEffects';
+
+const supportedTags = ['EM', 'STRONG', 'B', 'DEL', 'CODE', 'I'];
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
   const [text, setText] = useState(defaultText || '');
+
   const editorRef = useRef(null);
   const cursorPositionRef = useRef(null);
+
+  const handleKeyDown = useCallback(e => {
+    if (e.key === 'Enter') {
+      setToastEffect('enter key pressed');
+      e.preventDefault();
+      handleEnterKey();
+    }
+  }, []);
 
   const handleInput = useCallback(
     e => {
@@ -20,18 +31,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
     },
     [onChange]
   );
-
-  const handleKeyDown = useCallback(e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleEnterKey();
-    } else if (e.key === ' ') {
-      e.preventDefault();
-      handleSpaceKey();
-    } else if (e.key === 'ArrowRight') {
-      handleRightArrowKey();
-    }
-  }, []);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -59,8 +58,10 @@ export const convertToMarkdown = html => {
     .replace(/<br\s*\/?>/gi, '\n')
     // Convert <strong> to **
     .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+    .replace(/<b>(.*?)<\/b>/gi, '**$1**')
     // Convert <em> to __
     .replace(/<em>(.*?)<\/em>/gi, '__$1__')
+    .replace(/<i>(.*?)<\/i>/gi, '__$1__')
     // Convert <del> to ~~
     .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
     // Convert <code> to `
@@ -148,7 +149,10 @@ const parseMarkdown = input => {
 
 const removeTrailingSpacesFromMarkdownTags = input => {
   // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
-  const parsed = input.replace(/(<(strong|em|del|code)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
+  const parsed = input.replace(
+    /(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi,
+    '$1$3$5'
+  );
 
   return parsed;
 };
@@ -172,78 +176,6 @@ const handleEnterKey = () => {
     range.setEndAfter(br2);
     selection.removeAllRanges();
     selection.addRange(range);
-  }
-};
-
-const handleSpaceKey = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const startContainer = range.startContainer;
-    let currentNode =
-      startContainer.nodeType === Node.TEXT_NODE ? startContainer.parentNode : startContainer;
-
-    if (
-      supportedTags.includes(currentNode.nodeName) &&
-      has1TrailingSpaces(currentNode.textContent)
-    ) {
-      currentNode.textContent = currentNode.textContent.replace(/(\s|&nbsp;){1,}$/, '');
-
-      const span = document.createElement('span');
-      span.innerHTML = '&nbsp;';
-      currentNode.parentNode.insertBefore(span, currentNode.nextSibling);
-
-      const newRange = document.createRange();
-      newRange.setStartAfter(span);
-      newRange.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-    } else {
-      const spaceNode = document.createTextNode('\u00A0');
-      range.insertNode(spaceNode);
-
-      range.setStartAfter(spaceNode);
-      range.setEndAfter(spaceNode);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-  }
-};
-
-const handleRightArrowKey = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const startContainer = range.startContainer;
-    const offset = range.startOffset;
-
-    // Check if the cursor is at the end of a text node within a formatted element
-    if (
-      startContainer.nodeType === Node.TEXT_NODE &&
-      offset === startContainer.textContent.length
-    ) {
-      let currentNode = startContainer.parentNode;
-
-      // Check if the current node is a formatted element
-      if (supportedTags.includes(currentNode.nodeName)) {
-        // Move the cursor outside the formatted element
-        const newRange = document.createRange();
-
-        // If there is a next sibling, set the cursor at the start of that sibling
-        if (currentNode.nextSibling) {
-          newRange.setStart(currentNode.nextSibling, 0);
-        } else {
-          // If there's no next sibling, create a span with a non-breaking space
-          const span = document.createElement('span');
-          span.innerHTML = '&nbsp;'; // Add a non-breaking space
-          currentNode.parentNode.appendChild(span);
-          newRange.setStart(span, 1); // Position cursor after the non-breaking space
-        }
-        newRange.collapse(true);
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-      }
-    }
   }
 };
 
@@ -324,10 +256,6 @@ const restoreCursorPosition = (element, position) => {
     selection.removeAllRanges();
     selection.addRange(range);
   }
-};
-
-const has1TrailingSpaces = text => {
-  return /\s{1,}$/.test(text) || /(&nbsp;){1,}$/.test(text);
 };
 
 const has2TrailingSpaces = text => {
