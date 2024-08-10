@@ -86,8 +86,8 @@ async function checkVersion(lib, versionKey) {
 
 async function checkLibs() {
   await checkVersion('react', 'rc');
-  await checkVersion('eslint-plugin-react-compiler', 'experimental');
   await checkVersion('babel-plugin-react-compiler', 'experimental');
+  await checkVersion('eslint-plugin-react-compiler', 'experimental');
 }
 
 checkLibs();
