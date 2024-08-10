@@ -11,7 +11,13 @@ import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
-import { isAddingImagesCat, isLoadingNotesCat, notesCat } from '../store/note/noteCats.js';
+import {
+  isAddingImagesCat,
+  isDeletingImageCat,
+  isDeletingNoteCat,
+  isLoadingNotesCat,
+  notesCat,
+} from '../store/note/noteCats.js';
 import { fetchNotesEffect } from '../store/note/noteEffects';
 
 async function load() {
@@ -35,6 +41,8 @@ export function Notes() {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
+  const isDeleting = useCat(isDeletingNoteCat);
+  const isDeletingImage = useCat(isDeletingImageCat);
 
   const handleNavigateToHistory = useCallback(() => {
     navigateEffect('/on-this-day');
@@ -71,7 +79,7 @@ const Header = React.memo(() => {
 
   return (
     <PageHeader
-      isLoading={isLoading || isAddingImages}
+      isLoading={isLoading || isAddingImages || isDeleting || isDeletingImage}
       fixed
       showNewVersion
       title={
