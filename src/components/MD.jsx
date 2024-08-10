@@ -56,25 +56,25 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 });
 
 export const convertToMarkdown = html => {
-  let markdown = html
-    // Convert <br> to newline
-    .replace(/<br\s*\/?>/gi, '\n')
-    // Convert <strong> to **
-    .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
-    .replace(/<b>(.*?)<\/b>/gi, '**$1**')
-    // Convert <em> to __
-    .replace(/<em>(.*?)<\/em>/gi, '__$1__')
-    .replace(/<i>(.*?)<\/i>/gi, '__$1__')
-    // Convert <del> to ~~
-    .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
-    // Convert <code> to `
-    .replace(/<code>(.*?)<\/code>/gi, '`$1`')
-    // Convert &nbsp; to space
-    .replace(/&nbsp;/g, ' ')
-    // Remove any remaining HTML tags
-    .replace(/<[^>]+>/g, '');
-
-  return markdown;
+  return (
+    html
+      // Convert <br> to newline
+      .replace(/<br\s*\/?>/gi, '\n')
+      // Convert <strong> to **
+      .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+      .replace(/<b>(.*?)<\/b>/gi, '**$1**')
+      // Convert <em> to __
+      .replace(/<em>(.*?)<\/em>/gi, '__$1__')
+      .replace(/<i>(.*?)<\/i>/gi, '__$1__')
+      // Convert <del> to ~~
+      .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
+      // Convert <code> to `
+      .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+      // Convert &nbsp; to space
+      .replace(/&nbsp;/g, ' ')
+      // Remove any remaining HTML tags
+      .replace(/<[^>]+>/g, '')
+  );
 };
 
 export function renderMarkdown(markdown) {
@@ -135,29 +135,24 @@ const Editor = styled.div`
 `;
 
 const parseMarkdown = input => {
-  let parsed = input
-    // Bold
-    .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-    // Italic
-    .replace(/__(.*?)__/gim, '<em>$1</em>')
-    // Strikethrough
-    .replace(/~~(.*?)~~/gim, '<del>$1</del>')
-    // Inline code
-    .replace(/`([^`]+)`/gim, '<code>$1</code>')
-    // Line breaks
-    .replace(/\n/gim, '<br>');
-
-  return parsed;
+  return (
+    input
+      // Bold
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      // Italic
+      .replace(/__(.*?)__/gim, '<em>$1</em>')
+      // Strikethrough
+      .replace(/~~(.*?)~~/gim, '<del>$1</del>')
+      // Inline code
+      .replace(/`([^`]+)`/gim, '<code>$1</code>')
+      // Line breaks
+      .replace(/\n/gim, '<br>')
+  );
 };
 
 const removeTrailingSpacesFromMarkdownTags = input => {
   // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
-  const parsed = input.replace(
-    /(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi,
-    '$1$3$5'
-  );
-
-  return parsed;
+  return input.replace(/(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
 };
 
 const handleEnterKey = () => {
@@ -166,17 +161,11 @@ const handleEnterKey = () => {
     const range = selection.getRangeAt(0);
     range.deleteContents();
 
-    // Create two <br> elements
-    const br1 = document.createElement('br');
-    const br2 = document.createElement('br');
-
-    // Insert the <br> elements
-    range.insertNode(br2);
-    range.insertNode(br1);
+    const br = document.createElement('br');
+    range.insertNode(br);
 
     // Move the cursor after the second <br>
-    range.setStartAfter(br2);
-    range.setEndAfter(br2);
+    range.setStartAfter(br);
     selection.removeAllRanges();
     selection.addRange(range);
   }
