@@ -10,10 +10,10 @@ const Wrapper = styled.div`
   padding: 0.5rem;
 `;
 
-export const AudioPlayer = React.memo(({ src, hidden, onLoad }) => {
+export const AudioPlayer = React.memo(({ src, hidden, onLoaded }) => {
   return (
     <Wrapper hidden={hidden}>
-      <audio controls preload="metadata" onLoadedData={onLoad}>
+      <audio controls preload="metadata" onLoadedData={onLoaded}>
         <source src={src} type="audio/webm" />
       </audio>
     </Wrapper>

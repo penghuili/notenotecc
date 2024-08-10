@@ -52,9 +52,6 @@ export default defineConfig(({ mode }) => {
               if (id.includes('@ffmpeg/ffmpeg')) {
                 return 'ffmpeg';
               }
-              if (id.includes('plyr')) {
-                return 'plyr';
-              }
               if (id.includes('file-saver')) {
                 return 'file-saver';
               }

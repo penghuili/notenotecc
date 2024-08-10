@@ -12,8 +12,7 @@
     "idb-keyval": "6.2.1",
     "jwt-decode": "4.0.0",
     "lodash.uniqby": "4.7.0",
-    "openpgp": "5.11.1",
-    "plyr": "3.7.8",
+    "openpgp": "5.11.2",
     "qrcode.react": "3.1.0",
     "ramda": "0.30.1",
     "react": "19.0.0-rc-2d2cc042-20240809",
@@ -32,16 +31,15 @@
     "babel-plugin-react-compiler": "0.0.0-experimental-da85dca-20240809",
     "dotenv": "16.4.5",
     "eslint": "8.57.0",
-    "eslint-plugin-array-func": "5.0.2",
     "eslint-plugin-compat": "6.0.0",
     "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-react": "7.34.2",
+    "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-compiler": "0.0.0-experimental-c7434b2-20240809",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-sonarjs": "1.0.4",
-    "prettier": "3.3.1",
+    "prettier": "3.3.3",
     "rollup-plugin-visualizer": "5.12.0",
-    "vite": "5.3.5"
+    "vite": "5.4.0"
   },
   "eslintConfig": {
     "extends": [

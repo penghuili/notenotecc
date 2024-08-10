@@ -113,12 +113,10 @@ const InnerImage = React.memo(
 
         {!!innerUrl && (
           <>
-            {type === 'video/webm' && (
-              <VideoPlayer src={innerUrl} onLoad={handleLoaded} hidden={isLoading} />
-            )}
+            {type === 'video/webm' && <VideoPlayer src={innerUrl} onLoaded={handleLoaded} />}
 
             {type === 'audio/webm' && (
-              <AudioPlayer src={innerUrl} onLoad={handleLoaded} hidden={isLoading} />
+              <AudioPlayer src={innerUrl} onLoaded={handleLoaded} hidden={isLoading} />
             )}
 
             {type === 'image/webp' && (
