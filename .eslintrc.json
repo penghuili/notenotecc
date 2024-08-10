@@ -8,7 +8,10 @@
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:import/recommended"
+    "plugin:import/recommended",
+    "plugin:sonarjs/recommended-legacy",
+    "plugin:compat/recommended",
+    "plugin:array-func/recommended"
   ],
   "parserOptions": {
     "ecmaFeatures": {
@@ -17,7 +20,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["react", "eslint-plugin-react-compiler"],
+  "plugins": ["react", "eslint-plugin-react-compiler", "sonarjs", "compat", "array-func"],
   "rules": {
     "react/prop-types": 0,
     "react/no-unescaped-entities": 0,

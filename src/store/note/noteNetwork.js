@@ -24,11 +24,8 @@ import {
 export async function fetchNotes(startKey, startTime, endTime) {
   try {
     const query = objectToQueryString({ startKey, startTime, endTime });
-    const {
-      items,
-      startKey: newStartKey,
-      limit,
-    } = await HTTP.get(appName, `/v1/notes${query ? `?${query}` : ''}`);
+    const url = query ? `/v1/notes?${query}` : '/v1/notes';
+    const { items, startKey: newStartKey, limit } = await HTTP.get(appName, url);
 
     const decrypted = await Promise.all(items.map(note => decryptNote(note)));
 
@@ -79,6 +76,7 @@ async function uploadImages(password, images) {
 
     return `pic-${hash}.nncc`;
   }
+  const octetType = 'application/octet-stream';
   const encrypted = await Promise.all(
     images.map(async item => {
       const hash = await md5(item.blob);
@@ -86,7 +84,7 @@ async function uploadImages(password, images) {
 
       const uint8 = await blobToUint8Array(item.blob);
       const encrypted = await encryptFileSymmetric(password, uint8);
-      const encryptedBlob = uint8ArrayToBlob(encrypted, 'application/octet-stream');
+      const encryptedBlob = uint8ArrayToBlob(encrypted, octetType);
 
       return {
         name,
@@ -100,7 +98,7 @@ async function uploadImages(password, images) {
   const uploadUrls = await HTTP.post(appName, `/v1/upload-urls`, {
     images: encrypted.map(e => ({
       name: e.name,
-      type: 'application/octet-stream',
+      type: octetType,
     })),
   });
   await Promise.all(
@@ -109,7 +107,7 @@ async function uploadImages(password, images) {
         method: 'PUT',
         body: item.blob,
         headers: {
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': octetType,
           'Cache-Control': 'max-age=31536000,public',
         },
       });
@@ -281,15 +279,11 @@ function updateCache(note, type) {
 export async function encryptBlob(password, blob) {
   const uint8 = await blobToUint8Array(blob);
   const encrypted = await encryptFileSymmetric(password, uint8);
-  const encryptedBlob = uint8ArrayToBlob(encrypted, 'application/octet-stream');
-
-  return encryptedBlob;
+  return uint8ArrayToBlob(encrypted, 'application/octet-stream');
 }
 export async function decryptBlob(encryptedPassword, encryptedBlob, type) {
   const password = await decryptPassword(encryptedPassword);
   const uint8 = await blobToUint8Array(encryptedBlob);
   const decrypted = await decryptFileSymmetric(password, uint8);
-  const blob = uint8ArrayToBlob(decrypted, type);
-
-  return blob;
+  return uint8ArrayToBlob(decrypted, type);
 }

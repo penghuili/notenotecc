@@ -6,9 +6,5 @@ export const albumItemsCat = createCat(defaultAlbumItems);
 export const isLoadingAlbumItemsCat = createCat(false);
 
 export function useAlbumNotes(albumId) {
-  const albumItems = useCat(albumItemsCat, data =>
-    data.albumId === albumId ? data : defaultAlbumItems
-  );
-
-  return albumItems;
+  return useCat(albumItemsCat, data => (data.albumId === albumId ? data : defaultAlbumItems));
 }

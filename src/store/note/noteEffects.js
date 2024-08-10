@@ -37,6 +37,7 @@ import {
 } from './noteNetwork';
 
 const notesChangedAtKey = 'notenote-notesChangedAt';
+const encryptingMessage = 'Encrypting ...';
 
 export async function fetchNotesEffect(startKey, force) {
   if (!force && notesCat.get()?.items?.length) {
@@ -123,7 +124,7 @@ export async function createNoteEffect({
   goBack,
 }) {
   isCreatingNoteCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
+  setToastEffect(encryptingMessage, toastTypes.info);
 
   const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
 
@@ -156,7 +157,7 @@ export async function updateNoteEffect(
   { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
 ) {
   isUpdatingNoteCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
+  setToastEffect(encryptingMessage, toastTypes.info);
 
   const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
 
@@ -192,7 +193,7 @@ export async function updateNoteEffect(
 
 export async function encryptExistingNoteEffect(note) {
   isUpdatingNoteCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
+  setToastEffect(encryptingMessage, toastTypes.info);
 
   const { data } = await encryptExistingNote(note);
 
@@ -230,7 +231,7 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
 
 export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
   isAddingImagesCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
+  setToastEffect(encryptingMessage, toastTypes.info);
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
 

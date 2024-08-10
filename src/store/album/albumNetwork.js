@@ -32,11 +32,8 @@ export async function fetchAlbums() {
 export async function fetchAlbumItems(albumId, { startKey }) {
   try {
     const query = objectToQueryString({ startKey });
-    const {
-      items,
-      startKey: newStartKey,
-      limit,
-    } = await HTTP.get(appName, `/v1/albums/${albumId}/notes${query ? `?${query}` : ''}`);
+    const url = query ? `/v1/albums/${albumId}/notes?${query}` : `/v1/albums/${albumId}/notes`;
+    const { items, startKey: newStartKey, limit } = await HTTP.get(appName, url);
 
     const decrypted = await Promise.all(
       items.filter(item => !!item).map(note => decryptNote(note))
@@ -149,11 +146,10 @@ export async function decryptAlbum(album) {
   return { ...album, title: decryptedTitle };
 }
 export async function decryptPassword(encryptedPassword) {
-  const password = await decryptMessageAsymmetric(
+  return await decryptMessageAsymmetric(
     LocalStorage.get(sharedLocalStorageKeys.privateKey),
     encryptedPassword
   );
-  return password;
 }
 export async function encryptMessageWithEncryptedPassword(encryptedPassword, message) {
   if (!message) {
@@ -161,9 +157,7 @@ export async function encryptMessageWithEncryptedPassword(encryptedPassword, mes
   }
 
   const password = await decryptPassword(encryptedPassword);
-  const encryptedMessage = await encryptMessageSymmetric(password, message);
-
-  return encryptedMessage;
+  return await encryptMessageSymmetric(password, message);
 }
 export async function decryptNote(note) {
   if (!note?.encrypted) {
