@@ -209,14 +209,13 @@ const ImagesPreview = React.memo(({ images, onDelete }) => {
 const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
   return (
     <div>
-      {image.type === fileTypes.webp && (
+      {(image.type === fileTypes.webp || image.type === fileTypes.jpeg) && (
         <PreviewImage src={image.url} translateX={translateX} zIndex={zIndex} />
       )}
 
-      {image.type === fileTypes.webm ||
-        (image.type === fileTypes.mp4 && (
-          <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
-        ))}
+      {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
+        <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
+      )}
 
       {image.type === fileTypes.audio && (
         <AudioWrapper translateX={translateX} zIndex={zIndex}>

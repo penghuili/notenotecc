@@ -96,7 +96,7 @@ const InnerImage = React.memo(
       }
 
       setIsLoading(true);
-      fetchFileWithUrl(imagePathToUrl(path))
+      fetchFileWithUrl(imagePathToUrl(path), type)
         .then(data => decryptBlob(encryptedPassword, data.blob, type))
         .then(blob => {
           setInnerUrl(URL.createObjectURL(blob));
@@ -122,7 +122,7 @@ const InnerImage = React.memo(
               <AudioPlayer src={innerUrl} onLoaded={handleLoaded} hidden={isLoading} />
             )}
 
-            {type === fileTypes.webp && (
+            {(type === fileTypes.webp || type === fileTypes.jpeg) && (
               <div onDoubleClick={handleOpenFullScreen}>
                 <ImageElement src={innerUrl} onLoad={handleLoaded} />
               </div>

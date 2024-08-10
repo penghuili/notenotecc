@@ -9,7 +9,7 @@ import {
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { fileTypes } from '../lib/constants.js';
+import { videoType } from '../lib/constants.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
@@ -78,8 +78,6 @@ const Video = styled.video`
 
 export const RECORDING_DURATION = 15600;
 
-const fileType = isIOS() ? fileTypes.mp4 : fileTypes.webm;
-
 export const TakeVideo = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -135,9 +133,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const handleStopRecording = useCallback(() => {
     stopMediaRecorder();
 
-    const blob = new Blob(recordedChunksRef.current, { type: fileType });
+    const blob = new Blob(recordedChunksRef.current, { type: videoType });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, size: blob.size, type: fileType });
+    onSelect({ blob, url, size: blob.size, type: videoType });
 
     setIsRecording(false);
     setIsPaused(false);

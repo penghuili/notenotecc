@@ -127,6 +127,10 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
       return fileTypes.mp4;
     }
 
+    if (item.path.endsWith('.jpeg')) {
+      return fileTypes.jpeg;
+    }
+
     return fileTypes.webp;
   }
 

@@ -3,7 +3,7 @@ import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { fileTypes } from '../lib/constants.js';
+import { imageType } from '../lib/constants.js';
 import { useWindowBlur } from '../lib/useWindowBlur';
 import { useWindowFocus } from '../lib/useWindowFocus';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob';
@@ -43,10 +43,10 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     const context = tempCanvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, width, height);
 
-    const blob = await canvasToBlob(tempCanvas, fileTypes.webp, 0.8);
-    const imageUrl = tempCanvas.toDataURL(fileTypes.webp);
+    const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
+    const imageUrl = tempCanvas.toDataURL(imageType);
 
-    onSelect({ blob, url: imageUrl, size: blob.size, type: fileTypes.webp });
+    onSelect({ blob, url: imageUrl, size: blob.size, type: imageType });
   }, [onSelect]);
 
   const handleChangeFacingMode = useCallback(() => {

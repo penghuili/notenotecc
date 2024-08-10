@@ -1,3 +1,5 @@
+import { isIOS } from '../shared-private/react/device';
+
 export const localStorageKeys = {
   notes: 'notenote-notes',
   note: 'notenote-note',
@@ -6,7 +8,11 @@ export const localStorageKeys = {
 
 export const fileTypes = {
   webp: 'image/webp',
+  jpeg: 'image/jpeg',
   webm: 'video/webm',
   mp4: 'video/mp4',
   weba: 'audio/webm',
 };
+
+export const imageType = isIOS() ? fileTypes.jpeg : fileTypes.webp;
+export const videoType = isIOS() ? fileTypes.mp4 : fileTypes.webm;

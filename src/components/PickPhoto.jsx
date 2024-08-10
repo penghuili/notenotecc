@@ -4,7 +4,7 @@ import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
-import { fileTypes } from '../lib/constants.js';
+import { imageType } from '../lib/constants.js';
 import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob.js';
@@ -30,18 +30,18 @@ export const PickPhoto = React.memo(({ onSelect }) => {
 
   const handleCrop = useCallback(async () => {
     const canvas = cropperRef.current.crop(900);
-    const blob = await canvasToBlob(canvas, fileTypes.webp, 0.8);
-    const imageUrl = canvas.toDataURL(fileTypes.webp);
-    onSelect({ blob, url: imageUrl, size: blob.size, type: fileTypes.webp });
+    const blob = await canvasToBlob(canvas, imageType, 0.8);
+    const imageUrl = canvas.toDataURL(imageType);
+    onSelect({ blob, url: imageUrl, size: blob.size, type: imageType });
     pickedPhotoCat.set(null);
   }, [onSelect]);
 
   const handleSquare = useCallback(async () => {
     const squareCanvas = await makeImageSquare(pickedPhoto);
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
-    const blob = await canvasToBlob(resizedCanvas, fileTypes.webp, 0.8);
-    const imageUrl = resizedCanvas.toDataURL(fileTypes.webp);
-    onSelect({ blob, url: imageUrl, type: fileTypes.webp });
+    const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
+    const imageUrl = resizedCanvas.toDataURL(imageType);
+    onSelect({ blob, url: imageUrl, type: imageType });
     pickedPhotoCat.set(null);
   }, [onSelect, pickedPhoto]);
 
