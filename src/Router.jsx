@@ -18,6 +18,7 @@ import { initEffect, navigateEffect } from './shared-private/react/store/sharedE
 import { Verify2FA } from './shared-private/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared-private/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
+import { AI } from './views/AI.jsx';
 import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
 import { Albums } from './views/Albums.jsx';
@@ -57,6 +58,8 @@ const loggedRoutes = [
   { path: '/security/2fa', component: Setup2FA },
   { path: '/security/email', component: ChangeEmail },
   { path: '/security/password', component: ChangePassword },
+
+  { path: '/ai', component: AI },
 
   { path: '/', component: Notes },
 ];
