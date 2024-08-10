@@ -2,6 +2,7 @@ import './ImageCarousel.css';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { fileTypes } from '../lib/constants.js';
 import { isMobile } from '../shared-private/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
@@ -115,14 +116,18 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
     }
 
     if (item.path.endsWith('.weba')) {
-      return 'audio/webm';
+      return fileTypes.weba;
     }
 
     if (item.path.endsWith('.webm')) {
-      return 'video/webm';
+      return fileTypes.webm;
     }
 
-    return 'image/webp';
+    if (item.path.endsWith('.mp4')) {
+      return fileTypes.mp4;
+    }
+
+    return fileTypes.webp;
   }
 
   return (

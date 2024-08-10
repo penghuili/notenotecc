@@ -31,7 +31,6 @@
     "babel-plugin-react-compiler": "0.0.0-experimental-da85dca-20240809",
     "dotenv": "16.4.5",
     "eslint": "8.57.0",
-    "eslint-plugin-compat": "6.0.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-compiler": "0.0.0-experimental-c7434b2-20240809",

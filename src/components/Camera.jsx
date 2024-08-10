@@ -6,17 +6,16 @@ import {
   RiImageLine,
   RiSkipDownLine,
   RiSkipUpLine,
-  RiSpeakLine,
   RiVideoOnLine,
 } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
+import { fileTypes } from '../lib/constants.js';
 import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
-import { TakeAudio } from './TakeAudio.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { TakeVideo } from './TakeVideo.jsx';
 
@@ -83,8 +82,6 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
 
       {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.takeAudio && <TakeAudio onSelect={handleAddNewImage} />}
-
       {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
 
       <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
@@ -94,9 +91,6 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.takeVideo}>
             <RiVideoOnLine />
-          </Tabs.Trigger>
-          <Tabs.Trigger value={cameraTypes.takeAudio}>
-            <RiSpeakLine />
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.pickPhoto}>
             <RiImageLine />
@@ -215,15 +209,16 @@ const ImagesPreview = React.memo(({ images, onDelete }) => {
 const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
   return (
     <div>
-      {image.type === 'image/webp' && (
+      {image.type === fileTypes.webp && (
         <PreviewImage src={image.url} translateX={translateX} zIndex={zIndex} />
       )}
 
-      {image.type === 'video/webm' && (
-        <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
-      )}
+      {image.type === fileTypes.webm ||
+        (image.type === fileTypes.mp4 && (
+          <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
+        ))}
 
-      {image.type === 'audio/webm' && (
+      {image.type === fileTypes.audio && (
         <AudioWrapper translateX={translateX} zIndex={zIndex}>
           <PreviewAudio src={image.url} controls />
         </AudioWrapper>

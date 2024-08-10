@@ -1,3 +1,5 @@
+import { fileTypes } from './constants';
+
 export async function fetchFileWithUrl(fileUrl) {
   const response = await fetch(fileUrl, { mode: 'cors' });
   const blob = await response.blob();
@@ -11,10 +13,13 @@ export async function fetchFileWithUrl(fileUrl) {
 
 function getType(url) {
   if (url.endsWith('.webm')) {
-    return 'video/webm';
+    return fileTypes.webm;
+  }
+  if (url.endsWith('.mp4')) {
+    return fileTypes.mp4;
   }
   if (url.endsWith('.weba')) {
-    return 'audio/webm';
+    return fileTypes.weba;
   }
-  return 'image/webp';
+  return fileTypes.webp;
 }

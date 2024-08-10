@@ -2,7 +2,6 @@ import { IconButton } from '@radix-ui/themes';
 import {
   RiCameraLine,
   RiImageAddLine,
-  RiSpeakLine,
   RiStickyNoteAddLine,
   RiVideoAddLine,
 } from '@remixicon/react';
@@ -33,10 +32,6 @@ export const Actions = React.memo(() => {
     navigateEffect(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
-  const handleTakeAudio = useCallback(() => {
-    navigateEffect(`/notes/add?cameraType=${cameraTypes.takeAudio}`);
-  }, []);
-
   const handlePickPhoto = useCallback(photo => {
     if (photo) {
       pickedPhotoCat.set(photo);
@@ -56,9 +51,6 @@ export const Actions = React.memo(() => {
       </IconButton>
       <IconButton size="4" onClick={handleTakeVideo}>
         <RiVideoAddLine />
-      </IconButton>
-      <IconButton size="4" onClick={handleTakeAudio}>
-        <RiSpeakLine />
       </IconButton>
 
       <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">

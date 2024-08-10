@@ -9,10 +9,11 @@ import {
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { fileTypes } from '../lib/constants.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
-import { isMobile } from '../shared-private/react/device.js';
+import { isIOS, isMobile } from '../shared-private/react/device.js';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -41,7 +42,7 @@ export function renderError(mediaError, size) {
     return null;
   }
 
-  let errorMessage = 'Camera error';
+  let errorMessage = mediaError.message;
   if (mediaError.name === 'NotFoundError' || mediaError.name === 'DevicesNotFoundError') {
     errorMessage = 'Camera not found';
   }
@@ -54,7 +55,9 @@ export function renderError(mediaError, size) {
 
   return (
     <ErrorWrapper size={size}>
-      <Text as="p">{errorMessage}</Text>
+      <Text as="p">
+        {mediaError.name} {errorMessage}
+      </Text>
     </ErrorWrapper>
   );
 }
@@ -74,6 +77,8 @@ const Video = styled.video`
 `;
 
 export const RECORDING_DURATION = 15600;
+
+const fileType = isIOS() ? fileTypes.mp4 : fileTypes.webm;
 
 export const TakeVideo = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -130,9 +135,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const handleStopRecording = useCallback(() => {
     stopMediaRecorder();
 
-    const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+    const blob = new Blob(recordedChunksRef.current, { type: fileType });
     const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, size: blob.size, type: 'video/webm' });
+    onSelect({ blob, url, size: blob.size, type: fileType });
 
     setIsRecording(false);
     setIsPaused(false);
@@ -152,33 +157,41 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     }, RECORDING_DURATION - elapsedTimeRef.current);
   }, [clearTimers, handleStopRecording]);
 
-  const createMediaRecorder = useCallback(() => {
+  const createMediaRecorder = useCallback(async () => {
     if (mediaRecorderRef.current) {
       stopMediaRecorder();
     }
 
-    const mediaRecorder = new MediaRecorder(streamRef.current, {
-      mimeType: 'video/webm;codecs=vp9',
-      videoBitsPerSecond: 1000000,
-    });
-    mediaRecorderRef.current = mediaRecorder;
+    const { data } = await requestStream(facingModeRef.current);
 
-    mediaRecorder.ondataavailable = event => {
-      if (event.data.size > 0) {
-        recordedChunksRef.current.push(event.data);
-      }
-    };
-    mediaRecorder.start(100);
+    if (data) {
+      stopStream(streamRef.current);
+      streamRef.current = data;
+      videoRef.current.srcObject = data;
+
+      const mediaRecorder = new MediaRecorder(data, {
+        mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 1000000,
+      });
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = event => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
+      };
+      mediaRecorder.start(100);
+    }
   }, [stopMediaRecorder]);
 
   const handleStartRecording = useCallback(async () => {
     try {
+      recordedChunksRef.current = [];
       createMediaRecorder();
 
       setIsRecording(true);
       setIsPaused(false);
 
-      recordedChunksRef.current = [];
       startTimeRef.current = Date.now();
       elapsedTimeRef.current = 0;
       progressElementRef.current.start();
@@ -252,6 +265,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     });
 
     return () => {
+      recordedChunksRef.current = [];
       stopStream(streamRef.current);
       streamRef.current = null;
       if (timerIdRef.current) {
@@ -260,6 +274,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       }
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.ondataavailable = null;
+        mediaRecorderRef.current = null;
       }
     };
   }, []);
@@ -273,7 +289,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
   return (
     <VideoWrapper>
-      <Video ref={videoRef} autoPlay muted size={size} />
+      <Video ref={videoRef} autoPlay muted playsInline size={size} />
       <div style={{ width: '100%', position: 'absolute', top: size, left: 0 }}>
         <TimeProgress ref={progressElementRef} totalTime={RECORDING_DURATION} />
       </div>

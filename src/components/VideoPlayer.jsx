@@ -1,11 +1,11 @@
 import { IconButton, Slider } from '@radix-ui/themes';
-import { RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
+import { RiPlayLargeLine, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { getVideoDuration } from '../lib/getVideoDuration';
 
-export const VideoPlayer = React.memo(({ src, onLoaded, muted = true }) => {
+export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidden }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -21,6 +21,18 @@ export const VideoPlayer = React.memo(({ src, onLoaded, muted = true }) => {
     }
   }, [isPlaying, videoRef]);
 
+  const handlePlay = useCallback(
+    e => {
+      e.stopPropagation();
+      const video = videoRef.current;
+      if (video) {
+        video.play();
+        setIsPlaying(true);
+      }
+    },
+    [videoRef]
+  );
+
   const toggleFullScreen = useCallback(() => {
     const video = videoRef.current;
     if (video) {
@@ -32,15 +44,41 @@ export const VideoPlayer = React.memo(({ src, onLoaded, muted = true }) => {
     }
   }, [videoRef]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    const handleVideoEnd = () => {
+      if (video) {
+        video.currentTime = 0;
+        setIsPlaying(false);
+      }
+    };
+
+    video.addEventListener('ended', handleVideoEnd);
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd);
+    };
+  }, []);
+
   return (
-    <Wrapper>
+    <Wrapper hidden={hidden}>
       <Video
         ref={videoRef}
-        src={src}
         onClick={togglePlayPause}
         onDoubleClick={toggleFullScreen}
         muted={muted}
-      />
+        playsInline
+        preload="auto"
+      >
+        <source src={src} type={type} />
+      </Video>
+      {!isPlaying && (
+        <PauseWrapper>
+          <IconButton size="4" onClick={handlePlay}>
+            <RiPlayLargeLine />
+          </IconButton>
+        </PauseWrapper>
+      )}
       <PlayerActions videoRef={videoRef} src={src} onLoaded={onLoaded} muted={muted} />
     </Wrapper>
   );
@@ -50,13 +88,6 @@ const PlayerActions = React.memo(({ videoRef, src, onLoaded, muted }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(1);
   const [isMuted, setIsMuted] = useState(muted);
-
-  const handleTimeUpdate = useCallback(() => {
-    const video = videoRef.current;
-    if (video) {
-      setCurrentTime(video.currentTime);
-    }
-  }, [videoRef]);
 
   const handleProgressChange = useCallback(
     value => {
@@ -78,19 +109,32 @@ const PlayerActions = React.memo(({ videoRef, src, onLoaded, muted }) => {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
-      video.addEventListener('timeupdate', handleTimeUpdate);
-      return () => {
-        video.removeEventListener('timeupdate', handleTimeUpdate);
-      };
-    }
-  }, [handleTimeUpdate, videoRef]);
+
+    const handleTimeUpdate = () => {
+      if (video) {
+        setCurrentTime(video.currentTime);
+      }
+    };
+    const handleVideoEnd = () => {
+      if (video) {
+        setCurrentTime(0);
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.addEventListener('ended', handleVideoEnd);
+
+    return () => {
+      video.removeEventListener('timeupdate', handleTimeUpdate);
+      video.removeEventListener('ended', handleVideoEnd);
+    };
+  }, [videoRef]);
 
   useEffect(() => {
     getVideoDuration(src)
       .catch(() => undefined)
       .then(duration => {
-        setDuration(duration || 0);
+        setDuration(duration || 1);
         onLoaded();
       });
   }, [onLoaded, src]);
@@ -112,6 +156,9 @@ const PlayerActions = React.memo(({ videoRef, src, onLoaded, muted }) => {
 
 const Wrapper = styled.div`
   position: relative;
+  display: ${props => (props.hidden ? 'none' : 'block')};
+  width: 100%;
+  aspect-ratio: 1 / 1;
 `;
 const Video = styled.video`
   width: 100%;
@@ -125,4 +172,10 @@ const Actions = styled.div`
   align-items: center;
   width: 100%;
   padding: 12px 4px;
+`;
+const PauseWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;

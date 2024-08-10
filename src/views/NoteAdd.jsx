@@ -115,12 +115,7 @@ const Form = React.memo(({ cameraType }) => {
 
 const AddImage = React.memo(({ cameraType }) => {
   const [showCamera, setShowCamera] = useState(
-    [
-      cameraTypes.takePhoto,
-      cameraTypes.takeVideo,
-      cameraTypes.takeAudio,
-      cameraTypes.pickPhoto,
-    ].includes(cameraType)
+    [cameraTypes.takePhoto, cameraTypes.takeVideo, cameraTypes.pickPhoto].includes(cameraType)
   );
 
   const handleShow = useCallback(() => {

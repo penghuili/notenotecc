@@ -1,4 +1,4 @@
-import { localStorageKeys } from '../../lib/constants';
+import { fileTypes, localStorageKeys } from '../../lib/constants';
 import { fetchFileWithUrl } from '../../lib/fetchFileWithUrl';
 import { imagePathToUrl } from '../../lib/imagePathToUrl';
 import { asyncForEach } from '../../shared-private/js/asyncForEach';
@@ -67,11 +67,14 @@ async function uploadImages(password, images) {
   }
 
   function getName(type, hash) {
-    if (type === 'audio/webm') {
+    if (type === fileTypes.weba) {
       return `audio-${hash}.nncc`;
     }
-    if (type === 'video/webm') {
+    if (type === fileTypes.webm) {
       return `video-${hash}.nncc`;
+    }
+    if (type === fileTypes.mp4) {
+      return `mp4-${hash}.nncc`;
     }
 
     return `pic-${hash}.nncc`;

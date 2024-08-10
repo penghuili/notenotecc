@@ -1,4 +1,5 @@
 import { canvasToBlob } from '../shared-private/react/canvasToBlob';
+import { fileTypes } from './constants';
 
 export async function convertPNG2Webp(pngUrl) {
   const response = await fetch(pngUrl, { mode: 'cors' });
@@ -11,6 +12,6 @@ export async function convertPNG2Webp(pngUrl) {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(imageBitmap, 0, 0);
 
-  const webpBlob = await canvasToBlob(canvas, 'image/webp', 0.8);
+  const webpBlob = await canvasToBlob(canvas, fileTypes.webp, 0.8);
   return { blob: webpBlob, size: webpBlob.size, isImage: true };
 }

@@ -2,6 +2,7 @@ import { Box } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
+import { fileTypes } from '../lib/constants.js';
 import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
 import { imagePathToUrl } from '../lib/imagePathToUrl.js';
 import { useInView } from '../shared-private/react/hooks/useInView.js';
@@ -113,13 +114,15 @@ const InnerImage = React.memo(
 
         {!!innerUrl && (
           <>
-            {type === 'video/webm' && <VideoPlayer src={innerUrl} onLoaded={handleLoaded} />}
+            {(type === fileTypes.webm || type === fileTypes.mp4) && (
+              <VideoPlayer src={innerUrl} type={type} onLoaded={handleLoaded} />
+            )}
 
-            {type === 'audio/webm' && (
+            {type === fileTypes.weba && (
               <AudioPlayer src={innerUrl} onLoaded={handleLoaded} hidden={isLoading} />
             )}
 
-            {type === 'image/webp' && (
+            {type === fileTypes.webp && (
               <div onDoubleClick={handleOpenFullScreen}>
                 <ImageElement src={innerUrl} onLoad={handleLoaded} />
               </div>

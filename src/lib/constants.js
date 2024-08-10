@@ -3,3 +3,10 @@ export const localStorageKeys = {
   note: 'notenote-note',
   albums: 'notenote-albums',
 };
+
+export const fileTypes = {
+  webp: 'image/webp',
+  webm: 'video/webm',
+  mp4: 'video/mp4',
+  weba: 'audio/webm',
+};
