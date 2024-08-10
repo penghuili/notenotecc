@@ -6,6 +6,7 @@ import { useCat } from 'usecat';
 
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo } from './initShared';
+import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 
@@ -61,6 +62,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
 
   return (
     <>
+      <NewVersionAvailable />
       <Wrapper
         justify="center"
         align="center"
