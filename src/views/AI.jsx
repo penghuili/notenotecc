@@ -44,6 +44,7 @@ const Form = React.memo(() => {
     } else {
       setToastEffect('Something is wrong', toastTypes.error);
     }
+    setIsSending(false);
   }, [prefix, propmt]);
 
   return (

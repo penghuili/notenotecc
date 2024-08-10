@@ -10,12 +10,16 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   const editorRef = useRef(null);
   const cursorPositionRef = useRef(null);
 
-  const handleKeyDown = useCallback(e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleEnterKey();
-    }
-  }, []);
+  const handleKeyDown = useCallback(
+    e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleEnterKey();
+        onChange(convertToMarkdown(editorRef.current.innerHTML));
+      }
+    },
+    [onChange]
+  );
 
   const handleInput = useCallback(
     e => {
@@ -24,7 +28,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
       const newHtml = e.target.innerHTML;
       setText(newHtml);
 
-      onChange(convertToMarkdown(newHtml));
+      onChange(convertToMarkdown(editorRef.current.innerHTML));
     },
     [onChange]
   );
@@ -36,10 +40,11 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
       if (noTrailingSpaces !== editorRef.current.innerHTML) {
         editorRef.current.innerHTML = parsed;
         restoreCursorPosition(editorRef.current, cursorPositionRef.current);
+        onChange(convertToMarkdown(editorRef.current.innerHTML));
         editorRef.current.focus();
       }
     }
-  }, [text]);
+  }, [onChange, text]);
 
   return (
     <Wrapper>
