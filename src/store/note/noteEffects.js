@@ -1,4 +1,4 @@
-import { albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
+import { albumDescriptionCat, albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
@@ -168,14 +168,6 @@ export async function updateNoteEffect(
   });
 
   if (data) {
-    if (albumDescription) {
-      const albums = albumsCat.get() || [];
-      const newAlubm = albums[albums.length - 1];
-      if (newAlubm?.title === albumDescription) {
-        albumSelectedKeysCat.set([newAlubm.sortKey, ...albumSelectedKeysCat.get()]);
-      }
-    }
-
     updateStates(data, 'update');
 
     setToastEffect('Saved!');
@@ -316,6 +308,9 @@ async function getAlbumIds(albumIds, albumDescription) {
     const { data } = await createAlbum({ title: albumDescription });
     if (data) {
       albumsCat.set([...albumsCat.get(), data]);
+      albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
+      albumDescriptionCat.set('');
+
       return [...(albumIds || []), data.sortKey];
     }
   }

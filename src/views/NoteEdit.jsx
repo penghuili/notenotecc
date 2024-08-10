@@ -76,7 +76,7 @@ const Header = React.memo(({ noteId }) => {
       albumIds: selectedAlbumSortKeys,
       goBack: false,
       onSucceeded: () => {
-        albumDescriptionCat.set('');
+        albumDescriptionCat.reset();
       },
     });
   }, [albumDescription, description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
