@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const supportedTags = ['EM', 'STRONG', 'B', 'DEL', 'CODE', 'I'];
 
-export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
+export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const [text, setText] = useState(defaultText || '');
 
   const editorRef = useRef(null);
@@ -43,7 +43,13 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange }) => {
 
   return (
     <Wrapper>
-      <Editor ref={editorRef} contentEditable onInput={handleInput} onKeyDown={handleKeyDown} />
+      <Editor
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        onKeyDown={handleKeyDown}
+        autoFocus={autoFocus}
+      />
       <Text size="1">Markdown editor, support ~~ __ ** and `</Text>
     </Wrapper>
   );

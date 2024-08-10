@@ -1,5 +1,5 @@
 import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
@@ -17,53 +17,78 @@ export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
 export const AlbumsSelector = React.memo(() => {
-  const description = useCat(albumDescriptionCat);
-  const selectedKeys = useCat(albumSelectedKeysCat);
-
-  const albums = useCat(albumsCat);
-
-  useRerenderDetector('AlbumsSelector', {
-    description,
-    selectedKeys,
-    albums,
-  });
-
-  const handleNewAlbumChange = useCallback(value => {
-    albumDescriptionCat.set(value);
-  }, []);
-  const handleSelectedKeysChange = useCallback(value => {
-    albumSelectedKeysCat.set(value);
-  }, []);
-
   return (
     <div>
       <Text style={titleStyle}>Albums</Text>
 
-      <Box p="1.5px">
-        <InputField
-          placeholder="New album name"
-          value={description}
-          onChange={handleNewAlbumChange}
-        />
-      </Box>
+      <AlbumDescription />
 
-      {!!albums?.length && (
-        <>
-          <Text>Existing albums</Text>
-          <CheckboxGroup.Root
-            name="album"
-            value={selectedKeys}
-            onValueChange={handleSelectedKeysChange}
-            style={checkboxRootStyle}
-          >
-            {albums.map(album => (
-              <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
-                <Text style={titleStyle}>{album.title}</Text>
-              </CheckboxGroup.Item>
-            ))}
-          </CheckboxGroup.Root>
-        </>
-      )}
+      <AlbumItems />
     </div>
+  );
+});
+
+const AlbumDescription = React.memo(() => {
+  const description = useCat(albumDescriptionCat);
+
+  useRerenderDetector('AlbumDescription', { description });
+
+  const handleNewAlbumChange = useCallback(value => {
+    albumDescriptionCat.set(value);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      albumDescriptionCat.reset();
+    };
+  }, []);
+
+  return (
+    <Box p="1.5px">
+      <InputField
+        placeholder="New album name"
+        value={description}
+        onChange={handleNewAlbumChange}
+      />
+    </Box>
+  );
+});
+
+const AlbumItems = React.memo(() => {
+  const albums = useCat(albumsCat);
+  const selectedKeys = useCat(albumSelectedKeysCat);
+
+  useRerenderDetector('AlbumItems', { albums, selectedKeys });
+
+  const handleSelectedKeysChange = useCallback(value => {
+    albumSelectedKeysCat.set(value);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      albumSelectedKeysCat.reset();
+    };
+  }, []);
+
+  if (!albums?.length) {
+    return null;
+  }
+
+  return (
+    <>
+      <Text>Existing albums</Text>
+      <CheckboxGroup.Root
+        name="album"
+        value={selectedKeys}
+        onValueChange={handleSelectedKeysChange}
+        style={checkboxRootStyle}
+      >
+        {albums.map(album => (
+          <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
+            <Text style={titleStyle}>{album.title}</Text>
+          </CheckboxGroup.Item>
+        ))}
+      </CheckboxGroup.Root>
+    </>
   );
 });

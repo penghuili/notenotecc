@@ -1,3 +1,4 @@
+import { albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared-private/js/date';
 import { LocalStorage } from '../../shared-private/react/LocalStorage';
@@ -8,8 +9,9 @@ import {
   setToastEffect,
 } from '../../shared-private/react/store/sharedEffects';
 import { toastTypes } from '../../shared-private/react/Toast.jsx';
-import { fetchAlbumsEffect } from '../album/albumEffects';
+import { albumsCat } from '../album/albumCats.js';
 import { albumItemsCat } from '../album/albumItemCats';
+import { createAlbum } from '../album/albumNetwork.js';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -123,17 +125,14 @@ export async function createNoteEffect({
   isCreatingNoteCat.set(true);
   setToastEffect('Encrypting ...', toastTypes.info);
 
+  const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
+
   const { data } = await createNote({
     note,
     images,
-    albumIds,
-    albumDescription,
+    albumIds: updatedAlbumIds,
   });
   if (data) {
-    if (albumDescription) {
-      await fetchAlbumsEffect(true);
-    }
-
     const currentNotes = notesCat.get();
     notesCat.set({ ...currentNotes, items: [data, ...(currentNotes.items || [])] });
 
@@ -159,16 +158,21 @@ export async function updateNoteEffect(
   isUpdatingNoteCat.set(true);
   setToastEffect('Encrypting ...', toastTypes.info);
 
+  const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
+
   const { data } = await updateNote(noteId, {
     encryptedPassword,
     note,
-    albumIds,
-    albumDescription,
+    albumIds: updatedAlbumIds,
   });
 
   if (data) {
     if (albumDescription) {
-      await fetchAlbumsEffect(true);
+      const albums = albumsCat.get() || [];
+      const newAlubm = albums[albums.length - 1];
+      if (newAlubm?.title === albumDescription) {
+        albumSelectedKeysCat.set([newAlubm.sortKey, ...albumSelectedKeysCat.get()]);
+      }
     }
 
     updateStates(data, 'update');
@@ -304,4 +308,16 @@ function updateStates(newNote, type) {
       [date]: fn(currentOnThisDayNotes[date] || [], newNote),
     });
   }
+}
+
+async function getAlbumIds(albumIds, albumDescription) {
+  if (albumDescription) {
+    const { data } = await createAlbum({ title: albumDescription });
+    if (data) {
+      albumsCat.set([...albumsCat.get(), data]);
+      return [...(albumIds || []), data.sortKey];
+    }
+  }
+
+  return albumIds;
 }

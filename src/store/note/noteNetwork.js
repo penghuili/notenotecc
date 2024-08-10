@@ -16,7 +16,6 @@ import { LocalStorage, sharedLocalStorageKeys } from '../../shared-private/react
 import { md5 } from '../../shared-private/react/md5';
 import { objectToQueryString } from '../../shared-private/react/routeHelpers';
 import {
-  createAlbum,
   decryptNote,
   decryptPassword,
   encryptMessageWithEncryptedPassword,
@@ -167,20 +166,8 @@ export async function encryptExistingNote(note) {
   }
 }
 
-async function getAlbumIds(albumIds, albumDescription) {
-  if (albumDescription) {
-    const { data } = await createAlbum({ title: albumDescription });
-    if (data) {
-      return [...(albumIds || []), data.sortKey];
-    }
-  }
-
-  return albumIds;
-}
-
-export async function createNote({ note, images, albumIds, albumDescription }) {
+export async function createNote({ note, images, albumIds }) {
   try {
-    const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
     const password = generatePassword(20, true);
     const encryptedPassword = await encryptMessageAsymmetric(
       LocalStorage.get(sharedLocalStorageKeys.publicKey),
@@ -194,7 +181,7 @@ export async function createNote({ note, images, albumIds, albumDescription }) {
       encryptedPassword,
       note: encryptedNote,
       images: uploadedImages,
-      albumIds: updatedAlbumIds,
+      albumIds,
     });
 
     const decrypted = await decryptNote(data);
@@ -207,15 +194,13 @@ export async function createNote({ note, images, albumIds, albumDescription }) {
   }
 }
 
-export async function updateNote(noteId, { encryptedPassword, note, albumIds, albumDescription }) {
+export async function updateNote(noteId, { encryptedPassword, note, albumIds }) {
   try {
-    const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
-
     const encryptedMessage = await encryptMessageWithEncryptedPassword(encryptedPassword, note);
 
     const data = await HTTP.put(appName, `/v1/notes/${noteId}`, {
       note: encryptedMessage,
-      albumIds: updatedAlbumIds,
+      albumIds,
     });
 
     const decrypted = await decryptNote(data);

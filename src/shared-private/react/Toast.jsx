@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
-import { successCssColor, warningCssColor } from './AppWrapper.jsx';
+import { errorCssColor, successCssColor, warningCssColor } from './AppWrapper.jsx';
 
 export const toastTypes = {
   success: 'success',
@@ -53,10 +53,10 @@ export const Toast = () => {
 
   const icon = useMemo(() => {
     if (toast.type === toastTypes.info) {
-      return <RiInformationLine />;
+      return <RiInformationLine color={warningCssColor} />;
     }
     if (toast.type === toastTypes.error) {
-      return <RiErrorWarningLine color={warningCssColor} />;
+      return <RiErrorWarningLine color={errorCssColor} />;
     }
 
     return <RiCheckboxCircleLine color={successCssColor} />;

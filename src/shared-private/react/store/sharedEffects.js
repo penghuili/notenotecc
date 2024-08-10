@@ -283,14 +283,14 @@ async function forceFetchAccountEffect() {
 }
 
 export async function fetchAccountEffect() {
-  if (!userCat.get()) {
+  if (!userCat.get()?.id) {
     const cachedAccount = LocalStorage.get(`${appName}-account`);
     if (cachedAccount) {
       userCat.set(cachedAccount);
     }
   }
 
-  if (userCat.get()) {
+  if (userCat.get()?.id) {
     forceFetchAccountEffect();
   } else {
     await forceFetchAccountEffect();
