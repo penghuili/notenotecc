@@ -16,6 +16,7 @@ initShared({
   app: apps.simplestcam.name,
   privacyUrl: 'https://remiind.cc/privacy/',
   termsUrl: 'https://remiind.cc/terms/',
+  showNewVersion: true,
 });
 
 registerSW();

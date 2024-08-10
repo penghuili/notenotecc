@@ -79,10 +79,10 @@ function uploadVersionJson() {
     ? `{"version": "${version}", "changes": "${newVersionMessage}"}`
     : `{"version": "${version}"}`;
 
-  execSync(`echo '${json}' > build/version.json`);
+  execSync(`echo '${json}' > dist/version.json`);
 
   execSync(
-    `aws s3 cp build/version.json ${process.env.S3_URL}/version.json --cache-control max-age=0,no-store`
+    `aws s3 cp dist/version.json ${process.env.S3_URL}/version.json --cache-control max-age=0,no-store`
   );
 
   if (newVersionMessage) {

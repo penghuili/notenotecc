@@ -73,6 +73,7 @@ const Header = React.memo(() => {
     <PageHeader
       isLoading={isLoading || isAddingImages}
       fixed
+      showNewVersion
       title={
         <IconButton onClick={handleFetch} mr="2" variant="soft">
           <RiRefreshLine />
