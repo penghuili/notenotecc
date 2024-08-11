@@ -1,5 +1,7 @@
-import { Button, Text } from '@radix-ui/themes';
+import { Button, IconButton, Text } from '@radix-ui/themes';
+import { RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
+import styled from 'styled-components';
 
 import { renderMarkdown } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -40,17 +42,38 @@ const Form = React.memo(() => {
     if (data?.suggestion) {
       setAnswer(data.suggestion);
       setTokens(data.totalTokens);
-      setPrompt('');
     } else {
       setToastEffect('Something is wrong', toastTypes.error);
     }
     setIsSending(false);
   }, [prefix, propmt]);
 
+  const handleClearPrefix = useCallback(() => {
+    setPrefix('');
+  }, []);
+
+  const handleClearPrompt = useCallback(() => {
+    setPrompt('');
+  }, []);
+
   return (
     <ItemsWrapper>
-      <AreaField label="Prompt prefix" value={prefix} onChange={setPrefix} />
-      <AreaField label="What's your prompt?" value={propmt} onChange={setPrompt} />
+      <InputWrapper>
+        <AreaField label="Prompt prefix" value={prefix} onChange={setPrefix} />
+        <IconWrapper>
+          <IconButton onClick={handleClearPrefix} variant="ghost">
+            <RiCloseLine />
+          </IconButton>
+        </IconWrapper>
+      </InputWrapper>
+      <InputWrapper>
+        <AreaField label="What's your prompt?" value={propmt} onChange={setPrompt} />
+        <IconWrapper>
+          <IconButton onClick={handleClearPrompt} variant="ghost">
+            <RiCloseLine />
+          </IconButton>
+        </IconWrapper>
+      </InputWrapper>
 
       <Button disabled={isSending || !propmt || !prefix} onClick={handleSend}>
         Send
@@ -62,3 +85,12 @@ const Form = React.memo(() => {
     </ItemsWrapper>
   );
 });
+
+const InputWrapper = styled.div`
+  position: relative;
+`;
+const IconWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+`;
