@@ -2,7 +2,7 @@ import { Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-const supportedTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
+const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const [text, setText] = useState(parseMarkdown(defaultText || ''));
@@ -13,7 +13,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   const handleInput = useCallback(() => {
     cursorPositionRef.current = getCursorPosition(editorRef.current);
 
-    createList();
+    createListAndHeader();
 
     setText(editorRef.current.innerHTML);
     onChange(convertToMarkdown(editorRef.current.innerHTML));
@@ -43,6 +43,13 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 export const convertToMarkdown = html => {
   return (
     html
+      // Convert headers
+      .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n')
+      .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n')
+      .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n')
+      .replace(/<h4>(.*?)<\/h4>/gi, '#### $1\n')
+      .replace(/<h5>(.*?)<\/h5>/gi, '##### $1\n')
+      .replace(/<h6>(.*?)<\/h6>/gi, '###### $1\n')
       // Convert unordered lists
       .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
         return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n');
@@ -134,12 +141,25 @@ const Editor = styled.div`
     );
     color: inherit;
   }
+  ul,
+  ol {
+    margin: 0.5rem 0;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+  }
 `;
 
 const parseMarkdown = input => {
   const withLists = parseList(input);
+  const withHeader = parseHeader(withLists);
 
-  return parseInlineMarkdown(withLists);
+  return parseInlineMarkdown(withHeader);
 };
 
 const parseInlineMarkdown = input => {
@@ -204,6 +224,16 @@ const parseList = markdown => {
   return html;
 };
 
+const parseHeader = input => {
+  return input
+    .replace(/^###### (.*)\n?/gim, '<h6>$1</h6>')
+    .replace(/^##### (.*)\n?/gim, '<h5>$1</h5>')
+    .replace(/^#### (.*)\n?/gim, '<h4>$1</h4>')
+    .replace(/^### (.*)\n?/gim, '<h3>$1</h3>')
+    .replace(/^## (.*)\n?/gim, '<h2>$1</h2>')
+    .replace(/^# (.*)\n?/gim, '<h1>$1</h1>');
+};
+
 const removeTrailingSpacesFromMarkdownTags = input => {
   // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
   return input.replace(/(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
@@ -224,25 +254,37 @@ const getCursorPosition = element => {
   return null;
 };
 
-const createList = () => {
+const createListAndHeader = () => {
+  const { text, container } = getTextBeforeCursor();
+
+  const listType = listPattern(text);
+  if (listType) {
+    convertToList(container, listType);
+  }
+
+  const headerType = headerPattern(text);
+  if (headerType) {
+    convertToHeader(container, headerType);
+  }
+};
+
+const getTextBeforeCursor = () => {
   const selection = window.getSelection();
-  if (!selection.rangeCount) return;
+  if (!selection.rangeCount) {
+    return {};
+  }
   const range = selection.getRangeAt(0);
   const container = range.startContainer;
   const textBeforeCursor = container.textContent.slice(0, range.startOffset);
 
-  const listType = endsWithListPattern(textBeforeCursor);
-  if (listType) {
-    convertToList(container, listType);
-  }
+  return { text: textBeforeCursor.replace(/\u00A0/g, ' '), container };
 };
 
-const endsWithListPattern = text => {
-  const normalizedText = text.replace(/\u00A0/g, ' '); // Replace &nbsp; with regular space
-  if (normalizedText === '- ') {
+const listPattern = text => {
+  if (text === '- ') {
     return 'ul';
   }
-  if (normalizedText === '1. ') {
+  if (text === '1. ') {
     return 'ol';
   }
   return null;
@@ -256,6 +298,45 @@ const convertToList = (container, listType) => {
 
   const parent = container.parentNode;
   parent.replaceChild(list, container);
+};
+
+const headerPattern = text => {
+  if (text === '# ') {
+    return 'h1';
+  }
+  if (text === '## ') {
+    return 'h2';
+  }
+  if (text === '### ') {
+    return 'h3';
+  }
+  if (text === '#### ') {
+    return 'h4';
+  }
+  if (text === '##### ') {
+    return 'h5';
+  }
+  if (text === '###### ') {
+    return 'h6';
+  }
+  return null;
+};
+
+const convertToHeader = (container, headerType) => {
+  const header = document.createElement(headerType);
+
+  header.innerHTML = '&ZeroWidthSpace;';
+
+  const parent = container.parentNode;
+  parent.replaceChild(header, container);
+
+  // Set the cursor at the end of the header text
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.setStart(header, 1);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
 };
 
 const restoreCursorPosition = (element, position) => {
@@ -291,7 +372,7 @@ const restoreCursorPosition = (element, position) => {
   if (targetNode) {
     let currentNode = targetNode;
     while (currentNode !== element) {
-      if (supportedTags.includes(currentNode.nodeName)) {
+      if (supportedInlineTags.includes(currentNode.nodeName)) {
         const textContent = targetNode.textContent;
 
         // Check for two or more spaces (including non-breaking spaces) at the end
