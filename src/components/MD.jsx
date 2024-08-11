@@ -10,17 +10,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   const editorRef = useRef(null);
   const cursorPositionRef = useRef(null);
 
-  const handleKeyDown = useCallback(
-    e => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleEnterKey();
-        onChange(convertToMarkdown(editorRef.current.innerHTML));
-      }
-    },
-    [onChange]
-  );
-
   const handleInput = useCallback(
     e => {
       cursorPositionRef.current = getCursorPosition(editorRef.current);
@@ -48,13 +37,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 
   return (
     <Wrapper>
-      <Editor
-        ref={editorRef}
-        contentEditable
-        onInput={handleInput}
-        onKeyDown={handleKeyDown}
-        autoFocus={autoFocus}
-      />
+      <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
       <Text size="1">Markdown editor, support ~~ __ ** and `</Text>
     </Wrapper>
   );
@@ -63,6 +46,11 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 export const convertToMarkdown = html => {
   return (
     html
+      // Convert <div><br></div> to a single newline
+      .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
+      // Convert <div> to double newline
+      .replace(/<div\s*\/?>/gi, '\n')
+      .replace(/<\/div>/gi, '')
       // Convert <br> to newline
       .replace(/<br\s*\/?>/gi, '\n')
       // Convert <strong> to **
@@ -79,6 +67,7 @@ export const convertToMarkdown = html => {
       .replace(/&nbsp;/g, ' ')
       // Remove any remaining HTML tags
       .replace(/<[^>]+>/g, '')
+      .trim()
   );
 };
 
@@ -158,22 +147,6 @@ const parseMarkdown = input => {
 const removeTrailingSpacesFromMarkdownTags = input => {
   // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
   return input.replace(/(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
-};
-
-const handleEnterKey = () => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    range.deleteContents();
-
-    const br = document.createElement('br');
-    range.insertNode(br);
-
-    // Move the cursor after the second <br>
-    range.setStartAfter(br);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
 };
 
 const getCursorPosition = element => {
