@@ -2,29 +2,26 @@ import { Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-const supportedTags = ['EM', 'STRONG', 'B', 'DEL', 'CODE', 'I'];
+const supportedTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
-  const [text, setText] = useState(defaultText || '');
+  const [text, setText] = useState(parseMarkdown(defaultText || ''));
 
   const editorRef = useRef(null);
   const cursorPositionRef = useRef(null);
 
-  const handleInput = useCallback(
-    e => {
-      cursorPositionRef.current = getCursorPosition(editorRef.current);
+  const handleInput = useCallback(() => {
+    cursorPositionRef.current = getCursorPosition(editorRef.current);
 
-      const newHtml = e.target.innerHTML;
-      setText(newHtml);
+    createList();
 
-      onChange(convertToMarkdown(editorRef.current.innerHTML));
-    },
-    [onChange]
-  );
+    setText(editorRef.current.innerHTML);
+    onChange(convertToMarkdown(editorRef.current.innerHTML));
+  }, [onChange]);
 
   useEffect(() => {
     if (editorRef.current) {
-      const parsed = parseMarkdown(text);
+      const parsed = parseInlineMarkdown(text);
       const noTrailingSpaces = removeTrailingSpacesFromMarkdownTags(parsed);
       if (noTrailingSpaces !== editorRef.current.innerHTML) {
         editorRef.current.innerHTML = parsed;
@@ -38,7 +35,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   return (
     <Wrapper>
       <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
-      <Text size="1">Markdown editor, support ~~ __ ** and `</Text>
+      <Text size="1">Markdown editor, supports ~~ __ ** ` 1. -</Text>
     </Wrapper>
   );
 });
@@ -46,6 +43,17 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 export const convertToMarkdown = html => {
   return (
     html
+      // Convert unordered lists
+      .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
+        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n');
+      })
+      // Convert ordered lists
+      .replace(/<ol>\s*((<li>.*?<\/li>\s*)+)<\/ol>/gi, (match, items) => {
+        let index = 1;
+        return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
+          return `${index++}. ${itemContent.trim()}\n`;
+        });
+      })
       // Convert <div><br></div> to a single newline
       .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
       // Convert <div> to double newline
@@ -129,8 +137,18 @@ const Editor = styled.div`
 `;
 
 const parseMarkdown = input => {
+  const withLists = parseList(input);
+
+  return parseInlineMarkdown(withLists);
+};
+
+const parseInlineMarkdown = input => {
   return (
     input
+      // Convert unordered lists
+      .replace(/^- (.*?)(\n|$)/gm, '<ul><li>$1</li></ul>')
+      // Convert ordered lists
+      .replace(/^\d+\. (.*?)(\n|$)/gm, '<ol><li>$1</li></ol>')
       // Bold
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       // Italic
@@ -142,6 +160,48 @@ const parseMarkdown = input => {
       // Line breaks
       .replace(/\n/gim, '<br>')
   );
+};
+
+const parseList = markdown => {
+  const lines = markdown.trim().split('\n');
+  let html = '';
+  let inList = false;
+  let listType = '';
+
+  function closeList() {
+    if (inList) {
+      html += `</${listType}>`;
+      inList = false;
+    }
+  }
+
+  lines.forEach(line => {
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (!inList || listType !== 'ul') {
+        closeList();
+        html += '<ul>';
+        listType = 'ul';
+        inList = true;
+      }
+      html += `<li>${line.slice(2)}</li>`;
+    } else if (line.match(/^\d+\. /)) {
+      if (!inList || listType !== 'ol') {
+        closeList();
+        html += '<ol>';
+        listType = 'ol';
+        inList = true;
+      }
+      html += `<li>${line.replace(/^\d+\. /, '')}</li>`;
+    } else {
+      closeList();
+      if (line) {
+        html += `${line}\n`;
+      }
+    }
+  });
+
+  closeList();
+  return html;
 };
 
 const removeTrailingSpacesFromMarkdownTags = input => {
@@ -162,6 +222,40 @@ const getCursorPosition = element => {
   }
 
   return null;
+};
+
+const createList = () => {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  const container = range.startContainer;
+  const textBeforeCursor = container.textContent.slice(0, range.startOffset);
+
+  const listType = endsWithListPattern(textBeforeCursor);
+  if (listType) {
+    convertToList(container, listType);
+  }
+};
+
+const endsWithListPattern = text => {
+  const normalizedText = text.replace(/\u00A0/g, ' '); // Replace &nbsp; with regular space
+  if (normalizedText === '- ') {
+    return 'ul';
+  }
+  if (normalizedText === '1. ') {
+    return 'ol';
+  }
+  return null;
+};
+
+const convertToList = (container, listType) => {
+  const listItem = document.createElement('li');
+
+  const list = document.createElement(listType);
+  list.appendChild(listItem);
+
+  const parent = container.parentNode;
+  parent.replaceChild(list, container);
 };
 
 const restoreCursorPosition = (element, position) => {
