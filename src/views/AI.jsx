@@ -1,4 +1,4 @@
-import { Button } from '@radix-ui/themes';
+import { Button, Text } from '@radix-ui/themes';
 import React, { useCallback, useState } from 'react';
 
 import { renderMarkdown } from '../components/MD.jsx';
@@ -28,18 +28,18 @@ const Header = React.memo(() => {
 });
 
 const Form = React.memo(() => {
-  const [prefix, setPrefix] = useState(
-    `Translate this to Chinese, tell me what's the orignal language first:`
-  );
+  const [prefix, setPrefix] = useState(`翻译成中文:`);
   const [propmt, setPrompt] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [answer, setAnswer] = useState('');
+  const [tokens, setTokens] = useState(0);
 
   const handleSend = useCallback(async () => {
     setIsSending(true);
     const { data } = await getSuggestion(prefix, propmt);
-    if (data?.result) {
-      setAnswer(data.result);
+    if (data?.suggestion) {
+      setAnswer(data.suggestion);
+      setTokens(data.totalTokens);
       setPrompt('');
     } else {
       setToastEffect('Something is wrong', toastTypes.error);
@@ -57,6 +57,8 @@ const Form = React.memo(() => {
       </Button>
 
       {!!answer && renderMarkdown(answer)}
+
+      {!!tokens && <Text as="p">{tokens}</Text>}
     </ItemsWrapper>
   );
 });
