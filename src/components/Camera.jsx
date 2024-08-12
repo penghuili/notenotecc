@@ -3,7 +3,7 @@ import {
   RiCameraLine,
   RiCheckLine,
   RiCloseLine,
-  RiImageLine,
+  RiImageAddLine,
   RiSkipDownLine,
   RiSkipUpLine,
   RiVideoOnLine,
@@ -14,8 +14,9 @@ import styled from 'styled-components';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import { FilePicker } from './FilePicker.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
-import { PickPhoto } from './PickPhoto.jsx';
+import { pickedPhotoCat, PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { TakeVideo } from './TakeVideo.jsx';
 
@@ -58,6 +59,12 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
     [images]
   );
 
+  const handlePickPhoto = useCallback(photo => {
+    if (photo) {
+      pickedPhotoCat.set(photo);
+    }
+  }, []);
+
   useEffect(() => {
     disableBodyScroll();
 
@@ -93,7 +100,9 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
             <RiVideoOnLine />
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.pickPhoto}>
-            <RiImageLine />
+            <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
+              <RiImageAddLine />
+            </FilePicker>
           </Tabs.Trigger>
         </Tabs.List>
       </Tabs.Root>
