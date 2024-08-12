@@ -20,7 +20,7 @@
     "react-error-boundary": "4.0.13",
     "spark-md5": "3.0.2",
     "styled-components": "5.3.11",
-    "usecat": "1.1.1"
+    "usecat": "1.1.2"
   },
   "overrides": {
     "react": "19.0.0-rc-2d2cc042-20240809",
