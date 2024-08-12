@@ -273,10 +273,8 @@ async function forceFetchAccountEffect() {
 
   const { data } = await fetchAccount();
 
-  if (data) {
-    if (isNewer(data.updatedAt, userCat.get()?.updatedAt)) {
-      userCat.set(data);
-    }
+  if (data && isNewer(data.updatedAt, userCat.get()?.updatedAt)) {
+    userCat.set(data);
   }
 
   isLoadingAccountCat.set(false);

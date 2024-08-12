@@ -3,7 +3,7 @@ import { RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { renderMarkdown } from '../components/MD.jsx';
+import { Markdown } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { AreaField } from '../shared-private/react/AreaField.jsx';
@@ -79,7 +79,7 @@ const Form = React.memo(() => {
         Send
       </Button>
 
-      {!!answer && renderMarkdown(answer)}
+      {!!answer && <Markdown markdown={answer} />}
 
       {!!tokens && <Text as="p">{tokens}</Text>}
     </ItemsWrapper>

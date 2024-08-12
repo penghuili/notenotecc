@@ -1,95 +1,217 @@
 import { Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
-  const [text, setText] = useState(parseMarkdown(defaultText || ''));
-
   const editorRef = useRef(null);
-  const cursorPositionRef = useRef(null);
 
   const handleInput = useCallback(() => {
-    cursorPositionRef.current = getCursorPosition(editorRef.current);
+    const nearestNodeElement = getNearestNodeElement();
 
-    createListAndHeader();
+    if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
+      escapeInlineTags(nearestNodeElement);
+    } else {
+      createListAndHeader();
+      convertInlineTags();
+    }
 
-    setText(editorRef.current.innerHTML);
     onChange(convertToMarkdown(editorRef.current.innerHTML));
   }, [onChange]);
 
   useEffect(() => {
-    if (editorRef.current) {
-      const parsed = parseInlineMarkdown(text);
-      const noTrailingSpaces = removeTrailingSpacesFromMarkdownTags(parsed);
-      if (noTrailingSpaces !== editorRef.current.innerHTML) {
-        editorRef.current.innerHTML = parsed;
-        restoreCursorPosition(editorRef.current, cursorPositionRef.current);
-        onChange(convertToMarkdown(editorRef.current.innerHTML));
-        editorRef.current.focus();
-      }
-    }
-  }, [onChange, text]);
+    editorRef.current.innerHTML = parseMarkdown(defaultText || '');
+    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Wrapper>
       <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
-      <Text size="1">Markdown editor, supports ~~ __ ** ` 1. -</Text>
+      <Text size="1">Markdown editor, supports ~~ __ ** ` 1. - and #</Text>
     </Wrapper>
   );
 });
 
-export const convertToMarkdown = html => {
-  return (
-    html
-      // Convert headers
-      .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n')
-      .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n')
-      .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n')
-      .replace(/<h4>(.*?)<\/h4>/gi, '#### $1\n')
-      .replace(/<h5>(.*?)<\/h5>/gi, '##### $1\n')
-      .replace(/<h6>(.*?)<\/h6>/gi, '###### $1\n')
-      // Convert unordered lists
-      .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
-        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n');
-      })
-      // Convert ordered lists
-      .replace(/<ol>\s*((<li>.*?<\/li>\s*)+)<\/ol>/gi, (match, items) => {
-        let index = 1;
-        return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
-          return `${index++}. ${itemContent.trim()}\n`;
-        });
-      })
-      // Convert <div><br></div> to a single newline
-      .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
-      // Convert <div> to double newline
-      .replace(/<div\s*\/?>/gi, '\n')
-      .replace(/<\/div>/gi, '')
-      // Convert <br> to newline
-      .replace(/<br\s*\/?>/gi, '\n')
-      // Convert <strong> to **
-      .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
-      .replace(/<b>(.*?)<\/b>/gi, '**$1**')
-      // Convert <em> to __
-      .replace(/<em>(.*?)<\/em>/gi, '__$1__')
-      .replace(/<i>(.*?)<\/i>/gi, '__$1__')
-      // Convert <del> to ~~
-      .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
-      // Convert <code> to `
-      .replace(/<code>(.*?)<\/code>/gi, '`$1`')
-      // Convert &nbsp; to space
-      .replace(/&nbsp;/g, ' ')
-      // Remove any remaining HTML tags
-      .replace(/<[^>]+>/g, '')
-      .trim()
-  );
-};
-
-export function renderMarkdown(markdown) {
+export const Markdown = React.memo(({ markdown }) => {
   const html = parseMarkdown(markdown);
   return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
-}
+});
+
+const getNearestNodeElement = () => {
+  let container = getRangeContainer();
+  if (!container) {
+    return null;
+  }
+
+  while (container.nodeType !== Node.ELEMENT_NODE) {
+    container = container.parentNode;
+  }
+
+  return container;
+};
+
+const createListAndHeader = () => {
+  const result = getTextBeforeCursor();
+  if (!result) {
+    return;
+  }
+
+  const { text, container } = result;
+
+  const listType = listPattern(text);
+  if (listType) {
+    convertToList(container, listType);
+  }
+
+  const headerType = headerPattern(text);
+  if (headerType) {
+    convertToHeader(container, headerType);
+  }
+};
+
+const getTextBeforeCursor = () => {
+  const range = getRange();
+  if (!range) {
+    return null;
+  }
+
+  const container = range.startContainer;
+  const textBeforeCursor = container.textContent.slice(0, range.startOffset);
+
+  return { text: textBeforeCursor.replace(/\u00A0/g, ' '), container };
+};
+
+const listPattern = text => {
+  if (text === '- ') {
+    return 'ul';
+  }
+  if (text === '1. ') {
+    return 'ol';
+  }
+  return null;
+};
+
+const convertToList = (container, listType) => {
+  const listItem = document.createElement('li');
+
+  const list = document.createElement(listType);
+  list.appendChild(listItem);
+
+  const parent = container.parentNode;
+  parent.replaceChild(list, container);
+};
+
+const headerPattern = text => {
+  if (text === '# ') {
+    return 'h1';
+  }
+  if (text === '## ') {
+    return 'h2';
+  }
+  if (text === '### ') {
+    return 'h3';
+  }
+  if (text === '#### ') {
+    return 'h4';
+  }
+  if (text === '##### ') {
+    return 'h5';
+  }
+  if (text === '###### ') {
+    return 'h6';
+  }
+  return null;
+};
+
+const convertToHeader = (container, headerType) => {
+  const header = document.createElement(headerType);
+
+  header.innerHTML = '&ZeroWidthSpace;';
+
+  const parent = container.parentNode;
+  parent.replaceChild(header, container);
+
+  setCursorPosition(header, 1);
+};
+
+const convertInlineTags = () => {
+  const rangeContainer = getRangeContainer();
+
+  if (rangeContainer?.nodeType === Node.TEXT_NODE) {
+    const text = rangeContainer.textContent;
+
+    const patterns = [
+      { regex: /`([^`]+)`/, tag: 'code' },
+      { regex: /\*\*(.*?)\*\*/, tag: 'strong' },
+      { regex: /__(.*?)__/, tag: 'em' },
+      { regex: /~~(.*?)~~/, tag: 'del' },
+    ];
+
+    patterns.forEach(({ regex, tag }) => {
+      let match = regex.exec(text);
+
+      if (match !== null) {
+        const inlineElement = document.createElement(tag);
+        inlineElement.textContent = match[1];
+
+        const beforeText = text.slice(0, match.index);
+        const afterText = text.slice(match.index + match[0].length);
+
+        rangeContainer.textContent = beforeText;
+        rangeContainer.parentNode.insertBefore(inlineElement, rangeContainer.nextSibling);
+        const afterNode = document.createTextNode(afterText);
+        rangeContainer.parentNode.insertBefore(afterNode, inlineElement.nextSibling);
+
+        const span = addEmptySpanAfter(inlineElement);
+
+        setCursorPosition(span.firstChild, 1);
+      }
+    });
+  }
+};
+
+const escapeInlineTags = inlineElement => {
+  const textContent = inlineElement.textContent;
+
+  if (has2TrailingSpaces(textContent)) {
+    inlineElement.textContent = textContent.replace(/(\s|&nbsp;){2,}$/, '');
+
+    const span = addEmptySpanAfter(inlineElement);
+    setCursorPosition(span.firstChild, 1);
+  }
+};
+
+const getRange = () => {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) {
+    return null;
+  }
+
+  return selection.getRangeAt(0);
+};
+const getRangeContainer = () => {
+  const range = getRange();
+  return range?.startContainer;
+};
+
+const addEmptySpanAfter = element => {
+  const span = document.createElement('span');
+  span.innerHTML = '&nbsp;';
+  element.parentNode.insertBefore(span, element.nextSibling);
+
+  return span;
+};
+
+const setCursorPosition = (targetNode, targetOffset) => {
+  const range = document.createRange();
+  const selection = window.getSelection();
+  range.setStart(targetNode, targetOffset);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
 
 const Wrapper = styled.div`
   width: 100%;
@@ -155,20 +277,58 @@ const Editor = styled.div`
   }
 `;
 
-const parseMarkdown = input => {
-  const withLists = parseList(input);
-  const withHeader = parseHeader(withLists);
-
-  return parseInlineMarkdown(withHeader);
+const convertToMarkdown = html => {
+  return (
+    html
+      // Convert headers
+      .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n')
+      .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n')
+      .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n')
+      .replace(/<h4>(.*?)<\/h4>/gi, '#### $1\n')
+      .replace(/<h5>(.*?)<\/h5>/gi, '##### $1\n')
+      .replace(/<h6>(.*?)<\/h6>/gi, '###### $1\n')
+      // Convert unordered lists
+      .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
+        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n');
+      })
+      // Convert ordered lists
+      .replace(/<ol>\s*((<li>.*?<\/li>\s*)+)<\/ol>/gi, (match, items) => {
+        let index = 1;
+        return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
+          return `${index++}. ${itemContent.trim()}\n`;
+        });
+      })
+      // Convert <div><br></div> to a single newline
+      .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
+      // Convert <div> to newline
+      .replace(/<div\s*\/?>/gi, '\n')
+      .replace(/<\/div>/gi, '')
+      // Convert <br> to newline
+      .replace(/<br\s*\/?>/gi, '\n')
+      // Convert <strong> <b> to **
+      .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+      .replace(/<b>(.*?)<\/b>/gi, '**$1**')
+      // Convert <em> <i> to __
+      .replace(/<em>(.*?)<\/em>/gi, '__$1__')
+      .replace(/<i>(.*?)<\/i>/gi, '__$1__')
+      // Convert <del> to ~~
+      .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
+      // Convert <code> to `
+      .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+      // Convert &nbsp; to space
+      .replace(/&nbsp;/g, ' ')
+      // Remove any remaining HTML tags
+      .replace(/<[^>]+>/g, '')
+      .trim()
+  );
 };
 
-const parseInlineMarkdown = input => {
+const parseMarkdown = input => {
+  let parsed = parseList(input);
+  parsed = parseHeader(parsed);
+
   return (
-    input
-      // Convert unordered lists
-      .replace(/^- (.*?)(\n|$)/gm, '<ul><li>$1</li></ul>')
-      // Convert ordered lists
-      .replace(/^\d+\. (.*?)(\n|$)/gm, '<ol><li>$1</li></ol>')
+    parsed
       // Bold
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       // Italic
@@ -232,175 +392,6 @@ const parseHeader = input => {
     .replace(/^### (.*)\n?/gim, '<h3>$1</h3>')
     .replace(/^## (.*)\n?/gim, '<h2>$1</h2>')
     .replace(/^# (.*)\n?/gim, '<h1>$1</h1>');
-};
-
-const removeTrailingSpacesFromMarkdownTags = input => {
-  // Remove trailing spaces and non-breaking spaces within HTML tags only if there are two or more
-  return input.replace(/(<(strong|b|em|del|code|i)>)(.*?)(\s|&nbsp;){2,}(<\/\2>)/gi, '$1$3$5');
-};
-
-const getCursorPosition = element => {
-  const selection = window.getSelection();
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const preSelectionRange = range.cloneRange();
-    preSelectionRange.selectNodeContents(element);
-    preSelectionRange.setEnd(range.startContainer, range.startOffset);
-    const fullText = preSelectionRange.toString();
-    const visibleText = fullText.replace(/[*_~`]/g, '');
-    return visibleText.length;
-  }
-
-  return null;
-};
-
-const createListAndHeader = () => {
-  const { text, container } = getTextBeforeCursor();
-
-  const listType = listPattern(text);
-  if (listType) {
-    convertToList(container, listType);
-  }
-
-  const headerType = headerPattern(text);
-  if (headerType) {
-    convertToHeader(container, headerType);
-  }
-};
-
-const getTextBeforeCursor = () => {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) {
-    return {};
-  }
-  const range = selection.getRangeAt(0);
-  const container = range.startContainer;
-  const textBeforeCursor = container.textContent.slice(0, range.startOffset);
-
-  return { text: textBeforeCursor.replace(/\u00A0/g, ' '), container };
-};
-
-const listPattern = text => {
-  if (text === '- ') {
-    return 'ul';
-  }
-  if (text === '1. ') {
-    return 'ol';
-  }
-  return null;
-};
-
-const convertToList = (container, listType) => {
-  const listItem = document.createElement('li');
-
-  const list = document.createElement(listType);
-  list.appendChild(listItem);
-
-  const parent = container.parentNode;
-  parent.replaceChild(list, container);
-};
-
-const headerPattern = text => {
-  if (text === '# ') {
-    return 'h1';
-  }
-  if (text === '## ') {
-    return 'h2';
-  }
-  if (text === '### ') {
-    return 'h3';
-  }
-  if (text === '#### ') {
-    return 'h4';
-  }
-  if (text === '##### ') {
-    return 'h5';
-  }
-  if (text === '###### ') {
-    return 'h6';
-  }
-  return null;
-};
-
-const convertToHeader = (container, headerType) => {
-  const header = document.createElement(headerType);
-
-  header.innerHTML = '&ZeroWidthSpace;';
-
-  const parent = container.parentNode;
-  parent.replaceChild(header, container);
-
-  // Set the cursor at the end of the header text
-  const range = document.createRange();
-  const selection = window.getSelection();
-  range.setStart(header, 1);
-  range.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(range);
-};
-
-const restoreCursorPosition = (element, position) => {
-  if (position === null) return;
-
-  const selection = window.getSelection();
-  const range = document.createRange();
-
-  let currentLength = 0;
-  let targetNode = null;
-  let targetOffset = 0;
-
-  const traverseNodes = node => {
-    if (targetNode) return;
-
-    if (node.nodeType === Node.TEXT_NODE) {
-      const visibleLength = node.textContent.length;
-      if (currentLength + visibleLength >= position) {
-        targetNode = node;
-        targetOffset = position - currentLength;
-      } else {
-        currentLength += visibleLength;
-      }
-    } else {
-      for (let child of node.childNodes) {
-        traverseNodes(child);
-      }
-    }
-  };
-
-  traverseNodes(element);
-
-  if (targetNode) {
-    let currentNode = targetNode;
-    while (currentNode !== element) {
-      if (supportedInlineTags.includes(currentNode.nodeName)) {
-        const textContent = targetNode.textContent;
-
-        // Check for two or more spaces (including non-breaking spaces) at the end
-        if (has2TrailingSpaces(textContent)) {
-          // Remove the trailing spaces
-          targetNode.textContent = textContent.replace(/(\s|&nbsp;){2,}$/, '');
-        }
-        // Move the cursor outside the formatted element
-        if (currentNode.nextSibling) {
-          targetNode = currentNode.nextSibling;
-          targetOffset = 1;
-        } else {
-          const span = document.createElement('span');
-          span.innerHTML = '&nbsp;'; // Non-breaking space inside a span
-          currentNode.parentNode.insertBefore(span, currentNode.nextSibling);
-          targetNode = span.firstChild;
-          targetOffset = 1;
-        }
-        break;
-      }
-      currentNode = currentNode.parentNode;
-    }
-
-    range.setStart(targetNode, targetOffset);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  }
 };
 
 const has2TrailingSpaces = text => {

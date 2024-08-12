@@ -5,7 +5,7 @@ import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
 import { RouteLink } from '../shared-private/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
-import { renderMarkdown } from './MD.jsx';
+import { Markdown } from './MD.jsx';
 import { NoteActions } from './NoteActions.jsx';
 
 export const NoteItem = React.memo(({ note, albums }) => {
@@ -43,7 +43,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
         />
       )}
 
-      {!!note.note && renderMarkdown(note.note)}
+      {!!note.note && <Markdown markdown={note.note} />}
 
       {!!albums?.length && (
         <Flex wrap="wrap">
