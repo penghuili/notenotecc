@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { AnimatedBox } from '../shared-private/react/AnimatedBox.jsx';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
+const zeroWidthSpace = '&ZeroWidthSpace;';
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
@@ -17,10 +18,12 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
       escapeInlineTags(nearestNodeElement);
     } else {
       createListAndHeader();
+      escapeBlockquote(editorRef.current);
       convertInlineTags();
     }
 
     onChange(convertToMarkdown(editorRef.current.innerHTML));
+    console.log({ markdown: convertToMarkdown(editorRef.current.innerHTML) });
   }, [onChange]);
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   return (
     <Wrapper>
       <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
-      <Helper />
+      <HelperText />
     </Wrapper>
   );
 });
@@ -71,6 +74,11 @@ const createListAndHeader = () => {
   const headerType = headerPattern(text);
   if (headerType) {
     convertToHeader(container, headerType);
+  }
+
+  const blockquote = blockquotePattern(text);
+  if (blockquote) {
+    convertToBlockquote(container);
   }
 };
 
@@ -131,12 +139,56 @@ const headerPattern = text => {
 const convertToHeader = (container, headerType) => {
   const header = document.createElement(headerType);
 
-  header.innerHTML = '&ZeroWidthSpace;';
+  header.innerHTML = zeroWidthSpace;
 
   const parent = container.parentNode;
   parent.replaceChild(header, container);
 
   setCursorPosition(header, 1);
+};
+
+const blockquotePattern = text => {
+  if (text === '>') {
+    return 'blockquote';
+  }
+
+  return null;
+};
+
+const convertToBlockquote = container => {
+  const element = document.createElement('blockquote');
+  const pElement = document.createElement('p');
+  pElement.innerHTML = zeroWidthSpace;
+  element.appendChild(pElement);
+
+  const parent = container.parentNode;
+  parent.replaceChild(element, container);
+
+  setCursorPosition(pElement, 1);
+};
+
+const escapeBlockquote = wrapperElement => {
+  let currentElement = getRangeContainer();
+  if (!currentElement) {
+    return;
+  }
+
+  while (currentElement.tagName !== 'BLOCKQUOTE' && currentElement !== wrapperElement) {
+    currentElement = currentElement.parentNode;
+  }
+
+  if (currentElement.tagName !== 'BLOCKQUOTE') {
+    return;
+  }
+
+  const innerHTML = currentElement.innerHTML;
+
+  if (innerHTML.endsWith('<p><br></p><p><br></p>')) {
+    currentElement.innerHTML = innerHTML.replace(/<p><br><\/p><p><br><\/p>/, '');
+
+    const div = addEmptyDivAfter(currentElement);
+    setCursorPosition(div.firstChild, 1);
+  }
 };
 
 const convertInlineTags = () => {
@@ -216,6 +268,14 @@ const addEmptySpanAfter = element => {
   return span;
 };
 
+const addEmptyDivAfter = element => {
+  const div = document.createElement('div');
+  div.innerHTML = zeroWidthSpace;
+  element.parentNode.insertBefore(div, element.nextSibling);
+
+  return div;
+};
+
 const setCursorPosition = (targetNode, targetOffset) => {
   const range = document.createRange();
   const selection = window.getSelection();
@@ -284,6 +344,15 @@ const Editor = styled.div`
   h6 {
     margin: 0;
   }
+  blockquote {
+    box-sizing: border-box;
+    border-left: max(var(--space-1), 0.25em) solid var(--accent-a6);
+    padding-left: min(var(--space-5), max(var(--space-3), 0.5em));
+    margin: 0.5rem;
+    p {
+      margin: 0;
+    }
+  }
 `;
 
 const convertToMarkdown = html => {
@@ -306,6 +375,10 @@ const convertToMarkdown = html => {
         return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
           return `${index++}. ${itemContent.trim()}\n`;
         });
+      })
+      // Convert blockquotes
+      .replace(/<blockquote>(.*?)<\/blockquote>/gis, (match, content) => {
+        return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n').trim();
       })
       // Convert <div><br></div> to a single newline
       .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
@@ -330,6 +403,9 @@ const convertToMarkdown = html => {
       .replace(/<code>(.*?)<\/code>/gi, '`$1`')
       // Convert &nbsp; to space
       .replace(/&nbsp;/g, ' ')
+      // Remove zero width spaces
+      // eslint-disable-next-line no-misleading-character-class
+      .replace(/[\u200B\u200C\u200D\uFEFF]/g, '')
       // Remove any remaining HTML tags
       .replace(/<[^>]+>/g, '')
       .trim()
@@ -339,6 +415,13 @@ const convertToMarkdown = html => {
 const parseMarkdown = input => {
   let parsed = parseList(input);
   parsed = parseHeader(parsed);
+
+  // Convert blockquotes
+  parsed = parsed.replace(/(^|\n)(> .+(\n|$))+/g, match => {
+    const lines = match.trim().split('\n');
+    const content = lines.map(line => line.replace(/^> /, '').trim()).join('</p><p>');
+    return `<blockquote><p>${content}</p></blockquote>`;
+  });
 
   return (
     parsed
@@ -418,10 +501,11 @@ const helperText = `&#42;&#42;bold&#42;&#42;: becomes **bold**;
 &#126;&#126;strikethrough&#126;&#126;: becomes ~~strikethrough~~;
 &#91;notenote.cc&#93;(https://app.notenote.cc/): becomes [notenote.cc](https://app.notenote.cc/);
 Start with # you get a header (supports up to 6 levels);
+Start with > you get a blockquote;
 Start with - you get an unordered list;
 Start with 1. you get an ordered list.`;
 
-const Helper = React.memo(() => {
+const HelperText = React.memo(() => {
   const [open, setOpen] = useState(false);
 
   const handleToggle = useCallback(() => {
