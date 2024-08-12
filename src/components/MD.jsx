@@ -150,14 +150,23 @@ const convertInlineTags = () => {
       { regex: /\*\*(.*?)\*\*/, tag: 'strong' },
       { regex: /__(.*?)__/, tag: 'em' },
       { regex: /~~(.*?)~~/, tag: 'del' },
+      { regex: /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/, tag: 'a' },
     ];
 
     patterns.forEach(({ regex, tag }) => {
       let match = regex.exec(text);
 
       if (match !== null) {
-        const inlineElement = document.createElement(tag);
-        inlineElement.textContent = match[1];
+        let inlineElement;
+        if (tag === 'a') {
+          inlineElement = document.createElement('a');
+          inlineElement.href = match[2];
+          inlineElement.textContent = match[1];
+          inlineElement.target = '_blank';
+        } else {
+          inlineElement = document.createElement(tag);
+          inlineElement.textContent = match[1];
+        }
 
         const beforeText = text.slice(0, match.index);
         const afterText = text.slice(match.index + match[0].length);
@@ -305,6 +314,10 @@ const convertToMarkdown = html => {
       .replace(/<\/div>/gi, '')
       // Convert <br> to newline
       .replace(/<br\s*\/?>/gi, '\n')
+      // Convert <a> to links
+      .replace(/<a\s+href="([^"]+)"[^>]*>(.*?)<\/a>/gi, (match, href, text) => {
+        return `[${text}](${href})`;
+      })
       // Convert <strong> <b> to **
       .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
       .replace(/<b>(.*?)<\/b>/gi, '**$1**')
@@ -329,6 +342,8 @@ const parseMarkdown = input => {
 
   return (
     parsed
+      // Link
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim, '<a href="$2" target="_blank">$1</a>')
       // Bold
       .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
       // Italic
@@ -401,6 +416,7 @@ const has2TrailingSpaces = text => {
 const helperText = `&#42;&#42;bold&#42;&#42;: becomes **bold**;
 &#95;&#95;italic&#95;&#95;: becomes __italic__ (2 underscores);
 &#126;&#126;strikethrough&#126;&#126;: becomes ~~strikethrough~~;
+&#91;notenote.cc&#93;(https://app.notenote.cc/): becomes [notenote.cc](https://app.notenote.cc/);
 Start with # you get a header (supports up to 6 levels);
 Start with - you get an unordered list;
 Start with 1. you get an ordered list.`;
