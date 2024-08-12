@@ -1,6 +1,9 @@
-import { Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { Flex, Text } from '@radix-ui/themes';
+import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+import { AnimatedBox } from '../shared-private/react/AnimatedBox.jsx';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
 
@@ -29,7 +32,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   return (
     <Wrapper>
       <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
-      <Text size="1">Markdown editor, supports ~~ __ ** ` 1. - and #</Text>
+      <Helper />
     </Wrapper>
   );
 });
@@ -239,10 +242,8 @@ const Editor = styled.div`
 
     --code-variant-font-size-adjust: calc(var(--code-font-size-adjust) * 0.95);
     font-family: var(--code-font-family);
-    font-size: calc(var(--code-variant-font-size-adjust) * 1em);
     font-style: var(--code-font-style);
     font-weight: var(--code-font-weight);
-    line-height: 1.25;
     letter-spacing: calc(
       var(--code-letter-spacing) + var(--letter-spacing, var(--default-letter-spacing))
     );
@@ -251,13 +252,12 @@ const Editor = styled.div`
     padding: var(--code-padding-top) var(--code-padding-right) var(--code-padding-bottom)
       var(--code-padding-left);
   }
-  em {
+  em,
+  i {
     box-sizing: border-box;
     font-family: var(--em-font-family);
-    font-size: calc(var(--em-font-size-adjust) * 1em);
     font-style: var(--em-font-style);
     font-weight: var(--em-font-weight);
-    line-height: 1.25;
     letter-spacing: calc(
       var(--em-letter-spacing) + var(--letter-spacing, var(--default-letter-spacing))
     );
@@ -397,3 +397,41 @@ const parseHeader = input => {
 const has2TrailingSpaces = text => {
   return /\s{2,}$/.test(text) || /(&nbsp;){2,}$/.test(text);
 };
+
+const helperText = `&#42;&#42;bold&#42;&#42;: becomes **bold**;
+&#95;&#95;italic&#95;&#95;: becomes __italic__ (2 underscores);
+&#126;&#126;strikethrough&#126;&#126;: becomes ~~strikethrough~~;
+Start with # you get a header (supports up to 6 levels);
+Start with - you get an unordered list;
+Start with 1. you get an ordered list.`;
+
+const Helper = React.memo(() => {
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = useCallback(() => {
+    setOpen(!open);
+  }, [open]);
+
+  return (
+    <>
+      <HelperTitleWrapper align="center" onClick={handleToggle}>
+        <Text size="1">Markdown editor, click to learn more </Text>
+        {open ? <RiArrowDropUpLine /> : <RiArrowDropDownLine />}
+      </HelperTitleWrapper>
+      <AnimatedBox visible={open}>
+        <HelperContentWrapper>
+          <Markdown markdown={helperText} />
+        </HelperContentWrapper>
+      </AnimatedBox>
+    </>
+  );
+});
+
+const HelperTitleWrapper = styled(Flex)`
+  user-select: none;
+`;
+const HelperContentWrapper = styled.div`
+  & * {
+    font-size: var(--font-size-1);
+  }
+`;
