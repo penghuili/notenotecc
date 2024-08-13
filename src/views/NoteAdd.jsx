@@ -1,5 +1,5 @@
-import { Box, IconButton } from '@radix-ui/themes';
-import { RiImageAddLine, RiSendPlaneLine } from '@remixicon/react';
+import { Box, Button, IconButton } from '@radix-ui/themes';
+import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
 
@@ -60,13 +60,13 @@ const Header = React.memo(() => {
 
   const rightElement = useMemo(
     () => (
-      <IconButton
+      <Button
         disabled={(!images?.length && !description) || isCreating}
         onClick={handleSend}
         mr="2"
       >
-        <RiSendPlaneLine />
-      </IconButton>
+        Send
+      </Button>
     ),
     [description, handleSend, images?.length, isCreating]
   );

@@ -1,5 +1,4 @@
-import { IconButton } from '@radix-ui/themes';
-import { RiSendPlaneLine } from '@remixicon/react';
+import { Button } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
@@ -51,9 +50,9 @@ const Header = React.memo(({ albumId }) => {
 
   const rightElement = useMemo(
     () => (
-      <IconButton disabled={isUpdating || !hasTitle} onClick={handleSend} mr="2">
-        <RiSendPlaneLine />
-      </IconButton>
+      <Button disabled={isUpdating || !hasTitle} onClick={handleSend} mr="2">
+        Send
+      </Button>
     ),
     [handleSend, isUpdating, hasTitle]
   );
