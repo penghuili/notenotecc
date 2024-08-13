@@ -23,7 +23,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
     }
 
     onChange(convertToMarkdown(editorRef.current.innerHTML));
-    console.log({ markdown: convertToMarkdown(editorRef.current.innerHTML) });
   }, [onChange]);
 
   useEffect(() => {
@@ -35,6 +34,9 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   return (
     <Wrapper>
       <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
+      {/* <Flex>
+        <IconButton onClick={() => handleInlineClick(editorRef.current)}>Bold</IconButton>
+      </Flex> */}
       <HelperText />
     </Wrapper>
   );
@@ -44,6 +46,36 @@ export const Markdown = React.memo(({ markdown }) => {
   const html = parseMarkdown(markdown);
   return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
 });
+
+export const handleInlineClick = (wrapperElement, inlineTag) => {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) {
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+  const selectedText = range.toString();
+
+  if (selectedText.trim() === '') {
+    return;
+  }
+
+  const strong = document.createElement(inlineTag);
+  strong.textContent = selectedText;
+
+  range.deleteContents(); // Remove the selected text
+  range.insertNode(strong); // Insert the <strong> element
+
+  const newRange = document.createRange();
+  newRange.setStartAfter(strong);
+  newRange.collapse(true);
+
+  // Clear the selection and set the new range
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+
+  wrapperElement.focus();
+};
 
 const getNearestNodeElement = () => {
   let container = getRangeContainer();
@@ -297,7 +329,7 @@ const Editor = styled.div`
     box-shadow: inset 0 0 0 1px var(--gray-a7);
     border-radius: var(--radius-2);
     padding: 10px;
-    min-height: 80px;
+    min-height: 130px;
   }
 
   &[contenteditable='true']:focus {
