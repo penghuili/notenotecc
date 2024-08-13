@@ -2,7 +2,7 @@
   "name": "notenote.cc",
   "short_name": "notenote.cc",
   "background_color": "white",
-  "theme_color": "#33B4AE",
+  "theme_color": "#5474EC",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",
