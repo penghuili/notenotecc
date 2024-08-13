@@ -1,5 +1,5 @@
 import { Flex, IconButton, Spinner, Tabs, Text } from '@radix-ui/themes';
-import { RiArrowUpSLine, RiRefreshLine } from '@remixicon/react';
+import { RiRefreshLine } from '@remixicon/react';
 import {
   addDays,
   differenceInCalendarDays,
@@ -16,7 +16,7 @@ import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { scrollToTop } from '../lib/scrollToTop.js';
+import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { asyncForEach } from '../shared-private/js/asyncForEach';
 import { formatDate } from '../shared-private/js/date.js';
 import { getUTCTimeNumber } from '../shared-private/js/getUTCTimeNumber';
@@ -63,17 +63,8 @@ export function OnThisDay() {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
-  const rightElement = useMemo(
-    () => (
-      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
-        <RiArrowUpSLine />
-      </IconButton>
-    ),
-    []
-  );
-
   return (
-    <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={rightElement} />
+    <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={<ScrollToTop />} />
   );
 });
 

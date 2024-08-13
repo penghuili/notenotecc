@@ -1,10 +1,8 @@
-import { IconButton } from '@radix-ui/themes';
-import { RiArrowUpSLine } from '@remixicon/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { scrollToTop } from '../lib/scrollToTop.js';
+import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
@@ -35,22 +33,13 @@ const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
   const isAddingImages = useCat(isAddingImagesCat);
 
-  const rightElement = useMemo(
-    () => (
-      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
-        <RiArrowUpSLine />
-      </IconButton>
-    ),
-    []
-  );
-
   return (
     <PageHeader
       title="Album details"
       isLoading={isLoading || isAddingImages}
       fixed
       hasBack
-      right={rightElement}
+      right={<ScrollToTop />}
     />
   );
 });

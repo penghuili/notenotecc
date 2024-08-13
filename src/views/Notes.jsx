@@ -1,19 +1,18 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
-  RiArrowUpSLine,
   RiHashtag,
   RiHistoryLine,
   RiMenuLine,
   RiRefreshLine,
 } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { scrollToTop } from '../lib/scrollToTop.js';
+import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { FormButton } from '../shared-private/react/FormButton.jsx';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
@@ -123,24 +122,6 @@ const HeaderMenu = React.memo(() => {
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
-  );
-});
-
-const ScrollToTop = React.memo(() => {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    window.addEventListener('scroll', () => {
-      setShow(window.scrollY > 1000);
-    });
-  }, []);
-
-  return (
-    show && (
-      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
-        <RiArrowUpSLine />
-      </IconButton>
-    )
   );
 });
 
