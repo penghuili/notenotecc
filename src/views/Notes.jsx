@@ -1,5 +1,12 @@
-import { IconButton } from '@radix-ui/themes';
-import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
+import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import {
+  RiAccountCircleLine,
+  RiArrowUpSLine,
+  RiHashtag,
+  RiHistoryLine,
+  RiMenuLine,
+  RiRefreshLine,
+} from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
@@ -44,14 +51,6 @@ const Header = React.memo(() => {
   const isDeleting = useCat(isDeletingNoteCat);
   const isDeletingImage = useCat(isDeletingImageCat);
 
-  const handleNavigateToHistory = useCallback(() => {
-    navigateEffect('/on-this-day');
-  }, []);
-
-  const handleNavigateToAlbums = useCallback(() => {
-    navigateEffect('/albums');
-  }, []);
-
   const handleFetch = useCallback(async () => {
     isLoadingNotesCat.set(true);
     await fetchSettingsEffect(true);
@@ -63,16 +62,10 @@ const Header = React.memo(() => {
       <>
         <ScrollToTop />
 
-        <IconButton onClick={handleNavigateToHistory} mr="2" variant="ghost">
-          <RiHistoryLine />
-        </IconButton>
-
-        <IconButton onClick={handleNavigateToAlbums} mr="2" variant="ghost">
-          <RiHashtag />
-        </IconButton>
+        <HeaderMenu />
       </>
     ),
-    [handleNavigateToAlbums, handleNavigateToHistory]
+    []
   );
 
   return (
@@ -87,6 +80,49 @@ const Header = React.memo(() => {
       }
       right={rightElement}
     />
+  );
+});
+
+const HeaderMenu = React.memo(() => {
+  const handleNavigateToAccount = useCallback(() => {
+    navigateEffect('/account');
+  }, []);
+
+  const handleNavigateToHistory = useCallback(() => {
+    navigateEffect('/on-this-day');
+  }, []);
+
+  const handleNavigateToAlbums = useCallback(() => {
+    navigateEffect('/albums');
+  }, []);
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <IconButton variant="ghost" mr="2">
+          <RiMenuLine />
+        </IconButton>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Content variant="soft">
+        <DropdownMenu.Item onClick={handleNavigateToAccount}>
+          <RiAccountCircleLine />
+          Account
+        </DropdownMenu.Item>
+
+        <DropdownMenu.Separator />
+
+        <DropdownMenu.Item onClick={handleNavigateToHistory}>
+          <RiHistoryLine />
+          Today in history
+        </DropdownMenu.Item>
+
+        <DropdownMenu.Item onClick={handleNavigateToAlbums}>
+          <RiHashtag />
+          Albums
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 });
 
