@@ -16,7 +16,7 @@ export const apps = {
   },
   simplestcam: {
     name: 'notenote.cc',
-    color: '#33B4AE',
+    color: '#5474EC',
     api: 'simplestcam',
   },
 };

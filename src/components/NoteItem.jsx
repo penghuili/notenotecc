@@ -56,7 +56,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
         </Flex>
       )}
 
-      <Text size="2" as="p">
+      <Text size="2" as="p" color="gray">
         {ago}
       </Text>
     </Box>

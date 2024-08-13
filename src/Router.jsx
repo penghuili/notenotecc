@@ -22,6 +22,7 @@ import { AI } from './views/AI.jsx';
 import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
 import { Albums } from './views/Albums.jsx';
+import { AlbumsReorder } from './views/AlbumsReorder.jsx';
 import { NoteAdd } from './views/NoteAdd.jsx';
 import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
@@ -48,6 +49,7 @@ const loggedRoutes = [
   { path: '/notes/add', component: NoteAdd },
   { path: '/notes/:noteId', component: NoteEdit },
 
+  { path: '/albums/reorder', component: AlbumsReorder },
   { path: '/albums/:albumId/edit', component: AlbumEdit },
   { path: '/albums/:albumId', component: AlbumDetails },
   { path: '/albums', component: Albums },
