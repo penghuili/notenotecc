@@ -1,4 +1,4 @@
-import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import { Button, DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -14,7 +14,7 @@ import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
-import { FormButton } from '../shared-private/react/FormButton.jsx';
+import { useInView } from '../shared-private/react/hooks/useInView.js';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
 import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import {
@@ -150,13 +150,23 @@ const LoadMore = React.memo(() => {
     fetchNotesEffect(startKey, true);
   }, [startKey]);
 
+  const ref = useInView(
+    () => {
+      handleFetch();
+    },
+    {
+      threshold: 0.1,
+      alwaysObserve: true,
+    }
+  );
+
   if (!hasMore) {
     return null;
   }
 
   return (
-    <FormButton onClick={handleFetch} disabled={isLoading}>
+    <Button ref={ref} onClick={handleFetch} disabled={isLoading}>
       Load more
-    </FormButton>
+    </Button>
   );
 });
