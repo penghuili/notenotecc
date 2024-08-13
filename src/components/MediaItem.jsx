@@ -1,4 +1,5 @@
-import { Box } from '@radix-ui/themes';
+import { Box, IconButton } from '@radix-ui/themes';
+import { RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -84,6 +85,10 @@ const InnerImage = React.memo(
       fullScreenImageUrlCat.set(innerUrl);
     }, [innerUrl]);
 
+    const handleDeleteLocal = useCallback(() => {
+      onDeleteLocal(imageForAction);
+    }, [imageForAction, onDeleteLocal]);
+
     useEffect(() => {
       if (!path) {
         setInnerUrl(url);
@@ -129,7 +134,13 @@ const InnerImage = React.memo(
             )}
 
             <Box position="absolute" top="2" right="2">
-              <ImageActions noteId={noteId} image={imageForAction} onDeleteLocal={onDeleteLocal} />
+              {onDeleteLocal ? (
+                <IconButton onClick={handleDeleteLocal}>
+                  <RiCloseLine />
+                </IconButton>
+              ) : (
+                <ImageActions noteId={noteId} image={imageForAction} />
+              )}
             </Box>
           </>
         )}

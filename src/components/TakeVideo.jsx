@@ -301,7 +301,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
               <RiPlayLine />
             </IconButton>
 
-            <IconButton size="4" onClick={handleSwitchCamera}>
+            <IconButton size="4" onClick={handleSwitchCamera} variant="soft">
               <RiRefreshLine />
             </IconButton>
           </>

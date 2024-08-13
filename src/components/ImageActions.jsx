@@ -16,7 +16,7 @@ import { getFileSizeString } from '../shared-private/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
-export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
+export const ImageActions = React.memo(({ noteId, image }) => {
   const isDeleting = useCat(isDeletingImageCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -36,13 +36,9 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
   const handleDelete = useCallback(async () => {
     if (noteId) {
       await deleteImageEffect(noteId, { imagePath: image.path });
-    } else {
-      if (onDeleteLocal) {
-        onDeleteLocal(image);
-      }
     }
     setShowDeleteConfirm(false);
-  }, [noteId, image, onDeleteLocal]);
+  }, [noteId, image]);
 
   return (
     <>

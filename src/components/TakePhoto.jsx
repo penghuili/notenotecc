@@ -103,7 +103,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
           <RiCameraLine />
         </IconButton>
 
-        <IconButton size="4" onClick={handleChangeFacingMode}>
+        <IconButton size="4" onClick={handleChangeFacingMode} variant="soft">
           <RiRefreshLine />
         </IconButton>
       </Flex>
