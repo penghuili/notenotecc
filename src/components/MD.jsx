@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { AnimatedBox } from '../shared-private/react/AnimatedBox.jsx';
 
-const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE'];
+const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 const zeroWidthSpace = '&ZeroWidthSpace;';
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
@@ -202,6 +202,7 @@ const convertInlineTags = () => {
       { regex: /\*\*(.*?)\*\*/, tag: 'strong' },
       { regex: /__(.*?)__/, tag: 'em' },
       { regex: /~~(.*?)~~/, tag: 'del' },
+      { regex: /==(.*?)==/, tag: 'mark' },
       { regex: /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/, tag: 'a' },
     ];
 
@@ -399,6 +400,8 @@ const convertToMarkdown = html => {
       .replace(/<i>(.*?)<\/i>/gi, '__$1__')
       // Convert <del> to ~~
       .replace(/<del>(.*?)<\/del>/gi, '~~$1~~')
+      // Convert <mark> to ==
+      .replace(/<mark>(.*?)<\/mark>/gi, '==$1==')
       // Convert <code> to `
       .replace(/<code>(.*?)<\/code>/gi, '`$1`')
       // Convert &nbsp; to space
@@ -435,6 +438,8 @@ const parseMarkdown = input => {
       .replace(/~~(.*?)~~/gim, '<del>$1</del>')
       // Inline code
       .replace(/`([^`]+)`/gim, '<code>$1</code>')
+      // Highlight
+      .replace(/==(.*?)==/gim, '<mark>$1</mark>')
       // Line breaks
       .replace(/\n/gim, '<br>')
   );
