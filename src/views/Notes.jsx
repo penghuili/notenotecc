@@ -4,6 +4,7 @@ import {
   RiHashtag,
   RiHistoryLine,
   RiMenuLine,
+  RiOpenaiLine,
   RiRefreshLine,
 } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
@@ -16,6 +17,7 @@ import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useInView } from '../shared-private/react/hooks/useInView.js';
 import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { userCat } from '../shared-private/react/store/sharedCats.js';
 import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
 import {
   isAddingImagesCat,
@@ -83,6 +85,12 @@ const Header = React.memo(() => {
 });
 
 const HeaderMenu = React.memo(() => {
+  const userId = useCat(userCat, account => account?.id);
+  const isAdmin = useMemo(
+    () => [import.meta.env.VITE_USER1, import.meta.env.VITE_USER2].includes(userId),
+    [userId]
+  );
+
   const handleNavigateToAccount = useCallback(() => {
     navigateEffect('/account');
   }, []);
@@ -93,6 +101,10 @@ const HeaderMenu = React.memo(() => {
 
   const handleNavigateToAlbums = useCallback(() => {
     navigateEffect('/albums');
+  }, []);
+
+  const handleNavigateToAI = useCallback(() => {
+    navigateEffect('/ai');
   }, []);
 
   return (
@@ -120,6 +132,13 @@ const HeaderMenu = React.memo(() => {
           <RiHashtag />
           Albums
         </DropdownMenu.Item>
+
+        {isAdmin && (
+          <DropdownMenu.Item onClick={handleNavigateToAI}>
+            <RiOpenaiLine />
+            AI
+          </DropdownMenu.Item>
+        )}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
