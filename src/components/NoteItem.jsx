@@ -10,9 +10,10 @@ import { NoteActions } from './NoteActions.jsx';
 
 export const NoteItem = React.memo(({ note, albums }) => {
   const dateTime = useMemo(() => {
-    const dt = formatDateWeekTime(note.createdAt);
-    const ago = getAgo(new Date(note.createdAt));
-    return `${dt}, ${ago}`;
+    return formatDateWeekTime(note.createdAt);
+  }, [note?.createdAt]);
+  const ago = useMemo(() => {
+    return getAgo(new Date(note.createdAt));
   }, [note?.createdAt]);
 
   useRerenderDetector(
@@ -54,6 +55,10 @@ export const NoteItem = React.memo(({ note, albums }) => {
           ))}
         </Flex>
       )}
+
+      <Text size="2" as="p">
+        {ago}
+      </Text>
     </Box>
   );
 });
