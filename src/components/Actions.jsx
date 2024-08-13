@@ -46,22 +46,37 @@ export const Actions = React.memo(() => {
 
   return (
     <Wrapper>
-      <IconButton size="4" onClick={handleTakePhoto}>
+      <ButtonWrapper size="4" onClick={handleTakePhoto}>
         <RiCameraLine />
-      </IconButton>
-      <IconButton size="4" onClick={handleTakeVideo}>
+        <HelperText>Camera</HelperText>
+      </ButtonWrapper>
+      <ButtonWrapper size="4" onClick={handleTakeVideo}>
         <RiVideoAddLine />
-      </IconButton>
+        <HelperText>Video</HelperText>
+      </ButtonWrapper>
 
       <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
-        <IconButton size="4">
+        <ButtonWrapper size="4">
           <RiImageAddLine />
-        </IconButton>
+          <HelperText>Photo</HelperText>
+        </ButtonWrapper>
       </FilePicker>
 
-      <IconButton size="4" onClick={handleTakeNote}>
+      <ButtonWrapper size="4" onClick={handleTakeNote}>
         <RiStickyNoteAddLine />
-      </IconButton>
+        <HelperText>Text</HelperText>
+      </ButtonWrapper>
     </Wrapper>
   );
 });
+
+const ButtonWrapper = styled(IconButton)`
+  position: relative;
+`;
+const HelperText = styled.span`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  font-size: 10px;
+`;

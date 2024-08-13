@@ -7,39 +7,66 @@ import { isMobile } from '../shared-private/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
 export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDeleteLocal }) => {
-  const [currentIndex, setCurrentIndex] = useState(1); // Start at the first actual image
+  const isSwipable = images.length > 1;
+  const [currentIndex, setCurrentIndex] = useState(isSwipable ? 1 : 0); // Start at the first actual image
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef(null);
 
-  const totalSlides = images.length + 2; // Including duplicates
+  const totalSlides = isSwipable ? images.length + 2 : images.length; // Including duplicates
 
   const handleNextSlide = useCallback(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     if (isTransitioning) {
       return;
     }
     setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex + 1) % totalSlides);
-  }, [totalSlides, isTransitioning]);
+  }, [isSwipable, isTransitioning, totalSlides]);
 
   const handlePrevSlide = useCallback(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     if (isTransitioning) {
       return;
     }
     setIsTransitioning(true);
     setCurrentIndex(prevIndex => (prevIndex - 1 + totalSlides) % totalSlides);
-  }, [totalSlides, isTransitioning]);
+  }, [isSwipable, isTransitioning, totalSlides]);
 
-  const handleTouchStart = useCallback(e => {
-    setTouchStart(e.targetTouches[0].clientX);
-  }, []);
+  const handleTouchStart = useCallback(
+    e => {
+      if (!isSwipable) {
+        return;
+      }
 
-  const handleTouchMove = useCallback(e => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  }, []);
+      setTouchStart(e.targetTouches[0].clientX);
+    },
+    [isSwipable]
+  );
+
+  const handleTouchMove = useCallback(
+    e => {
+      if (!isSwipable) {
+        return;
+      }
+
+      setTouchEnd(e.targetTouches[0].clientX);
+    },
+    [isSwipable]
+  );
 
   const handleTouchEnd = useCallback(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     if (!touchStart || !touchEnd) {
       return;
     }
@@ -53,21 +80,38 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
     }
     setTouchStart(0);
     setTouchEnd(0);
-  }, [handleNextSlide, handlePrevSlide, touchEnd, touchStart]);
+  }, [handleNextSlide, handlePrevSlide, isSwipable, touchEnd, touchStart]);
 
-  const handleMouseDown = useCallback(e => {
-    setTouchStart(e.clientX);
-  }, []);
+  const handleMouseDown = useCallback(
+    e => {
+      if (!isSwipable) {
+        return;
+      }
+
+      setTouchStart(e.clientX);
+    },
+    [isSwipable]
+  );
 
   const handleMouseMove = useCallback(
     e => {
-      if (!touchStart) return;
+      if (!isSwipable) {
+        return;
+      }
+
+      if (!touchStart) {
+        return;
+      }
       setTouchEnd(e.clientX);
     },
-    [touchStart]
+    [isSwipable, touchStart]
   );
 
   const handleMouseUp = useCallback(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     if (!touchStart || !touchEnd) {
       return;
     }
@@ -81,14 +125,22 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
     }
     setTouchStart(0);
     setTouchEnd(0);
-  }, [handleNextSlide, handlePrevSlide, touchEnd, touchStart]);
+  }, [handleNextSlide, handlePrevSlide, isSwipable, touchEnd, touchStart]);
 
   const handleMouseLeave = useCallback(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     setTouchStart(0);
     setTouchEnd(0);
-  }, []);
+  }, [isSwipable]);
 
   useEffect(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     const handleKeyDown = event => {
       if (event.key === 'ArrowLeft') {
         handlePrevSlide();
@@ -101,9 +153,13 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleNextSlide, handlePrevSlide]);
+  }, [handleNextSlide, handlePrevSlide, isSwipable]);
 
   useEffect(() => {
+    if (!isSwipable) {
+      return;
+    }
+
     if (currentIndex === 0) {
       setTimeout(() => {
         setIsTransitioning(false);
@@ -115,7 +171,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
         setCurrentIndex(1);
       }, 200);
     }
-  }, [currentIndex, images.length, totalSlides]);
+  }, [currentIndex, images.length, isSwipable, totalSlides]);
 
   if (!images?.length) {
     return null;
@@ -159,27 +215,29 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
         }}
         onTransitionEnd={() => setIsTransitioning(false)}
       >
-        <div
-          className="carousel-slide"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-        >
-          <MediaItem
-            noteId={noteId}
-            encryptedPassword={encryptedPassword}
-            url={images[images.length - 1].url}
-            path={images[images.length - 1].path}
-            size={images[images.length - 1].size}
-            encryptedSize={images[images.length - 1].encryptedSize}
-            type={getMediaType(images[images.length - 1])}
-            onDeleteLocal={onDeleteLocal}
-          />
-        </div>
+        {images.length > 1 && (
+          <div
+            className="carousel-slide"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
+            <MediaItem
+              noteId={noteId}
+              encryptedPassword={encryptedPassword}
+              url={images[images.length - 1].url}
+              path={images[images.length - 1].path}
+              size={images[images.length - 1].size}
+              encryptedSize={images[images.length - 1].encryptedSize}
+              type={getMediaType(images[images.length - 1])}
+              onDeleteLocal={onDeleteLocal}
+            />
+          </div>
+        )}
         {images.map(image => (
           <div
             key={image.url || image.path}
@@ -204,27 +262,29 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             />
           </div>
         ))}
-        <div
-          className="carousel-slide"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-        >
-          <MediaItem
-            noteId={noteId}
-            encryptedPassword={encryptedPassword}
-            url={images[0].url}
-            path={images[0].path}
-            size={images[0].size}
-            encryptedSize={images[0].encryptedSize}
-            type={getMediaType(images[0])}
-            onDeleteLocal={onDeleteLocal}
-          />
-        </div>
+        {images.length > 1 && (
+          <div
+            className="carousel-slide"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
+            <MediaItem
+              noteId={noteId}
+              encryptedPassword={encryptedPassword}
+              url={images[0].url}
+              path={images[0].path}
+              size={images[0].size}
+              encryptedSize={images[0].encryptedSize}
+              type={getMediaType(images[0])}
+              onDeleteLocal={onDeleteLocal}
+            />
+          </div>
+        )}
       </div>
       {images.length > 1 && (
         <>

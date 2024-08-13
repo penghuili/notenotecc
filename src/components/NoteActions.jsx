@@ -2,11 +2,9 @@ import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
   RiImageAddLine,
-  RiImageLine,
   RiLockLine,
   RiMore2Line,
   RiPencilLine,
-  RiStickyNoteAddLine,
 } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
@@ -75,7 +73,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
       </IconButton>
 
       <IconButton variant="ghost" onClick={handleEidt} mr="2">
-        <RiStickyNoteAddLine />
+        <RiPencilLine />
       </IconButton>
 
       <DropdownMenu.Root>
@@ -86,20 +84,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleEidt}>
-            <RiPencilLine />
-            Update
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Separator />
-
-          <DropdownMenu.Item onClick={handleShowCamera}>
-            <RiImageLine />
-            Add images
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Separator />
-
           <DeleteAction noteId={note.sortKey} goBackAfterDelete={goBackAfterDelete} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
