@@ -22,10 +22,10 @@ import { TakeVideo } from './TakeVideo.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   z-index: 3000;
   background-color: white;
 

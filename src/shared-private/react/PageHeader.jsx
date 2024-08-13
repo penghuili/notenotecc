@@ -18,7 +18,7 @@ const Wrapper = styled(Flex)`
   padding: 0.5rem 0;
   z-index: ${props => props.zindex};
   left: 0;
-  top: 0;
+  top: env(safe-area-inset-top);
 
   background-color: white;
 `;
@@ -59,7 +59,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
         <RiAccountCircleLine />
       </IconButton>
     );
-  }, [handleNavigateToAccount, hasBack, isLoggedIn]);
+  }, [handleNavigateToAccount, hasBack, isLoggedIn, right]);
 
   return (
     <>
