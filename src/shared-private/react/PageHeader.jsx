@@ -50,7 +50,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
   }, [hasBack]);
 
   const userElement = useMemo(() => {
-    if (!isLoggedIn || hasBack) {
+    if (!isLoggedIn || hasBack || right) {
       return null;
     }
 
