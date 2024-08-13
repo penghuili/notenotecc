@@ -16,7 +16,7 @@ export const navigate = to => {
 
 export const goBack = () => window.history.back();
 
-export const RouteLink = React.memo(({ to, children }) => {
+export const RouteLink = React.memo(({ to, children, mr }) => {
   const handleClick = useCallback(
     e => {
       e.preventDefault();
@@ -26,7 +26,7 @@ export const RouteLink = React.memo(({ to, children }) => {
   );
 
   return (
-    <Link href={to} onClick={handleClick}>
+    <Link href={to} onClick={handleClick} mr={mr}>
       {children}
     </Link>
   );
@@ -64,14 +64,12 @@ function matchPath(realPath, routePath) {
     return false;
   }
 
-  const match = routeParts.every((routePart, index) => {
+  return routeParts.every((routePart, index) => {
     if (routePart.startsWith(':')) {
       return true;
     }
     return routePart === pathParts[index];
   });
-
-  return match;
 }
 
 function getPathParams(pathname, routePath) {

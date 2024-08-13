@@ -48,7 +48,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
       {!!albums?.length && (
         <Flex wrap="wrap">
           {albums?.map(album => (
-            <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="3">
+            <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`} mr="2">
               #{album.title}
             </RouteLink>
           ))}

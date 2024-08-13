@@ -1,5 +1,5 @@
 import { Avatar, Flex, Heading, IconButton, Spinner } from '@radix-ui/themes';
-import { RiArrowLeftLine, RiUserSmileLine } from '@remixicon/react';
+import { RiAccountCircleLine, RiArrowLeftLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
@@ -56,7 +56,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
 
     return (
       <IconButton onClick={handleNavigateToAccount} variant="ghost">
-        <RiUserSmileLine />
+        <RiAccountCircleLine />
       </IconButton>
     );
   }, [handleNavigateToAccount, hasBack, isLoggedIn]);
