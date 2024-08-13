@@ -1,6 +1,6 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine, RiHashtag, RiHistoryLine, RiRefreshLine } from '@remixicon/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
@@ -61,9 +61,7 @@ const Header = React.memo(() => {
   const rightElement = useMemo(
     () => (
       <>
-        <IconButton onClick={scrollToTop} mr="2" variant="ghost">
-          <RiArrowUpSLine />
-        </IconButton>
+        <ScrollToTop />
 
         <IconButton onClick={handleNavigateToHistory} mr="2" variant="ghost">
           <RiHistoryLine />
@@ -89,6 +87,24 @@ const Header = React.memo(() => {
       }
       right={rightElement}
     />
+  );
+});
+
+const ScrollToTop = React.memo(() => {
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener('scroll', () => {
+      setShow(window.scrollY > 1000);
+    });
+  }, []);
+
+  return (
+    show && (
+      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
+        <RiArrowUpSLine />
+      </IconButton>
+    )
   );
 });
 
