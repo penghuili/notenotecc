@@ -12,7 +12,7 @@ import { registerSW } from './shared-private/react/registerSW.js';
 import { Toast } from './shared-private/react/Toast.jsx';
 
 initShared({
-  logo: '/icons/icon-192.png',
+  logo: '/icons2/t/icon-192.png',
   app: apps.simplestcam.name,
   privacyUrl: 'https://remiind.cc/privacy/',
   termsUrl: 'https://remiind.cc/terms/',
