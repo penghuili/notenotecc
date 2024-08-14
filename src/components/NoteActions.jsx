@@ -21,7 +21,7 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
+export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showCamera, setShowCamera] = useState(false);
@@ -72,9 +72,11 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
         <RiImageAddLine />
       </IconButton>
 
-      <IconButton variant="ghost" onClick={handleEidt} mr="2">
-        <RiPencilLine />
-      </IconButton>
+      {showEdit && (
+        <IconButton variant="ghost" onClick={handleEidt} mr="2">
+          <RiPencilLine />
+        </IconButton>
+      )}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>

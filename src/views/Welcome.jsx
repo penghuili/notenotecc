@@ -1,4 +1,4 @@
-import { Avatar, Heading, Link } from '@radix-ui/themes';
+import { Avatar, Heading, Link, Text } from '@radix-ui/themes';
 import React from 'react';
 
 import { HorizontalCenter } from '../shared/react/HorizontalCenter.jsx';
@@ -13,6 +13,7 @@ export function Welcome() {
         <HorizontalCenter p="2rem 0 1rem" gap="2">
           <Avatar src={logo} /> <Heading as="h2">{appName}</Heading>
         </HorizontalCenter>
+        <Text>Take notes like Instagram, and encrypted.</Text>
       </ItemsWrapper>
 
       <ItemsWrapper align="start">

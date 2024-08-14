@@ -14,6 +14,13 @@ export const navigate = to => {
   queryParamsCat.set(parseSearch(search));
 };
 
+export const replaceTo = to => {
+  window.history.replaceState({}, '', to);
+  const [path, search] = to.split('?');
+  currentPathCat.set(path);
+  queryParamsCat.set(parseSearch(search));
+};
+
 export const goBack = () => window.history.back();
 
 export const RouteLink = React.memo(({ to, children, mr }) => {

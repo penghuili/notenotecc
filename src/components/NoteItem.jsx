@@ -8,7 +8,7 @@ import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MD.jsx';
 import { NoteActions } from './NoteActions.jsx';
 
-export const NoteItem = React.memo(({ note, albums }) => {
+export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
   }, [note?.createdAt]);
@@ -33,7 +33,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
           {dateTime}
         </Text>
 
-        <NoteActions note={note} />
+        <NoteActions note={note} showEdit={showEdit} />
       </Flex>
 
       {!!note.images?.length && (

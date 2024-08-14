@@ -76,12 +76,12 @@ const AlbumItems = React.memo(() => {
 
   return (
     <>
-      <Text>Existing albums</Text>
       <CheckboxGroup.Root
         name="album"
         value={selectedKeys}
         onValueChange={handleSelectedKeysChange}
         style={checkboxRootStyle}
+        mt="2"
       >
         {albums.map(album => (
           <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>

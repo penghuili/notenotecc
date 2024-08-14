@@ -11,10 +11,13 @@ import {
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MD.jsx';
+import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import {
   isAddingImagesCat,
@@ -27,7 +30,7 @@ import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/not
 
 const descriptionCat = createCat('');
 
-export const NoteEdit = React.memo(({ pathParams: { noteId } }) => {
+export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view } }) => {
   const prepareData = useCallback(async () => {
     await fetchNoteEffect(noteId);
 
@@ -42,18 +45,22 @@ export const NoteEdit = React.memo(({ pathParams: { noteId } }) => {
 
   return (
     <PrepareData load={prepareData}>
-      <Header noteId={noteId} />
+      <Header noteId={noteId} viewMode={!!view} />
 
-      <AddImage noteId={noteId} />
-
-      <Form noteId={noteId} />
-
-      <Images noteId={noteId} />
+      {view ? (
+        <NoteView noteId={noteId} />
+      ) : (
+        <>
+          <Form noteId={noteId} />
+          <AddImage noteId={noteId} />
+          <Images noteId={noteId} />
+        </>
+      )}
     </PrepareData>
   );
 });
 
-const Header = React.memo(({ noteId }) => {
+const Header = React.memo(({ noteId, viewMode }) => {
   const noteItem = useNote(noteId);
   const isLoading = useCat(isLoadingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
@@ -76,27 +83,37 @@ const Header = React.memo(({ noteId }) => {
       albumIds: selectedAlbumSortKeys,
       goBack: false,
       onSucceeded: () => {
-        albumDescriptionCat.reset();
+        replaceTo(`/notes/${noteId}?view=1`);
       },
     });
   }, [albumDescription, description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
 
-  const submitButton = useMemo(
-    () => (
-      <Button disabled={isDisabled} onClick={handleSend} mr="2">
-        Send
-      </Button>
-    ),
-    [handleSend, isDisabled]
+  const handleEdit = useCallback(() => {
+    replaceTo(`/notes/${noteId}`);
+  }, [noteId]);
+
+  const rightElement = useMemo(
+    () =>
+      viewMode ? (
+        <Button disabled={isDisabled} onClick={handleEdit} mr="2">
+          Edit
+        </Button>
+      ) : (
+        <Button disabled={isDisabled} onClick={handleSend} mr="2">
+          Send
+        </Button>
+      ),
+    [handleEdit, handleSend, isDisabled, viewMode]
   );
+  const titleMessage = useMemo(() => (viewMode ? 'Note details' : 'Update note'), [viewMode]);
 
   return (
     <PageHeader
-      title="Update note"
+      title={titleMessage}
       isLoading={isLoading || isAddingImages || isUpdating}
       fixed
       hasBack
-      right={submitButton}
+      right={rightElement}
     />
   );
 });
@@ -127,7 +144,7 @@ const AddImage = React.memo(({ noteId }) => {
 
   return (
     <>
-      <IconButton my="4" onClick={handleShowCamera}>
+      <IconButton size="4" my="4" onClick={handleShowCamera}>
         <RiImageAddLine />
       </IconButton>
 
@@ -172,6 +189,24 @@ const Images = React.memo(({ noteId }) => {
       noteId={noteId}
       encryptedPassword={noteItem?.encryptedPassword}
       images={noteItem.images}
+    />
+  );
+});
+
+const NoteView = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
+  const getNoteAlbums = useGetNoteAlbums();
+
+  if (!noteItem) {
+    return null;
+  }
+
+  return (
+    <NoteItem
+      key={noteItem.sortKey}
+      note={noteItem}
+      albums={getNoteAlbums(noteItem)}
+      showEdit={false}
     />
   );
 });
