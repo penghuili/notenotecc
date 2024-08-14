@@ -185,7 +185,7 @@ const LoadMore = React.memo(() => {
 
   return (
     <Button ref={ref} onClick={handleFetch} disabled={isLoading}>
-      Load more
+      {isLoading ? 'Loading...' : 'Load more'}
     </Button>
   );
 });

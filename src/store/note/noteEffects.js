@@ -55,6 +55,10 @@ export async function fetchNotesEffect(startKey, force) {
     }
   }
 
+  if (isLoadingNotesCat.get()) {
+    return;
+  }
+
   isLoadingNotesCat.set(true);
 
   const { data } = await fetchNotes(startKey);

@@ -1,5 +1,4 @@
-import { Box, IconButton } from '@radix-ui/themes';
-import { RiCloseLine } from '@remixicon/react';
+import { Box } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -134,13 +133,11 @@ const InnerImage = React.memo(
             )}
 
             <Box position="absolute" top="2" right="2">
-              {onDeleteLocal ? (
-                <IconButton onClick={handleDeleteLocal}>
-                  <RiCloseLine />
-                </IconButton>
-              ) : (
-                <ImageActions noteId={noteId} image={imageForAction} />
-              )}
+              <ImageActions
+                noteId={noteId}
+                image={imageForAction}
+                onDeleteLocal={handleDeleteLocal}
+              />
             </Box>
           </>
         )}

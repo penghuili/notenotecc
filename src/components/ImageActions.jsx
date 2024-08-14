@@ -1,12 +1,13 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
+  RiCloseLine,
   RiDeleteBinLine,
   RiDownloadLine,
   RiInformationLine,
   RiMore2Line,
   RiShareLine,
 } from '@remixicon/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
@@ -16,10 +17,10 @@ import { getFileSizeString } from '../shared-private/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 
-export const ImageActions = React.memo(({ noteId, image }) => {
+export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
   const isDeleting = useCat(isDeletingImageCat);
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deleteRef = useRef(null);
 
   const handleShare = useCallback(() => {
     shareFileWithUrl(image.url, image.type);
@@ -30,70 +31,100 @@ export const ImageActions = React.memo(({ noteId, image }) => {
   }, [image]);
 
   const handleShowDeleteConfirm = useCallback(() => {
-    setShowDeleteConfirm(true);
+    deleteRef.current.show();
   }, []);
 
   const handleDelete = useCallback(async () => {
+    if (onDeleteLocal) {
+      onDeleteLocal();
+      return;
+    }
+
     if (noteId) {
       await deleteImageEffect(noteId, { imagePath: image.path });
     }
-    setShowDeleteConfirm(false);
-  }, [noteId, image]);
+  }, [onDeleteLocal, noteId, image.path]);
 
   return (
     <>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton radius="full">
-            <RiMore2Line />
-          </IconButton>
-        </DropdownMenu.Trigger>
+      {onDeleteLocal ? (
+        <IconButton onClick={handleShowDeleteConfirm}>
+          <RiCloseLine />
+        </IconButton>
+      ) : (
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton radius="full">
+              <RiMore2Line />
+            </IconButton>
+          </DropdownMenu.Trigger>
 
-        <DropdownMenu.Content variant="soft">
-          {supportShare() && !!noteId && (
-            <>
-              <DropdownMenu.Item onClick={handleShare}>
-                <RiShareLine />
-                Share
-              </DropdownMenu.Item>
-            </>
-          )}
+          <DropdownMenu.Content variant="soft">
+            {supportShare() && !!noteId && (
+              <>
+                <DropdownMenu.Item onClick={handleShare}>
+                  <RiShareLine />
+                  Share
+                </DropdownMenu.Item>
+              </>
+            )}
 
-          <DropdownMenu.Item onClick={handleDownload}>
-            <RiDownloadLine />
-            Download
-          </DropdownMenu.Item>
+            <DropdownMenu.Item onClick={handleDownload}>
+              <RiDownloadLine />
+              Download
+            </DropdownMenu.Item>
 
-          <DropdownMenu.Separator />
+            <DropdownMenu.Separator />
 
-          <DropdownMenu.Item
-            onClick={handleShowDeleteConfirm}
-            color={errorColor}
-            disabled={isDeleting}
-          >
-            <RiDeleteBinLine />
-            Delete
-          </DropdownMenu.Item>
+            <DropdownMenu.Item
+              onClick={handleShowDeleteConfirm}
+              color={errorColor}
+              disabled={isDeleting}
+            >
+              <RiDeleteBinLine />
+              Delete
+            </DropdownMenu.Item>
 
-          {!!image.size && (
-            <>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item>
-                <RiInformationLine />
-                {getFileSizeString(image.size)}
-              </DropdownMenu.Item>
-            </>
-          )}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+            {!!image.size && (
+              <>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item>
+                  <RiInformationLine />
+                  {getFileSizeString(image.size)}
+                </DropdownMenu.Item>
+              </>
+            )}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      )}
 
-      <Confirm
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
-        message="Are you sure you want to delete this file?"
-        onConfirm={handleDelete}
-        isSaving={isDeleting}
-      />
+      <ConfirmDelete ref={deleteRef} onDelete={handleDelete} isDeleting={isDeleting} />
     </>
+  );
+});
+
+const ConfirmDelete = React.memo(({ ref, onDelete, isDeleting }) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleShow = useCallback(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+  const handleDelete = useCallback(async () => {
+    await onDelete();
+    setShowDeleteConfirm(false);
+  }, [onDelete]);
+
+  useImperativeHandle(ref, () => ({
+    show: handleShow,
+  }));
+
+  return (
+    <Confirm
+      open={showDeleteConfirm}
+      onOpenChange={setShowDeleteConfirm}
+      message="Are you sure you want to delete this?"
+      onConfirm={handleDelete}
+      isSaving={isDeleting}
+    />
   );
 });
