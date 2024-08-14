@@ -11,6 +11,7 @@ import React, { useCallback, useImperativeHandle, useRef, useState } from 'react
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
+import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { getFileSizeString } from '../shared/react/file';
@@ -85,20 +86,30 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
               Delete
             </DropdownMenu.Item>
 
-            {!!image.size && (
-              <>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item>
-                  <RiInformationLine />
-                  {getFileSizeString(image.size)}
-                </DropdownMenu.Item>
-              </>
-            )}
+            <FileSize size={image.size} />
           </DropdownMenu.Content>
         </DropdownMenu.Root>
       )}
 
       <ConfirmDelete ref={deleteRef} onDelete={handleDelete} isDeleting={isDeleting} />
+    </>
+  );
+});
+
+const FileSize = React.memo(({ size }) => {
+  const isAdmin = useIsAdmin();
+
+  if (!size || !isAdmin) {
+    return null;
+  }
+
+  return (
+    <>
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item>
+        <RiInformationLine />
+        {getFileSizeString(size)}
+      </DropdownMenu.Item>
     </>
   );
 });

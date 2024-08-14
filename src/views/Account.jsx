@@ -4,6 +4,7 @@ import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
+import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { formatDateTime } from '../shared/js/date';
 import { AppVersion } from '../shared/react/AppVersion.jsx';
 import { themeCssColor } from '../shared/react/AppWrapper.jsx';
@@ -56,6 +57,7 @@ const Header = React.memo(() => {
 const AccountInfo = React.memo(() => {
   const account = useCat(userCat);
   const settings = useCat(settingsCat);
+  const isAdmin = useIsAdmin();
 
   const handleCopyUserId = useCallback(async () => {
     await copyToClipboard(account.id);
@@ -109,19 +111,23 @@ const AccountInfo = React.memo(() => {
           </DataList.Value>
         </DataList.Item>
 
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Files size</DataList.Label>
-          <DataList.Value>
-            <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
-          </DataList.Value>
-        </DataList.Item>
+        {isAdmin && (
+          <>
+            <DataList.Item>
+              <DataList.Label minWidth="88px">Files size</DataList.Label>
+              <DataList.Value>
+                <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
+              </DataList.Value>
+            </DataList.Item>
 
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
-          <DataList.Value>
-            <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
-          </DataList.Value>
-        </DataList.Item>
+            <DataList.Item>
+              <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
+              <DataList.Value>
+                <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
+              </DataList.Value>
+            </DataList.Item>
+          </>
+        )}
       </DataList.Root>
     </ItemsWrapper>
   );

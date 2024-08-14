@@ -15,9 +15,9 @@ import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
+import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { userCat } from '../shared/react/store/sharedCats.js';
 import { fetchSettingsEffect, navigateEffect } from '../shared/react/store/sharedEffects';
 import {
   isAddingImagesCat,
@@ -85,11 +85,7 @@ const Header = React.memo(() => {
 });
 
 const HeaderMenu = React.memo(() => {
-  const userId = useCat(userCat, account => account?.id);
-  const isAdmin = useMemo(
-    () => [import.meta.env.VITE_USER1, import.meta.env.VITE_USER2].includes(userId),
-    [userId]
-  );
+  const isAdmin = useIsAdmin();
 
   const handleNavigateToAccount = useCallback(() => {
     navigateEffect('/account');
