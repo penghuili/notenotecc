@@ -1,4 +1,4 @@
-import { Flex, IconButton, Text } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import {
   RiPauseLine,
   RiPlayLine,
@@ -14,6 +14,7 @@ import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
 import { isIOS, isMobile } from '../shared-private/react/device.js';
+import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -297,32 +298,36 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
           <>
-            <IconButton size="4" onClick={handleStartRecording} disabled={!!error}>
+            <IconButtonWithText
+              onClick={handleStartRecording}
+              text="Record"
+              disabled={!!error && !!streamRef.current}
+            >
               <RiPlayLine />
-            </IconButton>
+            </IconButtonWithText>
 
-            <IconButton size="4" onClick={handleSwitchCamera} variant="soft">
+            <IconButtonWithText onClick={handleSwitchCamera} variant="soft" text="Flip">
               <RiRefreshLine />
-            </IconButton>
+            </IconButtonWithText>
           </>
         )}
 
         {isRecording && !isPaused && (
-          <IconButton size="4" onClick={handlePauseRecording} disabled={!!error}>
+          <IconButtonWithText onClick={handlePauseRecording} text="Pause" disabled={!!error}>
             <RiPauseLine />
-          </IconButton>
+          </IconButtonWithText>
         )}
 
         {isRecording && isPaused && (
-          <IconButton size="4" onClick={handleResumeRecording} disabled={!!error}>
+          <IconButtonWithText onClick={handleResumeRecording} text="Resume" disabled={!!error}>
             <RiRestartLine />
-          </IconButton>
+          </IconButtonWithText>
         )}
 
         {isRecording && (
-          <IconButton size="4" onClick={handleStopRecording} disabled={!!error}>
+          <IconButtonWithText onClick={handleStopRecording} text="Finish" disabled={!!error}>
             <RiStopLine />
-          </IconButton>
+          </IconButtonWithText>
         )}
       </Flex>
     </VideoWrapper>

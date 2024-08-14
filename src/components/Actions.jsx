@@ -1,4 +1,3 @@
-import { IconButton } from '@radix-ui/themes';
 import {
   RiCameraLine,
   RiImageAddLine,
@@ -11,6 +10,7 @@ import styled from 'styled-components';
 import { cameraTypes } from '../lib/cameraTypes';
 import { navigateEffect } from '../shared-private/react/store/sharedEffects';
 import { FilePicker } from './FilePicker.jsx';
+import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { pickedPhotoCat } from './PickPhoto.jsx';
 
 const Wrapper = styled.div`
@@ -46,37 +46,22 @@ export const Actions = React.memo(() => {
 
   return (
     <Wrapper>
-      <ButtonWrapper size="4" onClick={handleTakePhoto}>
+      <IconButtonWithText onClick={handleTakePhoto} text="Camera">
         <RiCameraLine />
-        <HelperText>Camera</HelperText>
-      </ButtonWrapper>
-      <ButtonWrapper size="4" onClick={handleTakeVideo}>
+      </IconButtonWithText>
+      <IconButtonWithText onClick={handleTakeVideo} text="Video">
         <RiVideoAddLine />
-        <HelperText>Video</HelperText>
-      </ButtonWrapper>
+      </IconButtonWithText>
 
       <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
-        <ButtonWrapper size="4">
+        <IconButtonWithText text="Photo">
           <RiImageAddLine />
-          <HelperText>Photo</HelperText>
-        </ButtonWrapper>
+        </IconButtonWithText>
       </FilePicker>
 
-      <ButtonWrapper size="4" onClick={handleTakeNote}>
+      <IconButtonWithText onClick={handleTakeNote} text="Text">
         <RiStickyNoteAddLine />
-        <HelperText>Text</HelperText>
-      </ButtonWrapper>
+      </IconButtonWithText>
     </Wrapper>
   );
 });
-
-const ButtonWrapper = styled(IconButton)`
-  position: relative;
-`;
-const HelperText = styled.span`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-  font-size: 10px;
-`;

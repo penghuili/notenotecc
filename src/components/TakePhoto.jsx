@@ -1,4 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { Flex } from '@radix-ui/themes';
 import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -8,6 +8,7 @@ import { useWindowBlur } from '../lib/useWindowBlur';
 import { useWindowFocus } from '../lib/useWindowFocus';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob';
 import { isMobile } from '../shared-private/react/device.js';
+import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, renderError, stopStream, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`
@@ -99,13 +100,17 @@ export const TakePhoto = React.memo(({ onSelect }) => {
       {errorElement}
 
       <Flex justify="center" align="center" py="2" gap="2">
-        <IconButton size="4" onClick={handleCapture} disabled={!!error}>
+        <IconButtonWithText
+          onClick={handleCapture}
+          disabled={!!error && !!videoStreamRef.current}
+          text="Capture"
+        >
           <RiCameraLine />
-        </IconButton>
+        </IconButtonWithText>
 
-        <IconButton size="4" onClick={handleChangeFacingMode} variant="soft">
+        <IconButtonWithText onClick={handleChangeFacingMode} variant="soft" text="Flip">
           <RiRefreshLine />
-        </IconButton>
+        </IconButtonWithText>
       </Flex>
     </VideoWrapper>
   );

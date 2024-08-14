@@ -136,7 +136,7 @@ const InnerImage = React.memo(
               <ImageActions
                 noteId={noteId}
                 image={imageForAction}
-                onDeleteLocal={handleDeleteLocal}
+                onDeleteLocal={url ? handleDeleteLocal : undefined}
               />
             </Box>
           </>

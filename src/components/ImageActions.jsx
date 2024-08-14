@@ -48,7 +48,7 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
   return (
     <>
       {onDeleteLocal ? (
-        <IconButton onClick={handleShowDeleteConfirm}>
+        <IconButton onClick={handleShowDeleteConfirm} radius="full">
           <RiCloseLine />
         </IconButton>
       ) : (

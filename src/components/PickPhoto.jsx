@@ -1,4 +1,4 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { Flex, Text } from '@radix-ui/themes';
 import { RiCropLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
 import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import { resizeCanvas } from '../lib/resizeCanvas';
 import { canvasToBlob } from '../shared-private/react/canvasToBlob.js';
 import { ImageCropper } from '../shared-private/react/ImageCropper.jsx';
 import { FilePicker } from './FilePicker.jsx';
+import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 
 const CropperWrapper = styled.div`
@@ -17,8 +18,13 @@ const CropperWrapper = styled.div`
   height: ${props => `${props.size}px`};
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+`;
+
+const HelperTextWrapper = styled.div`
+  position: absolute;
 `;
 
 export const pickedPhotoCat = createCat(null);
@@ -51,17 +57,22 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     <VideoWrapper>
       <CropperWrapper size={size}>
         <ImageCropper ref={cropperRef} width={size} pickedImage={pickedPhoto} />
+        {!pickedPhoto && (
+          <HelperTextWrapper>
+            <Text>Pick a photo from your device.</Text>
+          </HelperTextWrapper>
+        )}
       </CropperWrapper>
 
       <Flex justify="center" align="center" py="2" gap="2">
         {pickedPhoto ? (
           <>
-            <IconButton size="4" onClick={handleCrop}>
+            <IconButtonWithText onClick={handleCrop} text="Crop">
               <RiCropLine />
-            </IconButton>
-            <IconButton size="4" onClick={handleSquare}>
+            </IconButtonWithText>
+            <IconButtonWithText onClick={handleSquare} text="Square">
               <RiSquareLine />
-            </IconButton>
+            </IconButtonWithText>
           </>
         ) : (
           <FilePicker
@@ -70,9 +81,9 @@ export const PickPhoto = React.memo(({ onSelect }) => {
             onSelect={pickedPhotoCat.set}
             height="auto"
           >
-            <IconButton size="4">
+            <IconButtonWithText text="Pick">
               <RiImageAddLine />
-            </IconButton>
+            </IconButtonWithText>
           </FilePicker>
         )}
       </Flex>
