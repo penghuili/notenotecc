@@ -14,8 +14,8 @@ import { MarkdownEditor } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
 import {
   isAddingImagesCat,
   isLoadingNoteCat,

@@ -11,7 +11,7 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 import { FilePicker } from './FilePicker.jsx';
 import { pickedPhotoCat, PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';

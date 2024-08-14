@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared-private/react/bodySccroll';
+import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 import { fullScreenImageUrlCat } from '../store/note/noteCats';
 
 const FullScreenWrapper = styled.div`

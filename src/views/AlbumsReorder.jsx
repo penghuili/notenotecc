@@ -4,7 +4,7 @@ import { useCat } from 'usecat';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { Reorder } from '../components/Reorder.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
 

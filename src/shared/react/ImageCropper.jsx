@@ -4,7 +4,7 @@ import { disablePullToRefresh, enablePullToRefresh } from './bodySccroll';
 import { isAndroidPhone, isIOS } from './device';
 
 const PADDING = 10;
-// eslint-disable-next-line react/display-name
+
 export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
   const [image, setImage] = useState(null);
   const [imagePosition, setImagePosition] = useState({ x: PADDING, y: PADDING });

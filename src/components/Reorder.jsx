@@ -3,7 +3,7 @@ import React from 'react';
 import { arrayMove, List } from 'react-movable';
 import styled from 'styled-components';
 
-import { calculateItemPosition } from '../shared-private/js/position';
+import { calculateItemPosition } from '../shared/js/position';
 
 export const Reorder = React.memo(({ items, onReorder, reverse }) => {
   return (

@@ -4,13 +4,13 @@ import {
   decryptMessageSymmetric,
   encryptMessageAsymmetric,
   encryptMessageSymmetric,
-} from '../../shared-private/js/encryption';
-import { generatePassword } from '../../shared-private/js/generatePassword';
-import { orderByPosition } from '../../shared-private/js/position';
-import { HTTP } from '../../shared-private/react/HTTP';
-import { appName } from '../../shared-private/react/initShared';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared-private/react/LocalStorage';
-import { objectToQueryString } from '../../shared-private/react/routeHelpers';
+} from '../../shared/js/encryption';
+import { generatePassword } from '../../shared/js/generatePassword';
+import { orderByPosition } from '../../shared/js/position';
+import { HTTP } from '../../shared/react/HTTP';
+import { appName } from '../../shared/react/initShared';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
+import { objectToQueryString } from '../../shared/react/routeHelpers';
 
 export async function fetchAlbums() {
   try {

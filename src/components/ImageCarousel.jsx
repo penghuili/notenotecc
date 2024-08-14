@@ -3,7 +3,7 @@ import './ImageCarousel.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { fileTypes } from '../lib/constants';
-import { isMobile } from '../shared-private/react/device';
+import { isMobile } from '../shared/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
 export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDeleteLocal }) => {

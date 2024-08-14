@@ -1,4 +1,4 @@
-import { isIOS } from '../shared-private/react/device';
+import { isIOS } from '../shared/react/device';
 
 export const localStorageKeys = {
   notes: 'notenote-notes',

@@ -10,8 +10,8 @@ import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
-import { errorColor } from '../shared-private/react/AppWrapper.jsx';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,

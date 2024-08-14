@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { pickedPhotoCat } from './PickPhoto.jsx';

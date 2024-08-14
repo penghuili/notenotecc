@@ -1,14 +1,14 @@
 import { albumDescriptionCat, albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
-import { formatDate, isNewer } from '../../shared-private/js/date';
-import { LocalStorage } from '../../shared-private/react/LocalStorage';
-import { settingsCat } from '../../shared-private/react/store/sharedCats';
+import { formatDate, isNewer } from '../../shared/js/date';
+import { LocalStorage } from '../../shared/react/LocalStorage';
+import { settingsCat } from '../../shared/react/store/sharedCats';
 import {
   fetchSettingsEffect,
   goBackEffect,
   setToastEffect,
-} from '../../shared-private/react/store/sharedEffects';
-import { toastTypes } from '../../shared-private/react/Toast.jsx';
+} from '../../shared/react/store/sharedEffects';
+import { toastTypes } from '../../shared/react/Toast.jsx';
 import { albumsCat } from '../album/albumCats.js';
 import { albumItemsCat } from '../album/albumItemCats';
 import { createAlbum } from '../album/albumNetwork.js';

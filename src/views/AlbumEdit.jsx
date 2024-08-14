@@ -4,8 +4,8 @@ import { createCat, useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { InputField } from '../shared-private/react/InputField.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
+import { InputField } from '../shared/react/InputField.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { albumsCat, findAlbum, isUpdatingAlbumCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
 

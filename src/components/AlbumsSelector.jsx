@@ -3,7 +3,7 @@ import React, { useCallback, useEffect } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
-import { InputField } from '../shared-private/react/InputField.jsx';
+import { InputField } from '../shared/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
 
 const titleStyle = { userSelect: 'none' };

@@ -11,9 +11,9 @@ import React, { useCallback, useImperativeHandle, useRef, useState } from 'react
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
-import { errorColor } from '../shared-private/react/AppWrapper.jsx';
-import { Confirm } from '../shared-private/react/Confirm.jsx';
-import { getFileSizeString } from '../shared-private/react/file';
+import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { Confirm } from '../shared/react/Confirm.jsx';
+import { getFileSizeString } from '../shared/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 import { deleteImageEffect } from '../store/note/noteEffects';
 

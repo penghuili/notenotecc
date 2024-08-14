@@ -2,8 +2,8 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useMemo } from 'react';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
-import { formatDateWeekTime, getAgo } from '../shared-private/js/date';
-import { RouteLink } from '../shared-private/react/my-router.jsx';
+import { formatDateWeekTime, getAgo } from '../shared/js/date';
+import { RouteLink } from '../shared/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MD.jsx';
 import { NoteActions } from './NoteActions.jsx';

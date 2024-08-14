@@ -1,10 +1,10 @@
 import { Avatar, Heading, Link } from '@radix-ui/themes';
 import React from 'react';
 
-import { HorizontalCenter } from '../shared-private/react/HorizontalCenter.jsx';
-import { appName, logo, privacyUrl, termsUrl } from '../shared-private/react/initShared';
-import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
-import { RouteLink } from '../shared-private/react/my-router.jsx';
+import { HorizontalCenter } from '../shared/react/HorizontalCenter.jsx';
+import { appName, logo, privacyUrl, termsUrl } from '../shared/react/initShared';
+import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { RouteLink } from '../shared/react/my-router.jsx';
 
 export function Welcome() {
   return (

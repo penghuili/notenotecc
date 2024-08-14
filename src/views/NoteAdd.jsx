@@ -13,9 +13,9 @@ import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { cameraTypes } from '../lib/cameraTypes.js';
-import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { goBackEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { goBackEffect, navigateEffect } from '../shared/react/store/sharedEffects';
 import { isCreatingNoteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';
 

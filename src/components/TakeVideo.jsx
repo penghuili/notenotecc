@@ -13,7 +13,7 @@ import { videoType } from '../lib/constants.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
-import { isIOS, isMobile } from '../shared-private/react/device.js';
+import { isIOS, isMobile } from '../shared/react/device.js';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { TimeProgress } from './TimeProgress.jsx';
 

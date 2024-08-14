@@ -6,10 +6,10 @@ import { useCat } from 'usecat';
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { RouteLink } from '../shared-private/react/my-router.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { userCat } from '../shared-private/react/store/sharedCats.js';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects.js';
+import { RouteLink } from '../shared/react/my-router.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { userCat } from '../shared/react/store/sharedCats.js';
+import { navigateEffect } from '../shared/react/store/sharedEffects.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 

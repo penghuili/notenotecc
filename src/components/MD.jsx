@@ -3,7 +3,7 @@ import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { AnimatedBox } from '../shared-private/react/AnimatedBox.jsx';
+import { AnimatedBox } from '../shared/react/AnimatedBox.jsx';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 const zeroWidthSpace = '&ZeroWidthSpace;';

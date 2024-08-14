@@ -1,4 +1,4 @@
-import { canvasToBlob } from '../shared-private/react/canvasToBlob';
+import { canvasToBlob } from '../shared/react/canvasToBlob';
 import { fileTypes } from './constants';
 
 export async function convertPNG2Webp(pngUrl) {

@@ -4,23 +4,19 @@ import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { formatDateTime } from '../shared-private/js/date';
-import { AppVersion } from '../shared-private/react/AppVersion.jsx';
-import { themeCssColor } from '../shared-private/react/AppWrapper.jsx';
-import { copyToClipboard } from '../shared-private/react/copyToClipboard';
-import { getFileSizeString } from '../shared-private/react/file';
-import { HorizontalCenter } from '../shared-private/react/HorizontalCenter.jsx';
-import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
-import { LogoutLink } from '../shared-private/react/LogoutLink.jsx';
-import { RouteLink } from '../shared-private/react/my-router.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { PaymentStatus } from '../shared-private/react/PaymentStatus.jsx';
-import {
-  isLoadingAccountCat,
-  settingsCat,
-  userCat,
-} from '../shared-private/react/store/sharedCats.js';
-import { fetchSettingsEffect, setToastEffect } from '../shared-private/react/store/sharedEffects';
+import { formatDateTime } from '../shared/js/date';
+import { AppVersion } from '../shared/react/AppVersion.jsx';
+import { themeCssColor } from '../shared/react/AppWrapper.jsx';
+import { copyToClipboard } from '../shared/react/copyToClipboard';
+import { getFileSizeString } from '../shared/react/file';
+import { HorizontalCenter } from '../shared/react/HorizontalCenter.jsx';
+import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { LogoutLink } from '../shared/react/LogoutLink.jsx';
+import { RouteLink } from '../shared/react/my-router.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { PaymentStatus } from '../shared/react/PaymentStatus.jsx';
+import { isLoadingAccountCat, settingsCat, userCat } from '../shared/react/store/sharedCats.js';
+import { fetchSettingsEffect, setToastEffect } from '../shared/react/store/sharedEffects';
 
 async function load() {
   await fetchSettingsEffect();

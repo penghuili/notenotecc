@@ -15,10 +15,10 @@ import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
-import { useInView } from '../shared-private/react/hooks/useInView.js';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { userCat } from '../shared-private/react/store/sharedCats.js';
-import { fetchSettingsEffect, navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { useInView } from '../shared/react/hooks/useInView.js';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { userCat } from '../shared/react/store/sharedCats.js';
+import { fetchSettingsEffect, navigateEffect } from '../shared/react/store/sharedEffects';
 import {
   isAddingImagesCat,
   isDeletingImageCat,

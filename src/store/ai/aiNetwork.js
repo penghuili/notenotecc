@@ -1,5 +1,5 @@
-import { HTTP } from '../../shared-private/react/HTTP';
-import { appName } from '../../shared-private/react/initShared';
+import { HTTP } from '../../shared/react/HTTP';
+import { appName } from '../../shared/react/initShared';
 
 export async function getSuggestion(prefix, prompt) {
   try {

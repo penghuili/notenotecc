@@ -6,11 +6,11 @@ import styled from 'styled-components';
 import { Markdown } from '../components/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { AreaField } from '../shared-private/react/AreaField.jsx';
-import { ItemsWrapper } from '../shared-private/react/ItemsWrapper.jsx';
-import { PageHeader } from '../shared-private/react/PageHeader.jsx';
-import { setToastEffect } from '../shared-private/react/store/sharedEffects.js';
-import { toastTypes } from '../shared-private/react/Toast.jsx';
+import { AreaField } from '../shared/react/AreaField.jsx';
+import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { setToastEffect } from '../shared/react/store/sharedEffects.js';
+import { toastTypes } from '../shared/react/Toast.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';
 
 export const AI = React.memo(() => {

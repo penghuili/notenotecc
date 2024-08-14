@@ -1,20 +1,20 @@
 import { fileTypes, localStorageKeys } from '../../lib/constants';
 import { fetchFileWithUrl } from '../../lib/fetchFileWithUrl';
 import { imagePathToUrl } from '../../lib/imagePathToUrl';
-import { asyncForEach } from '../../shared-private/js/asyncForEach';
+import { asyncForEach } from '../../shared/js/asyncForEach';
 import {
   decryptFileSymmetric,
   encryptFileSymmetric,
   encryptMessageAsymmetric,
   encryptMessageSymmetric,
-} from '../../shared-private/js/encryption';
-import { generatePassword } from '../../shared-private/js/generatePassword';
-import { blobToUint8Array, uint8ArrayToBlob } from '../../shared-private/react/file';
-import { HTTP } from '../../shared-private/react/HTTP';
-import { appName } from '../../shared-private/react/initShared';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared-private/react/LocalStorage';
-import { md5 } from '../../shared-private/react/md5';
-import { objectToQueryString } from '../../shared-private/react/routeHelpers';
+} from '../../shared/js/encryption';
+import { generatePassword } from '../../shared/js/generatePassword';
+import { blobToUint8Array, uint8ArrayToBlob } from '../../shared/react/file';
+import { HTTP } from '../../shared/react/HTTP';
+import { appName } from '../../shared/react/initShared';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
+import { md5 } from '../../shared/react/md5';
+import { objectToQueryString } from '../../shared/react/routeHelpers';
 import {
   decryptNote,
   decryptPassword,

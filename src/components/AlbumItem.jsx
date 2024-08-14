@@ -3,9 +3,9 @@ import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
-import { errorColor } from '../shared-private/react/AppWrapper.jsx';
-import { RouteLink } from '../shared-private/react/my-router.jsx';
-import { navigateEffect } from '../shared-private/react/store/sharedEffects';
+import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { RouteLink } from '../shared/react/my-router.jsx';
+import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { isDeletingAlbumCat } from '../store/album/albumCats';
 import { deleteAlbumEffect } from '../store/album/albumEffects';
 

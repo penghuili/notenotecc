@@ -6,8 +6,8 @@ import styled from 'styled-components';
 import { imageType } from '../lib/constants.js';
 import { useWindowBlur } from '../lib/useWindowBlur';
 import { useWindowFocus } from '../lib/useWindowFocus';
-import { canvasToBlob } from '../shared-private/react/canvasToBlob';
-import { isMobile } from '../shared-private/react/device.js';
+import { canvasToBlob } from '../shared/react/canvasToBlob';
+import { isMobile } from '../shared/react/device.js';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, renderError, stopStream, VideoWrapper } from './TakeVideo.jsx';
 

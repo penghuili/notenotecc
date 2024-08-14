@@ -1,4 +1,4 @@
-import { LocalStorage } from '../../shared-private/react/LocalStorage';
+import { LocalStorage } from '../../shared/react/LocalStorage';
 import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 
