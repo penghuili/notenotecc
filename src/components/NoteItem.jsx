@@ -5,7 +5,7 @@ import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { RouteLink } from '../shared/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
-import { Markdown } from './MarkdownEditor/MD.jsx';
+import { Markdown } from './MarkdownEditor/index.jsx';
 import { NoteActions } from './NoteActions.jsx';
 
 export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
