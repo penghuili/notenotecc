@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
@@ -26,6 +26,8 @@ const Img = styled.img`
 export function FullScreenImage() {
   const url = useCat(fullScreenImageUrlCat);
 
+  const scrollYRef = useRef(null);
+
   const size = useMemo(() => {
     return Math.min(window.innerWidth, window.innerHeight, 900);
   }, []);
@@ -40,9 +42,11 @@ export function FullScreenImage() {
 
   useEffect(() => {
     if (url) {
+      scrollYRef.current = window.scrollY;
       disableBodyScroll();
     } else {
       enableBodyScroll();
+      window.scrollTo(0, scrollYRef.current);
     }
   }, [url]);
 

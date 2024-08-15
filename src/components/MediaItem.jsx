@@ -119,7 +119,7 @@ const InnerImage = React.memo(
         {!!innerUrl && (
           <>
             {(type === fileTypes.webm || type === fileTypes.mp4) && (
-              <VideoPlayer src={innerUrl} type={type} onLoaded={handleLoaded} />
+              <VideoPlayer src={innerUrl} type={type} hidden={isLoading} onLoaded={handleLoaded} />
             )}
 
             {type === fileTypes.weba && (

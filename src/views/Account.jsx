@@ -1,5 +1,5 @@
 import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
-import { RiFileCopyLine, RiLockLine } from '@remixicon/react';
+import { RiFileCopyLine, RiShieldCheckLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
@@ -32,7 +32,7 @@ export const Account = React.memo(() => {
 
       <ItemsWrapper align="start">
         <HorizontalCenter gap="1">
-          <RiLockLine color={themeCssColor} />
+          <RiShieldCheckLine color={themeCssColor} />
           <RouteLink to="/security">Security</RouteLink>
         </HorizontalCenter>
       </ItemsWrapper>

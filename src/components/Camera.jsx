@@ -4,6 +4,7 @@ import {
   RiCheckLine,
   RiCloseLine,
   RiImageAddLine,
+  RiPlayLine,
   RiVideoOnLine,
 } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -163,7 +164,14 @@ const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
       )}
 
       {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
-        <PreviewVideo src={image.url} controls translateX={translateX} zIndex={zIndex} />
+        <>
+          <PreviewVideo src={image.url} controls={false} translateX={translateX} zIndex={zIndex} />
+          <Flex justify="center" width="100%" position="absolute" top="30px">
+            <IconButton size="1">
+              <RiPlayLine />
+            </IconButton>
+          </Flex>
+        </>
       )}
     </div>
   );
