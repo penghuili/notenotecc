@@ -10,7 +10,7 @@ import {
 } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { MarkdownEditor } from '../components/MD.jsx';
+import { MarkdownEditor } from '../components/MarkdownEditor/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';

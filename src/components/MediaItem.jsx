@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { fileTypes } from '../lib/constants.js';
 import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
 import { imagePathToUrl } from '../lib/imagePathToUrl.js';
+import { isMobile } from '../shared/react/device.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
 import { fullScreenImageUrlCat } from '../store/note/noteCats.js';
@@ -45,16 +46,18 @@ export const MediaItem = React.memo(
       );
     }
 
-    return (
-      <div
-        ref={ref}
-        style={{ position: 'relative', aspectRatio: '1/1', width: '100%', maxWidth: 600 }}
-      >
-        {renderContent()}
-      </div>
-    );
+    return <Wrapper ref={ref}>{renderContent()}</Wrapper>;
   }
 );
+
+const Wrapper = styled.div`
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 600px;
+  border-radius: ${isMobile() ? '0' : '8px'};
+  overflow: hidden;
+`;
 
 const ImageElement = styled.img`
   width: 100%;

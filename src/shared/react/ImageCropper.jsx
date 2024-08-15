@@ -28,21 +28,16 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
   }, []);
 
   useEffect(() => {
-    const handleImageUpload = () => {
-      const reader = new FileReader();
-
-      reader.onload = event => {
-        const img = new Image();
-        img.onload = () => {
-          setImage(img);
-        };
-        img.src = event.target.result;
+    const createImage = () => {
+      const img = new Image();
+      img.onload = () => {
+        setImage(img);
       };
-      reader.readAsDataURL(pickedImage);
+      img.src = URL.createObjectURL(pickedImage);
     };
 
     if (pickedImage) {
-      handleImageUpload();
+      createImage();
     } else {
       setImage(null);
       const canvas = canvasRef.current;

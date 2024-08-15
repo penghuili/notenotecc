@@ -41,24 +41,24 @@ const encryptingMessage = 'Encrypting ...';
 
 export async function fetchNotesEffect(startKey, force) {
   if (!force && notesCat.get()?.items?.length) {
+    console.log('notes has state');
     return;
   }
 
   if (!force && !startKey) {
     const cachedNotes = LocalStorage.get(localStorageKeys.notes);
     if (cachedNotes?.items?.length) {
+      console.log('notes has cache');
       notesCat.set(cachedNotes);
 
       if (!isNewer(settingsCat.get()?.notesChangedAt, LocalStorage.get(notesChangedAtKey))) {
+        console.log('notes not changed');
         return;
       }
     }
   }
 
-  if (isLoadingNotesCat.get()) {
-    return;
-  }
-
+  console.log('fetching notes');
   isLoadingNotesCat.set(true);
 
   const { data } = await fetchNotes(startKey);

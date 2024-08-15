@@ -3,13 +3,15 @@ import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { AnimatedBox } from '../shared/react/AnimatedBox.jsx';
+import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
+import { Toolbar } from './Toolbar.jsx';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 const zeroWidthSpace = '&ZeroWidthSpace;';
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
+  const [activeElements, setActiveElements] = useState({});
 
   const handleInput = useCallback(() => {
     const nearestNodeElement = getNearestNodeElement();
@@ -17,26 +19,41 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
     if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
       escapeInlineTags(nearestNodeElement);
     } else {
-      createListAndHeader();
+      createBlockElement(editorRef.current);
       escapeBlockquote(editorRef.current);
       convertInlineTags();
     }
 
-    onChange(convertToMarkdown(editorRef.current.innerHTML));
+    const markdown = convertToMarkdown(editorRef.current.innerHTML);
+    onChange(markdown);
   }, [onChange]);
 
+  const handleKeyUp = useCallback(() => {
+    const elements = getActiveElements(editorRef.current);
+    if (Object.keys(elements).sort().join(',') !== Object.keys(activeElements).sort().join(',')) {
+      setActiveElements(elements);
+    }
+  }, [activeElements]);
+
   useEffect(() => {
-    editorRef.current.innerHTML = parseMarkdown(defaultText || '');
+    editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
     // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <Wrapper>
-      <Editor ref={editorRef} contentEditable onInput={handleInput} autoFocus={autoFocus} />
-      {/* <Flex>
-        <IconButton onClick={() => handleInlineClick(editorRef.current)}>Bold</IconButton>
-      </Flex> */}
+      <ContentWrapper>
+        <Editor
+          ref={editorRef}
+          contentEditable
+          onInput={handleInput}
+          onMouseUp={handleKeyUp}
+          onTouchEnd={handleKeyUp}
+          autoFocus={autoFocus}
+        />
+        <Toolbar editorRef={editorRef} activeElements={activeElements} />
+      </ContentWrapper>
       <HelperText />
     </Wrapper>
   );
@@ -47,34 +64,21 @@ export const Markdown = React.memo(({ markdown }) => {
   return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
 });
 
-export const handleInlineClick = (wrapperElement, inlineTag) => {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) {
-    return;
+const getActiveElements = wrapperElement => {
+  let container = getRangeContainer();
+  if (!container) {
+    return {};
   }
 
-  const range = selection.getRangeAt(0);
-  const selectedText = range.toString();
-
-  if (selectedText.trim() === '') {
-    return;
+  const elements = {};
+  while (container !== wrapperElement) {
+    container = container.parentNode;
+    if (container.nodeType === Node.ELEMENT_NODE) {
+      elements[container.tagName] = true;
+    }
   }
 
-  const strong = document.createElement(inlineTag);
-  strong.textContent = selectedText;
-
-  range.deleteContents(); // Remove the selected text
-  range.insertNode(strong); // Insert the <strong> element
-
-  const newRange = document.createRange();
-  newRange.setStartAfter(strong);
-  newRange.collapse(true);
-
-  // Clear the selection and set the new range
-  selection.removeAllRanges();
-  selection.addRange(newRange);
-
-  wrapperElement.focus();
+  return elements;
 };
 
 const getNearestNodeElement = () => {
@@ -90,7 +94,7 @@ const getNearestNodeElement = () => {
   return container;
 };
 
-const createListAndHeader = () => {
+const createBlockElement = wrapperElement => {
   const result = getTextBeforeCursor();
   if (!result) {
     return;
@@ -100,17 +104,17 @@ const createListAndHeader = () => {
 
   const listType = listPattern(text);
   if (listType) {
-    convertToList(container, listType);
+    convertToList(wrapperElement, container, listType);
   }
 
   const headerType = headerPattern(text);
   if (headerType) {
-    convertToHeader(container, headerType);
+    convertToHeader(wrapperElement, container, headerType);
   }
 
   const blockquote = blockquotePattern(text);
   if (blockquote) {
-    convertToBlockquote(container);
+    convertToBlockquote(wrapperElement, container);
   }
 };
 
@@ -136,14 +140,16 @@ const listPattern = text => {
   return null;
 };
 
-const convertToList = (container, listType) => {
+const convertToList = (wrapperElement, container, listType) => {
+  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
+
   const listItem = document.createElement('li');
+  listItem.innerHTML = content.replace(/^- /, '').replace(/^1. /, '').trim();
 
   const list = document.createElement(listType);
   list.appendChild(listItem);
 
-  const parent = container.parentNode;
-  parent.replaceChild(list, container);
+  parent.replaceChild(list, element);
 };
 
 const headerPattern = text => {
@@ -168,15 +174,30 @@ const headerPattern = text => {
   return null;
 };
 
-const convertToHeader = (container, headerType) => {
+const convertToHeader = (wrapperElement, container, headerType) => {
+  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
+
   const header = document.createElement(headerType);
+  header.innerHTML = content.replace(/^#{1,6} /, '').trim() || zeroWidthSpace;
 
-  header.innerHTML = zeroWidthSpace;
-
-  const parent = container.parentNode;
-  parent.replaceChild(header, container);
+  parent.replaceChild(header, element);
 
   setCursorPosition(header, 1);
+};
+
+const getElementsForBlock = (wrapperElement, container) => {
+  let element = container;
+  let parent = container.parentNode;
+  while (parent !== wrapperElement) {
+    element = parent;
+    parent = parent.parentNode;
+  }
+
+  return {
+    element,
+    parent,
+    content: (element.innerHTML || element.textContent).replace('&nbsp;', ' '),
+  };
 };
 
 const blockquotePattern = text => {
@@ -187,14 +208,15 @@ const blockquotePattern = text => {
   return null;
 };
 
-const convertToBlockquote = container => {
-  const element = document.createElement('blockquote');
-  const pElement = document.createElement('p');
-  pElement.innerHTML = zeroWidthSpace;
-  element.appendChild(pElement);
+const convertToBlockquote = (wrapperElement, container) => {
+  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
 
-  const parent = container.parentNode;
-  parent.replaceChild(element, container);
+  const blockquote = document.createElement('blockquote');
+  const pElement = document.createElement('p');
+  pElement.innerHTML = content.replace('&gt;', '').trim() || zeroWidthSpace;
+  blockquote.appendChild(pElement);
+
+  parent.replaceChild(blockquote, element);
 
   setCursorPosition(pElement, 1);
 };
@@ -320,7 +342,13 @@ const setCursorPosition = (targetNode, targetOffset) => {
 
 const Wrapper = styled.div`
   width: 100%;
+  position: relative;
 `;
+const ContentWrapper = styled.div`
+  width: 100%;
+  position: relative;
+`;
+
 const Editor = styled.div`
   line-height: var(--line-height, var(--default-line-height));
   letter-spacing: var(--letter-spacing, inherit);
@@ -328,7 +356,7 @@ const Editor = styled.div`
   &[contenteditable='true'] {
     box-shadow: inset 0 0 0 1px var(--gray-a7);
     border-radius: var(--radius-2);
-    padding: 10px;
+    padding: 10px 10px 60px;
     min-height: 130px;
   }
 
@@ -368,6 +396,7 @@ const Editor = styled.div`
   ul,
   ol {
     margin: 0.5rem 0;
+    padding: 0 0 0 2rem;
   }
   h1,
   h2,
@@ -375,13 +404,18 @@ const Editor = styled.div`
   h4,
   h5,
   h6 {
-    margin: 0;
+    margin: 0 0 0.25em;
+  }
+  p,
+  div {
+    margin: 0 0 0.75em;
+    min-height: 1em;
   }
   blockquote {
     box-sizing: border-box;
     border-left: max(var(--space-1), 0.25em) solid var(--accent-a6);
-    padding-left: min(var(--space-5), max(var(--space-3), 0.5em));
-    margin: 0.5rem;
+    margin: 0.5rem 0 0.5rem 1rem;
+    padding: 0 0 0 0.75rem;
     p {
       margin: 0;
     }
@@ -411,13 +445,14 @@ const convertToMarkdown = html => {
       })
       // Convert blockquotes
       .replace(/<blockquote>(.*?)<\/blockquote>/gis, (match, content) => {
-        return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n').trim();
+        return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n');
       })
       // Convert <div><br></div> to a single newline
       .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
+      .replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, '\n')
       // Convert <div> to newline
-      .replace(/<div\s*\/?>/gi, '\n')
-      .replace(/<\/div>/gi, '')
+      .replace(/<div>(.*?)<\/div>/gi, '$1\n')
+      .replace(/<p>(.*?)<\/p>/gi, '$1\n')
       // Convert <br> to newline
       .replace(/<br\s*\/?>/gi, '\n')
       // Convert <a> to links
@@ -447,19 +482,78 @@ const convertToMarkdown = html => {
   );
 };
 
-const parseMarkdown = input => {
-  let parsed = parseList(input);
-  parsed = parseHeader(parsed);
+function parseMarkdown(markdown) {
+  // Split the input into lines
+  const lines = markdown.split('\n');
+  let html = '';
+  let lineType = null;
 
-  // Convert blockquotes
-  parsed = parsed.replace(/(^|\n)(> .+(\n|$))+/g, match => {
-    const lines = match.trim().split('\n');
-    const content = lines.map(line => line.replace(/^> /, '').trim()).join('</p><p>');
-    return `<blockquote><p>${content}</p></blockquote>`;
+  const closeTag = () => {
+    if (['ul', 'ol', 'blockquote'].includes(lineType)) {
+      html += `</${lineType}>`;
+      lineType = null;
+    }
+  };
+
+  lines.forEach(line => {
+    // Remove leading and trailing whitespace
+    line = parseInlineMarkdown(line.trim());
+
+    // Handle headers
+    if (/^#{1,6} /.test(line)) {
+      const headerLevel = line.match(/^#+/)[0].length;
+      const headerText = line.slice(headerLevel + 1).trim();
+      html += `<h${headerLevel}>${headerText}</h${headerLevel}>`;
+      lineType = 'header';
+    }
+    // Handle unordered lists
+    else if (/^- /.test(line) || /^\* /.test(line)) {
+      if (lineType !== 'ul') {
+        closeTag();
+        html += '<ul>';
+        lineType = 'ul';
+      }
+      const listItem = line.slice(2).trim();
+      html += `<li>${listItem}</li>`;
+    }
+    // Handle ordered lists
+    else if (/^\d+\. /.test(line)) {
+      if (lineType !== 'ol') {
+        closeTag();
+        html += '<ol>';
+        lineType = 'ol';
+      }
+      const listItem = line.replace(/^\d+\.\s*/, '').trim();
+      html += `<li>${listItem}</li>`;
+    }
+    // Handle blockquotes
+    else if (/^> /.test(line)) {
+      if (lineType !== 'blockquote') {
+        closeTag();
+        html += '<blockquote>';
+        lineType = 'blockquote';
+      }
+      const blockquoteText = line.slice(2).trim();
+      html += `<p>${blockquoteText}</p>`;
+    }
+    // Handle paragraphs
+    else {
+      if (lineType !== 'p') {
+        closeTag();
+      }
+      lineType = 'p';
+      html += `<p>${line || '<br>'}</p>`;
+    }
   });
 
+  closeTag();
+
+  return html;
+}
+
+const parseInlineMarkdown = markdown => {
   return (
-    parsed
+    markdown
       // Link
       .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim, '<a href="$2" target="_blank">$1</a>')
       // Bold
@@ -472,61 +566,7 @@ const parseMarkdown = input => {
       .replace(/`([^`]+)`/gim, '<code>$1</code>')
       // Highlight
       .replace(/==(.*?)==/gim, '<mark>$1</mark>')
-      // Line breaks
-      .replace(/\n/gim, '<br>')
   );
-};
-
-const parseList = markdown => {
-  const lines = markdown.trim().split('\n');
-  let html = '';
-  let inList = false;
-  let listType = '';
-
-  function closeList() {
-    if (inList) {
-      html += `</${listType}>`;
-      inList = false;
-    }
-  }
-
-  lines.forEach(line => {
-    if (line.startsWith('- ') || line.startsWith('* ')) {
-      if (!inList || listType !== 'ul') {
-        closeList();
-        html += '<ul>';
-        listType = 'ul';
-        inList = true;
-      }
-      html += `<li>${line.slice(2)}</li>`;
-    } else if (line.match(/^\d+\. /)) {
-      if (!inList || listType !== 'ol') {
-        closeList();
-        html += '<ol>';
-        listType = 'ol';
-        inList = true;
-      }
-      html += `<li>${line.replace(/^\d+\. /, '')}</li>`;
-    } else {
-      closeList();
-      if (line) {
-        html += `${line}\n`;
-      }
-    }
-  });
-
-  closeList();
-  return html;
-};
-
-const parseHeader = input => {
-  return input
-    .replace(/^###### (.*)\n?/gim, '<h6>$1</h6>')
-    .replace(/^##### (.*)\n?/gim, '<h5>$1</h5>')
-    .replace(/^#### (.*)\n?/gim, '<h4>$1</h4>')
-    .replace(/^### (.*)\n?/gim, '<h3>$1</h3>')
-    .replace(/^## (.*)\n?/gim, '<h2>$1</h2>')
-    .replace(/^# (.*)\n?/gim, '<h1>$1</h1>');
 };
 
 const has2TrailingSpaces = text => {

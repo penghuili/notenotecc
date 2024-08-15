@@ -10,7 +10,7 @@ import {
 } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { MarkdownEditor } from '../components/MD.jsx';
+import { MarkdownEditor } from '../components/MarkdownEditor/MD.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';

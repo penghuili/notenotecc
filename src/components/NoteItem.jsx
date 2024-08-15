@@ -5,7 +5,7 @@ import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { RouteLink } from '../shared/react/my-router.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
-import { Markdown } from './MD.jsx';
+import { Markdown } from './MarkdownEditor/MD.jsx';
 import { NoteActions } from './NoteActions.jsx';
 
 export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
@@ -29,7 +29,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
   return (
     <Box mb="8">
       <Flex justify="between" align="center" mb="2">
-        <Text size="2" as="p">
+        <Text size="2" as="p" style={{ userSelect: 'none' }}>
           {dateTime}
         </Text>
 
@@ -56,7 +56,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
         </Flex>
       )}
 
-      <Text size="2" as="p" color="gray">
+      <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
         {ago}
       </Text>
     </Box>

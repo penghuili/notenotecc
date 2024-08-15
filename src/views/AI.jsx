@@ -3,7 +3,7 @@ import { RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { Markdown } from '../components/MD.jsx';
+import { Markdown } from '../components/MarkdownEditor/MD.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { AreaField } from '../shared/react/AreaField.jsx';
