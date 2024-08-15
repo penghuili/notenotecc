@@ -19,7 +19,9 @@ export const albumSelectedKeysCat = createCat([]);
 export const AlbumsSelector = React.memo(() => {
   return (
     <div>
-      <Text style={titleStyle}>Albums</Text>
+      <Text style={titleStyle} weight="bold">
+        Albums
+      </Text>
 
       <AlbumDescription />
 
