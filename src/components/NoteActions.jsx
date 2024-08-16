@@ -26,14 +26,22 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
 
   const [showCamera, setShowCamera] = useState(false);
 
-  const handleEncrypt = useCallback(() => {
-    encryptExistingNoteEffect(note);
-  }, [note]);
+  const handleEncrypt = useCallback(
+    e => {
+      e.stopPropagation();
+      encryptExistingNoteEffect(note);
+    },
+    [note]
+  );
 
-  const handleEidt = useCallback(() => {
-    setNoteEffect(note);
-    navigateEffect(`/notes/${note.sortKey}`);
-  }, [note]);
+  const handleEidt = useCallback(
+    e => {
+      e.stopPropagation();
+      setNoteEffect(note);
+      navigateEffect(`/notes/${note.sortKey}`);
+    },
+    [note]
+  );
 
   const handleAddImages = useCallback(
     async newImages => {
@@ -46,7 +54,8 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
     [note.encryptedPassword, note.sortKey]
   );
 
-  const handleShowCamera = useCallback(() => {
+  const handleShowCamera = useCallback(e => {
+    e.stopPropagation();
     setShowCamera(true);
   }, []);
 

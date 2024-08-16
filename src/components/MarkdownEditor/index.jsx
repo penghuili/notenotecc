@@ -4,14 +4,31 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
-import { Toolbar } from './Toolbar.jsx';
+import {
+  convertToBlockquote,
+  convertToHeader,
+  convertToList,
+  getRange,
+  getRangeContainer,
+  setCursorPosition,
+  Toolbar,
+  zeroWidthSpace,
+} from './Toolbar.jsx';
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
-const zeroWidthSpace = '&ZeroWidthSpace;';
 
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
   const [activeElements, setActiveElements] = useState({});
+
+  const handleChange = useCallback(() => {
+    const markdown = convertToMarkdown(editorRef.current.innerHTML);
+    onChange(markdown);
+    console.log('to markdown', { html: editorRef.current.innerHTML, markdown });
+
+    const elements = checkActiveElements(editorRef.current, activeElements);
+    setActiveElements(elements);
+  }, [activeElements, onChange]);
 
   const handleInput = useCallback(() => {
     const nearestNodeElement = getNearestNodeElement();
@@ -24,15 +41,12 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
       convertInlineTags();
     }
 
-    const markdown = convertToMarkdown(editorRef.current.innerHTML);
-    onChange(markdown);
-  }, [onChange]);
+    handleChange();
+  }, [handleChange]);
 
-  const handleKeyUp = useCallback(() => {
-    const elements = getActiveElements(editorRef.current);
-    if (Object.keys(elements).sort().join(',') !== Object.keys(activeElements).sort().join(',')) {
-      setActiveElements(elements);
-    }
+  const handleCheckActiveElements = useCallback(() => {
+    const elements = checkActiveElements(editorRef.current, activeElements);
+    setActiveElements(elements);
   }, [activeElements]);
 
   useEffect(() => {
@@ -48,11 +62,12 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
           ref={editorRef}
           contentEditable
           onInput={handleInput}
-          onMouseUp={handleKeyUp}
-          onTouchEnd={handleKeyUp}
+          onMouseUp={handleCheckActiveElements}
+          onTouchEnd={handleCheckActiveElements}
+          onKeyUp={handleCheckActiveElements}
           autoFocus={autoFocus}
         />
-        <Toolbar editorRef={editorRef} activeElements={activeElements} />
+        <Toolbar editorRef={editorRef} activeElements={activeElements} onChange={handleChange} />
       </ContentWrapper>
       <HelperText />
     </Wrapper>
@@ -61,6 +76,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 
 export const Markdown = React.memo(({ markdown }) => {
   const html = parseMarkdown(markdown);
+  console.log({ markdown, html });
   return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
 });
 
@@ -79,6 +95,16 @@ const getActiveElements = wrapperElement => {
   }
 
   return elements;
+};
+
+const checkActiveElements = (wrapperElement, currentActiveElements) => {
+  const elements = getActiveElements(wrapperElement);
+  if (
+    Object.keys(elements).sort().join(',') !== Object.keys(currentActiveElements).sort().join(',')
+  ) {
+    return elements;
+  }
+  return currentActiveElements;
 };
 
 const getNearestNodeElement = () => {
@@ -104,7 +130,7 @@ const createBlockElement = wrapperElement => {
 
   const listType = listPattern(text);
   if (listType) {
-    convertToList(wrapperElement, container, listType);
+    convertToList(wrapperElement, listType);
   }
 
   const headerType = headerPattern(text);
@@ -114,7 +140,7 @@ const createBlockElement = wrapperElement => {
 
   const blockquote = blockquotePattern(text);
   if (blockquote) {
-    convertToBlockquote(wrapperElement, container);
+    convertToBlockquote(wrapperElement);
   }
 };
 
@@ -140,18 +166,6 @@ const listPattern = text => {
   return null;
 };
 
-const convertToList = (wrapperElement, container, listType) => {
-  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
-
-  const listItem = document.createElement('li');
-  listItem.innerHTML = content.replace(/^- /, '').replace(/^1. /, '').trim();
-
-  const list = document.createElement(listType);
-  list.appendChild(listItem);
-
-  parent.replaceChild(list, element);
-};
-
 const headerPattern = text => {
   if (text === '# ') {
     return 'h1';
@@ -174,51 +188,12 @@ const headerPattern = text => {
   return null;
 };
 
-const convertToHeader = (wrapperElement, container, headerType) => {
-  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
-
-  const header = document.createElement(headerType);
-  header.innerHTML = content.replace(/^#{1,6} /, '').trim() || zeroWidthSpace;
-
-  parent.replaceChild(header, element);
-
-  setCursorPosition(header, 1);
-};
-
-const getElementsForBlock = (wrapperElement, container) => {
-  let element = container;
-  let parent = container.parentNode;
-  while (parent !== wrapperElement) {
-    element = parent;
-    parent = parent.parentNode;
-  }
-
-  return {
-    element,
-    parent,
-    content: (element.innerHTML || element.textContent).replace('&nbsp;', ' '),
-  };
-};
-
 const blockquotePattern = text => {
   if (text === '>') {
     return 'blockquote';
   }
 
   return null;
-};
-
-const convertToBlockquote = (wrapperElement, container) => {
-  const { parent, element, content } = getElementsForBlock(wrapperElement, container);
-
-  const blockquote = document.createElement('blockquote');
-  const pElement = document.createElement('p');
-  pElement.innerHTML = content.replace('&gt;', '').trim() || zeroWidthSpace;
-  blockquote.appendChild(pElement);
-
-  parent.replaceChild(blockquote, element);
-
-  setCursorPosition(pElement, 1);
 };
 
 const escapeBlockquote = wrapperElement => {
@@ -302,19 +277,6 @@ const escapeInlineTags = inlineElement => {
   }
 };
 
-const getRange = () => {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) {
-    return null;
-  }
-
-  return selection.getRangeAt(0);
-};
-const getRangeContainer = () => {
-  const range = getRange();
-  return range?.startContainer;
-};
-
 const addEmptySpanAfter = element => {
   const span = document.createElement('span');
   span.innerHTML = '&nbsp;';
@@ -329,15 +291,6 @@ const addEmptyDivAfter = element => {
   element.parentNode.insertBefore(div, element.nextSibling);
 
   return div;
-};
-
-const setCursorPosition = (targetNode, targetOffset) => {
-  const range = document.createRange();
-  const selection = window.getSelection();
-  range.setStart(targetNode, targetOffset);
-  range.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(range);
 };
 
 const Wrapper = styled.div`
@@ -355,7 +308,8 @@ const Editor = styled.div`
 
   &[contenteditable='true'] {
     box-shadow: inset 0 0 0 1px var(--gray-a7);
-    border-radius: var(--radius-2);
+    border-top-left-radius: var(--radius-2);
+    border-top-right-radius: var(--radius-2);
     padding: 10px 10px 60px;
     min-height: 130px;
   }
@@ -397,6 +351,7 @@ const Editor = styled.div`
   ol {
     margin: 0.5rem 0;
     padding: 0 0 0 2rem;
+    font-size: var(--font-size-3);
   }
   h1,
   h2,
@@ -410,6 +365,7 @@ const Editor = styled.div`
   div {
     margin: 0 0 0.75em;
     min-height: 1em;
+    font-size: var(--font-size-3);
   }
   blockquote {
     box-sizing: border-box;
@@ -418,6 +374,7 @@ const Editor = styled.div`
     padding: 0 0 0 0.75rem;
     p {
       margin: 0;
+      font-size: var(--font-size-3);
     }
   }
 `;
@@ -434,18 +391,18 @@ const convertToMarkdown = html => {
       .replace(/<h6>(.*?)<\/h6>/gi, '###### $1\n')
       // Convert unordered lists
       .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
-        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n');
+        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n').replace(/<br\s*\/?>/gi, '');
       })
       // Convert ordered lists
       .replace(/<ol>\s*((<li>.*?<\/li>\s*)+)<\/ol>/gi, (match, items) => {
         let index = 1;
         return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
-          return `${index++}. ${itemContent.trim()}\n`;
+          return `${index++}. ${itemContent.replace(/<br\s*\/?>/gi, '')}\n`;
         });
       })
       // Convert blockquotes
       .replace(/<blockquote>(.*?)<\/blockquote>/gis, (match, content) => {
-        return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n');
+        return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n').replace(/<br\s*\/?>/gi, '');
       })
       // Convert <div><br></div> to a single newline
       .replace(/<div>\s*<br\s*\/?>\s*<\/div>/gi, '\n')
@@ -476,9 +433,10 @@ const convertToMarkdown = html => {
       // Remove zero width spaces
       // eslint-disable-next-line no-misleading-character-class
       .replace(/[\u200B\u200C\u200D\uFEFF]/g, '')
+      // replace starting and ending newlines
+      .replace(/^\n+|\n+$/g, '')
       // Remove any remaining HTML tags
       .replace(/<[^>]+>/g, '')
-      .trim()
   );
 };
 
@@ -497,7 +455,7 @@ function parseMarkdown(markdown) {
 
   lines.forEach(line => {
     // Remove leading and trailing whitespace
-    line = parseInlineMarkdown(line.trim());
+    line = parseInlineMarkdown(line);
 
     // Handle headers
     if (/^#{1,6} /.test(line)) {

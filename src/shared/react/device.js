@@ -23,3 +23,7 @@ export function isIOS() {
 export function isMobile() {
   return isAndroidPhone() || isIOS();
 }
+
+export function isMobileWidth() {
+  return window.innerWidth < 768;
+}

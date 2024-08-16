@@ -50,7 +50,7 @@ export async function fetchNote(noteId) {
 
     const decrypted = await decryptNote(note);
 
-    LocalStorage.set(localStorageKeys.note, decrypted);
+    LocalStorage.set(decrypted.sortKey, decrypted);
 
     return {
       data: decrypted,
@@ -261,10 +261,16 @@ export async function deleteNote(noteId) {
 }
 
 function updateCache(note, type) {
+  if (type === 'update' || type === 'create') {
+    LocalStorage.set(note.sortKey, note);
+  } else if (type === 'delete') {
+    LocalStorage.remove(note.sortKey);
+  }
+
   const cachedItems = LocalStorage.get(localStorageKeys.notes) || [];
 
   let newItems = cachedItems?.items;
-  if (!newItems) {
+  if (!newItems?.length) {
     return;
   }
 

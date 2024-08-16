@@ -1,20 +1,26 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { RouteLink } from '../shared/react/my-router.jsx';
+import { navigateEffect } from '../shared/react/store/sharedEffects.js';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MarkdownEditor/index.jsx';
 import { NoteActions } from './NoteActions.jsx';
+import { TextTruncate } from './TextTruncate.jsx';
 
-export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
+export const NoteItem = React.memo(({ note, albums, showEdit = true, showFullText }) => {
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
   }, [note?.createdAt]);
   const ago = useMemo(() => {
     return getAgo(new Date(note.createdAt));
   }, [note?.createdAt]);
+
+  const handleNavigate = useCallback(() => {
+    navigateEffect(`/notes/${note.sortKey}?view=1`);
+  }, [note.sortKey]);
 
   useRerenderDetector(
     'NoteItem',
@@ -27,7 +33,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
   );
 
   return (
-    <Box mb="8">
+    <Box mb="8" onClick={handleNavigate}>
       <Flex justify="between" align="center" mb="2">
         <Text size="2" as="p" style={{ userSelect: 'none' }}>
           {dateTime}
@@ -44,7 +50,11 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true }) => {
         />
       )}
 
-      {!!note.note && <Markdown markdown={note.note} />}
+      {!!note.note && (
+        <TextTruncate showFullText={showFullText}>
+          <Markdown markdown={note.note} />
+        </TextTruncate>
+      )}
 
       {!!albums?.length && (
         <Flex wrap="wrap">

@@ -3,7 +3,6 @@ import './theme.css';
 import React from 'react';
 
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
-import { FullScreenImage } from './components/FullScreenImage.jsx';
 import { Router } from './Router.jsx';
 import { apps } from './shared/js/apps';
 import { AppWrapper } from './shared/react/AppWrapper.jsx';
@@ -27,7 +26,6 @@ function App() {
       <AppWrapper>
         <Router />
 
-        <FullScreenImage />
         <Toast />
       </AppWrapper>
     </ErrorBoundary>

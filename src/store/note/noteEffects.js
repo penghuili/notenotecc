@@ -106,12 +106,13 @@ export async function fetchNoteEffect(noteId) {
     return;
   }
 
-  const cachedNote = LocalStorage.get(localStorageKeys.note);
-  if (cachedNote?.sortKey === noteId && isNewer(cachedNote?.updatedAt, noteCat.get()?.updatedAt)) {
+  const cachedNote = LocalStorage.get(noteId);
+  if (cachedNote && isNewer(cachedNote?.updatedAt, noteCat.get()?.updatedAt)) {
     noteCat.set(cachedNote);
+    forceFetchNoteEffect(noteId);
+  } else {
+    await forceFetchNoteEffect(noteId);
   }
-
-  forceFetchNoteEffect(noteId);
 }
 
 export function setNoteEffect(note) {

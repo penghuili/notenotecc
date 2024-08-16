@@ -95,7 +95,7 @@ const Header = React.memo(({ noteId, viewMode }) => {
   const rightElement = useMemo(
     () =>
       viewMode ? (
-        <Button disabled={isDisabled} onClick={handleEdit} mr="2">
+        <Button disabled={isDisabled} onClick={handleEdit} mr="2" variant="soft">
           Edit
         </Button>
       ) : (
@@ -207,6 +207,7 @@ const NoteView = React.memo(({ noteId }) => {
       note={noteItem}
       albums={getNoteAlbums(noteItem)}
       showEdit={false}
+      showFullText
     />
   );
 });

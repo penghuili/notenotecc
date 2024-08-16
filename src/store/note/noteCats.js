@@ -9,7 +9,6 @@ export const isUpdatingNoteCat = createCat(false);
 export const isDeletingImageCat = createCat(false);
 export const isAddingImagesCat = createCat(false);
 export const isDeletingNoteCat = createCat(false);
-export const fullScreenImageUrlCat = createCat(null);
 export const onThisDayNotesCat = createCat({});
 export const isLoadingOnThisDayNotesCat = createCat(false);
 
