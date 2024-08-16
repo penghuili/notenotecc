@@ -158,10 +158,12 @@ export async function createNoteEffect({
 
 export async function updateNoteEffect(
   noteId,
-  { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack }
+  { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack, showSuccess = true }
 ) {
   isUpdatingNoteCat.set(true);
-  setToastEffect(encryptingMessage, toastTypes.info);
+  if (showSuccess) {
+    setToastEffect(encryptingMessage, toastTypes.info);
+  }
 
   const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
 
@@ -174,7 +176,9 @@ export async function updateNoteEffect(
   if (data) {
     updateStates(data, 'update');
 
-    setToastEffect('Saved!');
+    if (showSuccess) {
+      setToastEffect('Saved!');
+    }
 
     if (onSucceeded) {
       onSucceeded(data);

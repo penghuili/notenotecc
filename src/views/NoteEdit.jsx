@@ -13,6 +13,7 @@ import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { useDebounce } from '../lib/useDebounce.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
@@ -91,6 +92,22 @@ const Header = React.memo(({ noteId, viewMode }) => {
   const handleEdit = useCallback(() => {
     replaceTo(`/notes/${noteId}`);
   }, [noteId]);
+
+  const handleAutoSave = useCallback(() => {
+    if (viewMode) {
+      return;
+    }
+
+    updateNoteEffect(noteId, {
+      encryptedPassword: noteItem?.encryptedPassword,
+      note: description || null,
+      albumIds: selectedAlbumSortKeys,
+      goBack: false,
+      showSuccess: false,
+    });
+  }, [description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys, viewMode]);
+
+  useDebounce(description, handleAutoSave, 2000);
 
   const rightElement = useMemo(
     () =>
