@@ -94,7 +94,11 @@ async function forceFetchNoteEffect(noteId) {
   isLoadingNoteCat.set(true);
 
   const { data } = await fetchNote(noteId);
-  if (data && isNewer(data.updatedAt, noteCat.get()?.updatedAt)) {
+  const stateNote = noteCat.get();
+  if (
+    data &&
+    (stateNote?.sortKey !== noteId || isNewer(data.updatedAt, noteCat.get()?.updatedAt))
+  ) {
     noteCat.set(data);
   }
 
@@ -107,7 +111,7 @@ export async function fetchNoteEffect(noteId) {
   }
 
   const cachedNote = LocalStorage.get(noteId);
-  if (cachedNote && isNewer(cachedNote?.updatedAt, noteCat.get()?.updatedAt)) {
+  if (cachedNote) {
     noteCat.set(cachedNote);
     forceFetchNoteEffect(noteId);
   } else {

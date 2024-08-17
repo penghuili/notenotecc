@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-export const TextTruncate = React.memo(({ children, maxLines = 6, showFullText }) => {
+export const TextTruncate = React.memo(({ children, maxLines = 6, showFullText, onShowMore }) => {
   const textRef = useRef(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
@@ -16,7 +16,7 @@ export const TextTruncate = React.memo(({ children, maxLines = 6, showFullText }
       <Content ref={textRef} showFullText={showFullText} style={{ '--max-lines': maxLines }}>
         {children}
       </Content>
-      {isTruncated && <FadeOut />}
+      {isTruncated && <FadeOut onClick={onShowMore} />}
     </Wrapper>
   );
 });
@@ -40,5 +40,5 @@ const FadeOut = styled.div`
   width: 100%;
   height: 100%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-  pointer-events: none;
+  cursor: pointer;
 `;

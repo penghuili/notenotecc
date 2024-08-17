@@ -33,7 +33,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true, showFullTex
   );
 
   return (
-    <Box mb="8" onClick={handleNavigate}>
+    <Box mb="8">
       <Flex justify="between" align="center" mb="2">
         <Text size="2" as="p" style={{ userSelect: 'none' }}>
           {dateTime}
@@ -51,7 +51,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true, showFullTex
       )}
 
       {!!note.note && (
-        <TextTruncate showFullText={showFullText}>
+        <TextTruncate showFullText={showFullText} onShowMore={handleNavigate}>
           <Markdown markdown={note.note} />
         </TextTruncate>
       )}

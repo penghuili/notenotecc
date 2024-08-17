@@ -76,7 +76,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 
 export const Markdown = React.memo(({ markdown }) => {
   const html = parseMarkdown(markdown);
-  console.log({ markdown, html });
   return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
 });
 
