@@ -17,62 +17,85 @@ import {
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
-export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
-  const editorRef = useRef(null);
-  const [activeElements, setActiveElements] = useState({});
+export const MarkdownEditor = React.memo(
+  ({ defaultText, onChange, onImage, onAlbum, autoFocus }) => {
+    const editorRef = useRef(null);
+    const [activeElements, setActiveElements] = useState({});
+    const [isEmpty, setIsEmpty] = useState(true);
 
-  const handleChange = useCallback(() => {
-    const markdown = convertToMarkdown(editorRef.current.innerHTML);
-    onChange(markdown);
-    console.log('to markdown', { html: editorRef.current.innerHTML, markdown });
+    const handleCheckEmpty = useCallback(() => {
+      const isEmpty = editorRef.current.textContent.trim() === '';
+      setIsEmpty(isEmpty);
+    }, []);
 
-    const elements = checkActiveElements(editorRef.current, activeElements);
-    setActiveElements(elements);
-  }, [activeElements, onChange]);
+    const handleCheckActiveElements = useCallback(() => {
+      const elements = checkActiveElements(editorRef.current, activeElements);
+      setActiveElements(elements);
 
-  const handleInput = useCallback(() => {
-    const nearestNodeElement = getNearestNodeElement();
+      handleCheckEmpty();
+    }, [activeElements, handleCheckEmpty]);
 
-    if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
-      escapeInlineTags(nearestNodeElement);
-    } else {
-      createBlockElement(editorRef.current);
-      escapeBlockquote(editorRef.current);
-      convertInlineTags();
-    }
+    const handleChange = useCallback(() => {
+      const markdown = convertToMarkdown(editorRef.current.innerHTML);
+      onChange(markdown);
 
-    handleChange();
-  }, [handleChange]);
+      const elements = checkActiveElements(editorRef.current, activeElements);
+      setActiveElements(elements);
+    }, [activeElements, onChange]);
 
-  const handleCheckActiveElements = useCallback(() => {
-    const elements = checkActiveElements(editorRef.current, activeElements);
-    setActiveElements(elements);
-  }, [activeElements]);
+    const handleInput = useCallback(() => {
+      const nearestNodeElement = getNearestNodeElement();
 
-  useEffect(() => {
-    editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
-    // eslint-disable-next-line react-compiler/react-compiler
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
+        escapeInlineTags(nearestNodeElement);
+      } else {
+        createBlockElement(editorRef.current);
+        escapeBlockquote(editorRef.current);
+        convertInlineTags();
+      }
 
-  return (
-    <Wrapper>
-      <ContentWrapper>
-        <Editor
-          ref={editorRef}
-          contentEditable
-          onInput={handleInput}
-          onMouseUp={handleCheckActiveElements}
-          onTouchEnd={handleCheckActiveElements}
-          onKeyUp={handleCheckActiveElements}
-          autoFocus={autoFocus}
-        />
-        <Toolbar editorRef={editorRef} activeElements={activeElements} onChange={handleChange} />
-      </ContentWrapper>
-      <HelperText />
-    </Wrapper>
-  );
-});
+      handleChange();
+    }, [handleChange]);
+
+    useEffect(() => {
+      editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
+      // eslint-disable-next-line react-compiler/react-compiler
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+      if (autoFocus) {
+        editorRef.current.focus();
+        handleCheckActiveElements();
+      }
+    }, [autoFocus, handleCheckActiveElements]);
+
+    return (
+      <Wrapper>
+        <ContentWrapper>
+          <Editor
+            ref={editorRef}
+            contentEditable
+            onInput={handleInput}
+            onMouseUp={handleCheckActiveElements}
+            onTouchEnd={handleCheckActiveElements}
+            onKeyUp={handleCheckActiveElements}
+            data-placeholder="Start typing here..."
+            isEmpty={isEmpty}
+          />
+          <Toolbar
+            editorRef={editorRef}
+            activeElements={activeElements}
+            onChange={handleChange}
+            onImage={onImage}
+            onAlbum={onAlbum}
+          />
+        </ContentWrapper>
+        <HelperText />
+      </Wrapper>
+    );
+  }
+);
 
 export const Markdown = React.memo(({ markdown }) => {
   const html = parseMarkdown(markdown);
@@ -87,8 +110,8 @@ const getActiveElements = wrapperElement => {
 
   const elements = {};
   while (container !== wrapperElement) {
-    container = container.parentNode;
-    if (container.nodeType === Node.ELEMENT_NODE) {
+    container = container?.parentNode;
+    if (container?.nodeType === Node.ELEMENT_NODE) {
       elements[container.tagName] = true;
     }
   }
@@ -306,17 +329,19 @@ const Editor = styled.div`
   letter-spacing: var(--letter-spacing, inherit);
 
   &[contenteditable='true'] {
-    box-shadow: inset 0 0 0 1px var(--gray-a7);
-    border-top-left-radius: var(--radius-2);
-    border-top-right-radius: var(--radius-2);
-    padding: 10px 10px 60px;
+    padding: 10px 0;
     min-height: 130px;
+
+    &::before {
+      content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
+      color: var(--gray-5);
+      position: absolute;
+      left: 2px;
+    }
   }
 
   &[contenteditable='true']:focus {
-    outline: 2px solid var(--focus-8);
-    outline-offset: -1px;
-    border-radius: var(--radius-2);
+    outline: 0;
   }
 
   code {
@@ -362,7 +387,7 @@ const Editor = styled.div`
   }
   p,
   div {
-    margin: 0 0 0.75em;
+    margin: 0 0 0.25em;
     min-height: 1em;
     font-size: var(--font-size-3);
   }
@@ -549,9 +574,15 @@ const HelperText = React.memo(() => {
 
   return (
     <>
-      <HelperTitleWrapper align="center" onClick={handleToggle}>
-        <Text size="1">Markdown editor, click to learn more </Text>
-        {open ? <RiArrowDropUpLine /> : <RiArrowDropDownLine />}
+      <HelperTitleWrapper align="center" mt="1">
+        <Text size="1" onClick={handleToggle}>
+          Supports markdown, click to learn more{' '}
+        </Text>
+        {open ? (
+          <RiArrowDropUpLine onClick={handleToggle} />
+        ) : (
+          <RiArrowDropDownLine onClick={handleToggle} />
+        )}
       </HelperTitleWrapper>
       <AnimatedBox visible={open}>
         <HelperContentWrapper>

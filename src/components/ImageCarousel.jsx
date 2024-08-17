@@ -146,25 +146,6 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
       return;
     }
 
-    const handleKeyDown = event => {
-      if (event.key === 'ArrowLeft') {
-        handlePrevSlide();
-      } else if (event.key === 'ArrowRight') {
-        handleNextSlide();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleNextSlide, handlePrevSlide, isSwipable]);
-
-  useEffect(() => {
-    if (!isSwipable) {
-      return;
-    }
-
     if (innerCurrentIndex === 0) {
       setTimeout(() => {
         setIsTransitioning(false);

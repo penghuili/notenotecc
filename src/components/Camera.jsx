@@ -1,41 +1,15 @@
 import { Flex, IconButton, Tabs } from '@radix-ui/themes';
-import {
-  RiCameraLine,
-  RiCheckLine,
-  RiCloseLine,
-  RiImageAddLine,
-  RiPlayLine,
-  RiVideoOnLine,
-} from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { RiCameraLine, RiImageAddLine, RiPlayLine, RiVideoOnLine } from '@remixicon/react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
-import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 import { FilePicker } from './FilePicker.jsx';
+import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { pickedPhotoCat, PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
-
-const Wrapper = styled.div`
-  position: fixed;
-  top: env(safe-area-inset-top);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  max-width: 600px;
-  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  z-index: 3000;
-  background-color: white;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const Top = styled(Flex)`
-  max-width: 600px;
-`;
 
 export const Camera = React.memo(({ type, onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
@@ -58,26 +32,8 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
     }
   }, []);
 
-  useEffect(() => {
-    disableBodyScroll();
-
-    return () => {
-      enableBodyScroll();
-    };
-  }, []);
-
   return (
-    <Wrapper>
-      <Top justify="between" width="100%" p="2">
-        <IconButton variant="soft" onClick={onClose}>
-          <RiCloseLine />
-        </IconButton>
-
-        <IconButton onClick={handleSelect} disabled={!images?.length}>
-          <RiCheckLine />
-        </IconButton>
-      </Top>
-
+    <FullscreenPopup onConfirm={handleSelect} onClose={onClose} disabled={!images?.length}>
       {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
       {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
@@ -101,7 +57,7 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
       </Tabs.Root>
 
       {!!images?.length && <ImagesPreview images={images} />}
-    </Wrapper>
+    </FullscreenPopup>
   );
 });
 

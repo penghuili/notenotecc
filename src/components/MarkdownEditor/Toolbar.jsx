@@ -1,22 +1,26 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { Flex, IconButton, Tooltip } from '@radix-ui/themes';
 import {
   RiBold,
   RiCodeLine,
   RiDoubleQuotesL,
   RiH1,
   RiH2,
+  RiHashtag,
+  RiImageAddLine,
   RiItalic,
   RiListOrdered,
   RiListUnordered,
   RiMarkPenLine,
   RiStrikethrough,
 } from '@remixicon/react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 export const zeroWidthSpace = '&ZeroWidthSpace;';
 
-export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
+export const Toolbar = React.memo(({ editorRef, activeElements, onChange, onImage, onAlbum }) => {
+  const isActive = useMemo(() => Object.keys(activeElements).length > 0, [activeElements]);
+
   const handleToggleBold = useCallback(() => {
     if (activeElements.STRONG || activeElements.B) {
       removeInlineTag(editorRef.current, ['strong', 'b']);
@@ -119,10 +123,23 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
 
   return (
     <Wrapper position="sticky" bottom="0">
+      <Tooltip content="Add image / video">
+        <IconButton variant="soft" onClick={onImage} radius="none" color="grass">
+          <RiImageAddLine />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip content="Add tag">
+        <IconButton variant="soft" onClick={onAlbum} radius="none" color="grass">
+          <RiHashtag />
+        </IconButton>
+      </Tooltip>
+
       <IconButton
         variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
         onClick={handleToggleBold}
         radius="none"
+        disabled={!isActive}
       >
         <RiBold />
       </IconButton>
@@ -130,6 +147,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.EM || activeElements.I ? 'solid' : 'soft'}
         onClick={handleToggleItalic}
         radius="none"
+        disabled={!isActive}
       >
         <RiItalic />
       </IconButton>
@@ -137,6 +155,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.DEL ? 'solid' : 'soft'}
         onClick={handleToggleStrikethrough}
         radius="none"
+        disabled={!isActive}
       >
         <RiStrikethrough />
       </IconButton>
@@ -144,6 +163,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.CODE ? 'solid' : 'soft'}
         onClick={handleToggleCode}
         radius="none"
+        disabled={!isActive}
       >
         <RiCodeLine />
       </IconButton>
@@ -151,6 +171,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.MARK ? 'solid' : 'soft'}
         onClick={handleToggleMark}
         radius="none"
+        disabled={!isActive}
       >
         <RiMarkPenLine />
       </IconButton>
@@ -159,7 +180,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.H1 ? 'solid' : 'soft'}
         onClick={handleToggleH1}
         radius="none"
-        disabled={activeElements.LI || activeElements.BLOCKQUOTE}
+        disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
       >
         <RiH1 />
       </IconButton>
@@ -167,7 +188,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         variant={activeElements.H2 ? 'solid' : 'soft'}
         onClick={handleToggleH2}
         radius="none"
-        disabled={activeElements.LI || activeElements.BLOCKQUOTE}
+        disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
       >
         <RiH2 />
       </IconButton>
@@ -176,7 +197,11 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         onClick={handleToggleUL}
         radius="none"
         disabled={
-          activeElements.H1 || activeElements.H2 || activeElements.OL || activeElements.BLOCKQUOTE
+          !isActive ||
+          activeElements.H1 ||
+          activeElements.H2 ||
+          activeElements.OL ||
+          activeElements.BLOCKQUOTE
         }
       >
         <RiListUnordered />
@@ -186,7 +211,11 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         onClick={handleToggleOL}
         radius="none"
         disabled={
-          activeElements.H1 || activeElements.H2 || activeElements.UL || activeElements.BLOCKQUOTE
+          !isActive ||
+          activeElements.H1 ||
+          activeElements.H2 ||
+          activeElements.UL ||
+          activeElements.BLOCKQUOTE
         }
       >
         <RiListOrdered />
@@ -197,6 +226,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
         onClick={handleToggleBlockquote}
         radius="none"
         disabled={
+          !isActive ||
           activeElements.H1 ||
           activeElements.H2 ||
           activeElements.UL ||

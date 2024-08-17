@@ -1,12 +1,12 @@
-import { Box, CheckboxGroup, Text } from '@radix-ui/themes';
+import { CheckboxGroup, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect } from 'react';
+import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { InputField } from '../shared/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
 
-const titleStyle = { userSelect: 'none' };
 const checkboxRootStyle = {
   flexDirection: 'row',
   flexWrap: 'wrap',
@@ -16,19 +16,32 @@ const checkboxRootStyle = {
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
+export function useResetAlbumsSelector() {
+  useEffect(() => {
+    return () => {
+      albumDescriptionCat.reset();
+      albumSelectedKeysCat.reset();
+    };
+  }, []);
+}
+
 export const AlbumsSelector = React.memo(() => {
   return (
-    <div>
-      <Text style={titleStyle} weight="bold">
-        Albums
-      </Text>
+    <>
+      <Flex direction="column" gap="2">
+        <Title weight="bold">Albums</Title>
 
-      <AlbumDescription />
+        <AlbumItems />
 
-      <AlbumItems />
-    </div>
+        <AlbumDescription />
+      </Flex>
+    </>
   );
 });
+
+const Title = styled(Text)`
+  user-select: none;
+`;
 
 const AlbumDescription = React.memo(() => {
   const description = useCat(albumDescriptionCat);
@@ -39,20 +52,8 @@ const AlbumDescription = React.memo(() => {
     albumDescriptionCat.set(value);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      albumDescriptionCat.reset();
-    };
-  }, []);
-
   return (
-    <Box p="1.5px">
-      <InputField
-        placeholder="New album name"
-        value={description}
-        onChange={handleNewAlbumChange}
-      />
-    </Box>
+    <InputField placeholder="New album name" value={description} onChange={handleNewAlbumChange} />
   );
 });
 
@@ -66,31 +67,22 @@ const AlbumItems = React.memo(() => {
     albumSelectedKeysCat.set(value);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      albumSelectedKeysCat.reset();
-    };
-  }, []);
-
   if (!albums?.length) {
     return null;
   }
 
   return (
-    <>
-      <CheckboxGroup.Root
-        name="album"
-        value={selectedKeys}
-        onValueChange={handleSelectedKeysChange}
-        style={checkboxRootStyle}
-        mt="2"
-      >
-        {albums.map(album => (
-          <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
-            <Text style={titleStyle}>{album.title}</Text>
-          </CheckboxGroup.Item>
-        ))}
-      </CheckboxGroup.Root>
-    </>
+    <CheckboxGroup.Root
+      name="album"
+      value={selectedKeys}
+      onValueChange={handleSelectedKeysChange}
+      style={checkboxRootStyle}
+    >
+      {albums.map(album => (
+        <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
+          <Text>{album.title}</Text>
+        </CheckboxGroup.Item>
+      ))}
+    </CheckboxGroup.Root>
   );
 });

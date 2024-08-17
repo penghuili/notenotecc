@@ -39,7 +39,7 @@ export const NoteItem = React.memo(({ note, albums, showEdit = true, showFullTex
           {dateTime}
         </Text>
 
-        <NoteActions note={note} showEdit={showEdit} />
+        <NoteActions note={note} showEdit={showEdit} goBackAfterDelete={showFullText} />
       </Flex>
 
       {!!note.images?.length && (

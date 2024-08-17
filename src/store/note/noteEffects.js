@@ -293,7 +293,7 @@ function updateStates(newNote, type) {
   });
 
   const currentNote = noteCat.get();
-  if (currentNote?.sortKey === newNote.sortKey) {
+  if (type === 'update' && currentNote?.sortKey === newNote.sortKey) {
     noteCat.set(newNote);
   }
 

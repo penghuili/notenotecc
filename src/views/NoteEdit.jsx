@@ -1,23 +1,17 @@
-import { Button, IconButton } from '@radix-ui/themes';
-import { RiImageAddLine } from '@remixicon/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { Button } from '@radix-ui/themes';
+import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import {
-  albumDescriptionCat,
-  albumSelectedKeysCat,
-  AlbumsSelector,
-} from '../components/AlbumsSelector.jsx';
-import { Camera } from '../components/Camera.jsx';
+import { albumSelectedKeysCat, useResetAlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { useDebounce } from '../lib/useDebounce.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import {
@@ -28,6 +22,13 @@ import {
   useNote,
 } from '../store/note/noteCats.js';
 import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import {
+  AddAlbums,
+  AddImage,
+  SelectedAlbums,
+  showAlbumsSelectorCat,
+  showCameraCat,
+} from './NoteAdd.jsx';
 
 const descriptionCat = createCat('');
 
@@ -43,6 +44,7 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { vie
   }, [noteId]);
 
   useScrollToTop();
+  useResetAlbumsSelector();
 
   return (
     <PrepareData load={prepareData}>
@@ -52,9 +54,9 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { vie
         <NoteView noteId={noteId} />
       ) : (
         <>
-          <Form noteId={noteId} />
-          <AddImage noteId={noteId} />
           <Images noteId={noteId} />
+          <Form noteId={noteId} />
+          <SelectedAlbums />
         </>
       )}
     </PrepareData>
@@ -68,7 +70,6 @@ const Header = React.memo(({ noteId, viewMode }) => {
   const isAddingImages = useCat(isAddingImagesCat);
 
   const description = useCat(descriptionCat);
-  const albumDescription = useCat(albumDescriptionCat);
   const selectedAlbumSortKeys = useCat(albumSelectedKeysCat);
 
   const isDisabled = useMemo(
@@ -90,15 +91,16 @@ const Header = React.memo(({ noteId, viewMode }) => {
     });
   }, [description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys, viewMode]);
 
-  const debounceRef = useDebounce(description, handleAutoSave, 2000);
+  const debounce1Ref = useDebounce(description, handleAutoSave, 1000);
+  const debounce2Ref = useDebounce(selectedAlbumSortKeys, handleAutoSave, 1000);
 
   const handleSend = useCallback(() => {
-    clearTimeout(debounceRef.current);
+    clearTimeout(debounce1Ref.current);
+    clearTimeout(debounce2Ref.current);
 
     updateNoteEffect(noteId, {
       encryptedPassword: noteItem?.encryptedPassword,
       note: description || null,
-      albumDescription: albumDescription || null,
       albumIds: selectedAlbumSortKeys,
       goBack: false,
       onSucceeded: () => {
@@ -106,8 +108,8 @@ const Header = React.memo(({ noteId, viewMode }) => {
       },
     });
   }, [
-    albumDescription,
-    debounceRef,
+    debounce1Ref,
+    debounce2Ref,
     description,
     noteId,
     noteItem?.encryptedPassword,
@@ -144,41 +146,6 @@ const Header = React.memo(({ noteId, viewMode }) => {
   );
 });
 
-const AddImage = React.memo(({ noteId }) => {
-  const noteItem = useNote(noteId);
-
-  const [showCamera, setShowCamera] = useState(false);
-
-  const handleShowCamera = useCallback(() => {
-    setShowCamera(true);
-  }, []);
-
-  const handleAddNewImages = useCallback(
-    newImages => {
-      addImagesEffect(noteId, {
-        encryptedPassword: noteItem?.encryptedPassword,
-        images: newImages,
-      });
-      setShowCamera(false);
-    },
-    [noteId, noteItem?.encryptedPassword]
-  );
-
-  const handleCloseCamera = useCallback(() => {
-    setShowCamera(false);
-  }, []);
-
-  return (
-    <>
-      <IconButton size="4" my="4" onClick={handleShowCamera}>
-        <RiImageAddLine />
-      </IconButton>
-
-      {showCamera && <Camera onSelect={handleAddNewImages} onClose={handleCloseCamera} />}
-    </>
-  );
-});
-
 const Form = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
@@ -188,6 +155,14 @@ const Form = React.memo(({ noteId }) => {
     return (noteItem?.albumIds || []).map(a => a.albumId).join('/');
   }, [noteItem?.albumIds]);
 
+  const handleShowCamera = useCallback(() => {
+    showCameraCat.set(true);
+  }, []);
+
+  const handleShowAlbumsSelector = useCallback(() => {
+    showAlbumsSelectorCat.set(true);
+  }, []);
+
   useRerenderDetector('NoteEditForm', {
     noteItem,
     description,
@@ -195,12 +170,36 @@ const Form = React.memo(({ noteId }) => {
   });
 
   return (
-    <ItemsWrapper>
-      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
+    <>
+      <MarkdownEditor
+        autoFocus
+        defaultText={description}
+        onChange={descriptionCat.set}
+        onImage={handleShowCamera}
+        onAlbum={handleShowAlbumsSelector}
+      />
 
-      <AlbumsSelector />
-    </ItemsWrapper>
+      <AddAlbums />
+
+      <AddImageWrapper noteId={noteId} cameraType={cameraTypes.takePhoto} />
+    </>
   );
+});
+
+const AddImageWrapper = React.memo(({ noteId, cameraType }) => {
+  const noteItem = useNote(noteId);
+
+  const handleAddImages = useCallback(
+    newImages => {
+      addImagesEffect(noteId, {
+        encryptedPassword: noteItem?.encryptedPassword,
+        images: newImages,
+      });
+    },
+    [noteId, noteItem?.encryptedPassword]
+  );
+
+  return <AddImage cameraType={cameraType} onAdd={handleAddImages} />;
 });
 
 const Images = React.memo(({ noteId }) => {

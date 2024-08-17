@@ -16,7 +16,7 @@ import { pickedPhotoCat } from './PickPhoto.jsx';
 const Wrapper = styled.div`
   position: fixed;
   bottom: 5rem;
-  left: 50%;
+  left: ${document.documentElement.clientWidth / 2}px;
   transform: translateX(-50%);
 
   display: flex;
