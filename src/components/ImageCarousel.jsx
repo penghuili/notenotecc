@@ -1,6 +1,6 @@
 import './ImageCarousel.css';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { fileTypes } from '../lib/constants';
 import { isMobile } from '../shared/react/device';
@@ -15,6 +15,11 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
   const containerRef = useRef(null);
 
   const totalSlides = isSwipable ? images.length + 2 : images.length; // Including duplicates
+
+  const innerCurrentIndex = useMemo(
+    () => (currentIndex > totalSlides - 1 ? totalSlides - 1 : currentIndex),
+    [currentIndex, totalSlides]
+  );
 
   const handleNextSlide = useCallback(() => {
     if (!isSwipable) {
@@ -160,18 +165,18 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
       return;
     }
 
-    if (currentIndex === 0) {
+    if (innerCurrentIndex === 0) {
       setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(images.length);
       }, 200);
-    } else if (currentIndex === totalSlides - 1) {
+    } else if (innerCurrentIndex === totalSlides - 1) {
       setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(1);
       }, 200);
     }
-  }, [currentIndex, images.length, isSwipable, totalSlides]);
+  }, [innerCurrentIndex, images.length, isSwipable, totalSlides]);
 
   if (!images?.length) {
     return null;
@@ -203,14 +208,18 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
 
   // Calculate the display index for the indicator
   const displayIndex =
-    currentIndex === 0 ? images.length : currentIndex === totalSlides - 1 ? 1 : currentIndex;
+    innerCurrentIndex === 0
+      ? images.length
+      : innerCurrentIndex === totalSlides - 1
+        ? 1
+        : innerCurrentIndex;
 
   return (
     <div className="carousel-container" ref={containerRef}>
       <div
         className="carousel-track"
         style={{
-          transform: `translateX(-${currentIndex * 100}%)`,
+          transform: `translateX(-${innerCurrentIndex * 100}%)`,
           transition: isTransitioning ? 'transform 0.2s ease-in-out' : 'none',
         }}
         onTransitionEnd={() => setIsTransitioning(false)}
@@ -286,6 +295,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
           </div>
         )}
       </div>
+
       {images.length > 1 && (
         <>
           {!isMobile() && (

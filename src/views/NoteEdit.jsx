@@ -76,23 +76,6 @@ const Header = React.memo(({ noteId, viewMode }) => {
     [noteItem?.images?.length, description, isUpdating]
   );
 
-  const handleSend = useCallback(() => {
-    updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      note: description || null,
-      albumDescription: albumDescription || null,
-      albumIds: selectedAlbumSortKeys,
-      goBack: false,
-      onSucceeded: () => {
-        replaceTo(`/notes/${noteId}?view=1`);
-      },
-    });
-  }, [albumDescription, description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
-
-  const handleEdit = useCallback(() => {
-    replaceTo(`/notes/${noteId}`);
-  }, [noteId]);
-
   const handleAutoSave = useCallback(() => {
     if (viewMode) {
       return;
@@ -107,7 +90,33 @@ const Header = React.memo(({ noteId, viewMode }) => {
     });
   }, [description, noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys, viewMode]);
 
-  useDebounce(description, handleAutoSave, 2000);
+  const debounceRef = useDebounce(description, handleAutoSave, 2000);
+
+  const handleSend = useCallback(() => {
+    clearTimeout(debounceRef.current);
+
+    updateNoteEffect(noteId, {
+      encryptedPassword: noteItem?.encryptedPassword,
+      note: description || null,
+      albumDescription: albumDescription || null,
+      albumIds: selectedAlbumSortKeys,
+      goBack: false,
+      onSucceeded: () => {
+        replaceTo(`/notes/${noteId}?view=1`);
+      },
+    });
+  }, [
+    albumDescription,
+    debounceRef,
+    description,
+    noteId,
+    noteItem?.encryptedPassword,
+    selectedAlbumSortKeys,
+  ]);
+
+  const handleEdit = useCallback(() => {
+    replaceTo(`/notes/${noteId}`);
+  }, [noteId]);
 
   const rightElement = useMemo(
     () =>
