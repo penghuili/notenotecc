@@ -54,7 +54,7 @@ export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClos
     <Wrapper>
       <Top justify="between" width="100%">
         {onBack ? (
-          <IconButton variant="soft" onClick={onBack}>
+          <IconButton variant="soft" onClick={onBack} disabled={disabled}>
             <RiArrowLeftLine />
           </IconButton>
         ) : (

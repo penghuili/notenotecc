@@ -7,6 +7,7 @@ import {
   AlbumsSelector,
   useResetAlbumsSelector,
 } from '../components/AlbumsSelector.jsx';
+import { Camera } from '../components/Camera.jsx';
 import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
@@ -25,57 +26,74 @@ import {
   noteCat,
   useNote,
 } from '../store/note/noteCats.js';
-import { createNoteEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import {
+  addImagesEffect,
+  createNoteEffect,
+  fetchNoteEffect,
+  updateNoteEffect,
+} from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
+const showEditorCat = createCat(false);
+const showCameraCat = createCat(false);
 export const showAlbumsSelectorCat = createCat(false);
 
-export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view } }) => {
-  const [innerNoteId, setInnerNoteId] = useState(noteId);
+export const NoteEdit = React.memo(
+  ({ pathParams: { noteId }, queryParams: { cameraType, view } }) => {
+    const [innerNoteId, setInnerNoteId] = useState(noteId);
 
-  const prepareData = useCallback(async () => {
-    if (!noteId) {
-      return;
-    }
+    const prepareData = useCallback(async () => {
+      if (!noteId) {
+        return;
+      }
 
-    await fetchNoteEffect(noteId);
+      await fetchNoteEffect(noteId);
 
-    const note = noteCat.get();
-    if (note) {
-      descriptionCat.set(note.note);
-      albumSelectedKeysCat.set((note?.albumIds || []).map(a => a.albumId));
-    }
-  }, [noteId]);
+      const note = noteCat.get();
+      if (note) {
+        descriptionCat.set(note.note);
+        albumSelectedKeysCat.set((note?.albumIds || []).map(a => a.albumId));
+      }
+    }, [noteId]);
 
-  useScrollToTop();
-  useResetAlbumsSelector();
+    useScrollToTop();
+    useResetAlbumsSelector();
 
-  useEffect(() => {
-    if (!noteId) {
-      createNoteEffect({ note: '', goBack: false, showSuccess: false }).then(() => {
-        setInnerNoteId(noteCat.get()?.sortKey);
-      });
-    }
-  }, [noteId]);
+    useEffect(() => {
+      if (!noteId) {
+        createNoteEffect({ note: '', goBack: false, showSuccess: false }).then(() => {
+          setInnerNoteId(noteCat.get()?.sortKey);
+        });
+      }
+    }, [noteId]);
 
-  useEffect(() => {
-    return () => {
-      descriptionCat.reset();
-    };
-  }, []);
+    useEffect(() => {
+      showCameraCat.set(!!cameraType);
+    }, [cameraType]);
 
-  return (
-    <PrepareData load={prepareData}>
-      <Header viewMode={!!view} />
+    useEffect(() => {
+      showEditorCat.set(!view);
+    }, [view]);
 
-      <NoteView noteId={innerNoteId} />
+    useEffect(() => {
+      return () => {
+        descriptionCat.reset();
+      };
+    }, []);
 
-      <Editor noteId={innerNoteId} viewMode={!!view} />
+    return (
+      <PrepareData load={prepareData}>
+        <Header viewMode={!!view} />
 
-      <AlbumsEditor noteId={innerNoteId} />
-    </PrepareData>
-  );
-});
+        <NoteView noteId={innerNoteId} />
+
+        <Editor noteId={innerNoteId} viewMode={!!view} />
+        <AddImagesEditor noteId={innerNoteId} cameraType={cameraType} />
+        <AlbumsEditor noteId={innerNoteId} />
+      </PrepareData>
+    );
+  }
+);
 
 const Header = React.memo(({ viewMode }) => {
   const isLoading = useCat(isLoadingNoteCat);
@@ -124,6 +142,38 @@ const Editor = React.memo(({ noteId, viewMode }) => {
       <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
     </FullscreenPopup>
   );
+});
+
+const AddImagesEditor = React.memo(({ noteId, cameraType }) => {
+  const showCamera = useCat(showCameraCat);
+  const noteItem = useNote(noteId);
+
+  const handleClose = useCallback(() => {
+    replaceTo(`/notes/${noteId}?view=1`);
+  }, [noteId]);
+
+  const handleAddImages = useCallback(
+    async newImages => {
+      await addImagesEffect(noteId, {
+        encryptedPassword: noteItem?.encryptedPassword,
+        images: newImages,
+      });
+      replaceTo(`/notes/${noteId}?view=1`);
+    },
+    [noteId, noteItem?.encryptedPassword]
+  );
+
+  useEffect(() => {
+    return () => {
+      showCameraCat.reset();
+    };
+  }, []);
+
+  if (!showCamera) {
+    return null;
+  }
+
+  return <Camera type={cameraType} onSelect={handleAddImages} onClose={handleClose} />;
 });
 
 const AlbumsEditor = React.memo(({ noteId }) => {
