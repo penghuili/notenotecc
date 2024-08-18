@@ -49,7 +49,6 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
       <NoteView />
 
       <Editor />
-      <AddAlbums />
       <AddImageWrapper cameraType={cameraType} />
     </PrepareData>
   );
@@ -62,12 +61,14 @@ const Header = React.memo(() => {
   const isCreating = useCat(isCreatingNoteCat);
   const images = useCat(imagesCat);
   const description = useCat(descriptionCat);
+  const albumDescription = useCat(albumDescriptionCat);
   const selectedAlbumSortKeys = useCat(albumSelectedKeysCat);
 
   const handleSend = useCallback(async () => {
     await createNoteEffect({
       note: description,
       images,
+      albumDescription,
       albumIds: selectedAlbumSortKeys,
       goBack: false,
       onSucceeded: () => {
@@ -78,7 +79,7 @@ const Header = React.memo(() => {
         navigateEffect('/');
       },
     });
-  }, [description, images, selectedAlbumSortKeys]);
+  }, [albumDescription, description, images, selectedAlbumSortKeys]);
 
   const rightElement = useMemo(
     () => (
@@ -140,7 +141,7 @@ const NoteView = React.memo(() => {
         </Button>
       )}
 
-      <SelectedAlbums />
+      <AlbumsSelector />
     </Flex>
   );
 });
