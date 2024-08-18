@@ -10,7 +10,7 @@ const StyledLink = styled(Link)`
   }
 `;
 
-export function LinkButton({ children, onClick, disabled }) {
+export function LinkButton({ color, children, onClick, disabled }) {
   return (
     <StyledLink
       disabled={disabled}
@@ -20,7 +20,7 @@ export function LinkButton({ children, onClick, disabled }) {
         }
         onClick();
       }}
-      color={disabled ? 'gray' : 'accent'}
+      color={disabled ? 'gray' : color || 'accent'}
     >
       {children}
     </StyledLink>

@@ -51,7 +51,7 @@ const Header = React.memo(() => {
         <DropdownMenu.Content variant="soft">
           <DropdownMenu.Item onClick={handleNavigateToReorder}>
             <RiSortDesc />
-            Reorder albums
+            Reorder tags
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>

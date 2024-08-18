@@ -1,7 +1,10 @@
+import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@remixicon/react';
 import React from 'react';
 import { useCat } from 'usecat';
 
+import { themeCssColor } from './AppWrapper.jsx';
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
+import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
@@ -23,15 +26,27 @@ export function Security() {
       />
 
       <ItemsWrapper align="start">
-        <RouteLink to="/security/2fa">2-Factor Authentication</RouteLink>
+        <HorizontalCenter gap="1">
+          <RiLockStarLine color={themeCssColor} />
+          <RouteLink to="/security/2fa">2-Factor Authentication</RouteLink>
+        </HorizontalCenter>
 
-        <RouteLink to="/security/email">Change email</RouteLink>
+        <HorizontalCenter gap="1">
+          <RiMailLine color={themeCssColor} />
+          <RouteLink to="/security/email">Change email</RouteLink>
+        </HorizontalCenter>
 
-        <RouteLink to="/security/password">Change password</RouteLink>
+        <HorizontalCenter gap="1">
+          <RiLockPasswordLine color={themeCssColor} />
+          <RouteLink to="/security/password">Change password</RouteLink>
+        </HorizontalCenter>
 
         <LogoutLink />
 
-        <LinkButton onClick={logOutFromAllDevicesEffect}>Log out from all devices</LinkButton>
+        <HorizontalCenter gap="1">
+          <RiDeviceLine color={themeCssColor} />
+          <LinkButton onClick={logOutFromAllDevicesEffect}>Log out from all devices</LinkButton>
+        </HorizontalCenter>
 
         <DeleteAccountLink />
       </ItemsWrapper>
