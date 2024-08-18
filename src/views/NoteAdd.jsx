@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Text } from '@radix-ui/themes';
+import { Box, Button, Flex } from '@radix-ui/themes';
+import { RiImageAddLine, RiStickyNoteLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
@@ -11,7 +12,8 @@ import {
 import { Camera } from '../components/Camera.jsx';
 import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
-import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
+import { Markdown, MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
+import { BadgeStyled } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
@@ -22,19 +24,33 @@ import { createAlbum } from '../store/album/albumNetwork.js';
 import { isCreatingNoteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';
 
+const showEditorCat = createCat(false);
+const showCameraCat = createCat(false);
+export const showAlbumsSelectorCat = createCat(false);
+
 export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
+  const load = useCallback(async () => {
+    if (!cameraType) {
+      showEditorCat.set(true);
+    } else {
+      showCameraCat.set(
+        [cameraTypes.takePhoto, cameraTypes.takeVideo, cameraTypes.pickPhoto].includes(cameraType)
+      );
+    }
+  }, [cameraType]);
+
   useScrollToTop();
   useResetAlbumsSelector();
 
   return (
-    <PrepareData>
+    <PrepareData load={load}>
       <Header />
 
-      <Images />
+      <NoteView />
 
-      <Form cameraType={cameraType} />
-
-      <SelectedAlbums />
+      <Editor />
+      <AddAlbums />
+      <AddImageWrapper cameraType={cameraType} />
     </PrepareData>
   );
 });
@@ -71,7 +87,7 @@ const Header = React.memo(() => {
         onClick={handleSend}
         mr="2"
       >
-        Send
+        Create
       </Button>
     ),
     [description, handleSend, images?.length, isCreating]
@@ -80,8 +96,9 @@ const Header = React.memo(() => {
   return <PageHeader title="Add note" isLoading={isCreating} fixed hasBack right={rightElement} />;
 });
 
-const Images = React.memo(() => {
+const NoteView = React.memo(() => {
   const images = useCat(imagesCat);
+  const decription = useCat(descriptionCat);
 
   const handleDeleteLocalImage = useCallback(
     image => {
@@ -90,59 +107,60 @@ const Images = React.memo(() => {
     [images]
   );
 
-  if (!images?.length) {
-    return null;
-  }
-
-  return (
-    <Box mb="2">
-      <ImageCarousel images={images} onDeleteLocal={handleDeleteLocalImage} />
-    </Box>
-  );
-});
-
-export const showCameraCat = createCat(false);
-export const showAlbumsSelectorCat = createCat(false);
-
-const Form = React.memo(({ cameraType }) => {
-  const description = useCat(descriptionCat);
-
   const handleShowCamera = useCallback(() => {
     showCameraCat.set(true);
   }, []);
 
-  const handleShowAlbumsSelector = useCallback(() => {
-    showAlbumsSelectorCat.set(true);
-  }, []);
-
-  useEffect(() => {
-    showCameraCat.set(
-      [cameraTypes.takePhoto, cameraTypes.takeVideo, cameraTypes.pickPhoto].includes(cameraType)
-    );
-  }, [cameraType]);
-
-  useEffect(() => {
-    return () => {
-      descriptionCat.reset();
-      imagesCat.reset();
-      showCameraCat.reset();
-      showAlbumsSelectorCat.reset();
-    };
+  const handleShowEditor = useCallback(() => {
+    showEditorCat.set(true);
   }, []);
 
   return (
-    <>
-      <MarkdownEditor
-        autoFocus={!cameraType}
-        defaultText={description}
-        onChange={descriptionCat.set}
-        onImage={handleShowCamera}
-        onAlbum={handleShowAlbumsSelector}
-      />
+    <Flex mb="2" direction="column" align="start">
+      {images?.length ? (
+        <>
+          <Button onClick={handleShowCamera} variant="soft" size="1" mb="2">
+            <RiImageAddLine /> Add more images
+          </Button>
+          <ImageCarousel images={images} onDeleteLocal={handleDeleteLocalImage} />
+        </>
+      ) : (
+        <Button onClick={handleShowCamera} variant="soft">
+          <RiImageAddLine /> Add images
+        </Button>
+      )}
 
-      <AddAlbums />
-      <AddImageWrapper cameraType={cameraType} />
-    </>
+      {decription ? (
+        <Box onClick={handleShowEditor} my="4">
+          <Markdown markdown={decription} />
+        </Box>
+      ) : (
+        <Button onClick={handleShowEditor} variant="soft" my="4">
+          <RiStickyNoteLine /> Add note
+        </Button>
+      )}
+
+      <SelectedAlbums />
+    </Flex>
+  );
+});
+
+const Editor = React.memo(() => {
+  const showEditor = useCat(showEditorCat);
+  const description = useCat(descriptionCat);
+
+  const handleClose = useCallback(() => {
+    showEditorCat.set(false);
+  }, []);
+
+  if (!showEditor) {
+    return null;
+  }
+
+  return (
+    <FullscreenPopup onConfirm={handleClose} onClose={handleClose}>
+      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
+    </FullscreenPopup>
   );
 });
 
@@ -150,6 +168,8 @@ const AddImageWrapper = React.memo(({ cameraType }) => {
   const handleAddImages = useCallback(newImages => {
     imagesCat.set([...imagesCat.get(), ...newImages]);
   }, []);
+
+  useEffect(() => {}, [cameraType]);
 
   return <AddImage cameraType={cameraType} onAdd={handleAddImages} />;
 });
@@ -182,7 +202,7 @@ export const AddImage = React.memo(({ cameraType, onAdd }) => {
   return <Camera type={cameraType} onSelect={handleAddImages} onClose={handleClose} />;
 });
 
-export const AddAlbums = React.memo(() => {
+export const AddAlbums = React.memo(({ onConfirm, disabled }) => {
   const showAlbumsSelector = useCat(showAlbumsSelectorCat);
   const albumDescription = useCat(albumDescriptionCat);
   const isAddingAlbum = useCat(isCreatingAlbumCat);
@@ -201,8 +221,12 @@ export const AddAlbums = React.memo(() => {
       isCreatingAlbumCat.set(false);
     }
 
+    if (onConfirm) {
+      await onConfirm();
+    }
+
     showAlbumsSelectorCat.set(false);
-  }, [albumDescription]);
+  }, [albumDescription, onConfirm]);
 
   const handleClose = useCallback(() => {
     showAlbumsSelectorCat.set(false);
@@ -219,7 +243,11 @@ export const AddAlbums = React.memo(() => {
   }
 
   return (
-    <FullscreenPopup onConfirm={handleConfirm} onClose={handleClose} disabled={isAddingAlbum}>
+    <FullscreenPopup
+      onConfirm={handleConfirm}
+      onClose={handleClose}
+      disabled={disabled || isAddingAlbum}
+    >
       <AlbumsSelector />
     </FullscreenPopup>
   );
@@ -233,17 +261,20 @@ export const SelectedAlbums = React.memo(() => {
     return selectedKeys.map(key => albumsObject[key]).filter(Boolean);
   }, [albumsObject, selectedKeys]);
 
-  if (!selectedAlbums?.length) {
-    return null;
-  }
+  const handleShowSelector = useCallback(() => {
+    showAlbumsSelectorCat.set(true);
+  }, []);
 
   return (
-    <Flex wrap="wrap" mt="2">
+    <Flex wrap="wrap">
       {selectedAlbums.map(album => (
-        <Text key={album.sortKey} mr="2">
+        <BadgeStyled key={album.sortKey} onClick={handleShowSelector} mr="2">
           #{album.title}
-        </Text>
+        </BadgeStyled>
       ))}
+      <BadgeStyled onClick={handleShowSelector} mr="2" color="orange">
+        + Add album
+      </BadgeStyled>
     </Flex>
   );
 });

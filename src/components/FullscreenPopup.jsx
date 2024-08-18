@@ -19,9 +19,12 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
 `;
 const Top = styled(Flex)`
   max-width: 600px;
+  padding: 0.5rem 0;
 `;
 
 export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, children }) => {
@@ -35,7 +38,7 @@ export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, child
 
   return (
     <Wrapper>
-      <Top justify="between" width="100%" p="2">
+      <Top justify="between" width="100%">
         <IconButton variant="soft" onClick={onClose}>
           <RiCloseLine />
         </IconButton>

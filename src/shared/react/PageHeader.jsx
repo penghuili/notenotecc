@@ -10,6 +10,8 @@ import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect, navigateEffect } from './store/sharedEffects';
 
+export const headerHeight = 64;
+
 const Wrapper = styled(Flex)`
   width: ${props => (props.fixed ? `${props.width}px` : '100%')};
   height: 56px;
@@ -29,7 +31,7 @@ const Content = styled(Flex)`
   padding: 0 0.5rem;
 `;
 const Placeholder = styled.div`
-  height: 64px;
+  height: ${headerHeight}px;
 `;
 
 export function PageHeader({ fixed, title, right, isLoading, hasBack }) {

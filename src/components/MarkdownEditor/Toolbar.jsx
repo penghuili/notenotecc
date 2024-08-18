@@ -122,7 +122,7 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange, onImag
   }, [activeElements.BLOCKQUOTE, editorRef, onChange]);
 
   return (
-    <Wrapper position="sticky" bottom="0">
+    <Wrapper>
       <Tooltip content="Add image / video">
         <IconButton variant="soft" onClick={onImage} radius="none" color="grass">
           <RiImageAddLine />

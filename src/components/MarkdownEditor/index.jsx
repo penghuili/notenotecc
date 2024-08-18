@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
+import { hasPageMinHeightCat } from '../../shared/react/AppWrapper.jsx';
 import {
   convertToBlockquote,
   convertToHeader,
@@ -58,7 +59,12 @@ export const MarkdownEditor = React.memo(
     }, [handleChange]);
 
     useEffect(() => {
+      hasPageMinHeightCat.set(false);
       editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
+
+      return () => {
+        hasPageMinHeightCat.set(true);
+      };
       // eslint-disable-next-line react-compiler/react-compiler
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -72,17 +78,17 @@ export const MarkdownEditor = React.memo(
 
     return (
       <Wrapper>
-        <ContentWrapper>
-          <Editor
-            ref={editorRef}
-            contentEditable
-            onInput={handleInput}
-            onMouseUp={handleCheckActiveElements}
-            onTouchEnd={handleCheckActiveElements}
-            onKeyUp={handleCheckActiveElements}
-            data-placeholder="Start typing here..."
-            isEmpty={isEmpty}
-          />
+        <Editor
+          ref={editorRef}
+          contentEditable
+          onInput={handleInput}
+          onMouseUp={handleCheckActiveElements}
+          onTouchEnd={handleCheckActiveElements}
+          onKeyUp={handleCheckActiveElements}
+          data-placeholder="Start typing here..."
+          isEmpty={isEmpty}
+        />
+        <div>
           <Toolbar
             editorRef={editorRef}
             activeElements={activeElements}
@@ -90,16 +96,15 @@ export const MarkdownEditor = React.memo(
             onImage={onImage}
             onAlbum={onAlbum}
           />
-        </ContentWrapper>
-        <HelperText />
+        </div>
       </Wrapper>
     );
   }
 );
 
-export const Markdown = React.memo(({ markdown }) => {
+export const Markdown = React.memo(({ markdown, onClick }) => {
   const html = parseMarkdown(markdown);
-  return <Editor dangerouslySetInnerHTML={{ __html: html }} />;
+  return <Editor dangerouslySetInnerHTML={{ __html: html }} onClick={onClick} />;
 });
 
 const getActiveElements = wrapperElement => {
@@ -318,10 +323,10 @@ const addEmptyDivAfter = element => {
 const Wrapper = styled.div`
   width: 100%;
   position: relative;
-`;
-const ContentWrapper = styled.div`
-  width: 100%;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 48px);
 `;
 
 const Editor = styled.div`
@@ -330,7 +335,9 @@ const Editor = styled.div`
 
   &[contenteditable='true'] {
     padding: 10px 0;
-    min-height: 130px;
+    height: calc(100% - 32px);
+    overflow-y: auto;
+    scrollbar-width: none;
 
     &::before {
       content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
@@ -565,7 +572,7 @@ Start with > you get a blockquote;
 Start with - you get an unordered list;
 Start with 1. you get an ordered list.`;
 
-const HelperText = React.memo(() => {
+export const HelperText = React.memo(() => {
   const [open, setOpen] = useState(false);
 
   const handleToggle = useCallback(() => {
