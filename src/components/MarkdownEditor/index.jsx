@@ -371,7 +371,7 @@ const Editor = styled.div`
   ul,
   ol {
     margin: 0.5rem 0;
-    padding: 0 0 0 2rem;
+    padding: 0 0 0 1.95rem;
     font-size: var(--font-size-3);
   }
   h1,
@@ -390,7 +390,7 @@ const Editor = styled.div`
   }
   blockquote {
     box-sizing: border-box;
-    border-left: max(var(--space-1), 0.25em) solid var(--accent-a6);
+    border-left: 0.25rem solid var(--accent-a6);
     margin: 0.5rem 0 0.5rem 1rem;
     padding: 0 0 0 0.75rem;
     p {

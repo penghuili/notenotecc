@@ -57,9 +57,7 @@ const Header = React.memo(({ albumId }) => {
     [handleSend, isUpdating, hasTitle]
   );
 
-  return (
-    <PageHeader title="Edit album" isLoading={isUpdating} fixed hasBack right={rightElement} />
-  );
+  return <PageHeader title="Edit tag" isLoading={isUpdating} fixed hasBack right={rightElement} />;
 });
 
 const Form = React.memo(() => {

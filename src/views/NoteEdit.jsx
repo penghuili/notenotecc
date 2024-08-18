@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, useResetAlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -23,7 +23,7 @@ import { AddAlbums, showAlbumsSelectorCat } from './NoteAdd.jsx';
 
 const descriptionCat = createCat('');
 
-export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view, albums } }) => {
+export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view } }) => {
   const prepareData = useCallback(async () => {
     await fetchNoteEffect(noteId);
 
@@ -45,7 +45,7 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { vie
 
       <Editor noteId={noteId} viewMode={!!view} />
 
-      <AlbumsEditor noteId={noteId} viewMode={!!view} showAlbums={!!albums} />
+      <AlbumsEditor noteId={noteId} />
     </PrepareData>
   );
 });
@@ -112,28 +112,24 @@ const Editor = React.memo(({ noteId, viewMode }) => {
   );
 });
 
-const AlbumsEditor = React.memo(({ noteId, viewMode, showAlbums }) => {
+const AlbumsEditor = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
   const isUpdating = useCat(isUpdatingNoteCat);
 
-  const selectedAlbumSortKeys = useCat(albumSelectedKeysCat);
-
-  const handleSave = useCallback(() => {
-    updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      albumIds: selectedAlbumSortKeys,
-      goBack: false,
-    });
-  }, [noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
+  const handleSave = useCallback(
+    newAlbumKeys => {
+      updateNoteEffect(noteId, {
+        encryptedPassword: noteItem?.encryptedPassword,
+        albumIds: newAlbumKeys,
+        goBack: false,
+      });
+    },
+    [noteId, noteItem?.encryptedPassword]
+  );
 
   const handleClose = useCallback(() => {
-    const query = viewMode ? '?view=1' : '';
-    replaceTo(`/notes/${noteId}${query}`);
-  }, [noteId, viewMode]);
-
-  useEffect(() => {
-    showAlbumsSelectorCat.set(showAlbums);
-  }, [showAlbums]);
+    showAlbumsSelectorCat.set(false);
+  }, []);
 
   return <AddAlbums onConfirm={handleSave} onClose={handleClose} disabled={isUpdating} />;
 });

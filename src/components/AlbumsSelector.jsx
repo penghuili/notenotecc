@@ -1,6 +1,5 @@
 import { CheckboxGroup, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect } from 'react';
-import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
@@ -29,8 +28,6 @@ export const AlbumsSelector = React.memo(() => {
   return (
     <>
       <Flex direction="column" gap="2">
-        <Title weight="bold">Albums</Title>
-
         <AlbumItems />
 
         <AlbumDescription />
@@ -38,10 +35,6 @@ export const AlbumsSelector = React.memo(() => {
     </>
   );
 });
-
-const Title = styled(Text)`
-  user-select: none;
-`;
 
 const AlbumDescription = React.memo(() => {
   const description = useCat(albumDescriptionCat);

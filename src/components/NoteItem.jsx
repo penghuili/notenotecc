@@ -28,7 +28,12 @@ export const NoteItem = React.memo(({ note, albums, showFullText, onEdit, onAlbu
           {dateTime}
         </Text>
 
-        <NoteActions note={note} onEdit={onEdit} goBackAfterDelete={showFullText} />
+        <NoteActions
+          note={note}
+          onEdit={onEdit}
+          goBackAfterDelete={showFullText}
+          onUpdateAlbums={onAlbum}
+        />
       </Flex>
       {!!note.images?.length && (
         <ImageCarousel
@@ -69,7 +74,7 @@ export const NoteItem = React.memo(({ note, albums, showFullText, onEdit, onAlbu
             mr="2"
             color="orange"
           >
-            + Add album
+            + Add tag
           </BadgeStyled>
         )}
       </Flex>

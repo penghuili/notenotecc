@@ -3,7 +3,6 @@ import { RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { useWindowHeight } from '../lib/useWindowHeight';
 import { hasPageMinHeightCat } from '../shared/react/AppWrapper.jsx';
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 
@@ -16,7 +15,7 @@ const Wrapper = styled.div`
 
   width: 100vw;
   max-width: 600px;
-  height: ${p => p.height}px;
+  height: 100vh;
   background-color: white;
 
   display: flex;
@@ -41,8 +40,6 @@ const TopPlaceholder = styled.div`
 `;
 
 export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, children }) => {
-  const windowHeight = useWindowHeight();
-
   useEffect(() => {
     hasPageMinHeightCat.set(false);
     disableBodyScroll();
@@ -54,7 +51,7 @@ export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, child
   }, []);
 
   return (
-    <Wrapper height={windowHeight}>
+    <Wrapper>
       <Top justify="between" width="100%">
         <IconButton variant="soft" onClick={onClose}>
           <RiCloseLine />

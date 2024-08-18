@@ -20,9 +20,10 @@ import {
   encryptExistingNoteEffect,
   setNoteEffect,
 } from '../store/note/noteEffects';
+import { showAlbumsSelectorCat } from '../views/NoteAdd.jsx';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
+export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpdateAlbums }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showCamera, setShowCamera] = useState(false);
@@ -69,8 +70,13 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
   }, []);
 
   const handleUpdateAlbums = useCallback(() => {
-    navigateEffect(`/notes/${note.sortKey}?albums=1&view=1`);
-  }, [note.sortKey]);
+    if (onUpdateAlbums) {
+      onUpdateAlbums();
+    } else {
+      showAlbumsSelectorCat.set(true);
+      navigateEffect(`/notes/${note.sortKey}?view=1`);
+    }
+  }, [note.sortKey, onUpdateAlbums]);
 
   if (!note) {
     return null;
@@ -104,7 +110,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
         <DropdownMenu.Content variant="soft">
           <DropdownMenu.Item onClick={handleUpdateAlbums}>
             <RiHashtag />
-            Update albums
+            Update tags
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator />

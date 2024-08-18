@@ -35,7 +35,7 @@ const Header = React.memo(() => {
 
   return (
     <PageHeader
-      title="Album details"
+      title="Tag details"
       isLoading={isLoading || isAddingImages}
       fixed
       hasBack

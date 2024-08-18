@@ -126,7 +126,7 @@ const HeaderMenu = React.memo(() => {
 
         <DropdownMenu.Item onClick={handleNavigateToAlbums}>
           <RiHashtag />
-          Albums
+          Tags
         </DropdownMenu.Item>
 
         {isAdmin && (

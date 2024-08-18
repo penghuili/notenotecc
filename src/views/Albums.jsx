@@ -61,7 +61,7 @@ const Header = React.memo(() => {
 
   return (
     <PageHeader
-      title="Albums"
+      title="Tags"
       isLoading={isLoading || isDeleting}
       fixed
       hasBack
@@ -91,5 +91,5 @@ const NoAlbumNotesLink = React.memo(() => {
 
   const noalbumSortKey = `album_noalbum_${account?.id}`;
 
-  return <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without album</RouteLink>;
+  return <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without tags</RouteLink>;
 });

@@ -222,7 +222,7 @@ export const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
     }
 
     if (onConfirm) {
-      await onConfirm();
+      await onConfirm(albumSelectedKeysCat.get());
     }
 
     showAlbumsSelectorCat.set(false);
