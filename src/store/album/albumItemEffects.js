@@ -3,7 +3,7 @@ import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 
 export async function fetchAlbumItemsEffect(albumId, { startKey }) {
-  if (!startKey) {
+  if (!startKey && albumItemsCat.get()?.albumId !== albumId) {
     const cachedAlbumItems = LocalStorage.get(albumId);
     if (cachedAlbumItems?.length) {
       albumItemsCat.set({

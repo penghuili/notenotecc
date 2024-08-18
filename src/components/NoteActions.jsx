@@ -13,14 +13,13 @@ import { useCat } from 'usecat';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { navigateEffect } from '../shared/react/store/sharedEffects';
-import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
+import { isDeletingNoteCat, isUpdatingNoteCat, noteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
   deleteNoteEffect,
   encryptExistingNoteEffect,
-  setNoteEffect,
 } from '../store/note/noteEffects';
-import { showAlbumsSelectorCat } from '../views/NoteAdd.jsx';
+import { showAlbumsSelectorCat } from '../views/NoteEdit.jsx';
 import { Camera } from './Camera.jsx';
 
 export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpdateAlbums }) => {
@@ -39,7 +38,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
   const handleEidt = useCallback(
     e => {
       e.stopPropagation();
-      setNoteEffect(note);
+      noteCat.set(note);
       if (onEdit) {
         onEdit();
       } else {

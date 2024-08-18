@@ -1,5 +1,5 @@
 import { Flex, IconButton } from '@radix-ui/themes';
-import { RiCheckLine, RiCloseLine } from '@remixicon/react';
+import { RiArrowLeftLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -39,7 +39,7 @@ const TopPlaceholder = styled.div`
   height: 48px;
 `;
 
-export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, children }) => {
+export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClose, children }) => {
   useEffect(() => {
     hasPageMinHeightCat.set(false);
     disableBodyScroll();
@@ -53,13 +53,21 @@ export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, child
   return (
     <Wrapper>
       <Top justify="between" width="100%">
-        <IconButton variant="soft" onClick={onClose}>
-          <RiCloseLine />
-        </IconButton>
+        {onBack ? (
+          <IconButton variant="soft" onClick={onBack}>
+            <RiArrowLeftLine />
+          </IconButton>
+        ) : (
+          <>
+            <IconButton variant="soft" onClick={onClose}>
+              <RiCloseLine />
+            </IconButton>
 
-        <IconButton onClick={onConfirm} disabled={disabled}>
-          <RiCheckLine />
-        </IconButton>
+            <IconButton onClick={onConfirm} disabled={disabled}>
+              <RiCheckLine />
+            </IconButton>
+          </>
+        )}
       </Top>
       <TopPlaceholder />
 

@@ -119,10 +119,6 @@ export async function fetchNoteEffect(noteId) {
   }
 }
 
-export function setNoteEffect(note) {
-  noteCat.set(note);
-}
-
 export async function createNoteEffect({
   note,
   images,
@@ -130,9 +126,12 @@ export async function createNoteEffect({
   albumDescription,
   onSucceeded,
   goBack,
+  showSuccess = true,
 }) {
   isCreatingNoteCat.set(true);
-  setToastEffect(encryptingMessage, toastTypes.info);
+  if (showSuccess) {
+    setToastEffect(encryptingMessage, toastTypes.info);
+  }
 
   const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
 
@@ -142,10 +141,11 @@ export async function createNoteEffect({
     albumIds: updatedAlbumIds,
   });
   if (data) {
-    const currentNotes = notesCat.get();
-    notesCat.set({ ...currentNotes, items: [data, ...(currentNotes.items || [])] });
+    updateStates(data, 'create');
 
-    setToastEffect('Saved!');
+    if (showSuccess) {
+      setToastEffect('Saved!');
+    }
 
     if (onSucceeded) {
       onSucceeded(data);
@@ -284,30 +284,45 @@ function updateStates(newNote, type) {
   const fn =
     type === 'update'
       ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? item : i))
-      : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
+      : type === 'create'
+        ? (items, item) => [item, ...items]
+        : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
 
+  // home
   const currentNotes = notesCat.get();
   notesCat.set({
     ...currentNotes,
     items: fn(currentNotes.items || [], newNote),
   });
 
-  const currentNote = noteCat.get();
-  if (type === 'update' && currentNote?.sortKey === newNote.sortKey) {
+  // single
+  if (type === 'update' || type === 'create') {
+    console.log('update single note');
     noteCat.set(newNote);
   }
 
+  // album items
   const albumItems = albumItemsCat.get();
-  if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
+  if (type === 'create' && newNote.albumIds?.find(i => i.albumId === albumItems.albumId)) {
     albumItemsCat.set({
       ...albumItems,
-      items: fn(albumItems.items, newNote),
+      items: [newNote, ...albumItems.items],
+    });
+  } else if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
+    const newItems =
+      type === 'update' && newNote.albumIds?.find(i => i.albumId === albumItems.albumId)
+        ? albumItems.items.map(i => (i.sortKey === newNote.sortKey ? newNote : i))
+        : albumItems.items.filter(i => i.sortKey !== newNote.sortKey);
+    albumItemsCat.set({
+      ...albumItems,
+      items: newItems,
     });
   }
 
+  // on this day
   const currentOnThisDayNotes = onThisDayNotesCat.get();
   const date = formatDate(newNote.createdAt);
-  if (currentOnThisDayNotes?.[date]?.find(i => i.sortKey === newNote.sortKey)) {
+  if (currentOnThisDayNotes?.[date]) {
     onThisDayNotesCat.set({
       ...currentOnThisDayNotes,
       [date]: fn(currentOnThisDayNotes[date] || [], newNote),

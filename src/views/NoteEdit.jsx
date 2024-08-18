@@ -1,7 +1,12 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { albumSelectedKeysCat, useResetAlbumsSelector } from '../components/AlbumsSelector.jsx';
+import {
+  albumDescriptionCat,
+  albumSelectedKeysCat,
+  AlbumsSelector,
+  useResetAlbumsSelector,
+} from '../components/AlbumsSelector.jsx';
 import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
@@ -11,6 +16,8 @@ import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
+import { createAlbum } from '../store/album/albumNetwork.js';
 import {
   isAddingImagesCat,
   isLoadingNoteCat,
@@ -18,13 +25,19 @@ import {
   noteCat,
   useNote,
 } from '../store/note/noteCats.js';
-import { fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
-import { AddAlbums, showAlbumsSelectorCat } from './NoteAdd.jsx';
+import { createNoteEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
+export const showAlbumsSelectorCat = createCat(false);
 
 export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view } }) => {
+  const [innerNoteId, setInnerNoteId] = useState(noteId);
+
   const prepareData = useCallback(async () => {
+    if (!noteId) {
+      return;
+    }
+
     await fetchNoteEffect(noteId);
 
     const note = noteCat.get();
@@ -37,15 +50,29 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { vie
   useScrollToTop();
   useResetAlbumsSelector();
 
+  useEffect(() => {
+    if (!noteId) {
+      createNoteEffect({ note: '', goBack: false, showSuccess: false }).then(() => {
+        setInnerNoteId(noteCat.get()?.sortKey);
+      });
+    }
+  }, [noteId]);
+
+  useEffect(() => {
+    return () => {
+      descriptionCat.reset();
+    };
+  }, []);
+
   return (
     <PrepareData load={prepareData}>
       <Header viewMode={!!view} />
 
-      <NoteView noteId={noteId} />
+      <NoteView noteId={innerNoteId} />
 
-      <Editor noteId={noteId} viewMode={!!view} />
+      <Editor noteId={innerNoteId} viewMode={!!view} />
 
-      <AlbumsEditor noteId={noteId} />
+      <AlbumsEditor noteId={innerNoteId} />
     </PrepareData>
   );
 });
@@ -82,20 +109,7 @@ const Editor = React.memo(({ noteId, viewMode }) => {
     });
   }, [description, noteId, noteItem?.encryptedPassword]);
 
-  const debounceRef = useDebounce(description, handleAutoSave, 1000);
-
-  const handleSend = useCallback(() => {
-    clearTimeout(debounceRef.current);
-
-    updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      note: description || null,
-      goBack: false,
-      onSucceeded: () => {
-        replaceTo(`/notes/${noteId}?view=1`);
-      },
-    });
-  }, [debounceRef, description, noteId, noteItem?.encryptedPassword]);
+  useDebounce(description, handleAutoSave, 500);
 
   const handleClose = useCallback(() => {
     replaceTo(`/notes/${noteId}?view=1`);
@@ -106,7 +120,7 @@ const Editor = React.memo(({ noteId, viewMode }) => {
   }
 
   return (
-    <FullscreenPopup onConfirm={handleSend} onClose={handleClose} disabled={isUpdating}>
+    <FullscreenPopup onBack={handleClose} disabled={isUpdating}>
       <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
     </FullscreenPopup>
   );
@@ -159,5 +173,60 @@ const NoteView = React.memo(({ noteId }) => {
       showFullText
       onAlbum={handleShowAlbumsSelector}
     />
+  );
+});
+
+const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
+  const showAlbumsSelector = useCat(showAlbumsSelectorCat);
+  const albumDescription = useCat(albumDescriptionCat);
+  const isAddingAlbum = useCat(isCreatingAlbumCat);
+
+  const handleConfirm = useCallback(async () => {
+    if (albumDescription) {
+      isCreatingAlbumCat.set(true);
+
+      const { data } = await createAlbum({ title: albumDescription });
+      if (data) {
+        albumsCat.set([...albumsCat.get(), data]);
+        albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
+        albumDescriptionCat.set('');
+      }
+
+      isCreatingAlbumCat.set(false);
+    }
+
+    if (onConfirm) {
+      await onConfirm(albumSelectedKeysCat.get());
+    }
+
+    showAlbumsSelectorCat.set(false);
+  }, [albumDescription, onConfirm]);
+
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose();
+    } else {
+      showAlbumsSelectorCat.set(false);
+    }
+  }, [onClose]);
+
+  useEffect(() => {
+    return () => {
+      showAlbumsSelectorCat.reset();
+    };
+  }, []);
+
+  if (!showAlbumsSelector) {
+    return null;
+  }
+
+  return (
+    <FullscreenPopup
+      onConfirm={handleConfirm}
+      onClose={handleClose}
+      disabled={disabled || isAddingAlbum}
+    >
+      <AlbumsSelector />
+    </FullscreenPopup>
   );
 });

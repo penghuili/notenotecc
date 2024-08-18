@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { navigateEffect } from '../shared/react/store/sharedEffects.js';
-import { AddNotePlaceholder } from '../views/NoteAdd.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MarkdownEditor/index.jsx';
 import { NoteActions } from './NoteActions.jsx';
@@ -51,39 +50,38 @@ export const NoteItem = React.memo(({ note, albums, showFullText, onEdit, onAlbu
         !!onAlbum && <AddNotePlaceholder onClick={onEdit} />
       )}
 
-      {!!albums?.length ||
-        (!!onAlbum && (
-          <Flex wrap="wrap" my="2">
-            {albums?.map(album => (
-              <BadgeStyled
-                key={album.sortKey}
-                onClick={() => {
-                  if (onAlbum) {
-                    onAlbum(album);
-                  } else {
-                    navigateEffect(`/albums/${album.sortKey}`);
-                  }
-                }}
-                mr="2"
-              >
-                #{album.title}
-              </BadgeStyled>
-            ))}
-            {!!onAlbum && (
-              <BadgeStyled
-                onClick={() => {
-                  if (onAlbum) {
-                    onAlbum();
-                  }
-                }}
-                mr="2"
-                color="orange"
-              >
-                + Add tag
-              </BadgeStyled>
-            )}
-          </Flex>
-        ))}
+      {(!!albums?.length || !!onAlbum) && (
+        <Flex wrap="wrap" my="2">
+          {albums?.map(album => (
+            <BadgeStyled
+              key={album.sortKey}
+              onClick={() => {
+                if (onAlbum) {
+                  onAlbum(album);
+                } else {
+                  navigateEffect(`/albums/${album.sortKey}`);
+                }
+              }}
+              mr="2"
+            >
+              #{album.title}
+            </BadgeStyled>
+          ))}
+          {!!onAlbum && (
+            <BadgeStyled
+              onClick={() => {
+                if (onAlbum) {
+                  onAlbum();
+                }
+              }}
+              mr="2"
+              color="orange"
+            >
+              + Add tag
+            </BadgeStyled>
+          )}
+        </Flex>
+      )}
 
       <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
         {ago}
@@ -93,5 +91,16 @@ export const NoteItem = React.memo(({ note, albums, showFullText, onEdit, onAlbu
 });
 
 export const BadgeStyled = styled(Badge)`
+  cursor: pointer;
+`;
+
+const AddNotePlaceholder = React.memo(({ onClick }) => {
+  return <Placeholder onClick={onClick}>Add note ...</Placeholder>;
+});
+const Placeholder = styled.div`
+  width: 100%;
+  height: 3rem;
+  padding-top: 0.5rem;
+  color: var(--gray-5);
   cursor: pointer;
 `;
