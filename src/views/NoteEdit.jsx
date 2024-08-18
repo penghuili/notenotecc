@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, useResetAlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -23,7 +23,7 @@ import { AddAlbums, showAlbumsSelectorCat } from './NoteAdd.jsx';
 
 const descriptionCat = createCat('');
 
-export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view } }) => {
+export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { view, albums } }) => {
   const prepareData = useCallback(async () => {
     await fetchNoteEffect(noteId);
 
@@ -45,7 +45,7 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { vie
 
       <Editor noteId={noteId} viewMode={!!view} />
 
-      <AlbumsEditor noteId={noteId} />
+      <AlbumsEditor noteId={noteId} viewMode={!!view} showAlbums={!!albums} />
     </PrepareData>
   );
 });
@@ -112,7 +112,7 @@ const Editor = React.memo(({ noteId, viewMode }) => {
   );
 });
 
-const AlbumsEditor = React.memo(({ noteId }) => {
+const AlbumsEditor = React.memo(({ noteId, viewMode, showAlbums }) => {
   const noteItem = useNote(noteId);
   const isUpdating = useCat(isUpdatingNoteCat);
 
@@ -126,7 +126,16 @@ const AlbumsEditor = React.memo(({ noteId }) => {
     });
   }, [noteId, noteItem?.encryptedPassword, selectedAlbumSortKeys]);
 
-  return <AddAlbums onConfirm={handleSave} disabled={isUpdating} />;
+  const handleClose = useCallback(() => {
+    const query = viewMode ? '?view=1' : '';
+    replaceTo(`/notes/${noteId}${query}`);
+  }, [noteId, viewMode]);
+
+  useEffect(() => {
+    showAlbumsSelectorCat.set(showAlbums);
+  }, [showAlbums]);
+
+  return <AddAlbums onConfirm={handleSave} onClose={handleClose} disabled={isUpdating} />;
 });
 
 const NoteView = React.memo(({ noteId }) => {
@@ -150,10 +159,9 @@ const NoteView = React.memo(({ noteId }) => {
       key={noteItem.sortKey}
       note={noteItem}
       albums={getNoteAlbums(noteItem)}
-      showEdit={false}
+      onEdit={handleShowEditor}
       showFullText
       onAlbum={handleShowAlbumsSelector}
-      onClickText={handleShowEditor}
     />
   );
 });

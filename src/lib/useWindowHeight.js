@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 
 export function useWindowHeight() {
-  const [height, setHeight] = useState(window.innerHeight);
+  const [height, setHeight] = useState(window.visualViewport.height);
 
   useEffect(() => {
-    const handleResize = () => setHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
+    const handleResize = () => {
+      const viewportHeight = window.visualViewport.height;
+      setHeight(viewportHeight);
+    };
+
+    window.visualViewport.addEventListener('resize', handleResize);
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 

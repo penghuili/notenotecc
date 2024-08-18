@@ -1,12 +1,10 @@
-import { Flex, IconButton, Tooltip } from '@radix-ui/themes';
+import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiBold,
   RiCodeLine,
   RiDoubleQuotesL,
   RiH1,
   RiH2,
-  RiHashtag,
-  RiImageAddLine,
   RiItalic,
   RiListOrdered,
   RiListUnordered,
@@ -18,7 +16,7 @@ import styled from 'styled-components';
 
 export const zeroWidthSpace = '&ZeroWidthSpace;';
 
-export const Toolbar = React.memo(({ editorRef, activeElements, onChange, onImage, onAlbum }) => {
+export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
   const isActive = useMemo(() => Object.keys(activeElements).length > 0, [activeElements]);
 
   const handleToggleBold = useCallback(() => {
@@ -123,18 +121,6 @@ export const Toolbar = React.memo(({ editorRef, activeElements, onChange, onImag
 
   return (
     <Wrapper>
-      <Tooltip content="Add image / video">
-        <IconButton variant="soft" onClick={onImage} radius="none" color="grass">
-          <RiImageAddLine />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content="Add tag">
-        <IconButton variant="soft" onClick={onAlbum} radius="none" color="grass">
-          <RiHashtag />
-        </IconButton>
-      </Tooltip>
-
       <IconButton
         variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
         onClick={handleToggleBold}

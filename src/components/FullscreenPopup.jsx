@@ -3,6 +3,8 @@ import { RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
+import { useWindowHeight } from '../lib/useWindowHeight';
+import { hasPageMinHeightCat } from '../shared/react/AppWrapper.jsx';
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 
 const Wrapper = styled.div`
@@ -10,10 +12,11 @@ const Wrapper = styled.div`
   top: env(safe-area-inset-top);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 3000;
+
   width: 100vw;
   max-width: 600px;
-  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  z-index: 3000;
+  height: ${p => p.height}px;
   background-color: white;
 
   display: flex;
@@ -21,23 +24,37 @@ const Wrapper = styled.div`
   align-items: center;
   padding: 0 0.5rem;
   box-sizing: border-box;
+  overflow: hidden;
 `;
 const Top = styled(Flex)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   max-width: 600px;
-  padding: 0.5rem 0;
+  height: 48px;
+  padding: 0.5rem;
+`;
+const TopPlaceholder = styled.div`
+  width: 100%;
+  height: 48px;
 `;
 
 export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, children }) => {
+  const windowHeight = useWindowHeight();
+
   useEffect(() => {
+    hasPageMinHeightCat.set(false);
     disableBodyScroll();
 
     return () => {
+      hasPageMinHeightCat.set(true);
       enableBodyScroll();
     };
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper height={windowHeight}>
       <Top justify="between" width="100%">
         <IconButton variant="soft" onClick={onClose}>
           <RiCloseLine />
@@ -47,6 +64,7 @@ export const FullscreenPopup = React.memo(({ disabled, onConfirm, onClose, child
           <RiCheckLine />
         </IconButton>
       </Top>
+      <TopPlaceholder />
 
       {children}
     </Wrapper>

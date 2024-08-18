@@ -45,7 +45,7 @@ const verifyEmailRoutes = [
   { path: '/security/email', component: VerifyEmail },
   { path: '/', component: VerifyEmail },
 ];
-const loggedRoutes = [
+const loggedInRoutes = [
   { path: '/notes/add', component: NoteAdd },
   { path: '/notes/:noteId', component: NoteEdit },
 
@@ -98,7 +98,7 @@ const AllRoutes = React.memo(() => {
       navigateEffect(redirectUrl);
     }
 
-    return <Routes routes={loggedRoutes} />;
+    return <Routes routes={loggedInRoutes} />;
   }
 
   if (!publicRoutes.map(route => route.path).includes(pathname)) {

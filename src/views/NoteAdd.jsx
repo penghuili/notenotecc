@@ -202,7 +202,7 @@ export const AddImage = React.memo(({ cameraType, onAdd }) => {
   return <Camera type={cameraType} onSelect={handleAddImages} onClose={handleClose} />;
 });
 
-export const AddAlbums = React.memo(({ onConfirm, disabled }) => {
+export const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
   const showAlbumsSelector = useCat(showAlbumsSelectorCat);
   const albumDescription = useCat(albumDescriptionCat);
   const isAddingAlbum = useCat(isCreatingAlbumCat);
@@ -229,8 +229,12 @@ export const AddAlbums = React.memo(({ onConfirm, disabled }) => {
   }, [albumDescription, onConfirm]);
 
   const handleClose = useCallback(() => {
-    showAlbumsSelectorCat.set(false);
-  }, []);
+    if (onClose) {
+      onClose();
+    } else {
+      showAlbumsSelectorCat.set(false);
+    }
+  }, [onClose]);
 
   useEffect(() => {
     return () => {

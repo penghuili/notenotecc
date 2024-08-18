@@ -1,6 +1,7 @@
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
+  RiHashtag,
   RiImageAddLine,
   RiLockLine,
   RiMore2Line,
@@ -21,7 +22,7 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) => {
+export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showCamera, setShowCamera] = useState(false);
@@ -38,9 +39,13 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
     e => {
       e.stopPropagation();
       setNoteEffect(note);
-      navigateEffect(`/notes/${note.sortKey}`);
+      if (onEdit) {
+        onEdit();
+      } else {
+        navigateEffect(`/notes/${note.sortKey}`);
+      }
     },
-    [note]
+    [note, onEdit]
   );
 
   const handleAddImages = useCallback(
@@ -63,6 +68,10 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
     setShowCamera(false);
   }, []);
 
+  const handleUpdateAlbums = useCallback(() => {
+    navigateEffect(`/notes/${note.sortKey}?albums=1&view=1`);
+  }, [note.sortKey]);
+
   if (!note) {
     return null;
   }
@@ -81,11 +90,9 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
         <RiImageAddLine />
       </IconButton>
 
-      {showEdit && (
-        <IconButton variant="ghost" onClick={handleEidt} mr="2">
-          <RiPencilLine />
-        </IconButton>
-      )}
+      <IconButton variant="ghost" onClick={handleEidt} mr="2">
+        <RiPencilLine />
+      </IconButton>
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
@@ -95,6 +102,13 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, showEdit }) =>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
+          <DropdownMenu.Item onClick={handleUpdateAlbums}>
+            <RiHashtag />
+            Update albums
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator />
+
           <DeleteAction noteId={note.sortKey} goBackAfterDelete={goBackAfterDelete} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>

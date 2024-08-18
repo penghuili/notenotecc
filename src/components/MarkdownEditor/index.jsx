@@ -3,8 +3,8 @@ import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { useWindowHeight } from '../../lib/useWindowHeight.js';
 import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
-import { hasPageMinHeightCat } from '../../shared/react/AppWrapper.jsx';
 import {
   convertToBlockquote,
   convertToHeader,
@@ -18,89 +18,79 @@ import {
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
-export const MarkdownEditor = React.memo(
-  ({ defaultText, onChange, onImage, onAlbum, autoFocus }) => {
-    const editorRef = useRef(null);
-    const [activeElements, setActiveElements] = useState({});
-    const [isEmpty, setIsEmpty] = useState(true);
+export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
+  const editorRef = useRef(null);
+  const [activeElements, setActiveElements] = useState({});
+  const [isEmpty, setIsEmpty] = useState(true);
+  const windowHeight = useWindowHeight();
 
-    const handleCheckEmpty = useCallback(() => {
-      const isEmpty = editorRef.current.textContent.trim() === '';
-      setIsEmpty(isEmpty);
-    }, []);
+  const handleCheckEmpty = useCallback(() => {
+    const isEmpty = editorRef.current.textContent.trim() === '';
+    setIsEmpty(isEmpty);
+  }, []);
 
-    const handleCheckActiveElements = useCallback(() => {
-      const elements = checkActiveElements(editorRef.current, activeElements);
-      setActiveElements(elements);
+  const handleCheckActiveElements = useCallback(() => {
+    const elements = checkActiveElements(editorRef.current, activeElements);
+    setActiveElements(elements);
 
-      handleCheckEmpty();
-    }, [activeElements, handleCheckEmpty]);
+    handleCheckEmpty();
+  }, [activeElements, handleCheckEmpty]);
 
-    const handleChange = useCallback(() => {
-      const markdown = convertToMarkdown(editorRef.current.innerHTML);
-      onChange(markdown);
+  const handleChange = useCallback(() => {
+    const markdown = convertToMarkdown(editorRef.current.innerHTML);
+    onChange(markdown);
 
-      const elements = checkActiveElements(editorRef.current, activeElements);
-      setActiveElements(elements);
-    }, [activeElements, onChange]);
+    const elements = checkActiveElements(editorRef.current, activeElements);
+    setActiveElements(elements);
+  }, [activeElements, onChange]);
 
-    const handleInput = useCallback(() => {
-      const nearestNodeElement = getNearestNodeElement();
+  const handleInput = useCallback(() => {
+    const nearestNodeElement = getNearestNodeElement();
 
-      if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
-        escapeInlineTags(nearestNodeElement);
-      } else {
-        createBlockElement(editorRef.current);
-        escapeBlockquote(editorRef.current);
-        convertInlineTags();
-      }
+    if (supportedInlineTags.includes(nearestNodeElement?.tagName)) {
+      escapeInlineTags(nearestNodeElement);
+    } else {
+      createBlockElement(editorRef.current);
+      escapeBlockquote(editorRef.current);
+      convertInlineTags();
+    }
 
-      handleChange();
-    }, [handleChange]);
+    handleChange();
+  }, [handleChange]);
 
-    useEffect(() => {
-      hasPageMinHeightCat.set(false);
-      editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
+  useEffect(() => {
+    editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
 
-      return () => {
-        hasPageMinHeightCat.set(true);
-      };
-      // eslint-disable-next-line react-compiler/react-compiler
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // eslint-disable-next-line react-compiler/react-compiler
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-    useEffect(() => {
-      if (autoFocus) {
-        editorRef.current.focus();
-        handleCheckActiveElements();
-      }
-    }, [autoFocus, handleCheckActiveElements]);
+  useEffect(() => {
+    if (autoFocus) {
+      editorRef.current.focus();
+      handleCheckActiveElements();
+    }
+  }, [autoFocus, handleCheckActiveElements]);
 
-    return (
-      <Wrapper>
-        <Editor
-          ref={editorRef}
-          contentEditable
-          onInput={handleInput}
-          onMouseUp={handleCheckActiveElements}
-          onTouchEnd={handleCheckActiveElements}
-          onKeyUp={handleCheckActiveElements}
-          data-placeholder="Start typing here..."
-          isEmpty={isEmpty}
-        />
-        <div>
-          <Toolbar
-            editorRef={editorRef}
-            activeElements={activeElements}
-            onChange={handleChange}
-            onImage={onImage}
-            onAlbum={onAlbum}
-          />
-        </div>
-      </Wrapper>
-    );
-  }
-);
+  return (
+    <Wrapper height={windowHeight - 48}>
+      <Editor
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        onMouseUp={handleCheckActiveElements}
+        onTouchEnd={handleCheckActiveElements}
+        onKeyUp={handleCheckActiveElements}
+        data-placeholder="Start typing here..."
+        isEmpty={isEmpty}
+        height={windowHeight - 48 - 32}
+      />
+      <div>
+        <Toolbar editorRef={editorRef} activeElements={activeElements} onChange={handleChange} />
+      </div>
+    </Wrapper>
+  );
+});
 
 export const Markdown = React.memo(({ markdown, onClick }) => {
   const html = parseMarkdown(markdown);
@@ -325,8 +315,8 @@ const Wrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: calc(100% - 48px);
+  justify-content: flex-start;
+  height: ${props => `${props.height}px`};
 `;
 
 const Editor = styled.div`
@@ -335,7 +325,7 @@ const Editor = styled.div`
 
   &[contenteditable='true'] {
     padding: 10px 0;
-    height: calc(100% - 32px);
+    height: ${props => `${props.height}px`};
     overflow-y: auto;
     scrollbar-width: none;
 
