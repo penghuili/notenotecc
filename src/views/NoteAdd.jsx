@@ -1,6 +1,7 @@
-import { Box, Button, Flex } from '@radix-ui/themes';
-import { RiImageAddLine, RiStickyNoteLine } from '@remixicon/react';
+import { Button, Flex } from '@radix-ui/themes';
+import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import {
@@ -132,13 +133,11 @@ const NoteView = React.memo(() => {
       )}
 
       {decription ? (
-        <Box onClick={handleShowEditor} my="4">
+        <MarkdownWrapper onClick={handleShowEditor}>
           <Markdown markdown={decription} />
-        </Box>
+        </MarkdownWrapper>
       ) : (
-        <Button onClick={handleShowEditor} variant="soft" my="4">
-          <RiStickyNoteLine /> Add note
-        </Button>
+        <AddNotePlaceholder onClick={handleShowEditor} />
       )}
 
       <AlbumsSelector />
@@ -283,3 +282,20 @@ export const SelectedAlbums = React.memo(() => {
     </Flex>
   );
 });
+
+export const AddNotePlaceholder = React.memo(({ onClick }) => {
+  return <Placeholder onClick={onClick}>Add note ...</Placeholder>;
+});
+
+const Placeholder = styled.div`
+  width: 100%;
+  height: 3rem;
+  padding-top: 0.5rem;
+  color: var(--gray-5);
+  cursor: pointer;
+`;
+
+const MarkdownWrapper = styled.div`
+  cursor: pointer;
+  margin: 0.5rem 0;
+`;
