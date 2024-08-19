@@ -18,7 +18,7 @@ export const NoteItem = React.memo(({ note, albums, showFullText, onEdit, onAlbu
   }, [note?.createdAt]);
 
   const handleNavigate = useCallback(() => {
-    navigateEffect(`/notes/${note.sortKey}?view=1`);
+    navigateEffect(`/notes/${note.sortKey}`);
   }, [note.sortKey]);
 
   return (

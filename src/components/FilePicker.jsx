@@ -19,12 +19,12 @@ const Input = styled.input`
 `;
 
 export const FilePicker = React.memo(
-  ({ accept, takePhoto, height, children, disabled, onSelect }) => {
+  ({ accept, takePhoto, height, children, disabled, multiple, onSelect }) => {
     const handleChange = useCallback(
       e => {
-        const file = onSelect(e.target.files?.[0]);
-        if (file) {
-          onSelect(file);
+        const files = onSelect(e.target.files);
+        if (files?.length) {
+          onSelect(files);
         }
       },
       [onSelect]
@@ -39,6 +39,7 @@ export const FilePicker = React.memo(
           capture={takePhoto ? 'environment' : undefined}
           onChange={handleChange}
           disabled={disabled}
+          multiple={multiple}
         />
       </Wrapper>
     );

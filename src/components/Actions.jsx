@@ -11,7 +11,7 @@ import { cameraTypes } from '../lib/cameraTypes';
 import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
-import { pickedPhotoCat } from './PickPhoto.jsx';
+import { pickedPhotosCat } from './PickPhoto.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -32,16 +32,16 @@ export const Actions = React.memo(() => {
     navigateEffect(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
-  const handlePickPhoto = useCallback(photo => {
-    if (photo) {
-      pickedPhotoCat.set(photo);
+  const handlePickPhotos = useCallback(photos => {
+    if (photos) {
+      pickedPhotosCat.set(photos);
 
       navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
     }
   }, []);
 
   const handleTakeNote = useCallback(() => {
-    navigateEffect(`/notes/add`);
+    navigateEffect(`/notes/add?editor=1`);
   }, []);
 
   return (
@@ -53,7 +53,13 @@ export const Actions = React.memo(() => {
         <RiVideoAddLine />
       </IconButtonWithText>
 
-      <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
+      <FilePicker
+        accept="image/*"
+        takePhoto={false}
+        multiple
+        onSelect={handlePickPhotos}
+        height="auto"
+      >
         <IconButtonWithText text="Photo">
           <RiImageAddLine />
         </IconButtonWithText>

@@ -42,7 +42,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
       if (onEdit) {
         onEdit();
       } else {
-        navigateEffect(`/notes/${note.sortKey}`);
+        navigateEffect(`/notes/${note.sortKey}?editor=1`);
       }
     },
     [note, onEdit]
@@ -73,7 +73,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
       onUpdateAlbums();
     } else {
       showAlbumsSelectorCat.set(true);
-      navigateEffect(`/notes/${note.sortKey}?view=1`);
+      navigateEffect(`/notes/${note.sortKey}`);
     }
   }, [note.sortKey, onUpdateAlbums]);
 

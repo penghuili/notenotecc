@@ -39,7 +39,7 @@ const showCameraCat = createCat(false);
 export const showAlbumsSelectorCat = createCat(false);
 
 export const NoteEdit = React.memo(
-  ({ pathParams: { noteId }, queryParams: { cameraType, view } }) => {
+  ({ pathParams: { noteId }, queryParams: { cameraType, editor } }) => {
     const [innerNoteId, setInnerNoteId] = useState(noteId);
 
     const prepareData = useCallback(async () => {
@@ -68,12 +68,17 @@ export const NoteEdit = React.memo(
     }, [noteId]);
 
     useEffect(() => {
-      showCameraCat.set(!!cameraType);
-    }, [cameraType]);
-
-    useEffect(() => {
-      showEditorCat.set(!view);
-    }, [view]);
+      if (cameraType) {
+        showCameraCat.set(true);
+        showEditorCat.set(false);
+      } else if (editor) {
+        showCameraCat.set(false);
+        showEditorCat.set(true);
+      } else {
+        showCameraCat.set(false);
+        showEditorCat.set(false);
+      }
+    }, [cameraType, editor]);
 
     useEffect(() => {
       return () => {
@@ -83,11 +88,11 @@ export const NoteEdit = React.memo(
 
     return (
       <PrepareData load={prepareData}>
-        <Header viewMode={!!view} />
+        <Header />
 
         <NoteView noteId={innerNoteId} />
 
-        <Editor noteId={innerNoteId} viewMode={!!view} />
+        <Editor noteId={innerNoteId} />
         <AddImagesEditor noteId={innerNoteId} cameraType={cameraType} />
         <AlbumsEditor noteId={innerNoteId} />
       </PrepareData>
@@ -95,12 +100,13 @@ export const NoteEdit = React.memo(
   }
 );
 
-const Header = React.memo(({ viewMode }) => {
+const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
+  const showEditor = useCat(showEditorCat);
 
-  const titleMessage = useMemo(() => (viewMode ? 'Note details' : 'Update note'), [viewMode]);
+  const titleMessage = useMemo(() => (showEditor ? 'Update note' : 'Note details'), [showEditor]);
 
   return (
     <PageHeader
@@ -112,11 +118,12 @@ const Header = React.memo(({ viewMode }) => {
   );
 });
 
-const Editor = React.memo(({ noteId, viewMode }) => {
+const Editor = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
   const description = useCat(descriptionCat);
   const isUpdating = useCat(isUpdatingNoteCat);
+  const showEditor = useCat(showEditorCat);
 
   const handleAutoSave = useCallback(() => {
     updateNoteEffect(noteId, {
@@ -130,10 +137,10 @@ const Editor = React.memo(({ noteId, viewMode }) => {
   useDebounce(description, handleAutoSave, 500);
 
   const handleClose = useCallback(() => {
-    replaceTo(`/notes/${noteId}?view=1`);
+    replaceTo(`/notes/${noteId}`);
   }, [noteId]);
 
-  if (viewMode) {
+  if (!showEditor) {
     return null;
   }
 
@@ -149,7 +156,7 @@ const AddImagesEditor = React.memo(({ noteId, cameraType }) => {
   const noteItem = useNote(noteId);
 
   const handleClose = useCallback(() => {
-    replaceTo(`/notes/${noteId}?view=1`);
+    replaceTo(`/notes/${noteId}`);
   }, [noteId]);
 
   const handleAddImages = useCallback(
@@ -158,7 +165,7 @@ const AddImagesEditor = React.memo(({ noteId, cameraType }) => {
         encryptedPassword: noteItem?.encryptedPassword,
         images: newImages,
       });
-      replaceTo(`/notes/${noteId}?view=1`);
+      replaceTo(`/notes/${noteId}`);
     },
     [noteId, noteItem?.encryptedPassword]
   );
@@ -207,7 +214,7 @@ const NoteView = React.memo(({ noteId }) => {
   }, []);
 
   const handleShowEditor = useCallback(() => {
-    replaceTo(`/notes/${noteId}`);
+    replaceTo(`/notes/${noteId}?editor=1`);
   }, [noteId]);
 
   if (!noteItem) {

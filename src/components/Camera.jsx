@@ -7,7 +7,7 @@ import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { FilePicker } from './FilePicker.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
-import { pickedPhotoCat, PickPhoto } from './PickPhoto.jsx';
+import { pickedPhotosCat, PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
@@ -26,9 +26,9 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
     [images]
   );
 
-  const handlePickPhoto = useCallback(photo => {
-    if (photo) {
-      pickedPhotoCat.set(photo);
+  const handlePickPhotos = useCallback(photos => {
+    if (photos) {
+      pickedPhotosCat.set(photos);
     }
   }, []);
 
@@ -49,7 +49,13 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
             <RiVideoOnLine />
           </Tabs.Trigger>
           <Tabs.Trigger value={cameraTypes.pickPhoto}>
-            <FilePicker accept="image/*" takePhoto={false} onSelect={handlePickPhoto} height="auto">
+            <FilePicker
+              accept="image/*"
+              takePhoto={false}
+              multiple
+              onSelect={handlePickPhotos}
+              height="auto"
+            >
               <RiImageAddLine />
             </FilePicker>
           </Tabs.Trigger>

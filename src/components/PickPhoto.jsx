@@ -1,6 +1,6 @@
 import { Flex, Text } from '@radix-ui/themes';
 import { RiCropLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
@@ -27,37 +27,49 @@ const HelperTextWrapper = styled.div`
   position: absolute;
 `;
 
-export const pickedPhotoCat = createCat(null);
+export const pickedPhotosCat = createCat([]);
 
 export const PickPhoto = React.memo(({ onSelect }) => {
-  const pickedPhoto = useCat(pickedPhotoCat);
+  const pickedPhotos = useCat(pickedPhotosCat);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const cropperRef = useRef(null);
+
+  const handleNextPhoto = useCallback(() => {
+    if (currentPhotoIndex < pickedPhotos.length - 1) {
+      setCurrentPhotoIndex(currentPhotoIndex + 1);
+    } else {
+      setCurrentPhotoIndex(0);
+      pickedPhotosCat.set([]);
+    }
+  }, [currentPhotoIndex, pickedPhotos.length]);
 
   const handleCrop = useCallback(async () => {
     const canvas = cropperRef.current.crop(900);
     const blob = await canvasToBlob(canvas, imageType, 0.8);
     const imageUrl = canvas.toDataURL(imageType);
     onSelect({ blob, url: imageUrl, size: blob.size, type: imageType });
-    pickedPhotoCat.set(null);
-  }, [onSelect]);
+
+    handleNextPhoto();
+  }, [handleNextPhoto, onSelect]);
 
   const handleSquare = useCallback(async () => {
-    const squareCanvas = await makeImageSquare(pickedPhoto);
+    const squareCanvas = await makeImageSquare(pickedPhotos[currentPhotoIndex]);
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
     const imageUrl = resizedCanvas.toDataURL(imageType);
     onSelect({ blob, url: imageUrl, type: imageType });
-    pickedPhotoCat.set(null);
-  }, [onSelect, pickedPhoto]);
+
+    handleNextPhoto();
+  }, [currentPhotoIndex, handleNextPhoto, onSelect, pickedPhotos]);
 
   const size = getCameraSize();
 
   return (
     <VideoWrapper>
       <CropperWrapper size={size}>
-        <ImageCropper ref={cropperRef} width={size} pickedImage={pickedPhoto} />
-        {!pickedPhoto && (
+        <ImageCropper ref={cropperRef} width={size} pickedImage={pickedPhotos[currentPhotoIndex]} />
+        {!pickedPhotos[currentPhotoIndex] && (
           <HelperTextWrapper>
             <Text>Pick a photo from your device.</Text>
           </HelperTextWrapper>
@@ -65,7 +77,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
       </CropperWrapper>
 
       <Flex justify="center" align="center" py="2" gap="2">
-        {pickedPhoto ? (
+        {pickedPhotos[currentPhotoIndex] ? (
           <>
             <IconButtonWithText onClick={handleCrop} text="Crop">
               <RiCropLine />
@@ -78,7 +90,8 @@ export const PickPhoto = React.memo(({ onSelect }) => {
           <FilePicker
             accept="image/*"
             takePhoto={false}
-            onSelect={pickedPhotoCat.set}
+            multiple
+            onSelect={pickedPhotosCat.set}
             height="auto"
           >
             <IconButtonWithText text="Pick">
