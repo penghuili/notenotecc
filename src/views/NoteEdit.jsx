@@ -11,8 +11,8 @@ import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
-import { useDebounce } from '../lib/useDebounce.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { replaceTo } from '../shared/react/my-router.jsx';
@@ -152,37 +152,27 @@ const saveDescription = async ({ noteId, description, encryptedPassword }) => {
     showSuccess: false,
   });
 };
+const debouncedSaveDescription = debounceAndQueue(saveDescription, 500);
 
 const Editor = React.memo(() => {
   const description = useCat(descriptionCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const showEditor = useCat(showEditorCat);
 
-  const handleAutoSave = useCallback(() => {
-    const noteId = noteIdCat.get();
-    const encryptedPassword = encryptedPasswordCat.get();
-    if (!noteId || !encryptedPassword) {
-      return;
-    }
-    addRequestToQueue({
-      args: [{ noteId, description: descriptionCat.get(), encryptedPassword }],
-      handler: saveDescription,
+  const handleChange = useCallback(newDescription => {
+    descriptionCat.set(newDescription);
+
+    debouncedSaveDescription({
+      noteId: noteIdCat.get(),
+      description: newDescription,
+      encryptedPassword: encryptedPasswordCat.get(),
     });
   }, []);
-
-  useDebounce(description, handleAutoSave, 500);
 
   const handleBack = useCallback(() => {
     const noteId = noteIdCat.get();
     replaceTo(`/notes/${noteId}`);
   }, []);
-
-  useEffect(() => {
-    return () => {
-      handleAutoSave();
-      descriptionCat.reset();
-    };
-  }, [handleAutoSave]);
 
   if (!showEditor) {
     return null;
@@ -190,7 +180,7 @@ const Editor = React.memo(() => {
 
   return (
     <FullscreenPopup onBack={handleBack} disabled={isUpdating}>
-      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
+      <MarkdownEditor autoFocus defaultText={description} onChange={handleChange} />
     </FullscreenPopup>
   );
 });
