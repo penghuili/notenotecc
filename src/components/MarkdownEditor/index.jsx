@@ -42,8 +42,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
     const markdown = convertToMarkdown(editorRef.current.innerHTML);
     onChange(markdown);
 
-    console.log({ markdown });
-
     const elements = checkActiveElements(editorRef.current, activeElements);
     setActiveElements(elements);
   }, [activeElements, onChange]);
@@ -142,7 +140,7 @@ const createBlockElement = wrapperElement => {
     return;
   }
 
-  const { text, container } = result;
+  const { text } = result;
 
   const listType = listPattern(text);
   if (listType) {
@@ -151,7 +149,7 @@ const createBlockElement = wrapperElement => {
 
   const headerType = headerPattern(text);
   if (headerType) {
-    convertToHeader(wrapperElement, container, headerType);
+    convertToHeader(wrapperElement, headerType);
   }
 
   const blockquote = blockquotePattern(text);
@@ -169,7 +167,14 @@ const getTextBeforeCursor = () => {
   const container = range.startContainer;
   const textBeforeCursor = container.textContent.slice(0, range.startOffset);
 
-  return { text: textBeforeCursor.replace(/\u00A0/g, ' '), container };
+  return {
+    text: textBeforeCursor
+      // nbsp
+      .replace(/\u00A0/g, ' ')
+      // zero width space
+      .replace(/\u200B/g, ''),
+    container,
+  };
 };
 
 const listPattern = text => {

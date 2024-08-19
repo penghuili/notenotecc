@@ -5,7 +5,6 @@ import { parseMarkdown } from './markdownHelpers';
 
 export const Markdown = React.memo(({ markdown, onClick }) => {
   const html = parseMarkdown(markdown);
-  console.log({ markdown, html });
   return <Editor dangerouslySetInnerHTML={{ __html: html }} onClick={onClick} />;
 });
 
