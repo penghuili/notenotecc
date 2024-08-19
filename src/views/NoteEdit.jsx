@@ -156,7 +156,6 @@ const debouncedSaveDescription = debounceAndQueue(saveDescription, 500);
 
 const Editor = React.memo(() => {
   const description = useCat(descriptionCat);
-  const isUpdating = useCat(isUpdatingNoteCat);
   const showEditor = useCat(showEditorCat);
 
   const handleChange = useCallback(newDescription => {
@@ -179,7 +178,7 @@ const Editor = React.memo(() => {
   }
 
   return (
-    <FullscreenPopup onBack={handleBack} disabled={isUpdating}>
+    <FullscreenPopup onBack={handleBack}>
       <MarkdownEditor autoFocus defaultText={description} onChange={handleChange} />
     </FullscreenPopup>
   );
