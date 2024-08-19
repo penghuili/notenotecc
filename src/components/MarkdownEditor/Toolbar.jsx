@@ -1,5 +1,7 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import {
+  RiArrowGoBackLine,
+  RiArrowGoForwardLine,
   RiBold,
   RiCodeLine,
   RiDoubleQuotesL,
@@ -13,220 +15,283 @@ import {
 } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
+
+import { getCursorPosition, restoreCursorPosition } from './markdownHelpers';
 
 export const zeroWidthSpace = '&ZeroWidthSpace;';
+export const hasUndoHistoryCat = createCat(false);
+export const hasRedoHistoryCat = createCat(false);
 
-export const Toolbar = React.memo(({ editorRef, activeElements, onChange }) => {
-  const isActive = useMemo(() => Object.keys(activeElements).length > 0, [activeElements]);
+export const Toolbar = React.memo(
+  ({ editorRef, undoHistoryRef, redoHistoryRef, activeElements, onChange }) => {
+    const hasUndoHistory = useCat(hasUndoHistoryCat);
+    const hasRedoHistory = useCat(hasRedoHistoryCat);
+    const isActive = useMemo(() => Object.keys(activeElements).length > 0, [activeElements]);
 
-  const handleToggleBold = useCallback(() => {
-    if (activeElements.STRONG || activeElements.B) {
-      removeInlineTag(editorRef.current, ['strong', 'b']);
-    } else {
-      addInlineTag(editorRef.current, 'strong');
-    }
+    const handleUndo = useCallback(() => {
+      const position = getCursorPosition(editorRef.current);
+      redoHistoryRef.current.push({ innerHTML: editorRef.current.innerHTML, position });
+      // eslint-disable-next-line react-compiler/react-compiler
+      redoHistoryRef.current = redoHistoryRef.current.slice(-30);
 
-    onChange();
-  }, [activeElements.B, activeElements.STRONG, editorRef, onChange]);
+      const lastItem = undoHistoryRef.current.pop();
+      // eslint-disable-next-line react-compiler/react-compiler
+      editorRef.current.innerHTML = lastItem.innerHTML;
 
-  const handleToggleItalic = useCallback(() => {
-    if (activeElements.EM || activeElements.I) {
-      removeInlineTag(editorRef.current, ['em', 'i']);
-    } else {
-      addInlineTag(editorRef.current, 'em');
-    }
+      restoreCursorPosition(editorRef.current, lastItem.position);
+      editorRef.current.focus();
 
-    onChange();
-  }, [activeElements.EM, activeElements.I, editorRef, onChange]);
+      onChange(true);
 
-  const handleToggleStrikethrough = useCallback(() => {
-    if (activeElements.DEL) {
-      removeInlineTag(editorRef.current, ['del']);
-    } else {
-      addInlineTag(editorRef.current, 'del');
-    }
+      hasUndoHistoryCat.set(undoHistoryRef.current.length > 0);
+      hasRedoHistoryCat.set(redoHistoryRef.current.length > 0);
+    }, [editorRef, onChange, redoHistoryRef, undoHistoryRef]);
 
-    onChange();
-  }, [activeElements.DEL, editorRef, onChange]);
+    const handleRedo = useCallback(() => {
+      const position = getCursorPosition(editorRef.current);
+      undoHistoryRef.current.push({ innerHTML: editorRef.current.innerHTML, position });
+      undoHistoryRef.current = undoHistoryRef.current.slice(-30);
 
-  const handleToggleCode = useCallback(() => {
-    if (activeElements.CODE) {
-      removeInlineTag(editorRef.current, ['code']);
-    } else {
-      addInlineTag(editorRef.current, 'code');
-    }
+      const lastItem = redoHistoryRef.current.pop();
+      // eslint-disable-next-line react-compiler/react-compiler
+      editorRef.current.innerHTML = lastItem.innerHTML;
 
-    onChange();
-  }, [activeElements.CODE, editorRef, onChange]);
+      restoreCursorPosition(editorRef.current, lastItem.position);
+      editorRef.current.focus();
 
-  const handleToggleMark = useCallback(() => {
-    if (activeElements.MARK) {
-      removeInlineTag(editorRef.current, ['mark']);
-    } else {
-      addInlineTag(editorRef.current, 'mark');
-    }
+      onChange(true);
 
-    onChange();
-  }, [activeElements.MARK, editorRef, onChange]);
+      hasUndoHistoryCat.set(undoHistoryRef.current.length > 0);
+      hasRedoHistoryCat.set(redoHistoryRef.current.length > 0);
+    }, [editorRef, onChange, redoHistoryRef, undoHistoryRef]);
 
-  const handleToggleH1 = useCallback(() => {
-    if (activeElements.H1) {
-      removeBlockElement(editorRef.current);
-    } else {
-      convertToHeader(editorRef.current, 'h1');
-    }
+    const handleToggleBold = useCallback(() => {
+      if (activeElements.STRONG || activeElements.B) {
+        removeInlineTag(editorRef.current, ['strong', 'b']);
+      } else {
+        addInlineTag(editorRef.current, 'strong');
+      }
 
-    onChange();
-  }, [activeElements.H1, editorRef, onChange]);
+      onChange();
+    }, [activeElements.B, activeElements.STRONG, editorRef, onChange]);
 
-  const handleToggleH2 = useCallback(() => {
-    if (activeElements.H2) {
-      removeBlockElement(editorRef.current);
-    } else {
-      convertToHeader(editorRef.current, 'h2');
-    }
+    const handleToggleItalic = useCallback(() => {
+      if (activeElements.EM || activeElements.I) {
+        removeInlineTag(editorRef.current, ['em', 'i']);
+      } else {
+        addInlineTag(editorRef.current, 'em');
+      }
 
-    onChange();
-  }, [activeElements.H2, editorRef, onChange]);
+      onChange();
+    }, [activeElements.EM, activeElements.I, editorRef, onChange]);
 
-  const handleToggleUL = useCallback(() => {
-    if (activeElements.UL) {
-      removeListElement(editorRef.current);
-    } else {
-      convertToList(editorRef.current, 'ul');
-    }
+    const handleToggleStrikethrough = useCallback(() => {
+      if (activeElements.DEL) {
+        removeInlineTag(editorRef.current, ['del']);
+      } else {
+        addInlineTag(editorRef.current, 'del');
+      }
 
-    onChange();
-  }, [activeElements.UL, editorRef, onChange]);
+      onChange();
+    }, [activeElements.DEL, editorRef, onChange]);
 
-  const handleToggleOL = useCallback(() => {
-    if (activeElements.OL) {
-      removeListElement(editorRef.current);
-    } else {
-      convertToList(editorRef.current, 'ol');
-    }
+    const handleToggleCode = useCallback(() => {
+      if (activeElements.CODE) {
+        removeInlineTag(editorRef.current, ['code']);
+      } else {
+        addInlineTag(editorRef.current, 'code');
+      }
 
-    onChange();
-  }, [activeElements.OL, editorRef, onChange]);
+      onChange();
+    }, [activeElements.CODE, editorRef, onChange]);
 
-  const handleToggleBlockquote = useCallback(() => {
-    if (activeElements.BLOCKQUOTE) {
-      removeBlockquoteElement(editorRef.current);
-    } else {
-      convertToBlockquote(editorRef.current);
-    }
+    const handleToggleMark = useCallback(() => {
+      if (activeElements.MARK) {
+        removeInlineTag(editorRef.current, ['mark']);
+      } else {
+        addInlineTag(editorRef.current, 'mark');
+      }
 
-    onChange();
-  }, [activeElements.BLOCKQUOTE, editorRef, onChange]);
+      onChange();
+    }, [activeElements.MARK, editorRef, onChange]);
 
-  return (
-    <Wrapper>
-      <IconButton
-        variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
-        onClick={handleToggleBold}
-        radius="none"
-        disabled={!isActive}
-      >
-        <RiBold />
-      </IconButton>
-      <IconButton
-        variant={activeElements.EM || activeElements.I ? 'solid' : 'soft'}
-        onClick={handleToggleItalic}
-        radius="none"
-        disabled={!isActive}
-      >
-        <RiItalic />
-      </IconButton>
-      <IconButton
-        variant={activeElements.DEL ? 'solid' : 'soft'}
-        onClick={handleToggleStrikethrough}
-        radius="none"
-        disabled={!isActive}
-      >
-        <RiStrikethrough />
-      </IconButton>
-      <IconButton
-        variant={activeElements.CODE ? 'solid' : 'soft'}
-        onClick={handleToggleCode}
-        radius="none"
-        disabled={!isActive}
-      >
-        <RiCodeLine />
-      </IconButton>
-      <IconButton
-        variant={activeElements.MARK ? 'solid' : 'soft'}
-        onClick={handleToggleMark}
-        radius="none"
-        disabled={!isActive}
-      >
-        <RiMarkPenLine />
-      </IconButton>
+    const handleToggleH1 = useCallback(() => {
+      if (activeElements.H1) {
+        removeBlockElement(editorRef.current);
+      } else {
+        convertToHeader(editorRef.current, 'h1');
+      }
 
-      <IconButton
-        variant={activeElements.H1 ? 'solid' : 'soft'}
-        onClick={handleToggleH1}
-        radius="none"
-        disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
-      >
-        <RiH1 />
-      </IconButton>
-      <IconButton
-        variant={activeElements.H2 ? 'solid' : 'soft'}
-        onClick={handleToggleH2}
-        radius="none"
-        disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
-      >
-        <RiH2 />
-      </IconButton>
-      <IconButton
-        variant={activeElements.UL ? 'solid' : 'soft'}
-        onClick={handleToggleUL}
-        radius="none"
-        disabled={
-          !isActive ||
-          activeElements.H1 ||
-          activeElements.H2 ||
-          activeElements.OL ||
-          activeElements.BLOCKQUOTE
-        }
-      >
-        <RiListUnordered />
-      </IconButton>
-      <IconButton
-        variant={activeElements.OL ? 'solid' : 'soft'}
-        onClick={handleToggleOL}
-        radius="none"
-        disabled={
-          !isActive ||
-          activeElements.H1 ||
-          activeElements.H2 ||
-          activeElements.UL ||
-          activeElements.BLOCKQUOTE
-        }
-      >
-        <RiListOrdered />
-      </IconButton>
+      onChange();
+    }, [activeElements.H1, editorRef, onChange]);
 
-      <IconButton
-        variant={activeElements.BLOCKQUOTE ? 'solid' : 'soft'}
-        onClick={handleToggleBlockquote}
-        radius="none"
-        disabled={
-          !isActive ||
-          activeElements.H1 ||
-          activeElements.H2 ||
-          activeElements.UL ||
-          activeElements.UL ||
-          activeElements.OL
-        }
-      >
-        <RiDoubleQuotesL />
-      </IconButton>
+    const handleToggleH2 = useCallback(() => {
+      if (activeElements.H2) {
+        removeBlockElement(editorRef.current);
+      } else {
+        convertToHeader(editorRef.current, 'h2');
+      }
 
-      <Placeholder width={`calc(100% - ${5 * 32}px)`} />
-    </Wrapper>
-  );
-});
+      onChange();
+    }, [activeElements.H2, editorRef, onChange]);
+
+    const handleToggleUL = useCallback(() => {
+      if (activeElements.UL) {
+        removeListElement(editorRef.current);
+      } else {
+        convertToList(editorRef.current, 'ul');
+      }
+
+      onChange();
+    }, [activeElements.UL, editorRef, onChange]);
+
+    const handleToggleOL = useCallback(() => {
+      if (activeElements.OL) {
+        removeListElement(editorRef.current);
+      } else {
+        convertToList(editorRef.current, 'ol');
+      }
+
+      onChange();
+    }, [activeElements.OL, editorRef, onChange]);
+
+    const handleToggleBlockquote = useCallback(() => {
+      if (activeElements.BLOCKQUOTE) {
+        removeBlockquoteElement(editorRef.current);
+      } else {
+        convertToBlockquote(editorRef.current);
+      }
+
+      onChange();
+    }, [activeElements.BLOCKQUOTE, editorRef, onChange]);
+
+    return (
+      <Wrapper>
+        <IconButton
+          variant="soft"
+          onClick={handleUndo}
+          radius="none"
+          disabled={!isActive || !hasUndoHistory}
+        >
+          <RiArrowGoBackLine />
+        </IconButton>
+        <IconButton
+          variant="soft"
+          onClick={handleRedo}
+          radius="none"
+          disabled={!isActive || !hasRedoHistory}
+        >
+          <RiArrowGoForwardLine />
+        </IconButton>
+
+        <IconButton
+          variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
+          onClick={handleToggleBold}
+          radius="none"
+          disabled={!isActive}
+        >
+          <RiBold />
+        </IconButton>
+        <IconButton
+          variant={activeElements.EM || activeElements.I ? 'solid' : 'soft'}
+          onClick={handleToggleItalic}
+          radius="none"
+          disabled={!isActive}
+        >
+          <RiItalic />
+        </IconButton>
+        <IconButton
+          variant={activeElements.DEL ? 'solid' : 'soft'}
+          onClick={handleToggleStrikethrough}
+          radius="none"
+          disabled={!isActive}
+        >
+          <RiStrikethrough />
+        </IconButton>
+        <IconButton
+          variant={activeElements.CODE ? 'solid' : 'soft'}
+          onClick={handleToggleCode}
+          radius="none"
+          disabled={!isActive}
+        >
+          <RiCodeLine />
+        </IconButton>
+        <IconButton
+          variant={activeElements.MARK ? 'solid' : 'soft'}
+          onClick={handleToggleMark}
+          radius="none"
+          disabled={!isActive}
+        >
+          <RiMarkPenLine />
+        </IconButton>
+
+        <IconButton
+          variant={activeElements.H1 ? 'solid' : 'soft'}
+          onClick={handleToggleH1}
+          radius="none"
+          disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
+        >
+          <RiH1 />
+        </IconButton>
+        <IconButton
+          variant={activeElements.H2 ? 'solid' : 'soft'}
+          onClick={handleToggleH2}
+          radius="none"
+          disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
+        >
+          <RiH2 />
+        </IconButton>
+        <IconButton
+          variant={activeElements.UL ? 'solid' : 'soft'}
+          onClick={handleToggleUL}
+          radius="none"
+          disabled={
+            !isActive ||
+            activeElements.H1 ||
+            activeElements.H2 ||
+            activeElements.OL ||
+            activeElements.BLOCKQUOTE
+          }
+        >
+          <RiListUnordered />
+        </IconButton>
+        <IconButton
+          variant={activeElements.OL ? 'solid' : 'soft'}
+          onClick={handleToggleOL}
+          radius="none"
+          disabled={
+            !isActive ||
+            activeElements.H1 ||
+            activeElements.H2 ||
+            activeElements.UL ||
+            activeElements.BLOCKQUOTE
+          }
+        >
+          <RiListOrdered />
+        </IconButton>
+
+        <IconButton
+          variant={activeElements.BLOCKQUOTE ? 'solid' : 'soft'}
+          onClick={handleToggleBlockquote}
+          radius="none"
+          disabled={
+            !isActive ||
+            activeElements.H1 ||
+            activeElements.H2 ||
+            activeElements.UL ||
+            activeElements.UL ||
+            activeElements.OL
+          }
+        >
+          <RiDoubleQuotesL />
+        </IconButton>
+
+        <Placeholder width={`calc(100% - ${5 * 32}px)`} />
+      </Wrapper>
+    );
+  }
+);
 
 const addInlineTag = (wrapperElement, inlineTag) => {
   const selection = window.getSelection();

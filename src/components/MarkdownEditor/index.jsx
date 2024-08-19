@@ -4,15 +4,18 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { useWindowHeight } from '../../lib/useWindowHeight.js';
+import { compareObjects } from '../../shared/js/object.js';
 import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
 import { Editor, Markdown } from './Markdown.jsx';
-import { convertToMarkdown, parseMarkdown } from './markdownHelpers.js';
+import { convertToMarkdown, getCursorPosition, parseMarkdown } from './markdownHelpers.js';
 import {
   convertToBlockquote,
   convertToHeader,
   convertToList,
   getRange,
   getRangeContainer,
+  hasRedoHistoryCat,
+  hasUndoHistoryCat,
   setCursorPosition,
   Toolbar,
   zeroWidthSpace,
@@ -23,28 +26,57 @@ const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
   const [activeElements, setActiveElements] = useState({});
+  const prevActiveElements = useRef({});
   const [isEmpty, setIsEmpty] = useState(true);
   const windowHeight = useWindowHeight();
+  const undoHistoryRef = useRef([]);
+  const redoHistoryRef = useRef([]);
+  const historyTimerIdRef = useRef(null);
 
-  const handleCheckEmpty = useCallback(() => {
+  const handleCheckActiveElements = useCallback(() => {
+    const elements = checkActiveElements(editorRef.current, prevActiveElements.current);
+    if (elements !== prevActiveElements.current) {
+      setActiveElements(elements);
+      prevActiveElements.current = elements;
+    }
+
     const isEmpty = editorRef.current.textContent.trim() === '';
     setIsEmpty(isEmpty);
   }, []);
 
-  const handleCheckActiveElements = useCallback(() => {
-    const elements = checkActiveElements(editorRef.current, activeElements);
-    setActiveElements(elements);
+  const handleChange = useCallback(
+    isUndoRedo => {
+      const innerHTML = editorRef.current.innerHTML;
+      const markdown = convertToMarkdown(innerHTML);
+      onChange(markdown);
 
-    handleCheckEmpty();
-  }, [activeElements, handleCheckEmpty]);
+      handleCheckActiveElements();
 
-  const handleChange = useCallback(() => {
-    const markdown = convertToMarkdown(editorRef.current.innerHTML);
-    onChange(markdown);
+      if (historyTimerIdRef.current) {
+        return;
+      }
+      if (!isUndoRedo) {
+        redoHistoryRef.current = [];
+        hasRedoHistoryCat.set(false);
 
-    const elements = checkActiveElements(editorRef.current, activeElements);
-    setActiveElements(elements);
-  }, [activeElements, onChange]);
+        const position = getCursorPosition(editorRef.current);
+        historyTimerIdRef.current = setTimeout(() => {
+          if (
+            undoHistoryRef.current[undoHistoryRef.current.length - 1]?.innerHTML !== innerHTML &&
+            innerHTML !== editorRef.current.innerHTML
+          ) {
+            undoHistoryRef.current.push({ innerHTML, position });
+            undoHistoryRef.current = undoHistoryRef.current.slice(-30);
+            hasUndoHistoryCat.set(undoHistoryRef.current.length > 0);
+          }
+
+          clearTimeout(historyTimerIdRef.current);
+          historyTimerIdRef.current = null;
+        }, 1000);
+      }
+    },
+    [handleCheckActiveElements, onChange]
+  );
 
   const handleInput = useCallback(() => {
     const nearestNodeElement = getNearestNodeElement();
@@ -70,6 +102,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   useEffect(() => {
     if (autoFocus) {
       editorRef.current.focus();
+
       handleCheckActiveElements();
     }
   }, [autoFocus, handleCheckActiveElements]);
@@ -88,7 +121,13 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
         height={windowHeight - 48 - 32}
       />
       <div>
-        <Toolbar editorRef={editorRef} activeElements={activeElements} onChange={handleChange} />
+        <Toolbar
+          editorRef={editorRef}
+          undoHistoryRef={undoHistoryRef}
+          redoHistoryRef={redoHistoryRef}
+          activeElements={activeElements}
+          onChange={handleChange}
+        />
       </div>
     </Wrapper>
   );
@@ -113,9 +152,7 @@ const getActiveElements = wrapperElement => {
 
 const checkActiveElements = (wrapperElement, currentActiveElements) => {
   const elements = getActiveElements(wrapperElement);
-  if (
-    Object.keys(elements).sort().join(',') !== Object.keys(currentActiveElements).sort().join(',')
-  ) {
+  if (!compareObjects(elements, currentActiveElements)) {
     return elements;
   }
   return currentActiveElements;

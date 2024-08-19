@@ -148,3 +148,58 @@ const parseInlineMarkdown = markdown => {
       .replace(/==(.*?)==/gim, '<mark>$1</mark>')
   );
 };
+
+export const getCursorPosition = element => {
+  const selection = window.getSelection();
+  if (selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    const preSelectionRange = range.cloneRange();
+    preSelectionRange.selectNodeContents(element);
+    preSelectionRange.setEnd(range.startContainer, range.startOffset);
+    const fullText = preSelectionRange.toString();
+    const visibleText = fullText.replace(/[*_~`=]/g, '');
+    return visibleText.length;
+  }
+
+  return null;
+};
+
+export const restoreCursorPosition = (element, position) => {
+  if (position === null) {
+    return;
+  }
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+
+  let currentLength = 0;
+  let targetNode = null;
+  let targetOffset = 0;
+
+  const traverseNodes = node => {
+    if (targetNode) return;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const visibleLength = node.textContent.length;
+      if (currentLength + visibleLength >= position) {
+        targetNode = node;
+        targetOffset = position - currentLength;
+      } else {
+        currentLength += visibleLength;
+      }
+    } else {
+      for (let child of node.childNodes) {
+        traverseNodes(child);
+      }
+    }
+  };
+
+  traverseNodes(element);
+
+  if (targetNode) {
+    range.setStart(targetNode, targetOffset);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
