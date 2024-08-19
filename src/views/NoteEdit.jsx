@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import {
@@ -21,27 +21,25 @@ import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { createAlbum } from '../store/album/albumNetwork.js';
 import {
   isAddingImagesCat,
+  isCreatingNoteCat,
+  isDeletingImageCat,
+  isDeletingNoteCat,
   isLoadingNoteCat,
   isUpdatingNoteCat,
   noteCat,
   useNote,
 } from '../store/note/noteCats.js';
-import {
-  addImagesEffect,
-  createNoteEffect,
-  fetchNoteEffect,
-  updateNoteEffect,
-} from '../store/note/noteEffects';
+import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
+const noteIdCat = createCat(null);
+const encryptedPasswordCat = createCat('');
 const showEditorCat = createCat(false);
 const showCameraCat = createCat(false);
 export const showAlbumsSelectorCat = createCat(false);
 
 export const NoteEdit = React.memo(
   ({ pathParams: { noteId }, queryParams: { cameraType, editor } }) => {
-    const [innerNoteId, setInnerNoteId] = useState(noteId);
-
     const prepareData = useCallback(async () => {
       if (cameraType) {
         showCameraCat.set(true);
@@ -54,38 +52,27 @@ export const NoteEdit = React.memo(
         showEditorCat.set(false);
       }
 
-      if (!noteId) {
-        return;
+      if (noteId) {
+        noteIdCat.set(noteId);
+        await fetchNoteEffect(noteId);
+
+        const note = noteCat.get();
+        if (note) {
+          descriptionCat.set(note.note || '');
+          encryptedPasswordCat.set(note.encryptedPassword);
+          albumSelectedKeysCat.set((note.albumIds || []).map(a => a.albumId));
+
+          return;
+        }
       }
 
-      await fetchNoteEffect(noteId);
-
-      const note = noteCat.get();
-      if (note) {
-        descriptionCat.set(note.note);
-        albumSelectedKeysCat.set((note?.albumIds || []).map(a => a.albumId));
-      }
+      replaceTo('/notes');
     }, [cameraType, editor, noteId]);
-
-    useEffect(() => {
-      async function createNote() {
-        await createNoteEffect({ note: '', goBack: false, showSuccess: false });
-        setInnerNoteId(noteCat.get()?.sortKey);
-      }
-
-      if (!noteId) {
-        addRequestToQueue({
-          args: [],
-          handler: createNote,
-        });
-      }
-    }, [noteId]);
 
     useScrollToTop();
 
     useEffect(() => {
       return () => {
-        descriptionCat.reset();
         albumDescriptionCat.reset();
         albumSelectedKeysCat.reset();
       };
@@ -95,11 +82,11 @@ export const NoteEdit = React.memo(
       <PrepareData load={prepareData}>
         <Header />
 
-        <NoteView noteId={innerNoteId} />
+        <NoteView />
 
-        <Editor noteId={innerNoteId} />
-        <AddImages noteId={innerNoteId} cameraType={cameraType} />
-        <AddAlbums noteId={innerNoteId} />
+        <Editor />
+        <AddImages cameraType={cameraType} />
+        <AddAlbums />
       </PrepareData>
     );
   }
@@ -107,8 +94,11 @@ export const NoteEdit = React.memo(
 
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNoteCat);
+  const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
+  const isDeleting = useCat(isDeletingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
+  const isDeletingImage = useCat(isDeletingImageCat);
   const showEditor = useCat(showEditorCat);
 
   const titleMessage = useMemo(() => (showEditor ? 'Update note' : 'Note details'), [showEditor]);
@@ -116,14 +106,17 @@ const Header = React.memo(() => {
   return (
     <PageHeader
       title={titleMessage}
-      isLoading={isLoading || isAddingImages || isUpdating}
+      isLoading={
+        isLoading || isAddingImages || isUpdating || isDeleting || isDeletingImage || isCreating
+      }
       fixed
       hasBack
     />
   );
 });
 
-const NoteView = React.memo(({ noteId }) => {
+const NoteView = React.memo(() => {
+  const noteId = useCat(noteIdCat);
   const noteItem = useNote(noteId);
   const getNoteAlbums = useGetNoteAlbums();
 
@@ -160,25 +153,36 @@ const saveDescription = async ({ noteId, description, encryptedPassword }) => {
   });
 };
 
-const Editor = React.memo(({ noteId }) => {
-  const noteItem = useNote(noteId);
-
+const Editor = React.memo(() => {
   const description = useCat(descriptionCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const showEditor = useCat(showEditorCat);
 
   const handleAutoSave = useCallback(() => {
+    const noteId = noteIdCat.get();
+    const encryptedPassword = encryptedPasswordCat.get();
+    if (!noteId || !encryptedPassword) {
+      return;
+    }
     addRequestToQueue({
-      args: [{ noteId, description, encryptedPassword: noteItem?.encryptedPassword }],
+      args: [{ noteId, description: descriptionCat.get(), encryptedPassword }],
       handler: saveDescription,
     });
-  }, [description, noteId, noteItem?.encryptedPassword]);
+  }, []);
 
   useDebounce(description, handleAutoSave, 500);
 
   const handleBack = useCallback(() => {
+    const noteId = noteIdCat.get();
     replaceTo(`/notes/${noteId}`);
-  }, [noteId]);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      handleAutoSave();
+      descriptionCat.reset();
+    };
+  }, [handleAutoSave]);
 
   if (!showEditor) {
     return null;
@@ -198,25 +202,27 @@ const saveImages = async ({ noteId, images, encryptedPassword }) => {
   });
 };
 
-const AddImages = React.memo(({ noteId, cameraType }) => {
+const AddImages = React.memo(({ cameraType }) => {
   const showCamera = useCat(showCameraCat);
   const isAddingImages = useCat(isAddingImagesCat);
-  const noteItem = useNote(noteId);
 
   const handleClose = useCallback(() => {
+    const noteId = noteIdCat.get();
     replaceTo(`/notes/${noteId}`);
-  }, [noteId]);
+  }, []);
 
-  const handleAddImages = useCallback(
-    async newImages => {
-      addRequestToQueue({
-        args: [{ noteId, images: newImages, encryptedPassword: noteItem?.encryptedPassword }],
-        handler: saveImages,
-      });
-      replaceTo(`/notes/${noteId}`);
-    },
-    [noteId, noteItem?.encryptedPassword]
-  );
+  const handleAddImages = useCallback(async newImages => {
+    const noteId = noteIdCat.get();
+    const encryptedPassword = encryptedPasswordCat.get();
+    if (!noteId || !encryptedPassword) {
+      return;
+    }
+    addRequestToQueue({
+      args: [{ noteId, images: newImages, encryptedPassword }],
+      handler: saveImages,
+    });
+    replaceTo(`/notes/${noteId}`);
+  }, []);
 
   if (!showCamera) {
     return null;
@@ -254,19 +260,24 @@ const saveAlbums = async ({ noteId, encryptedPassword }) => {
   });
 };
 
-const AddAlbums = React.memo(({ noteId }) => {
-  const noteItem = useNote(noteId);
+const AddAlbums = React.memo(() => {
   const isAddingAlbum = useCat(isCreatingAlbumCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const showAlbumsSelector = useCat(showAlbumsSelectorCat);
 
   const handleConfirm = useCallback(async () => {
+    const noteId = noteIdCat.get();
+    const encryptedPassword = encryptedPasswordCat.get();
+    if (!noteId || !encryptedPassword) {
+      return;
+    }
+
     addRequestToQueue({
-      args: [{ noteId, encryptedPassword: noteItem?.encryptedPassword }],
+      args: [{ noteId, encryptedPassword }],
       handler: saveAlbums,
     });
     showAlbumsSelectorCat.set(false);
-  }, [noteId, noteItem?.encryptedPassword]);
+  }, []);
 
   const handleClose = useCallback(() => {
     showAlbumsSelectorCat.set(false);

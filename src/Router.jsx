@@ -23,6 +23,7 @@ import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
 import { Albums } from './views/Albums.jsx';
 import { AlbumsReorder } from './views/AlbumsReorder.jsx';
+import { NoteAdd } from './views/NoteAdd.jsx';
 import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
@@ -45,7 +46,7 @@ const verifyEmailRoutes = [
   { path: '/', component: VerifyEmail },
 ];
 const loggedInRoutes = [
-  { path: '/notes/add', component: NoteEdit },
+  { path: '/notes/add', component: NoteAdd },
   { path: '/notes/:noteId', component: NoteEdit },
 
   { path: '/albums/reorder', component: AlbumsReorder },

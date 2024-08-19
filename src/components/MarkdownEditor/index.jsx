@@ -95,6 +95,13 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   useEffect(() => {
     editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
 
+    return () => {
+      if (historyTimerIdRef.current) {
+        clearTimeout(historyTimerIdRef.current);
+        historyTimerIdRef.current = null;
+      }
+    };
+
     // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -12,14 +12,21 @@ export function AnimatedBox({ visible, children }) {
 
   useEffect(() => {
     const content = contentRef.current;
+    let timerId;
     if (visible) {
       content.style.maxHeight = `${content.scrollHeight}px`;
     } else {
       contentRef.current.style.maxHeight = `${content.scrollHeight}px`;
-      setTimeout(() => {
+      timerId = setTimeout(() => {
         contentRef.current.style.maxHeight = '0';
       }, 10);
     }
+
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
   }, [visible]);
 
   function handleTransitionEnd() {

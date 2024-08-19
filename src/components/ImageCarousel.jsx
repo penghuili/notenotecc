@@ -146,17 +146,28 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
       return;
     }
 
+    let firstTimer;
+    let lastTimer;
     if (innerCurrentIndex === 0) {
-      setTimeout(() => {
+      firstTimer = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(images.length);
       }, 200);
     } else if (innerCurrentIndex === totalSlides - 1) {
-      setTimeout(() => {
+      lastTimer = setTimeout(() => {
         setIsTransitioning(false);
         setCurrentIndex(1);
       }, 200);
     }
+
+    return () => {
+      if (firstTimer) {
+        clearTimeout(firstTimer);
+      }
+      if (lastTimer) {
+        clearTimeout(lastTimer);
+      }
+    };
   }, [innerCurrentIndex, images.length, isSwipable, totalSlides]);
 
   if (!images?.length) {

@@ -1,30 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function useAutoSave(onSave, delay = 1000) {
   const [content, setContent] = useState('');
-  const [timer, setTimer] = useState(null);
-
-  useEffect(() => {
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [timer]);
+  const timerIdRef = useRef(null);
 
   const handleChange = newContent => {
     setContent(newContent);
 
-    if (timer) {
-      clearTimeout(timer);
+    if (timerIdRef.current) {
+      clearTimeout(timerIdRef.current);
     }
 
-    const newTimer = setTimeout(() => {
+    timerIdRef.current = setTimeout(() => {
       onSave(newContent);
     }, delay);
-
-    setTimer(newTimer);
   };
+
+  useEffect(() => {
+    return () => {
+      if (timerIdRef.current) {
+        clearTimeout(timerIdRef.current);
+      }
+    };
+  }, []);
 
   return [content, handleChange];
 }
