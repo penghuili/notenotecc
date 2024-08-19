@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { navigateEffect } from '../shared/react/store/sharedEffects.js';
 import { ImageCarousel } from './ImageCarousel.jsx';
-import { Markdown } from './MarkdownEditor/index.jsx';
+import { Markdown } from './MarkdownEditor/Markdown.jsx';
 import { NoteActions } from './NoteActions.jsx';
 import { TextTruncate } from './TextTruncate.jsx';
 

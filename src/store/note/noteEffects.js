@@ -297,7 +297,6 @@ function updateStates(newNote, type) {
 
   // single
   if (type === 'update' || type === 'create') {
-    console.log('update single note');
     noteCat.set(newNote);
   }
 
