@@ -1,5 +1,5 @@
 import { CheckboxGroup, Flex, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
@@ -14,15 +14,6 @@ const checkboxRootStyle = {
 
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
-
-export function useResetAlbumsSelector() {
-  useEffect(() => {
-    return () => {
-      albumDescriptionCat.reset();
-      albumSelectedKeysCat.reset();
-    };
-  }, []);
-}
 
 export const AlbumsSelector = React.memo(() => {
   return (

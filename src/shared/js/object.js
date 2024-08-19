@@ -59,3 +59,18 @@ export function updateOrPrepend(obj, path, sortKey, value) {
 export function arrayToObject(arr, key) {
   return arr.reduce((acc, item) => ({ ...acc, [item[key]]: item }), {});
 }
+
+export function compareObjects(obj1, obj2) {
+  if (!obj1 || !obj2) {
+    return obj1 === obj2;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  return keys1.every(key => obj1[key] === obj2[key]);
+}

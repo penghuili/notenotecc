@@ -11,7 +11,7 @@ import { pickedPhotosCat, PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
-export const Camera = React.memo(({ type, onSelect, onClose }) => {
+export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
   const [images, setImages] = useState([]);
 
@@ -33,7 +33,11 @@ export const Camera = React.memo(({ type, onSelect, onClose }) => {
   }, []);
 
   return (
-    <FullscreenPopup onConfirm={handleSelect} onClose={onClose} disabled={!images?.length}>
+    <FullscreenPopup
+      onConfirm={handleSelect}
+      onClose={onClose}
+      disabled={disabled || !images?.length}
+    >
       {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
       {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}

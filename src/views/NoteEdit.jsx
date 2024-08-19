@@ -5,7 +5,6 @@ import {
   albumDescriptionCat,
   albumSelectedKeysCat,
   AlbumsSelector,
-  useResetAlbumsSelector,
 } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
@@ -43,6 +42,17 @@ export const NoteEdit = React.memo(
     const [innerNoteId, setInnerNoteId] = useState(noteId);
 
     const prepareData = useCallback(async () => {
+      if (cameraType) {
+        showCameraCat.set(true);
+        showEditorCat.set(false);
+      } else if (editor) {
+        showCameraCat.set(false);
+        showEditorCat.set(true);
+      } else {
+        showCameraCat.set(false);
+        showEditorCat.set(false);
+      }
+
       if (!noteId) {
         return;
       }
@@ -54,10 +64,7 @@ export const NoteEdit = React.memo(
         descriptionCat.set(note.note);
         albumSelectedKeysCat.set((note?.albumIds || []).map(a => a.albumId));
       }
-    }, [noteId]);
-
-    useScrollToTop();
-    useResetAlbumsSelector();
+    }, [cameraType, editor, noteId]);
 
     useEffect(() => {
       if (!noteId) {
@@ -67,22 +74,13 @@ export const NoteEdit = React.memo(
       }
     }, [noteId]);
 
-    useEffect(() => {
-      if (cameraType) {
-        showCameraCat.set(true);
-        showEditorCat.set(false);
-      } else if (editor) {
-        showCameraCat.set(false);
-        showEditorCat.set(true);
-      } else {
-        showCameraCat.set(false);
-        showEditorCat.set(false);
-      }
-    }, [cameraType, editor]);
+    useScrollToTop();
 
     useEffect(() => {
       return () => {
         descriptionCat.reset();
+        albumDescriptionCat.reset();
+        albumSelectedKeysCat.reset();
       };
     }, []);
 
@@ -93,8 +91,8 @@ export const NoteEdit = React.memo(
         <NoteView noteId={innerNoteId} />
 
         <Editor noteId={innerNoteId} />
-        <AddImagesEditor noteId={innerNoteId} cameraType={cameraType} />
-        <AlbumsEditor noteId={innerNoteId} />
+        <AddImages noteId={innerNoteId} cameraType={cameraType} />
+        <AddAlbums noteId={innerNoteId} />
       </PrepareData>
     );
   }
@@ -116,93 +114,6 @@ const Header = React.memo(() => {
       hasBack
     />
   );
-});
-
-const Editor = React.memo(({ noteId }) => {
-  const noteItem = useNote(noteId);
-
-  const description = useCat(descriptionCat);
-  const isUpdating = useCat(isUpdatingNoteCat);
-  const showEditor = useCat(showEditorCat);
-
-  const handleAutoSave = useCallback(() => {
-    updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      note: description || null,
-      goBack: false,
-      showSuccess: false,
-    });
-  }, [description, noteId, noteItem?.encryptedPassword]);
-
-  useDebounce(description, handleAutoSave, 500);
-
-  const handleClose = useCallback(() => {
-    replaceTo(`/notes/${noteId}`);
-  }, [noteId]);
-
-  if (!showEditor) {
-    return null;
-  }
-
-  return (
-    <FullscreenPopup onBack={handleClose} disabled={isUpdating}>
-      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
-    </FullscreenPopup>
-  );
-});
-
-const AddImagesEditor = React.memo(({ noteId, cameraType }) => {
-  const showCamera = useCat(showCameraCat);
-  const noteItem = useNote(noteId);
-
-  const handleClose = useCallback(() => {
-    replaceTo(`/notes/${noteId}`);
-  }, [noteId]);
-
-  const handleAddImages = useCallback(
-    async newImages => {
-      await addImagesEffect(noteId, {
-        encryptedPassword: noteItem?.encryptedPassword,
-        images: newImages,
-      });
-      replaceTo(`/notes/${noteId}`);
-    },
-    [noteId, noteItem?.encryptedPassword]
-  );
-
-  useEffect(() => {
-    return () => {
-      showCameraCat.reset();
-    };
-  }, []);
-
-  if (!showCamera) {
-    return null;
-  }
-
-  return <Camera type={cameraType} onSelect={handleAddImages} onClose={handleClose} />;
-});
-
-const AlbumsEditor = React.memo(({ noteId }) => {
-  const noteItem = useNote(noteId);
-  const isUpdating = useCat(isUpdatingNoteCat);
-
-  const handleSave = useCallback(
-    newAlbumKeys => {
-      updateNoteEffect(noteId, {
-        encryptedPassword: noteItem?.encryptedPassword,
-        albumIds: newAlbumKeys,
-        goBack: false,
-      });
-    },
-    [noteId, noteItem?.encryptedPassword]
-  );
-
-  const handleClose = useCallback(() => {
-    showAlbumsSelectorCat.set(false);
-  }, []);
-
-  return <AddAlbums onConfirm={handleSave} onClose={handleClose} disabled={isUpdating} />;
 });
 
 const NoteView = React.memo(({ noteId }) => {
@@ -233,10 +144,79 @@ const NoteView = React.memo(({ noteId }) => {
   );
 });
 
-const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
-  const showAlbumsSelector = useCat(showAlbumsSelectorCat);
+const Editor = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
+
+  const description = useCat(descriptionCat);
+  const isUpdating = useCat(isUpdatingNoteCat);
+  const showEditor = useCat(showEditorCat);
+
+  const handleAutoSave = useCallback(() => {
+    updateNoteEffect(noteId, {
+      encryptedPassword: noteItem?.encryptedPassword,
+      note: description || null,
+      goBack: false,
+      showSuccess: false,
+    });
+  }, [description, noteId, noteItem?.encryptedPassword]);
+
+  useDebounce(description, handleAutoSave, 500);
+
+  const handleBack = useCallback(() => {
+    replaceTo(`/notes/${noteId}`);
+  }, [noteId]);
+
+  if (!showEditor) {
+    return null;
+  }
+
+  return (
+    <FullscreenPopup onBack={handleBack} disabled={isUpdating}>
+      <MarkdownEditor autoFocus defaultText={description} onChange={descriptionCat.set} />
+    </FullscreenPopup>
+  );
+});
+
+const AddImages = React.memo(({ noteId, cameraType }) => {
+  const showCamera = useCat(showCameraCat);
+  const isAddingImages = useCat(isAddingImagesCat);
+  const noteItem = useNote(noteId);
+
+  const handleClose = useCallback(() => {
+    replaceTo(`/notes/${noteId}`);
+  }, [noteId]);
+
+  const handleAddImages = useCallback(
+    async newImages => {
+      await addImagesEffect(noteId, {
+        encryptedPassword: noteItem?.encryptedPassword,
+        images: newImages,
+      });
+      replaceTo(`/notes/${noteId}`);
+    },
+    [noteId, noteItem?.encryptedPassword]
+  );
+
+  if (!showCamera) {
+    return null;
+  }
+
+  return (
+    <Camera
+      type={cameraType}
+      disabled={isAddingImages}
+      onSelect={handleAddImages}
+      onClose={handleClose}
+    />
+  );
+});
+
+const AddAlbums = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
   const albumDescription = useCat(albumDescriptionCat);
   const isAddingAlbum = useCat(isCreatingAlbumCat);
+  const isUpdating = useCat(isUpdatingNoteCat);
+  const showAlbumsSelector = useCat(showAlbumsSelectorCat);
 
   const handleConfirm = useCallback(async () => {
     if (albumDescription) {
@@ -252,25 +232,17 @@ const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
       isCreatingAlbumCat.set(false);
     }
 
-    if (onConfirm) {
-      await onConfirm(albumSelectedKeysCat.get());
-    }
+    await updateNoteEffect(noteId, {
+      encryptedPassword: noteItem?.encryptedPassword,
+      albumIds: albumSelectedKeysCat.get(),
+      goBack: false,
+    });
 
     showAlbumsSelectorCat.set(false);
-  }, [albumDescription, onConfirm]);
+  }, [albumDescription, noteId, noteItem?.encryptedPassword]);
 
   const handleClose = useCallback(() => {
-    if (onClose) {
-      onClose();
-    } else {
-      showAlbumsSelectorCat.set(false);
-    }
-  }, [onClose]);
-
-  useEffect(() => {
-    return () => {
-      showAlbumsSelectorCat.reset();
-    };
+    showAlbumsSelectorCat.set(false);
   }, []);
 
   if (!showAlbumsSelector) {
@@ -281,7 +253,7 @@ const AddAlbums = React.memo(({ onConfirm, onClose, disabled }) => {
     <FullscreenPopup
       onConfirm={handleConfirm}
       onClose={handleClose}
-      disabled={disabled || isAddingAlbum}
+      disabled={isUpdating || isAddingAlbum}
     >
       <AlbumsSelector />
     </FullscreenPopup>

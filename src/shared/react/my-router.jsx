@@ -2,8 +2,8 @@ import { Link } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
-export const currentPathCat = createCat(window.location.pathname);
-export const queryParamsCat = createCat(parseSearch(window.location.search));
+const currentPathCat = createCat(window.location.pathname);
+const queryParamsCat = createCat(parseSearch(window.location.search));
 
 listenToPopStateChange();
 
