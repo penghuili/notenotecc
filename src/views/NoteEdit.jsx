@@ -11,6 +11,7 @@ import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { addRequestToQueue } from '../lib/requestQueue.js';
 import { useDebounce } from '../lib/useDebounce.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
@@ -67,9 +68,15 @@ export const NoteEdit = React.memo(
     }, [cameraType, editor, noteId]);
 
     useEffect(() => {
+      async function createNote() {
+        await createNoteEffect({ note: '', goBack: false, showSuccess: false });
+        setInnerNoteId(noteCat.get()?.sortKey);
+      }
+
       if (!noteId) {
-        createNoteEffect({ note: '', goBack: false, showSuccess: false }).then(() => {
-          setInnerNoteId(noteCat.get()?.sortKey);
+        addRequestToQueue({
+          args: [],
+          handler: createNote,
         });
       }
     }, [noteId]);
@@ -144,6 +151,15 @@ const NoteView = React.memo(({ noteId }) => {
   );
 });
 
+const saveDescription = async ({ noteId, description, encryptedPassword }) => {
+  await updateNoteEffect(noteId, {
+    encryptedPassword: encryptedPassword,
+    note: description || null,
+    goBack: false,
+    showSuccess: false,
+  });
+};
+
 const Editor = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
@@ -152,11 +168,9 @@ const Editor = React.memo(({ noteId }) => {
   const showEditor = useCat(showEditorCat);
 
   const handleAutoSave = useCallback(() => {
-    updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      note: description || null,
-      goBack: false,
-      showSuccess: false,
+    addRequestToQueue({
+      args: [{ noteId, description, encryptedPassword: noteItem?.encryptedPassword }],
+      handler: saveDescription,
     });
   }, [description, noteId, noteItem?.encryptedPassword]);
 
@@ -177,6 +191,13 @@ const Editor = React.memo(({ noteId }) => {
   );
 });
 
+const saveImages = async ({ noteId, images, encryptedPassword }) => {
+  await addImagesEffect(noteId, {
+    encryptedPassword: encryptedPassword,
+    images,
+  });
+};
+
 const AddImages = React.memo(({ noteId, cameraType }) => {
   const showCamera = useCat(showCameraCat);
   const isAddingImages = useCat(isAddingImagesCat);
@@ -188,9 +209,9 @@ const AddImages = React.memo(({ noteId, cameraType }) => {
 
   const handleAddImages = useCallback(
     async newImages => {
-      await addImagesEffect(noteId, {
-        encryptedPassword: noteItem?.encryptedPassword,
-        images: newImages,
+      addRequestToQueue({
+        args: [{ noteId, images: newImages, encryptedPassword: noteItem?.encryptedPassword }],
+        handler: saveImages,
       });
       replaceTo(`/notes/${noteId}`);
     },
@@ -211,35 +232,41 @@ const AddImages = React.memo(({ noteId, cameraType }) => {
   );
 });
 
+const saveAlbums = async ({ noteId, encryptedPassword }) => {
+  const albumDescription = albumDescriptionCat.get();
+  if (albumDescription) {
+    isCreatingAlbumCat.set(true);
+
+    const { data } = await createAlbum({ title: albumDescription });
+    if (data) {
+      albumsCat.set([...albumsCat.get(), data]);
+      albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
+      albumDescriptionCat.set('');
+    }
+
+    isCreatingAlbumCat.set(false);
+  }
+
+  await updateNoteEffect(noteId, {
+    encryptedPassword: encryptedPassword,
+    albumIds: albumSelectedKeysCat.get(),
+    goBack: false,
+  });
+};
+
 const AddAlbums = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
-  const albumDescription = useCat(albumDescriptionCat);
   const isAddingAlbum = useCat(isCreatingAlbumCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const showAlbumsSelector = useCat(showAlbumsSelectorCat);
 
   const handleConfirm = useCallback(async () => {
-    if (albumDescription) {
-      isCreatingAlbumCat.set(true);
-
-      const { data } = await createAlbum({ title: albumDescription });
-      if (data) {
-        albumsCat.set([...albumsCat.get(), data]);
-        albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
-        albumDescriptionCat.set('');
-      }
-
-      isCreatingAlbumCat.set(false);
-    }
-
-    await updateNoteEffect(noteId, {
-      encryptedPassword: noteItem?.encryptedPassword,
-      albumIds: albumSelectedKeysCat.get(),
-      goBack: false,
+    addRequestToQueue({
+      args: [{ noteId, encryptedPassword: noteItem?.encryptedPassword }],
+      handler: saveAlbums,
     });
-
     showAlbumsSelectorCat.set(false);
-  }, [albumDescription, noteId, noteItem?.encryptedPassword]);
+  }, [noteId, noteItem?.encryptedPassword]);
 
   const handleClose = useCallback(() => {
     showAlbumsSelectorCat.set(false);
