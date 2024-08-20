@@ -13,11 +13,6 @@ import { Markdown } from './MarkdownEditor/Markdown.jsx';
 import { NoteActions } from './NoteActions.jsx';
 import { TextTruncate } from './TextTruncate.jsx';
 
-const addAlbumData = {
-  sortKey: 'add-album',
-  title: '+ Add tag',
-};
-
 export const NoteItem = React.memo(({ note, albums }) => {
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
@@ -49,15 +44,31 @@ export const NoteItem = React.memo(({ note, albums }) => {
     [note]
   );
 
-  const handleUpdateAlbums = useCallback(() => {
-    const currentPath = currentPathCat.get();
-    if (currentPath !== `/notes/${note.sortKey}`) {
-      noteCat.set(note);
-      navigate(`/notes/${note.sortKey}`);
+  const albumsElement = useMemo(() => {
+    if (isDetailsPage || !albums?.length) {
+      return null;
     }
 
-    navigate(`/notes/${note.sortKey}?albums=1`);
-  }, [note]);
+    return (
+      <Flex wrap="wrap">
+        {albums?.map(album => (
+          <AlbumItem key={album.sortKey} album={album} to={`/albums/${album.sortKey}`} />
+        ))}
+      </Flex>
+    );
+  }, [albums, isDetailsPage]);
+
+  const agoElement = useMemo(() => {
+    if (isDetailsPage) {
+      return null;
+    }
+
+    return (
+      <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
+        {ago}
+      </Text>
+    );
+  }, [ago, isDetailsPage]);
 
   return (
     <Box mb="8">
@@ -66,12 +77,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
           {dateTime}
         </Text>
 
-        <NoteActions
-          note={note}
-          goBackAfterDelete={isDetailsPage}
-          onEdit={handleEidt}
-          onUpdateAlbums={handleUpdateAlbums}
-        />
+        <NoteActions note={note} goBackAfterDelete={isDetailsPage} onEdit={handleEidt} />
       </Flex>
       {!!note.images?.length && (
         <ImageCarousel
@@ -88,29 +94,9 @@ export const NoteItem = React.memo(({ note, albums }) => {
         !!isDetailsPage && <AddNotePlaceholder onClick={handleEidt} />
       )}
 
-      {(!!albums?.length || !!isDetailsPage) && (
-        <Flex wrap="wrap">
-          {albums?.map(album => (
-            <AlbumItem
-              key={album.sortKey}
-              album={album}
-              to={isDetailsPage ? `/notes/${note.sortKey}?albums=1` : `/albums/${album.sortKey}`}
-            />
-          ))}
-          {!!isDetailsPage && (
-            <AlbumItem
-              key={addAlbumData.sortKey}
-              album={addAlbumData}
-              to={`/notes/${note.sortKey}?albums=1`}
-              color="orange"
-            />
-          )}
-        </Flex>
-      )}
+      {albumsElement}
 
-      <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
-        {ago}
-      </Text>
+      {agoElement}
     </Box>
   );
 });

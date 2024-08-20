@@ -1,3 +1,4 @@
+import { albumDescriptionCat, albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
 import { orderByPosition } from '../../shared/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared/react/eventEmitter';
@@ -49,13 +50,12 @@ export async function fetchAlbumsEffect(force) {
 
 export async function createAlbumEffect({ title, onSucceeded, goBack }) {
   isCreatingAlbumCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await createAlbum({ title });
   if (data) {
     albumsCat.set([...albumsCat.get(), data]);
-
-    setToastEffect('Saved!');
+    albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
+    albumDescriptionCat.set('');
 
     if (onSucceeded) {
       onSucceeded(data);

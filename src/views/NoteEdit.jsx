@@ -17,8 +17,6 @@ import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { goBack, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
-import { createAlbum } from '../store/album/albumNetwork.js';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -93,7 +91,6 @@ export const NoteEdit = React.memo(
 
         <Editor />
         <AddImages cameraType={cameraType} />
-        <AddAlbums />
       </PrepareData>
     );
   }
@@ -131,7 +128,13 @@ const NoteView = React.memo(() => {
     return null;
   }
 
-  return <NoteItem key={noteItem.sortKey} note={noteItem} albums={getNoteAlbums(noteItem)} />;
+  return (
+    <>
+      <NoteItem key={noteItem.sortKey} note={noteItem} albums={getNoteAlbums(noteItem)} />
+
+      <AddAlbums />
+    </>
+  );
 });
 
 const saveDescription = async ({ noteId, description, encryptedPassword }) => {
@@ -215,34 +218,16 @@ const AddImages = React.memo(({ cameraType }) => {
   );
 });
 
-const saveAlbums = async ({ noteId, encryptedPassword }) => {
-  const albumDescription = albumDescriptionCat.get();
-  if (albumDescription) {
-    isCreatingAlbumCat.set(true);
-
-    const { data } = await createAlbum({ title: albumDescription });
-    if (data) {
-      albumsCat.set([...albumsCat.get(), data]);
-      albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
-      albumDescriptionCat.set('');
-    }
-
-    isCreatingAlbumCat.set(false);
-  }
-
+const saveAlbums = async ({ noteId, encryptedPassword, albumIds }) => {
   await updateNoteEffect(noteId, {
     encryptedPassword: encryptedPassword,
-    albumIds: albumSelectedKeysCat.get(),
+    albumIds,
     goBack: false,
   });
 };
 
 const AddAlbums = React.memo(() => {
-  const isAddingAlbum = useCat(isCreatingAlbumCat);
-  const isUpdating = useCat(isUpdatingNoteCat);
-  const showAlbumsSelector = useCat(showAlbumsSelectorCat);
-
-  const handleConfirm = useCallback(async () => {
+  const handleChange = useCallback(async albumIds => {
     const noteId = noteIdCat.get();
     const encryptedPassword = encryptedPasswordCat.get();
     if (!noteId || !encryptedPassword) {
@@ -250,27 +235,10 @@ const AddAlbums = React.memo(() => {
     }
 
     addRequestToQueue({
-      args: [{ noteId, encryptedPassword }],
+      args: [{ noteId, encryptedPassword, albumIds }],
       handler: saveAlbums,
     });
-    goBack();
   }, []);
 
-  const handleClose = useCallback(() => {
-    goBack();
-  }, []);
-
-  if (!showAlbumsSelector) {
-    return null;
-  }
-
-  return (
-    <FullscreenPopup
-      onConfirm={handleConfirm}
-      onClose={handleClose}
-      disabled={isUpdating || isAddingAlbum}
-    >
-      <AlbumsSelector />
-    </FullscreenPopup>
-  );
+  return <AlbumsSelector onChange={handleChange} />;
 });

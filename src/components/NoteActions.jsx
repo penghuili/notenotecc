@@ -1,8 +1,8 @@
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
-  RiHashtag,
   RiImageAddLine,
+  RiInformation2Line,
   RiLockLine,
   RiMore2Line,
   RiPencilLine,
@@ -12,6 +12,7 @@ import { useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { navigate } from '../shared/react/my-router.jsx';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
@@ -20,7 +21,7 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpdateAlbums }) => {
+export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showCamera, setShowCamera] = useState(false);
@@ -53,6 +54,10 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
     setShowCamera(false);
   }, []);
 
+  const handleShowDetails = useCallback(() => {
+    navigate(`/notes/${note.sortKey}`);
+  }, [note.sortKey]);
+
   if (!note) {
     return null;
   }
@@ -83,9 +88,9 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={onUpdateAlbums}>
-            <RiHashtag />
-            Update tags
+          <DropdownMenu.Item onClick={handleShowDetails}>
+            <RiInformation2Line />
+            Details
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator />

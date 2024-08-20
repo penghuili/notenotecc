@@ -1,10 +1,10 @@
-import { CheckboxGroup, Flex, Text } from '@radix-ui/themes';
+import { Button, CheckboxGroup, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { InputField } from '../shared/react/InputField.jsx';
 import { albumsCat } from '../store/album/albumCats.js';
+import { createAlbumEffect } from '../store/album/albumEffects.js';
 
 const checkboxRootStyle = {
   flexDirection: 'row',
@@ -15,41 +15,55 @@ const checkboxRootStyle = {
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
-export const AlbumsSelector = React.memo(() => {
+export const AlbumsSelector = React.memo(({ onChange }) => {
   return (
     <>
-      <Flex direction="column" gap="2">
-        <AlbumItems />
+      <Flex direction="column" gap="4">
+        <AlbumItems onChange={onChange} />
 
-        <AlbumDescription />
+        <AlbumDescription onChange={onChange} />
       </Flex>
     </>
   );
 });
 
-const AlbumDescription = React.memo(() => {
+const AlbumDescription = React.memo(({ onChange }) => {
   const description = useCat(albumDescriptionCat);
 
-  useRerenderDetector('AlbumDescription', { description });
-
-  const handleNewAlbumChange = useCallback(value => {
-    albumDescriptionCat.set(value);
-  }, []);
+  const handleCreate = useCallback(async () => {
+    await createAlbumEffect({
+      title: description,
+      onSucceeded: () => {
+        onChange(albumSelectedKeysCat.get());
+      },
+    });
+  }, [description, onChange]);
 
   return (
-    <InputField placeholder="New album name" value={description} onChange={handleNewAlbumChange} />
+    <Flex gap="2">
+      <InputField
+        placeholder="New tag name"
+        value={description}
+        onChange={albumDescriptionCat.set}
+      />
+      <Button onClick={handleCreate} variant="soft">
+        Add new tag
+      </Button>
+    </Flex>
   );
 });
 
-const AlbumItems = React.memo(() => {
+const AlbumItems = React.memo(({ onChange }) => {
   const albums = useCat(albumsCat);
   const selectedKeys = useCat(albumSelectedKeysCat);
 
-  useRerenderDetector('AlbumItems', { albums, selectedKeys });
-
-  const handleSelectedKeysChange = useCallback(value => {
-    albumSelectedKeysCat.set(value);
-  }, []);
+  const handleSelectedKeysChange = useCallback(
+    value => {
+      albumSelectedKeysCat.set(value);
+      onChange(albumSelectedKeysCat.get());
+    },
+    [onChange]
+  );
 
   if (!albums?.length) {
     return null;
