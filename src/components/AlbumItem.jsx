@@ -1,54 +1,12 @@
-import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
-import React, { useCallback } from 'react';
-import { useCat } from 'usecat';
+import { Badge } from '@radix-ui/themes';
+import React from 'react';
 
-import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { RouteLink } from '../shared/react/my-router.jsx';
-import { navigateEffect } from '../shared/react/store/sharedEffects';
-import { isDeletingAlbumCat } from '../store/album/albumCats';
-import { deleteAlbumEffect } from '../store/album/albumEffects';
+import { CustomRouteLink } from '../shared/react/my-router.jsx';
 
-export const AlbumItem = React.memo(({ album }) => {
-  const isDeleting = useCat(isDeletingAlbumCat);
-
-  const handleEdit = useCallback(() => {
-    navigateEffect(`/albums/${album.sortKey}/edit`);
-  }, [album.sortKey]);
-
-  const handleDelete = useCallback(
-    e => {
-      e.stopPropagation();
-      deleteAlbumEffect(album.sortKey, {});
-    },
-    [album.sortKey]
-  );
-
+export const AlbumItem = React.memo(({ album, to, color }) => {
   return (
-    <Flex align="center" mr="3" mb="2">
-      <RouteLink key={album.sortKey} to={`/albums/${album.sortKey}`}>
-        #{album.title}
-      </RouteLink>
-
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton radius="full" ml="1" variant="soft">
-            <RiMore2Line />
-          </IconButton>
-        </DropdownMenu.Trigger>
-
-        <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleEdit}>
-            <RiPencilLine />
-            Edit
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item onClick={handleDelete} color={errorColor} disabled={isDeleting}>
-            <RiDeleteBinLine />
-            Delete
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
-    </Flex>
+    <CustomRouteLink to={to || `/albums/${album.sortKey}`} color={color} mr="3" mb="2">
+      <Badge>{album.title}</Badge>
+    </CustomRouteLink>
   );
 });

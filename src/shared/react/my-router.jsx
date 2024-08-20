@@ -2,40 +2,58 @@ import { Link } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
-const currentPathCat = createCat(window.location.pathname);
-const queryParamsCat = createCat(parseSearch(window.location.search));
+export const currentPathCat = createCat(window.location.pathname);
+export const queryParamsCat = createCat(parseSearch(window.location.search));
 
 listenToPopStateChange();
 
 export const navigate = to => {
-  window.history.pushState({}, '', to);
-  const [path, search] = to.split('?');
-  currentPathCat.set(path);
-  queryParamsCat.set(parseSearch(search));
+  if (isUrlChanged(to)) {
+    window.history.pushState({}, '', to);
+    updatePathAndQuery(to);
+  }
 };
 
 export const replaceTo = to => {
-  window.history.replaceState({}, '', to);
-  const [path, search] = to.split('?');
-  currentPathCat.set(path);
-  queryParamsCat.set(parseSearch(search));
+  if (isUrlChanged(to)) {
+    window.history.replaceState({}, '', to);
+    updatePathAndQuery(to);
+  }
 };
 
 export const goBack = () => window.history.back();
 
-export const RouteLink = React.memo(({ to, children, mr }) => {
+export const RouteLink = React.memo(({ to, children, mr, mb }) => {
   const handleClick = useCallback(
     e => {
-      e.preventDefault();
-      navigate(to);
+      handleNavigateForLink(e, to);
     },
     [to]
   );
 
   return (
-    <Link href={to} onClick={handleClick} mr={mr}>
+    <Link href={to} onClick={handleClick} mr={mr} mb={mb}>
       {children}
     </Link>
+  );
+});
+
+export const CustomRouteLink = React.memo(({ to, children, mr, mb }) => {
+  const handleClick = useCallback(
+    e => {
+      handleNavigateForLink(e, to);
+    },
+    [to]
+  );
+
+  return (
+    <a
+      href={to}
+      onClick={handleClick}
+      style={{ marginRight: mr && `var(--space-${mr})`, marginBottom: mb && `var(--space-${mb})` }}
+    >
+      {children}
+    </a>
   );
 });
 
@@ -118,4 +136,21 @@ function listenToPopStateChange() {
   };
 
   window.addEventListener('popstate', handleLocationChange);
+}
+
+function handleNavigateForLink(e, to) {
+  e.preventDefault();
+  navigate(to);
+}
+
+function updatePathAndQuery(to) {
+  const [path, search] = to.split('?');
+  const query = parseSearch(search);
+  currentPathCat.set(path);
+  queryParamsCat.set(query);
+}
+
+function isUrlChanged(to) {
+  const current = `${window.location.pathname}${window.location.search}`;
+  return current !== to;
 }

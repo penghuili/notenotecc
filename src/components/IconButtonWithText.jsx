@@ -19,5 +19,5 @@ const HelperText = styled.span`
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-  font-size: 10px;
+  font-size: calc(10px * var(--scaling));
 `;

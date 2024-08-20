@@ -15,7 +15,7 @@ import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { goBack, navigate, replaceTo } from '../shared/react/my-router.jsx';
+import { goBack, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { createAlbum } from '../store/album/albumNetwork.js';
@@ -127,28 +127,11 @@ const NoteView = React.memo(() => {
   const noteItem = useNote(noteId);
   const getNoteAlbums = useGetNoteAlbums();
 
-  const handleShowAlbumsSelector = useCallback(() => {
-    navigate(`/notes/${noteId}?albums=1`);
-  }, [noteId]);
-
-  const handleShowEditor = useCallback(() => {
-    navigate(`/notes/${noteId}?editor=1`);
-  }, [noteId]);
-
   if (!noteItem) {
     return null;
   }
 
-  return (
-    <NoteItem
-      key={noteItem.sortKey}
-      note={noteItem}
-      albums={getNoteAlbums(noteItem)}
-      onEdit={handleShowEditor}
-      showFullText
-      onAlbum={handleShowAlbumsSelector}
-    />
-  );
+  return <NoteItem key={noteItem.sortKey} note={noteItem} albums={getNoteAlbums(noteItem)} />;
 });
 
 const saveDescription = async ({ noteId, description, encryptedPassword }) => {

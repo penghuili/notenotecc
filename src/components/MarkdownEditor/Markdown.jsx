@@ -20,7 +20,7 @@ export const Editor = styled.div`
 
     &::before {
       content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
-      color: var(--gray-5);
+      color: var(--gray-7);
       position: absolute;
       left: 2px;
     }

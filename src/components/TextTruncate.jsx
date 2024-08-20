@@ -30,8 +30,9 @@ const Content = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.5rem;
-  max-height: ${props => (props.showFullText ? 'none' : `calc(1.5rem * var(--max-lines))`)};
+  line-height: var(--line-height-3);
+  max-height: ${props =>
+    props.showFullText ? 'none' : `calc(var(--line-height-3) * var(--max-lines))`};
 `;
 const FadeOut = styled.div`
   position: absolute;

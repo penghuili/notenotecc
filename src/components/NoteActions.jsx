@@ -12,8 +12,7 @@ import { useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { navigate } from '../shared/react/my-router.jsx';
-import { isDeletingNoteCat, isUpdatingNoteCat, noteCat } from '../store/note/noteCats.js';
+import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
   deleteNoteEffect,
@@ -32,20 +31,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
       encryptExistingNoteEffect(note);
     },
     [note]
-  );
-
-  const handleEidt = useCallback(
-    e => {
-      e.stopPropagation();
-      noteCat.set(note);
-      if (onEdit) {
-        onEdit();
-      } else {
-        navigate(`/notes/${note.sortKey}`);
-        navigate(`/notes/${note.sortKey}?editor=1`);
-      }
-    },
-    [note, onEdit]
   );
 
   const handleAddImages = useCallback(
@@ -68,15 +53,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
     setShowCamera(false);
   }, []);
 
-  const handleUpdateAlbums = useCallback(() => {
-    if (onUpdateAlbums) {
-      onUpdateAlbums();
-    } else {
-      navigate(`/notes/${note.sortKey}`);
-      navigate(`/notes/${note.sortKey}?albums=1`);
-    }
-  }, [note.sortKey, onUpdateAlbums]);
-
   if (!note) {
     return null;
   }
@@ -95,7 +71,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
         <RiImageAddLine />
       </IconButton>
 
-      <IconButton variant="ghost" onClick={handleEidt} mr="2">
+      <IconButton variant="ghost" onClick={onEdit} mr="2">
         <RiPencilLine />
       </IconButton>
 
@@ -107,7 +83,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleUpdateAlbums}>
+          <DropdownMenu.Item onClick={onUpdateAlbums}>
             <RiHashtag />
             Update tags
           </DropdownMenu.Item>

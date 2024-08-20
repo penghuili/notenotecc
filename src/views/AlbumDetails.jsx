@@ -1,11 +1,17 @@
-import React, { useCallback } from 'react';
+import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
+import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
+import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { FormButton } from '../shared/react/FormButton.jsx';
+import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { isDeletingAlbumCat } from '../store/album/albumCats.js';
+import { deleteAlbumEffect } from '../store/album/albumEffects.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
@@ -20,7 +26,7 @@ export const AlbumDetails = React.memo(({ pathParams: { albumId } }) => {
 
   return (
     <PrepareData load={load}>
-      <Header />
+      <Header albumId={albumId} />
 
       <Notes albumId={albumId} />
 
@@ -29,17 +35,58 @@ export const AlbumDetails = React.memo(({ pathParams: { albumId } }) => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = React.memo(({ albumId }) => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
   const isAddingImages = useCat(isAddingImagesCat);
+  const isDeleting = useCat(isDeletingAlbumCat);
+
+  const handleEdit = useCallback(() => {
+    navigate(`/albums/${albumId}/edit`);
+  }, [albumId]);
+
+  const handleDelete = useCallback(
+    e => {
+      e.stopPropagation();
+      deleteAlbumEffect(albumId, {});
+    },
+    [albumId]
+  );
+
+  const rightElement = useMemo(() => {
+    return (
+      <>
+        <ScrollToTop />
+
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton mr="2" ml="2" variant="ghost">
+              <RiMore2Line />
+            </IconButton>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Content variant="soft">
+            <DropdownMenu.Item onClick={handleEdit}>
+              <RiPencilLine />
+              Edit
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Item onClick={handleDelete} color={errorColor} disabled={isDeleting}>
+              <RiDeleteBinLine />
+              Delete
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </>
+    );
+  }, [handleDelete, handleEdit, isDeleting]);
 
   return (
     <PageHeader
       title="Tag details"
-      isLoading={isLoading || isAddingImages}
+      isLoading={isLoading || isAddingImages || isDeleting}
       fixed
       hasBack
-      right={<ScrollToTop />}
+      right={rightElement}
     />
   );
 });
