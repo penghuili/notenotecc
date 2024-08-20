@@ -22,6 +22,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   const [error, setError] = useState(null);
 
   const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
+  const isDestroyedRef = useRef(false);
 
   const handleRequestCamera = useCallback(async mode => {
     setError(null);
@@ -72,8 +73,14 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   }, [handleRequestCamera]);
 
   useEffect(() => {
+    isDestroyedRef.current = false;
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
+        if (isDestroyedRef.current) {
+          stopStream(data);
+          return;
+        }
+
         videoStreamRef.current = data;
         if (videoRef.current) {
           videoRef.current.srcObject = data;
@@ -87,6 +94,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     return () => {
       stopStream(videoStreamRef.current);
       videoStreamRef.current = null;
+      isDestroyedRef.current = true;
     };
   }, []);
 

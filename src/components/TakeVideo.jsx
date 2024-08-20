@@ -92,6 +92,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
   const progressElementRef = useRef(null);
+  const isDestroyedRef = useRef(false);
 
   const handleSwitchCamera = useCallback(async () => {
     stopStream(streamRef.current);
@@ -251,8 +252,13 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   }, [clearTimers, stopMediaRecorder]);
 
   useEffect(() => {
+    isDestroyedRef.current = false;
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
+        if (isDestroyedRef.current) {
+          stopStream(data);
+          return;
+        }
         streamRef.current = data;
         if (videoRef.current) {
           videoRef.current.srcObject = data;
@@ -276,6 +282,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
         mediaRecorderRef.current.ondataavailable = null;
         mediaRecorderRef.current = null;
       }
+      isDestroyedRef.current = true;
     };
   }, []);
 
