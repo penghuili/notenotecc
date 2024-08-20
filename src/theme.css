@@ -82,6 +82,6 @@ body * {
 }
 
 .remixicon {
-  width: 20px;
-  height: 20px;
+  width: calc(20px * var(--scaling));
+  height: calc(20px * var(--scaling));
 }

@@ -3,7 +3,6 @@ import './style.css';
 
 import { Theme } from '@radix-ui/themes';
 import React from 'react';
-import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
@@ -28,12 +27,8 @@ export function AppWrapper({ children }) {
   const scaling = useCat(fontScalingCat);
 
   return (
-    <StyledTheme accentColor={themeColor} appearance="light" scaling={scaling}>
+    <Theme accentColor={themeColor} appearance="light" style={{ '--scaling': `${scaling}` }}>
       <PageWrapper hasMinHeight={hasMinHeight}>{children}</PageWrapper>
-    </StyledTheme>
+    </Theme>
   );
 }
-
-const StyledTheme = styled(Theme)`
-  --scaling: ${props => props.scaling};
-`;
