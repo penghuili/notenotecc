@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
-import { navigateEffect } from '../shared/react/store/sharedEffects';
+import { navigate } from '../shared/react/my-router.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { pickedPhotosCat } from './PickPhoto.jsx';
@@ -25,23 +25,23 @@ const Wrapper = styled.div`
 
 export const Actions = React.memo(() => {
   const handleTakePhoto = useCallback(() => {
-    navigateEffect(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
+    navigate(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
   }, []);
 
   const handleTakeVideo = useCallback(() => {
-    navigateEffect(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
+    navigate(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
   const handlePickPhotos = useCallback(photos => {
     if (photos) {
       pickedPhotosCat.set(photos);
 
-      navigateEffect(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
+      navigate(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
     }
   }, []);
 
   const handleTakeNote = useCallback(() => {
-    navigateEffect(`/notes/add?editor=1`);
+    navigate(`/notes/add?editor=1`);
   }, []);
 
   return (

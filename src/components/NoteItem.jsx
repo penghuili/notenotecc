@@ -5,7 +5,6 @@ import { useCat } from 'usecat';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { currentPathCat, navigate } from '../shared/react/my-router.jsx';
-import { navigateEffect } from '../shared/react/store/sharedEffects.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { AlbumItem } from './AlbumItem.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
@@ -26,7 +25,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
   }, [currentPath, note.sortKey]);
 
   const handleNavigate = useCallback(() => {
-    navigateEffect(`/notes/${note.sortKey}`);
+    navigate(`/notes/${note.sortKey}`);
   }, [note.sortKey]);
 
   const handleEidt = useCallback(
@@ -84,7 +83,6 @@ export const NoteItem = React.memo(({ note, albums }) => {
           noteId={note.sortKey}
           encryptedPassword={note.encryptedPassword}
           images={note.images}
-          onClick={handleNavigate}
         />
       )}
       {note.note ? (

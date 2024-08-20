@@ -7,14 +7,14 @@ import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared/react/LocalStorage';
-import { Routes } from './shared/react/my-router.jsx';
+import { navigate, Routes } from './shared/react/my-router.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
 import { Setup2FA } from './shared/react/Setup2FA.jsx';
 import { SignIn } from './shared/react/SignIn.jsx';
 import { SignUp } from './shared/react/SignUp.jsx';
 import { isLoggedInCat, useIsEmailVerified } from './shared/react/store/sharedCats.js';
-import { initEffect, navigateEffect } from './shared/react/store/sharedEffects.js';
+import { initEffect } from './shared/react/store/sharedEffects.js';
 import { Verify2FA } from './shared/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
@@ -95,7 +95,7 @@ const AllRoutes = React.memo(() => {
     const redirectUrl = LocalStorage.get(sharedLocalStorageKeys.redirectUrl);
     if (redirectUrl) {
       LocalStorage.remove(sharedLocalStorageKeys.redirectUrl);
-      navigateEffect(redirectUrl);
+      navigate(redirectUrl);
     }
 
     return <Routes routes={loggedInRoutes} />;

@@ -54,10 +54,6 @@ export function goBackEffect() {
   goBack();
 }
 
-export function navigateEffect(path) {
-  navigate(path);
-}
-
 export function setToastEffect(message, type) {
   toastCat.set({
     ...toastCat.get(),
@@ -156,7 +152,7 @@ export async function signInEffect(email, password) {
     }
   } else {
     if (data.tempToken) {
-      navigateEffect('/sign-in/2fa');
+      navigate('/sign-in/2fa');
     } else {
       isLoggedInEffect(true);
     }

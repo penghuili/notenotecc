@@ -17,8 +17,9 @@ import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
+import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { fetchSettingsEffect, navigateEffect } from '../shared/react/store/sharedEffects';
+import { fetchSettingsEffect } from '../shared/react/store/sharedEffects';
 import {
   isAddingImagesCat,
   isDeletingImageCat,
@@ -88,19 +89,19 @@ const HeaderMenu = React.memo(() => {
   const isAdmin = useIsAdmin();
 
   const handleNavigateToAccount = useCallback(() => {
-    navigateEffect('/account');
+    navigate('/account');
   }, []);
 
   const handleNavigateToHistory = useCallback(() => {
-    navigateEffect('/on-this-day');
+    navigate('/on-this-day');
   }, []);
 
   const handleNavigateToAlbums = useCallback(() => {
-    navigateEffect('/albums');
+    navigate('/albums');
   }, []);
 
   const handleNavigateToAI = useCallback(() => {
-    navigateEffect('/ai');
+    navigate('/ai');
   }, []);
 
   return (

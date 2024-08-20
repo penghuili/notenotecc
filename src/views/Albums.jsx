@@ -6,10 +6,9 @@ import { useCat } from 'usecat';
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { RouteLink } from '../shared/react/my-router.jsx';
+import { navigate, RouteLink } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { userCat } from '../shared/react/store/sharedCats.js';
-import { navigateEffect } from '../shared/react/store/sharedEffects.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 
@@ -36,7 +35,7 @@ const Header = React.memo(() => {
   const isDeleting = useCat(isDeletingAlbumCat);
 
   const handleNavigateToReorder = useCallback(() => {
-    navigateEffect('/albums/reorder');
+    navigate('/albums/reorder');
   }, []);
 
   const rightElement = useMemo(

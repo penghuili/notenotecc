@@ -40,8 +40,8 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
       prevActiveElements.current = elements;
     }
 
-    const isEmpty = editorRef.current.textContent.trim() === '';
-    setIsEmpty(isEmpty);
+    const newEmpty = editorRef.current.innerHTML.trim() === '<p></p>';
+    setIsEmpty(newEmpty);
   }, []);
 
   const handleChange = useCallback(

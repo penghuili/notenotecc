@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { RouteLink } from './my-router.jsx';
+import { navigate, RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { navigateEffect, setToastEffect } from './store/sharedEffects';
+import { setToastEffect } from './store/sharedEffects';
 import { resetPasswordSave, resetPasswordTrigger } from './store/sharedNetwork';
 import { toastTypes } from './Toast.jsx';
 
@@ -82,7 +82,7 @@ export function ResetPassword() {
             setIsSaving(true);
             const { data } = await resetPasswordSave(email, password, code);
             if (data) {
-              navigateEffect('/sign-in');
+              navigate('/sign-in');
               setToastEffect(
                 'Your password is reset successfully. Now you can login. You need to reenable 2FA if you want.'
               );

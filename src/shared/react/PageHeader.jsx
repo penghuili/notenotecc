@@ -6,9 +6,10 @@ import { useCat } from 'usecat';
 
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
+import { navigate } from './my-router.jsx';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { isLoggedInCat } from './store/sharedCats.js';
-import { goBackEffect, navigateEffect } from './store/sharedEffects';
+import { goBackEffect } from './store/sharedEffects';
 
 const Wrapper = styled(Flex)`
   width: ${props => (props.fixed ? `${props.width}px` : '100%')};
@@ -35,7 +36,7 @@ const Placeholder = styled.div`
 export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
   const isLoggedIn = useCat(isLoggedInCat);
 
-  const handleNavigateToAccount = useCallback(() => navigateEffect('/account'), []);
+  const handleNavigateToAccount = useCallback(() => navigate('/account'), []);
 
   const iconElement = useMemo(() => {
     if (hasBack) {
