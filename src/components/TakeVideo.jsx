@@ -110,7 +110,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     const { data: stream, error: requestError } = await requestStream(newMode);
     if (stream) {
       streamRef.current = stream;
-      videoRef.current.srcObject = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
     } else {
       setError(requestError);
     }
@@ -166,7 +168,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     if (data) {
       stopStream(streamRef.current);
       streamRef.current = data;
-      videoRef.current.srcObject = data;
+      if (videoRef.current) {
+        videoRef.current.srcObject = data;
+      }
 
       const mediaRecorder = new MediaRecorder(data, {
         mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
@@ -230,7 +234,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
     if (stream) {
       streamRef.current = stream;
-      videoRef.current.srcObject = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
     }
     if (requestError) {
       setError(requestError);
@@ -256,7 +262,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
         streamRef.current = data;
-        videoRef.current.srcObject = data;
+        if (videoRef.current) {
+          videoRef.current.srcObject = data;
+        }
       }
       if (error) {
         setError(error);

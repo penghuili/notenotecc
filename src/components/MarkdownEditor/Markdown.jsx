@@ -14,7 +14,7 @@ export const Editor = styled.div`
 
   &[contenteditable='true'] {
     padding: 10px 0;
-    height: ${props => `${props.height}px`};
+    height: ${props => `${props.height}`};
     overflow-y: auto;
     scrollbar-width: none;
 

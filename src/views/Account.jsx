@@ -32,17 +32,14 @@ export const Account = React.memo(() => {
       <AccountInfo />
 
       <ItemsWrapper align="start">
-        <HorizontalCenter gap="1">
-          <RiShieldCheckLine color={themeCssColor} />
-          <RouteLink to="/security">Security</RouteLink>
-        </HorizontalCenter>
-      </ItemsWrapper>
-
-      <ItemsWrapper align="start">
         <FontSize />
       </ItemsWrapper>
 
       <ItemsWrapper align="start">
+        <HorizontalCenter gap="1">
+          <RiShieldCheckLine color={themeCssColor} />
+          <RouteLink to="/security">Security</RouteLink>
+        </HorizontalCenter>
         <HorizontalCenter gap="1">
           <RiCodeLine color={themeCssColor} />
           <Link href="https://github.com/penghuili/notenotecc" target="_blank">

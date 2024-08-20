@@ -28,7 +28,9 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     const { data, error } = await requestStream(mode);
     if (data) {
       videoStreamRef.current = data;
-      videoRef.current.srcObject = data;
+      if (videoRef.current) {
+        videoRef.current.srcObject = data;
+      }
     }
     if (error) {
       setError(error);
@@ -73,7 +75,9 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
         videoStreamRef.current = data;
-        videoRef.current.srcObject = data;
+        if (videoRef.current) {
+          videoRef.current.srcObject = data;
+        }
       }
       if (error) {
         setError(error);

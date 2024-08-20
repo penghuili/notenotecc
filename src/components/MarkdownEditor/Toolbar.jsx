@@ -504,6 +504,6 @@ const Wrapper = styled(Flex)`
 const Placeholder = styled.div`
   width: ${props => props.width};
   min-width: 0;
-  height: 32px;
+  height: var(--space-6);
   background-color: var(--accent-a3);
 `;

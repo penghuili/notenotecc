@@ -115,7 +115,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   }, [autoFocus, handleCheckActiveElements]);
 
   return (
-    <Wrapper height={windowHeight - 48}>
+    <Wrapper height={`calc(${windowHeight}px - var(--space-8) - var(--space-2))`}>
       <Editor
         ref={editorRef}
         contentEditable
@@ -125,7 +125,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
         onKeyUp={handleCheckActiveElements}
         data-placeholder="Start typing here..."
         isEmpty={isEmpty}
-        height={windowHeight - 48 - 32}
+        height={`calc(${windowHeight}px - var(--space-8) - var(--space-2) - var(--space-6))`}
       />
       <div>
         <Toolbar
@@ -364,7 +364,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  height: ${props => `${props.height}px`};
+  height: ${props => `${props.height}`};
 `;
 
 const has2TrailingSpaces = text => {

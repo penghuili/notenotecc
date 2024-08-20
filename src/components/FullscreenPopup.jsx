@@ -31,12 +31,12 @@ const Top = styled(Flex)`
   left: 0;
   width: 100%;
   max-width: 600px;
-  height: 48px;
+  height: var(--space-8);
   padding: 0.5rem;
 `;
 const TopPlaceholder = styled.div`
   width: 100%;
-  height: 48px;
+  height: calc(var(--space-8) + var(--space-2));
 `;
 
 export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClose, children }) => {
