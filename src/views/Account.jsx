@@ -1,5 +1,5 @@
-import { DataList, Flex, IconButton, Text } from '@radix-ui/themes';
-import { RiFileCopyLine, RiShieldCheckLine } from '@remixicon/react';
+import { DataList, Flex, IconButton, Link, Text } from '@radix-ui/themes';
+import { RiCodeLine, RiFileCopyLine, RiShieldCheckLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
@@ -43,6 +43,12 @@ export const Account = React.memo(() => {
       </ItemsWrapper>
 
       <ItemsWrapper align="start">
+        <HorizontalCenter gap="1">
+          <RiCodeLine color={themeCssColor} />
+          <Link href="https://github.com/penghuili/notenotecc" target="_blank">
+            Source code
+          </Link>
+        </HorizontalCenter>
         <LogoutLink />
       </ItemsWrapper>
 

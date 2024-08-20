@@ -22,6 +22,9 @@ export function Welcome() {
       </ItemsWrapper>
 
       <ItemsWrapper align="start">
+        <Link href="https://github.com/penghuili/notenotecc" target="_blank">
+          Source code
+        </Link>
         <Link href={privacyUrl} target="_blank">
           Privacy
         </Link>
