@@ -84,10 +84,11 @@ export const NoteItem = React.memo(({ note, albums }) => {
           noteId={note.sortKey}
           encryptedPassword={note.encryptedPassword}
           images={note.images}
+          onClick={handleNavigate}
         />
       )}
       {note.note ? (
-        <TextTruncate showFullText={isDetailsPage} onShowMore={handleNavigate}>
+        <TextTruncate showFullText={isDetailsPage} onClick={handleNavigate}>
           <Markdown markdown={note.note} />
         </TextTruncate>
       ) : (

@@ -21,17 +21,13 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
     }
   }, [isPlaying, videoRef]);
 
-  const handlePlay = useCallback(
-    e => {
-      e.stopPropagation();
-      const video = videoRef.current;
-      if (video) {
-        video.play();
-        setIsPlaying(true);
-      }
-    },
-    [videoRef]
-  );
+  const handlePlay = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.play();
+      setIsPlaying(true);
+    }
+  }, [videoRef]);
 
   const toggleFullScreen = useCallback(() => {
     const video = videoRef.current;

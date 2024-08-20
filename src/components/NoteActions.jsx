@@ -2,7 +2,6 @@ import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
   RiImageAddLine,
-  RiInformation2Line,
   RiLockLine,
   RiMore2Line,
   RiPencilLine,
@@ -12,7 +11,6 @@ import { useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { navigate } from '../shared/react/my-router.jsx';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
@@ -54,10 +52,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
     setShowCamera(false);
   }, []);
 
-  const handleShowDetails = useCallback(() => {
-    navigate(`/notes/${note.sortKey}`);
-  }, [note.sortKey]);
-
   if (!note) {
     return null;
   }
@@ -88,13 +82,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleShowDetails}>
-            <RiInformation2Line />
-            Details
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Separator />
-
           <DeleteAction noteId={note.sortKey} goBackAfterDelete={goBackAfterDelete} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
