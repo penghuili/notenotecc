@@ -99,7 +99,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
 
   return (
     <VideoWrapper>
-      <Video ref={videoRef} autoPlay playsInline size={size} />
+      <Video ref={videoRef} autoPlay muted playsInline size={size} />
 
       {errorElement}
 

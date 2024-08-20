@@ -9,9 +9,7 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
 import { navigate } from '../shared/react/my-router.jsx';
-import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
-import { pickedPhotosCat } from './PickPhoto.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -32,12 +30,8 @@ export const Actions = React.memo(() => {
     navigate(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
-  const handlePickPhotos = useCallback(photos => {
-    if (photos) {
-      pickedPhotosCat.set(photos);
-
-      navigate(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
-    }
+  const handlePickPhotos = useCallback(() => {
+    navigate(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
   }, []);
 
   const handleTakeNote = useCallback(() => {
@@ -52,19 +46,9 @@ export const Actions = React.memo(() => {
       <IconButtonWithText onClick={handleTakeVideo} text="Video">
         <RiVideoAddLine />
       </IconButtonWithText>
-
-      <FilePicker
-        accept="image/*"
-        takePhoto={false}
-        multiple
-        onSelect={handlePickPhotos}
-        height="auto"
-      >
-        <IconButtonWithText text="Photo">
-          <RiImageAddLine />
-        </IconButtonWithText>
-      </FilePicker>
-
+      <IconButtonWithText onClick={handlePickPhotos} text="Photo">
+        <RiImageAddLine />
+      </IconButtonWithText>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
         <RiStickyNoteAddLine />
       </IconButtonWithText>

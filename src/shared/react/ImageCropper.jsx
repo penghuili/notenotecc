@@ -5,7 +5,7 @@ import { isAndroidPhone, isIOS } from './device';
 
 const PADDING = 10;
 
-export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
+export const ImageCropper = forwardRef(({ width, pickedImage, onError }, ref) => {
   const [image, setImage] = useState(null);
   const [imagePosition, setImagePosition] = useState({ x: PADDING, y: PADDING });
   const [isDragging, setIsDragging] = useState(false);
@@ -33,6 +33,10 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
       img.onload = () => {
         setImage(img);
       };
+      img.onerror = e => {
+        setImage(null);
+        onError(e);
+      };
       img.src = URL.createObjectURL(pickedImage);
     };
 
@@ -44,7 +48,7 @@ export const ImageCropper = forwardRef(({ width, pickedImage }, ref) => {
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
-  }, [pickedImage]);
+  }, [onError, pickedImage]);
 
   useEffect(() => {
     const setupCropArea = () => {

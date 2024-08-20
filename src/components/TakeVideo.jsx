@@ -10,7 +10,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components';
 
 import { videoType } from '../lib/constants.js';
-import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
 import { isIOS, isMobile } from '../shared/react/device.js';
@@ -83,13 +82,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [error, setError] = useState(null);
-
-  useRerenderDetector('TakeVideo', {
-    isRecording,
-    isPaused,
-    error,
-    onSelect,
-  });
 
   const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
   const streamRef = useRef(null);

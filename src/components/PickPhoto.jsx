@@ -1,8 +1,7 @@
-import { Flex, Text } from '@radix-ui/themes';
-import { RiCropLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useCallback, useRef, useState } from 'react';
+import { Button, Flex, Text } from '@radix-ui/themes';
+import { RiCropLine, RiDeleteBinLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { createCat, useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
 import { makeImageSquare } from '../lib/makeImageSquare';
@@ -27,22 +26,24 @@ const HelperTextWrapper = styled.div`
   position: absolute;
 `;
 
-export const pickedPhotosCat = createCat([]);
-
 export const PickPhoto = React.memo(({ onSelect }) => {
-  const pickedPhotos = useCat(pickedPhotosCat);
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [pickedPhotos, setPickedPhotos] = useState([]);
+  const [error, setError] = useState(null);
 
   const cropperRef = useRef(null);
 
   const handleNextPhoto = useCallback(() => {
-    if (currentPhotoIndex < pickedPhotos.length - 1) {
-      setCurrentPhotoIndex(currentPhotoIndex + 1);
-    } else {
-      setCurrentPhotoIndex(0);
-      pickedPhotosCat.set([]);
+    setError(null);
+    const left = pickedPhotos.slice(1);
+    setPickedPhotos(left);
+  }, [pickedPhotos]);
+
+  const handlePickPhotos = useCallback(photos => {
+    setError(null);
+    if (photos) {
+      setPickedPhotos(Array.from(photos));
     }
-  }, [currentPhotoIndex, pickedPhotos.length]);
+  }, []);
 
   const handleCrop = useCallback(async () => {
     const canvas = cropperRef.current.crop(900);
@@ -54,30 +55,55 @@ export const PickPhoto = React.memo(({ onSelect }) => {
   }, [handleNextPhoto, onSelect]);
 
   const handleSquare = useCallback(async () => {
-    const squareCanvas = await makeImageSquare(pickedPhotos[currentPhotoIndex]);
+    const squareCanvas = await makeImageSquare(pickedPhotos[0]);
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
     const imageUrl = resizedCanvas.toDataURL(imageType);
     onSelect({ blob, url: imageUrl, type: imageType });
 
     handleNextPhoto();
-  }, [currentPhotoIndex, handleNextPhoto, onSelect, pickedPhotos]);
+  }, [handleNextPhoto, onSelect, pickedPhotos]);
 
   const size = getCameraSize();
+
+  const errorElement = useMemo(() => {
+    if (!error) {
+      return null;
+    }
+    return (
+      <HelperTextWrapper>
+        <Flex direction="column" gap="2">
+          <Text align="center">
+            notenote.cc can't process this photo, you can take a screenshot of it, and choose the
+            screenshot.
+          </Text>
+          {pickedPhotos.length > 1 && <Button onClick={handleNextPhoto}>Check next photo</Button>}
+        </Flex>
+      </HelperTextWrapper>
+    );
+  }, [error, handleNextPhoto, pickedPhotos.length]);
 
   return (
     <VideoWrapper>
       <CropperWrapper size={size}>
-        <ImageCropper ref={cropperRef} width={size} pickedImage={pickedPhotos[currentPhotoIndex]} />
-        {!pickedPhotos[currentPhotoIndex] && (
+        <ImageCropper
+          ref={cropperRef}
+          width={size}
+          pickedImage={pickedPhotos[0]}
+          onError={setError}
+        />
+
+        {!pickedPhotos[0] && !error && (
           <HelperTextWrapper>
-            <Text>Pick a photo from your device.</Text>
+            <Text>Pick photos from your device.</Text>
           </HelperTextWrapper>
         )}
+
+        {errorElement}
       </CropperWrapper>
 
       <Flex justify="center" align="center" py="2" gap="2">
-        {pickedPhotos[currentPhotoIndex] ? (
+        {pickedPhotos[0] && !error && (
           <>
             <IconButtonWithText onClick={handleCrop} text="Crop">
               <RiCropLine />
@@ -85,13 +111,18 @@ export const PickPhoto = React.memo(({ onSelect }) => {
             <IconButtonWithText onClick={handleSquare} text="Square">
               <RiSquareLine />
             </IconButtonWithText>
+            <IconButtonWithText onClick={handleNextPhoto} text="Delete" variant="soft">
+              <RiDeleteBinLine />
+            </IconButtonWithText>
           </>
-        ) : (
+        )}
+
+        {(!pickedPhotos[0] || (!!error && pickedPhotos.length === 1)) && (
           <FilePicker
             accept="image/*"
             takePhoto={false}
             multiple
-            onSelect={pickedPhotosCat.set}
+            onSelect={handlePickPhotos}
             height="auto"
           >
             <IconButtonWithText text="Pick">

@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, IconButton } from '@radix-ui/themes';
+import { Button, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -38,7 +38,7 @@ export function Notes() {
     <PrepareData load={load} source="Notes">
       <Header />
 
-      <NotesItems />
+      <NoteItems />
 
       <LoadMore />
 
@@ -141,9 +141,21 @@ const HeaderMenu = React.memo(() => {
   );
 });
 
-const NotesItems = React.memo(() => {
+const NoteItems = React.memo(() => {
   const { items: notes } = useCat(notesCat);
-  return <NotesList notes={notes} />;
+  const isLoading = useCat(isLoadingNotesCat);
+
+  if (notes?.length) {
+    return <NotesList notes={notes} />;
+  }
+  if (!isLoading) {
+    return (
+      <Flex justify="center" py="8">
+        <Text align="center">Click actions below to take your first note.</Text>
+      </Flex>
+    );
+  }
+  return null;
 });
 
 export const NotesList = React.memo(({ notes }) => {
