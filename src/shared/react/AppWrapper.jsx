@@ -3,8 +3,10 @@ import './style.css';
 
 import { Theme } from '@radix-ui/themes';
 import React from 'react';
+import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
+import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
 export const themeColor = 'tomato';
@@ -19,13 +21,19 @@ export const errorCssColor = 'var(--red-9)';
 export const textCssColor = 'var(--gray-12)';
 
 export const hasPageMinHeightCat = createCat(true);
+export const fontScalingCat = createCat(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
 
 export function AppWrapper({ children }) {
   const hasMinHeight = useCat(hasPageMinHeightCat);
+  const scaling = useCat(fontScalingCat);
 
   return (
-    <Theme accentColor={themeColor} appearance="light">
+    <StyledTheme accentColor={themeColor} appearance="light" scaling={scaling}>
       <PageWrapper hasMinHeight={hasMinHeight}>{children}</PageWrapper>
-    </Theme>
+    </StyledTheme>
   );
 }
+
+const StyledTheme = styled(Theme)`
+  --scaling: ${props => props.scaling};
+`;

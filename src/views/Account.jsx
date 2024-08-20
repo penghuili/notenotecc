@@ -10,6 +10,7 @@ import { AppVersion } from '../shared/react/AppVersion.jsx';
 import { themeCssColor } from '../shared/react/AppWrapper.jsx';
 import { copyToClipboard } from '../shared/react/copyToClipboard';
 import { getFileSizeString } from '../shared/react/file';
+import { FontSize } from '../shared/react/FontSize.jsx';
 import { HorizontalCenter } from '../shared/react/HorizontalCenter.jsx';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared/react/LogoutLink.jsx';
@@ -35,6 +36,10 @@ export const Account = React.memo(() => {
           <RiShieldCheckLine color={themeCssColor} />
           <RouteLink to="/security">Security</RouteLink>
         </HorizontalCenter>
+      </ItemsWrapper>
+
+      <ItemsWrapper align="start">
+        <FontSize />
       </ItemsWrapper>
 
       <ItemsWrapper align="start">

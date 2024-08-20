@@ -128,8 +128,8 @@ const NoteView = React.memo(() => {
   const getNoteAlbums = useGetNoteAlbums();
 
   const handleShowAlbumsSelector = useCallback(() => {
-    showAlbumsSelectorCat.set(true);
-  }, []);
+    navigate(`/notes/${noteId}?albums=1`);
+  }, [noteId]);
 
   const handleShowEditor = useCallback(() => {
     navigate(`/notes/${noteId}?editor=1`);

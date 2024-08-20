@@ -9,6 +9,7 @@ export const sharedLocalStorageKeys = {
   privateKey: 'privateKey',
 
   themeMode: 'themeMode',
+  fontScaling: 'fontScaling',
   redirectUrl: 'redirectUrl',
   pdfFileContent: 'pdfFileContent',
 };

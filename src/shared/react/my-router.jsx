@@ -4,24 +4,21 @@ import { createCat, useCat } from 'usecat';
 
 const currentPathCat = createCat(window.location.pathname);
 const queryParamsCat = createCat(parseSearch(window.location.search));
-let browserBackBehavior = '';
 
 listenToPopStateChange();
 
-export const navigate = (to, backBehavior) => {
+export const navigate = to => {
   window.history.pushState({}, '', to);
   const [path, search] = to.split('?');
   currentPathCat.set(path);
   queryParamsCat.set(parseSearch(search));
-  browserBackBehavior = backBehavior;
 };
 
-export const replaceTo = (to, backBehavior) => {
+export const replaceTo = to => {
   window.history.replaceState({}, '', to);
   const [path, search] = to.split('?');
   currentPathCat.set(path);
   queryParamsCat.set(parseSearch(search));
-  browserBackBehavior = backBehavior;
 };
 
 export const goBack = () => window.history.back();
@@ -45,8 +42,6 @@ export const RouteLink = React.memo(({ to, children, mr }) => {
 export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
   const currentPath = useCat(currentPathCat);
   const queryParams = useCat(queryParamsCat);
-
-  console.log('currentPath', currentPath, 'queryParams', queryParams, history.length);
 
   const route = useMemo(() => {
     const route = routes.find(({ path }) => matchPath(currentPath, path));
@@ -117,10 +112,6 @@ function parseSearch(search) {
 
 function listenToPopStateChange() {
   const handleLocationChange = () => {
-    if (browserBackBehavior) {
-      navigate(browserBackBehavior);
-      return;
-    }
     const { pathname, search } = window.location;
     currentPathCat.set(pathname);
     queryParamsCat.set(parseSearch(search));

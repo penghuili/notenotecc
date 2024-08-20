@@ -72,10 +72,6 @@
   }
 }
 
-.radix-themes {
-  min-height: 0 !important;
-}
-
 body {
   margin: 0;
   padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
