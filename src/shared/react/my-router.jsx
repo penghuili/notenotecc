@@ -4,21 +4,32 @@ import { createCat, useCat } from 'usecat';
 
 const currentPathCat = createCat(window.location.pathname);
 const queryParamsCat = createCat(parseSearch(window.location.search));
+const browserBackOverrideCat = createCat('');
 
 listenToPopStateChange();
 
-export const navigate = to => {
+export const navigate = (to, backBehavior) => {
   window.history.pushState({}, '', to);
   const [path, search] = to.split('?');
   currentPathCat.set(path);
   queryParamsCat.set(parseSearch(search));
+  if (backBehavior) {
+    browserBackOverrideCat.set(backBehavior);
+  } else {
+    browserBackOverrideCat.set('');
+  }
 };
 
-export const replaceTo = to => {
+export const replaceTo = (to, backBehavior) => {
   window.history.replaceState({}, '', to);
   const [path, search] = to.split('?');
   currentPathCat.set(path);
   queryParamsCat.set(parseSearch(search));
+  if (backBehavior) {
+    browserBackOverrideCat.set(backBehavior);
+  } else {
+    browserBackOverrideCat.set('');
+  }
 };
 
 export const goBack = () => window.history.back();
@@ -112,6 +123,11 @@ function parseSearch(search) {
 
 function listenToPopStateChange() {
   const handleLocationChange = () => {
+    const backUrl = browserBackOverrideCat.get();
+    if (backUrl) {
+      navigate(backUrl);
+      return;
+    }
     const { pathname, search } = window.location;
     currentPathCat.set(pathname);
     queryParamsCat.set(parseSearch(search));

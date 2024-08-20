@@ -14,8 +14,10 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType, editor } }) => {
     const note = noteCat.get();
     if (note) {
       const query = objectToQueryString({ cameraType, editor });
-      const url = query ? `/notes/${note.sortKey}?${query}` : `/notes/${note.sortKey}`;
-      replaceTo(url);
+      const { to, back } = query
+        ? { to: `/notes/${note.sortKey}?${query}`, back: `/notes/${note.sortKey}` }
+        : { to: `/notes/${note.sortKey}` };
+      replaceTo(to, back);
     }
   }, [cameraType, editor]);
 

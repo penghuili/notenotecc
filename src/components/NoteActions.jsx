@@ -12,6 +12,7 @@ import { useCat } from 'usecat';
 
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { navigate } from '../shared/react/my-router.jsx';
 import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { isDeletingNoteCat, isUpdatingNoteCat, noteCat } from '../store/note/noteCats.js';
 import {
@@ -19,7 +20,6 @@ import {
   deleteNoteEffect,
   encryptExistingNoteEffect,
 } from '../store/note/noteEffects';
-import { showAlbumsSelectorCat } from '../views/NoteEdit.jsx';
 import { Camera } from './Camera.jsx';
 
 export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpdateAlbums }) => {
@@ -42,7 +42,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
       if (onEdit) {
         onEdit();
       } else {
-        navigateEffect(`/notes/${note.sortKey}?editor=1`);
+        navigate(`/notes/${note.sortKey}?editor=1`, `/notes/${note.sortKey}`);
       }
     },
     [note, onEdit]
@@ -72,8 +72,7 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
     if (onUpdateAlbums) {
       onUpdateAlbums();
     } else {
-      showAlbumsSelectorCat.set(true);
-      navigateEffect(`/notes/${note.sortKey}`);
+      navigateEffect(`/notes/${note.sortKey}?albums=1`, `/notes/${note.sortKey}`);
     }
   }, [note.sortKey, onUpdateAlbums]);
 

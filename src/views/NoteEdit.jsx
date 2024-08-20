@@ -36,20 +36,27 @@ const noteIdCat = createCat(null);
 const encryptedPasswordCat = createCat('');
 const showEditorCat = createCat(false);
 const showCameraCat = createCat(false);
-export const showAlbumsSelectorCat = createCat(false);
+const showAlbumsSelectorCat = createCat(false);
 
 export const NoteEdit = React.memo(
-  ({ pathParams: { noteId }, queryParams: { cameraType, editor } }) => {
+  ({ pathParams: { noteId }, queryParams: { cameraType, editor, albums } }) => {
     const prepareData = useCallback(async () => {
       if (cameraType) {
         showCameraCat.set(true);
         showEditorCat.set(false);
+        showAlbumsSelectorCat.set(false);
       } else if (editor) {
         showCameraCat.set(false);
         showEditorCat.set(true);
+        showAlbumsSelectorCat.set(false);
+      } else if (albums) {
+        showCameraCat.set(false);
+        showEditorCat.set(false);
+        showAlbumsSelectorCat.set(true);
       } else {
         showCameraCat.set(false);
         showEditorCat.set(false);
+        showAlbumsSelectorCat.set(false);
       }
 
       if (noteId) {
@@ -67,7 +74,7 @@ export const NoteEdit = React.memo(
       }
 
       replaceTo('/notes');
-    }, [cameraType, editor, noteId]);
+    }, [albums, cameraType, editor, noteId]);
 
     useScrollToTop();
 
@@ -125,7 +132,7 @@ const NoteView = React.memo(() => {
   }, []);
 
   const handleShowEditor = useCallback(() => {
-    replaceTo(`/notes/${noteId}?editor=1`);
+    replaceTo(`/notes/${noteId}?editor=1`, `/notes/${noteId}`);
   }, [noteId]);
 
   if (!noteItem) {
@@ -265,11 +272,12 @@ const AddAlbums = React.memo(() => {
       args: [{ noteId, encryptedPassword }],
       handler: saveAlbums,
     });
-    showAlbumsSelectorCat.set(false);
+    replaceTo(`/notes/${noteId}`);
   }, []);
 
   const handleClose = useCallback(() => {
-    showAlbumsSelectorCat.set(false);
+    const noteId = noteIdCat.get();
+    replaceTo(`/notes/${noteId}`);
   }, []);
 
   if (!showAlbumsSelector) {
