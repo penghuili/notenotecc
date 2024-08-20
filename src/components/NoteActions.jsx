@@ -13,7 +13,6 @@ import { useCat } from 'usecat';
 import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
-import { navigateEffect } from '../shared/react/store/sharedEffects';
 import { isDeletingNoteCat, isUpdatingNoteCat, noteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
@@ -42,7 +41,8 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
       if (onEdit) {
         onEdit();
       } else {
-        navigate(`/notes/${note.sortKey}?editor=1`, `/notes/${note.sortKey}`);
+        navigate(`/notes/${note.sortKey}`);
+        navigate(`/notes/${note.sortKey}?editor=1`);
       }
     },
     [note, onEdit]
@@ -72,7 +72,8 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit, onUpda
     if (onUpdateAlbums) {
       onUpdateAlbums();
     } else {
-      navigateEffect(`/notes/${note.sortKey}?albums=1`, `/notes/${note.sortKey}`);
+      navigate(`/notes/${note.sortKey}`);
+      navigate(`/notes/${note.sortKey}?albums=1`);
     }
   }, [note.sortKey, onUpdateAlbums]);
 

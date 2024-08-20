@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { replaceTo } from '../shared/react/my-router.jsx';
+import { navigate, replaceTo } from '../shared/react/my-router.jsx';
 import { objectToQueryString } from '../shared/react/routeHelpers.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects';
@@ -13,11 +13,11 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType, editor } }) => {
     await createNoteEffect({ note: '', goBack: false, showSuccess: false });
     const note = noteCat.get();
     if (note) {
+      replaceTo(`/notes/${note.sortKey}`);
       const query = objectToQueryString({ cameraType, editor });
-      const { to, back } = query
-        ? { to: `/notes/${note.sortKey}?${query}`, back: `/notes/${note.sortKey}` }
-        : { to: `/notes/${note.sortKey}` };
-      replaceTo(to, back);
+      if (query) {
+        navigate(`/notes/${note.sortKey}?${query}`);
+      }
     }
   }, [cameraType, editor]);
 

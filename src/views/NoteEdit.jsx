@@ -15,7 +15,7 @@ import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { replaceTo } from '../shared/react/my-router.jsx';
+import { goBack, navigate, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { createAlbum } from '../store/album/albumNetwork.js';
@@ -132,7 +132,7 @@ const NoteView = React.memo(() => {
   }, []);
 
   const handleShowEditor = useCallback(() => {
-    replaceTo(`/notes/${noteId}?editor=1`, `/notes/${noteId}`);
+    navigate(`/notes/${noteId}?editor=1`);
   }, [noteId]);
 
   if (!noteItem) {
@@ -176,8 +176,7 @@ const Editor = React.memo(() => {
   }, []);
 
   const handleBack = useCallback(() => {
-    const noteId = noteIdCat.get();
-    replaceTo(`/notes/${noteId}`);
+    goBack();
   }, []);
 
   if (!showEditor) {
@@ -203,8 +202,7 @@ const AddImages = React.memo(({ cameraType }) => {
   const isAddingImages = useCat(isAddingImagesCat);
 
   const handleClose = useCallback(() => {
-    const noteId = noteIdCat.get();
-    replaceTo(`/notes/${noteId}`);
+    goBack();
   }, []);
 
   const handleAddImages = useCallback(async newImages => {
@@ -217,7 +215,7 @@ const AddImages = React.memo(({ cameraType }) => {
       args: [{ noteId, images: newImages, encryptedPassword }],
       handler: saveImages,
     });
-    replaceTo(`/notes/${noteId}`);
+    goBack();
   }, []);
 
   if (!showCamera) {
@@ -272,12 +270,11 @@ const AddAlbums = React.memo(() => {
       args: [{ noteId, encryptedPassword }],
       handler: saveAlbums,
     });
-    replaceTo(`/notes/${noteId}`);
+    goBack();
   }, []);
 
   const handleClose = useCallback(() => {
-    const noteId = noteIdCat.get();
-    replaceTo(`/notes/${noteId}`);
+    goBack();
   }, []);
 
   if (!showAlbumsSelector) {
