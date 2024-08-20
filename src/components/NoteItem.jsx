@@ -89,7 +89,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
       )}
 
       {(!!albums?.length || !!isDetailsPage) && (
-        <Flex wrap="wrap" my="2">
+        <Flex wrap="wrap">
           {albums?.map(album => (
             <AlbumItem
               key={album.sortKey}
