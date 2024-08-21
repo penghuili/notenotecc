@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
-import { useVisualViewportHeight } from './hooks/useVisualViewportHeight.js';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
 import { navigate } from './my-router.jsx';
@@ -15,14 +14,14 @@ import { goBackEffect } from './store/sharedEffects';
 import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`
-  width: ${props => (props.fixed ? `${props.width}px` : '100%')};
+  width: ${widthWithoutScrollbar}px;
   height: var(--space-8);
-
-  position: ${props => (props.fixed ? 'fixed' : 'static')};
   padding: 0.5rem 0;
-  z-index: ${props => props.zindex};
+
+  position: fixed;
   left: 0;
-  top: ${props => `calc(${props.top}px + env(safe-area-inset-top))`};
+  top: env(safe-area-inset-top);
+  z-index: 2000;
 
   background-color: white;
 `;
@@ -36,9 +35,8 @@ const Placeholder = styled.div`
   height: calc(var(--space-8) + var(--space-2));
 `;
 
-export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
+export function PageHeader({ title, right, isLoading, hasBack }) {
   const isLoggedIn = useCat(isLoggedInCat);
-  const visualViewportHeight = useVisualViewportHeight();
 
   const handleNavigateToAccount = useCallback(() => navigate('/account'), []);
 
@@ -68,14 +66,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
 
   return (
     <>
-      <Wrapper
-        justify="center"
-        align="center"
-        zindex={2000}
-        width={widthWithoutScrollbar}
-        fixed={fixed ? 'fixed' : ''}
-        top={window.innerHeight - visualViewportHeight}
-      >
+      <Wrapper justify="center" align="center">
         <Content direction="row" justify="between">
           <HorizontalCenter gap="2">
             {iconElement}
@@ -94,7 +85,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
         </Content>
       </Wrapper>
 
-      {fixed && <Placeholder />}
+      <Placeholder />
 
       {showNewVersion && <NewVersionAvailable />}
 

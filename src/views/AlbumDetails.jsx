@@ -1,4 +1,4 @@
-import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
+import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
@@ -9,7 +9,7 @@ import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
-import { FormButton } from '../shared/react/FormButton.jsx';
+import { useInView } from '../shared/react/hooks/useInView.js';
 import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isDeletingAlbumCat } from '../store/album/albumCats.js';
@@ -137,13 +137,23 @@ const LoadMore = React.memo(({ albumId }) => {
     fetchAlbumItemsEffect(albumId, { startKey });
   }, [albumId, startKey]);
 
+  const ref = useInView(
+    () => {
+      handleFetch();
+    },
+    {
+      threshold: 0.1,
+      alwaysObserve: true,
+    }
+  );
+
   if (!hasMore) {
     return null;
   }
 
   return (
-    <FormButton onClick={handleFetch} disabled={isLoading}>
-      Load more
-    </FormButton>
+    <Button ref={ref} onClick={handleFetch} disabled={isLoading}>
+      {isLoading ? 'Loading...' : 'Load more'}
+    </Button>
   );
 });
