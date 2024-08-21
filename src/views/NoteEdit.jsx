@@ -2,11 +2,7 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import {
-  albumDescriptionCat,
-  albumSelectedKeysCat,
-  AlbumsSelector,
-} from '../components/AlbumsSelector.jsx';
+import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
@@ -41,11 +37,7 @@ const showCameraCat = createCat(false);
 
 export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { cameraType } }) => {
   const prepareData = useCallback(async () => {
-    if (cameraType) {
-      showCameraCat.set(true);
-    } else {
-      showCameraCat.set(false);
-    }
+    showCameraCat.set(!!cameraType);
 
     if (noteId) {
       noteIdCat.set(noteId);
@@ -65,13 +57,6 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { cam
   }, [cameraType, noteId]);
 
   useScrollToTop();
-
-  useEffect(() => {
-    return () => {
-      albumDescriptionCat.reset();
-      albumSelectedKeysCat.reset();
-    };
-  }, []);
 
   return (
     <PrepareData load={prepareData}>
