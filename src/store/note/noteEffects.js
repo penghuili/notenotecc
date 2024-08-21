@@ -165,7 +165,7 @@ export async function updateNoteEffect(
   { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack, showSuccess = true }
 ) {
   isUpdatingNoteCat.set(true);
-  if (showSuccess) {
+  if (showSuccess && note !== undefined) {
     setToastEffect(encryptingMessage, toastTypes.info);
   }
 

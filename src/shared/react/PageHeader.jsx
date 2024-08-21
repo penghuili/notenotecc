@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
+import { useVisualViewportHeight } from './hooks/useVisualViewportHeight.js';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
 import { navigate } from './my-router.jsx';
@@ -21,7 +22,7 @@ const Wrapper = styled(Flex)`
   padding: 0.5rem 0;
   z-index: ${props => props.zindex};
   left: 0;
-  top: env(safe-area-inset-top);
+  top: ${props => `calc(${props.top}px + env(safe-area-inset-top))`};
 
   background-color: white;
 `;
@@ -37,6 +38,7 @@ const Placeholder = styled.div`
 
 export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
   const isLoggedIn = useCat(isLoggedInCat);
+  const visualViewportHeight = useVisualViewportHeight();
 
   const handleNavigateToAccount = useCallback(() => navigate('/account'), []);
 
@@ -72,6 +74,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
         zindex={2000}
         width={widthWithoutScrollbar}
         fixed={fixed ? 'fixed' : ''}
+        top={window.innerHeight - visualViewportHeight}
       >
         <Content direction="row" justify="between">
           <HorizontalCenter gap="2">
