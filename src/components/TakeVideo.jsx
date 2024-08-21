@@ -95,11 +95,11 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const isDestroyedRef = useRef(false);
 
   const handleSwitchCamera = useCallback(async () => {
-    stopStream(streamRef.current);
-    streamRef.current = null;
-
     const newMode = facingModeRef.current === 'user' ? 'environment' : 'user';
     facingModeRef.current = newMode;
+
+    stopStream(streamRef.current);
+    streamRef.current = null;
     const { data: stream, error: requestError } = await requestStream(newMode);
     if (stream) {
       streamRef.current = stream;
@@ -156,10 +156,11 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       stopMediaRecorder();
     }
 
+    stopStream(streamRef.current);
+    streamRef.current = null;
     const { data } = await requestStream(facingModeRef.current);
 
     if (data) {
-      stopStream(streamRef.current);
       streamRef.current = data;
       if (videoRef.current) {
         videoRef.current.srcObject = data;
@@ -219,11 +220,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   }, [handleSetupTimer, isPaused]);
 
   const handleWindowFocus = useCallback(async () => {
-    if (streamRef.current) {
-      stopStream(streamRef.current);
-      streamRef.current = null;
-    }
-
+    stopStream(streamRef.current);
+    streamRef.current = null;
     const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
     if (stream) {
       streamRef.current = stream;
@@ -253,6 +251,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
   useEffect(() => {
     isDestroyedRef.current = false;
+
+    stopStream(streamRef.current);
+    streamRef.current = null;
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
         if (isDestroyedRef.current) {
@@ -286,7 +287,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     };
   }, []);
 
+  // eslint-disable-next-line react-compiler/react-compiler
   useWindowFocus(handleWindowFocus);
+  // eslint-disable-next-line react-compiler/react-compiler
   useWindowBlur(handleWindowBlur);
 
   const size = getCameraSize();
@@ -305,11 +308,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
           <>
-            <IconButtonWithText
-              onClick={handleStartRecording}
-              text="Record"
-              disabled={!!error && !!streamRef.current}
-            >
+            <IconButtonWithText onClick={handleStartRecording} text="Record" disabled={!!error}>
               <RiPlayLine />
             </IconButtonWithText>
 

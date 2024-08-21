@@ -17,7 +17,7 @@ const Video = styled.video`
 `;
 
 export const TakePhoto = React.memo(({ onSelect }) => {
-  const videoStreamRef = useRef(null);
+  const streamRef = useRef(null);
   const videoRef = useRef(null);
   const [error, setError] = useState(null);
 
@@ -26,9 +26,11 @@ export const TakePhoto = React.memo(({ onSelect }) => {
 
   const handleRequestCamera = useCallback(async mode => {
     setError(null);
+    stopStream(streamRef.current);
+    streamRef.current = null;
     const { data, error } = await requestStream(mode);
     if (data) {
-      videoStreamRef.current = data;
+      streamRef.current = data;
       if (videoRef.current) {
         videoRef.current.srcObject = data;
       }
@@ -60,20 +62,22 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   }, [handleRequestCamera]);
 
   const handleWindowBlur = useCallback(() => {
-    if (videoStreamRef.current) {
-      stopStream(videoStreamRef.current);
-      videoStreamRef.current = null;
+    if (streamRef.current) {
+      stopStream(streamRef.current);
+      streamRef.current = null;
     }
   }, []);
 
   const handleWindowFocus = useCallback(() => {
-    if (!videoStreamRef.current) {
+    if (!streamRef.current) {
       handleRequestCamera(facingModeRef.current);
     }
   }, [handleRequestCamera]);
 
   useEffect(() => {
     isDestroyedRef.current = false;
+    stopStream(streamRef.current);
+    streamRef.current = null;
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
         if (isDestroyedRef.current) {
@@ -81,7 +85,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
           return;
         }
 
-        videoStreamRef.current = data;
+        streamRef.current = data;
         if (videoRef.current) {
           videoRef.current.srcObject = data;
         }
@@ -92,13 +96,15 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     });
 
     return () => {
-      stopStream(videoStreamRef.current);
-      videoStreamRef.current = null;
+      stopStream(streamRef.current);
+      streamRef.current = null;
       isDestroyedRef.current = true;
     };
   }, []);
 
+  // eslint-disable-next-line react-compiler/react-compiler
   useWindowBlur(handleWindowBlur);
+  // eslint-disable-next-line react-compiler/react-compiler
   useWindowFocus(handleWindowFocus);
 
   const size = getCameraSize();
@@ -112,11 +118,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
       {errorElement}
 
       <Flex justify="center" align="center" py="2" gap="2">
-        <IconButtonWithText
-          onClick={handleCapture}
-          disabled={!!error && !!videoStreamRef.current}
-          text="Capture"
-        >
+        <IconButtonWithText onClick={handleCapture} disabled={!!error} text="Capture">
           <RiCameraLine />
         </IconButtonWithText>
 
