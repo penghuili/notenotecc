@@ -22,7 +22,7 @@ import {
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
-export const MarkdownEditor = React.memo(({ defaultText, onChange, onBlur, autoFocus }) => {
+export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
   const [activeElements, setActiveElements] = useState({});
   const prevActiveElements = useRef({});
@@ -30,7 +30,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, onBlur, autoF
   const undoHistoryRef = useRef([]);
   const redoHistoryRef = useRef([]);
   const historyTimerIdRef = useRef(null);
-  const [isFocusing, setIsFocusing] = useState(false);
 
   const handleCheckActiveElements = useCallback(() => {
     const elements = checkActiveElements(editorRef.current, prevActiveElements.current);
@@ -91,19 +90,11 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, onBlur, autoF
     handleChange();
   }, [handleChange]);
 
-  const handleFocus = useCallback(() => {
-    setIsFocusing(true);
-  }, []);
-
-  const handleBlur = useCallback(() => {
-    setIsFocusing(false);
-    onBlur?.();
-  }, [onBlur]);
-
   useEffect(() => {
     editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
 
-    handleCheckActiveElements();
+    const newEmpty = editorRef.current.innerHTML.trim() === '<p></p>';
+    setIsEmpty(newEmpty);
 
     return () => {
       if (historyTimerIdRef.current) {
@@ -119,11 +110,11 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, onBlur, autoF
   useEffect(() => {
     if (autoFocus) {
       editorRef.current.focus();
-
       handleCheckActiveElements();
     }
     // eslint-disable-next-line react-compiler/react-compiler
-  }, [autoFocus, handleCheckActiveElements]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFocus]);
 
   return (
     <Wrapper>
@@ -134,20 +125,16 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, onBlur, autoF
         onMouseUp={handleCheckActiveElements}
         onTouchEnd={handleCheckActiveElements}
         onKeyUp={handleCheckActiveElements}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         data-placeholder="Start typing here..."
         isEmpty={isEmpty}
       />
-      {isFocusing && (
-        <Toolbar
-          editorRef={editorRef}
-          undoHistoryRef={undoHistoryRef}
-          redoHistoryRef={redoHistoryRef}
-          activeElements={activeElements}
-          onChange={handleChange}
-        />
-      )}
+      <Toolbar
+        editorRef={editorRef}
+        undoHistoryRef={undoHistoryRef}
+        redoHistoryRef={redoHistoryRef}
+        activeElements={activeElements}
+        onChange={handleChange}
+      />
     </Wrapper>
   );
 });
