@@ -496,6 +496,7 @@ export const getRange = () => {
 };
 
 const Wrapper = styled(Flex)`
+  position: sticky;
   width: 100%;
   background-color: white;
   overflow-x: auto;

@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Box, Flex, Text } from '@radix-ui/themes';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import {
@@ -7,15 +8,15 @@ import {
   AlbumsSelector,
 } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
-import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
+import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
-import { NoteItem } from '../components/NoteItem.jsx';
+import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
-import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
+import { formatDateWeekTime } from '../shared/js/date.js';
 import { isIOS } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { goBack, replaceTo } from '../shared/react/my-router.jsx';
@@ -36,69 +37,52 @@ import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/not
 const descriptionCat = createCat('');
 const noteIdCat = createCat(null);
 const encryptedPasswordCat = createCat('');
-const showEditorCat = createCat(false);
 const showCameraCat = createCat(false);
-const showAlbumsSelectorCat = createCat(false);
 
-export const NoteEdit = React.memo(
-  ({ pathParams: { noteId }, queryParams: { cameraType, editor, albums } }) => {
-    const prepareData = useCallback(async () => {
-      if (cameraType) {
-        showCameraCat.set(true);
-        showEditorCat.set(false);
-        showAlbumsSelectorCat.set(false);
-      } else if (editor) {
-        showCameraCat.set(false);
-        showEditorCat.set(true);
-        showAlbumsSelectorCat.set(false);
-      } else if (albums) {
-        showCameraCat.set(false);
-        showEditorCat.set(false);
-        showAlbumsSelectorCat.set(true);
-      } else {
-        showCameraCat.set(false);
-        showEditorCat.set(false);
-        showAlbumsSelectorCat.set(false);
+export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { cameraType } }) => {
+  const prepareData = useCallback(async () => {
+    if (cameraType) {
+      showCameraCat.set(true);
+    } else {
+      showCameraCat.set(false);
+    }
+
+    if (noteId) {
+      noteIdCat.set(noteId);
+      await fetchNoteEffect(noteId);
+
+      const note = noteCat.get();
+      if (note) {
+        descriptionCat.set(note.note || '');
+        encryptedPasswordCat.set(note.encryptedPassword);
+        albumSelectedKeysCat.set((note.albumIds || []).map(a => a.albumId));
+
+        return;
       }
+    }
 
-      if (noteId) {
-        noteIdCat.set(noteId);
-        await fetchNoteEffect(noteId);
+    replaceTo('/notes');
+  }, [cameraType, noteId]);
 
-        const note = noteCat.get();
-        if (note) {
-          descriptionCat.set(note.note || '');
-          encryptedPasswordCat.set(note.encryptedPassword);
-          albumSelectedKeysCat.set((note.albumIds || []).map(a => a.albumId));
+  useScrollToTop();
 
-          return;
-        }
-      }
+  useEffect(() => {
+    return () => {
+      albumDescriptionCat.reset();
+      albumSelectedKeysCat.reset();
+    };
+  }, []);
 
-      replaceTo('/notes');
-    }, [albums, cameraType, editor, noteId]);
+  return (
+    <PrepareData load={prepareData}>
+      <Header />
 
-    useScrollToTop();
+      <NoteView />
 
-    useEffect(() => {
-      return () => {
-        albumDescriptionCat.reset();
-        albumSelectedKeysCat.reset();
-      };
-    }, []);
-
-    return (
-      <PrepareData load={prepareData}>
-        <Header />
-
-        <NoteView />
-
-        <Editor />
-        <AddImages cameraType={cameraType} />
-      </PrepareData>
-    );
-  }
-);
+      <AddImages cameraType={cameraType} />
+    </PrepareData>
+  );
+});
 
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingNoteCat);
@@ -107,13 +91,10 @@ const Header = React.memo(() => {
   const isDeleting = useCat(isDeletingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeletingImage = useCat(isDeletingImageCat);
-  const showEditor = useCat(showEditorCat);
-
-  const titleMessage = useMemo(() => (showEditor ? 'Update note' : 'Note details'), [showEditor]);
 
   return (
     <PageHeader
-      title={titleMessage}
+      title="Note details"
       isLoading={
         isLoading || isAddingImages || isUpdating || isDeleting || isDeletingImage || isCreating
       }
@@ -126,7 +107,6 @@ const Header = React.memo(() => {
 const NoteView = React.memo(() => {
   const noteId = useCat(noteIdCat);
   const noteItem = useNote(noteId);
-  const getNoteAlbums = useGetNoteAlbums();
 
   if (!noteItem) {
     return null;
@@ -134,7 +114,23 @@ const NoteView = React.memo(() => {
 
   return (
     <>
-      <NoteItem key={noteItem.sortKey} note={noteItem} albums={getNoteAlbums(noteItem)} />
+      <Flex justify="between" align="center" mb="2">
+        <Text size="2" as="p" style={{ userSelect: 'none' }}>
+          {formatDateWeekTime(noteItem.createdAt)}
+        </Text>
+
+        <NoteActions note={noteItem} goBackAfterDelete />
+      </Flex>
+      {!!noteItem.images?.length && (
+        <ImageCarousel
+          noteId={noteItem.sortKey}
+          encryptedPassword={noteItem.encryptedPassword}
+          images={noteItem.images}
+        />
+      )}
+      <Box mb="6">
+        <Editor />
+      </Box>
 
       <AddAlbums />
     </>
@@ -153,7 +149,6 @@ const debouncedSaveDescription = debounceAndQueue(saveDescription, 500);
 
 const Editor = React.memo(() => {
   const description = useCat(descriptionCat);
-  const showEditor = useCat(showEditorCat);
 
   const handleChange = useCallback(newDescription => {
     descriptionCat.set(newDescription);
@@ -165,19 +160,7 @@ const Editor = React.memo(() => {
     });
   }, []);
 
-  const handleBack = useCallback(() => {
-    goBack();
-  }, []);
-
-  if (!showEditor) {
-    return null;
-  }
-
-  return (
-    <FullscreenPopup onBack={handleBack}>
-      <MarkdownEditor autoFocus defaultText={description} onChange={handleChange} />
-    </FullscreenPopup>
-  );
+  return <MarkdownEditor defaultText={description} onChange={handleChange} />;
 });
 
 const saveImages = async ({ noteId, images, encryptedPassword }) => {

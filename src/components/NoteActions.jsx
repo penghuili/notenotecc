@@ -1,7 +1,6 @@
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import {
   RiDeleteBinLine,
-  RiHashtag,
   RiImageAddLine,
   RiLockLine,
   RiMore2Line,
@@ -20,7 +19,7 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
+export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
 
   const [showCamera, setShowCamera] = useState(false);
@@ -75,10 +74,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
         <RiImageAddLine />
       </IconButton>
 
-      <IconButton variant="ghost" onClick={onEdit} mr="2">
-        <RiPencilLine />
-      </IconButton>
-
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
@@ -88,8 +83,8 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
 
         <DropdownMenu.Content variant="soft">
           <DropdownMenu.Item onClick={handleNavigateToDetails}>
-            <RiHashtag />
-            Update tags
+            <RiPencilLine />
+            Update
           </DropdownMenu.Item>
 
           <DropdownMenu.Separator />

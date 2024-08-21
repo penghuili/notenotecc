@@ -13,8 +13,7 @@ export const Editor = styled.div`
   letter-spacing: var(--letter-spacing, inherit);
 
   &[contenteditable='true'] {
-    padding: 10px 0;
-    height: ${props => `${props.height}`};
+    min-height: 100px;
     overflow-y: auto;
     scrollbar-width: none;
 

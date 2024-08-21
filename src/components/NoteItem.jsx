@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Text } from '@radix-ui/themes';
+import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
@@ -100,11 +100,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
   );
 });
 
-export const BadgeStyled = styled(Badge)`
-  cursor: pointer;
-`;
-
-const AddNotePlaceholder = React.memo(({ onClick }) => {
+export const AddNotePlaceholder = React.memo(({ onClick }) => {
   return <Placeholder onClick={onClick}>Add note ...</Placeholder>;
 });
 const Placeholder = styled.div`
