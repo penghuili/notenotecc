@@ -3,9 +3,9 @@ import React from 'react';
 
 import { AnimatedBox } from './AnimatedBox.jsx';
 
-export function Banner({ open, children, right }) {
+export function Banner({ open, children, right, mt, mb }) {
   return (
-    <AnimatedBox visible={open}>
+    <AnimatedBox visible={open} mt={mt} mb={mb}>
       <Flex
         direction="row"
         align="center"

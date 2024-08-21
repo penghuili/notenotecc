@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 export function useWindowBlur(callback) {
   useEffect(() => {
     function handleBlur() {
-      callback;
+      callback();
     }
 
     window.addEventListener('blur', handleBlur);

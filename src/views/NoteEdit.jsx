@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import {
@@ -11,12 +11,16 @@ import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
+import { isIOS } from '../shared/react/device.js';
+import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { goBack, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -187,6 +191,8 @@ const AddImages = React.memo(({ cameraType }) => {
   const showCamera = useCat(showCameraCat);
   const isAddingImages = useCat(isAddingImagesCat);
 
+  const prevShowCamera = useRef();
+
   const handleClose = useCallback(() => {
     goBack();
   }, []);
@@ -203,6 +209,34 @@ const AddImages = React.memo(({ cameraType }) => {
     });
     goBack();
   }, []);
+
+  useEffect(() => {
+    if (!isIOS()) {
+      return;
+    }
+
+    if (prevShowCamera.current && !showCamera) {
+      const prevTimestamp = LocalStorage.get(localStorageKeys.showIOSCameraBanner);
+      if (
+        !prevTimestamp ||
+        prevTimestamp.timestamp <
+          Date.now() - Math.min(prevTimestamp.times * 2, 90) * 24 * 60 * 60 * 1000
+      ) {
+        topBannerCat.set({
+          message:
+            'Your iPhone may shows that notenote.cc is still recording, but it isn’t. iOS browsers have limitations.',
+          buttonText: 'Close',
+        });
+
+        LocalStorage.set(localStorageKeys.showIOSCameraBanner, {
+          timestamp: Date.now(),
+          times: (prevTimestamp?.times || 0) + 1,
+        });
+      }
+    } else {
+      prevShowCamera.current = showCamera;
+    }
+  }, [showCamera]);
 
   if (!showCamera) {
     return null;

@@ -11,6 +11,7 @@ import { navigate } from './my-router.jsx';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { isLoggedInCat } from './store/sharedCats.js';
 import { goBackEffect } from './store/sharedEffects';
+import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`
   width: ${props => (props.fixed ? `${props.width}px` : '100%')};
@@ -93,6 +94,8 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
       {fixed && <Placeholder />}
 
       {showNewVersion && <NewVersionAvailable />}
+
+      <TopBanner />
     </>
   );
 }

@@ -1,6 +1,5 @@
 import { Button, Text } from '@radix-ui/themes';
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Banner } from './Banner.jsx';
 
@@ -28,34 +27,30 @@ export function NewVersionAvailable() {
     return () => window.removeEventListener('focus', fetchNewVersion);
   }, []);
 
+  const rightElement = useMemo(
+    () => (
+      <Button
+        variant="soft"
+        onClick={() => {
+          location.reload();
+        }}
+      >
+        Update
+      </Button>
+    ),
+    []
+  );
+
   if (!newVersion) {
     return null;
   }
 
   return (
-    <Wrapper>
-      <Banner
-        open
-        right={
-          <Button
-            variant="soft"
-            onClick={() => {
-              location.reload();
-            }}
-          >
-            Update
-          </Button>
-        }
-      >
-        <Text weight="bold" as="p">
-          New version available: {newVersion}
-        </Text>
-        <Text as="p">{changes || 'Tiny changes.'}</Text>
-      </Banner>
-    </Wrapper>
+    <Banner open right={rightElement} mb="6">
+      <Text weight="bold" as="p">
+        New version available: {newVersion}
+      </Text>
+      <Text as="p">{changes || 'Tiny changes.'}</Text>
+    </Banner>
   );
 }
-
-const Wrapper = styled.div`
-  margin-bottom: 2rem;
-`;

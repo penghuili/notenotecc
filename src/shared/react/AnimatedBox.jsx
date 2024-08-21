@@ -1,14 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import { Box } from '@radix-ui/themes';
+import React, { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-const Wrapper = styled.div`
+const Wrapper = styled(Box)`
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.2s ease-in-out;
 `;
 
-export function AnimatedBox({ visible, children }) {
+export function AnimatedBox({ visible, children, mt, mb }) {
   const contentRef = useRef(null);
+
+  const handleTransitionEnd = useCallback(() => {
+    const content = contentRef.current;
+    if (visible) {
+      content.style.maxHeight = 'none';
+    }
+  }, [visible]);
 
   useEffect(() => {
     const content = contentRef.current;
@@ -29,15 +37,8 @@ export function AnimatedBox({ visible, children }) {
     };
   }, [visible]);
 
-  function handleTransitionEnd() {
-    const content = contentRef.current;
-    if (visible) {
-      content.style.maxHeight = 'none';
-    }
-  }
-
   return (
-    <Wrapper ref={contentRef} onTransitionEnd={handleTransitionEnd}>
+    <Wrapper ref={contentRef} onTransitionEnd={handleTransitionEnd} mt={mt} mb={mb}>
       {children}
     </Wrapper>
   );

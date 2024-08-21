@@ -100,6 +100,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
     stopStream(streamRef.current);
     streamRef.current = null;
+    videoRef.current.srcObject = null;
+    videoRef.current.load();
     const { data: stream, error: requestError } = await requestStream(newMode);
     if (stream) {
       streamRef.current = stream;
@@ -158,6 +160,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
     stopStream(streamRef.current);
     streamRef.current = null;
+    videoRef.current.srcObject = null;
+    videoRef.current.load();
     const { data } = await requestStream(facingModeRef.current);
 
     if (data) {
@@ -222,6 +226,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const handleWindowFocus = useCallback(async () => {
     stopStream(streamRef.current);
     streamRef.current = null;
+    videoRef.current.srcObject = null;
+    videoRef.current.load();
     const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
     if (stream) {
       streamRef.current = stream;
@@ -254,6 +260,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
     stopStream(streamRef.current);
     streamRef.current = null;
+    videoRef.current.srcObject = null;
+    videoRef.current.load();
     requestStream(facingModeRef.current).then(({ data, error }) => {
       if (data) {
         if (isDestroyedRef.current) {
@@ -361,6 +369,9 @@ async function requestStream(mode) {
 
 export function stopStream(stream) {
   if (stream) {
-    stream.getTracks().forEach(track => track.stop());
+    stream.getTracks().forEach(track => {
+      track.stop();
+      stream.removeTrack(track);
+    });
   }
 }
