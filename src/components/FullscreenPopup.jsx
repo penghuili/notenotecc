@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   z-index: 3000;
 
   width: ${widthWithoutScrollbar}px;
-  height: 100vh;
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
 
   background-color: white;
