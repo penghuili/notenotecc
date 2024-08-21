@@ -1,11 +1,8 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
-import { useCat } from 'usecat';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
-import { currentPathCat, navigate } from '../shared/react/my-router.jsx';
-import { noteCat } from '../store/note/noteCats.js';
+import { navigate } from '../shared/react/my-router.jsx';
 import { AlbumItem } from './AlbumItem.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MarkdownEditor/Markdown.jsx';
@@ -19,32 +16,13 @@ export const NoteItem = React.memo(({ note, albums }) => {
   const ago = useMemo(() => {
     return getAgo(new Date(note.createdAt));
   }, [note?.createdAt]);
-  const currentPath = useCat(currentPathCat);
-  const isDetailsPage = useMemo(() => {
-    return currentPath === `/notes/${note.sortKey}`;
-  }, [currentPath, note.sortKey]);
 
   const handleNavigate = useCallback(() => {
     navigate(`/notes/${note.sortKey}`);
   }, [note.sortKey]);
 
-  const handleEidt = useCallback(
-    e => {
-      e.stopPropagation();
-
-      const currentPath = currentPathCat.get();
-      if (currentPath !== `/notes/${note.sortKey}`) {
-        noteCat.set(note);
-        navigate(`/notes/${note.sortKey}`);
-      }
-
-      navigate(`/notes/${note.sortKey}?editor=1`);
-    },
-    [note]
-  );
-
   const albumsElement = useMemo(() => {
-    if (isDetailsPage || !albums?.length) {
+    if (!albums?.length) {
       return null;
     }
 
@@ -55,19 +33,15 @@ export const NoteItem = React.memo(({ note, albums }) => {
         ))}
       </Flex>
     );
-  }, [albums, isDetailsPage]);
+  }, [albums]);
 
   const agoElement = useMemo(() => {
-    if (isDetailsPage) {
-      return null;
-    }
-
     return (
       <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
         {ago}
       </Text>
     );
-  }, [ago, isDetailsPage]);
+  }, [ago]);
 
   return (
     <Box mb="8">
@@ -76,7 +50,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
           {dateTime}
         </Text>
 
-        <NoteActions note={note} goBackAfterDelete={isDetailsPage} onEdit={handleEidt} />
+        <NoteActions note={note} />
       </Flex>
       {!!note.images?.length && (
         <ImageCarousel
@@ -85,12 +59,10 @@ export const NoteItem = React.memo(({ note, albums }) => {
           images={note.images}
         />
       )}
-      {note.note ? (
-        <TextTruncate showFullText={isDetailsPage} onClick={handleNavigate}>
+      {!!note.note && (
+        <TextTruncate showFullText={false} onClick={handleNavigate}>
           <Markdown markdown={note.note} />
         </TextTruncate>
-      ) : (
-        !!isDetailsPage && <AddNotePlaceholder onClick={handleEidt} />
       )}
 
       {albumsElement}
@@ -99,14 +71,3 @@ export const NoteItem = React.memo(({ note, albums }) => {
     </Box>
   );
 });
-
-export const AddNotePlaceholder = React.memo(({ onClick }) => {
-  return <Placeholder onClick={onClick}>Add note ...</Placeholder>;
-});
-const Placeholder = styled.div`
-  width: 100%;
-  height: 3rem;
-  padding-top: 0.5rem;
-  color: var(--gray-7);
-  cursor: pointer;
-`;

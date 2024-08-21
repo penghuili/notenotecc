@@ -15,10 +15,10 @@ const checkboxRootStyle = {
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
-export const AlbumsSelector = React.memo(({ onChange }) => {
+export const AlbumsSelector = React.memo(({ onChange, mt }) => {
   return (
     <>
-      <Flex direction="column" gap="2">
+      <Flex direction="column" gap="2" mt={mt}>
         <Heading as="h3" size="3">
           Tags
         </Heading>

@@ -6,11 +6,11 @@ import {
   RiMore2Line,
   RiPencilLine,
 } from '@remixicon/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { navigate } from '../shared/react/my-router.jsx';
+import { currentPathCat, navigate } from '../shared/react/my-router.jsx';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
 import {
   addImagesEffect,
@@ -19,8 +19,12 @@ import {
 } from '../store/note/noteEffects';
 import { Camera } from './Camera.jsx';
 
-export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
+export const NoteActions = React.memo(({ note }) => {
   const isUpdating = useCat(isUpdatingNoteCat);
+  const currentPath = useCat(currentPathCat);
+  const isDetailsPage = useMemo(() => {
+    return currentPath === `/notes/${note.sortKey}`;
+  }, [currentPath, note.sortKey]);
 
   const [showCamera, setShowCamera] = useState(false);
 
@@ -82,14 +86,16 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete }) => {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleNavigateToDetails}>
-            <RiPencilLine />
-            Update
-          </DropdownMenu.Item>
+          {!isDetailsPage && (
+            <DropdownMenu.Item onClick={handleNavigateToDetails}>
+              <RiPencilLine />
+              Update
+            </DropdownMenu.Item>
+          )}
 
           <DropdownMenu.Separator />
 
-          <DeleteAction noteId={note.sortKey} goBackAfterDelete={goBackAfterDelete} />
+          <DeleteAction noteId={note.sortKey} goBackAfterDelete={isDetailsPage} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 

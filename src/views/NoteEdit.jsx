@@ -1,7 +1,8 @@
-import { Box, Flex, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { Flex, Text } from '@radix-ui/themes';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createCat, useCat } from 'usecat';
 
+import { AlbumItem } from '../components/AlbumItem.jsx';
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
@@ -11,6 +12,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { addRequestToQueue } from '../lib/requestQueue.js';
+import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
 import { isIOS } from '../shared/react/device.js';
@@ -60,7 +62,7 @@ export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { cam
 
   return (
     <PrepareData load={prepareData}>
-      <Header />
+      <Header noteId={noteId} />
 
       <NoteView />
 
@@ -76,6 +78,10 @@ const Header = React.memo(() => {
   const isDeleting = useCat(isDeletingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeletingImage = useCat(isDeletingImageCat);
+  const noteId = useCat(noteIdCat);
+  const noteItem = useNote(noteId);
+
+  const rightElement = useMemo(() => !!noteItem && <NoteActions note={noteItem} />, [noteItem]);
 
   return (
     <PageHeader
@@ -85,6 +91,7 @@ const Header = React.memo(() => {
       }
       fixed
       hasBack
+      right={rightElement}
     />
   );
 });
@@ -92,6 +99,22 @@ const Header = React.memo(() => {
 const NoteView = React.memo(() => {
   const noteId = useCat(noteIdCat);
   const noteItem = useNote(noteId);
+  const getNoteAlbums = useGetNoteAlbums();
+
+  const albumsElement = useMemo(() => {
+    const albums = getNoteAlbums(noteItem);
+    if (!albums?.length) {
+      return null;
+    }
+
+    return (
+      <Flex wrap="wrap" mt="2">
+        {albums.map(album => (
+          <AlbumItem key={album.sortKey} album={album} to={`/albums/${album.sortKey}`} />
+        ))}
+      </Flex>
+    );
+  }, [getNoteAlbums, noteItem]);
 
   if (!noteItem) {
     return null;
@@ -103,8 +126,6 @@ const NoteView = React.memo(() => {
         <Text size="2" as="p" style={{ userSelect: 'none' }}>
           {formatDateWeekTime(noteItem.createdAt)}
         </Text>
-
-        <NoteActions note={noteItem} goBackAfterDelete />
       </Flex>
       {!!noteItem.images?.length && (
         <ImageCarousel
@@ -113,9 +134,9 @@ const NoteView = React.memo(() => {
           images={noteItem.images}
         />
       )}
-      <Box mb="6">
-        <Editor />
-      </Box>
+      <Editor />
+
+      {albumsElement}
 
       <AddAlbums />
     </>
@@ -242,5 +263,5 @@ const AddAlbums = React.memo(() => {
     });
   }, []);
 
-  return <AlbumsSelector onChange={handleChange} />;
+  return <AlbumsSelector onChange={handleChange} mt="6" />;
 });
