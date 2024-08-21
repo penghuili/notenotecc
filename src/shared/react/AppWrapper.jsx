@@ -2,9 +2,10 @@ import '@radix-ui/themes/styles.css';
 import './style.css';
 
 import { Theme } from '@radix-ui/themes';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createCat, useCat } from 'usecat';
 
+import { updateFontSize } from './FontSize.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
@@ -20,14 +21,16 @@ export const errorCssColor = 'var(--red-9)';
 export const textCssColor = 'var(--gray-12)';
 
 export const hasPageMinHeightCat = createCat(true);
-export const fontScalingCat = createCat(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
 
 export function AppWrapper({ children }) {
   const hasMinHeight = useCat(hasPageMinHeightCat);
-  const scaling = useCat(fontScalingCat);
+
+  useEffect(() => {
+    updateFontSize(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
+  }, []);
 
   return (
-    <Theme accentColor={themeColor} appearance="light" style={{ '--scaling': `${scaling}` }}>
+    <Theme accentColor={themeColor} appearance="light">
       <PageWrapper hasMinHeight={hasMinHeight}>{children}</PageWrapper>
     </Theme>
   );

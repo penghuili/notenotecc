@@ -1,16 +1,35 @@
-import { Box, RadioGroup, Text } from '@radix-ui/themes';
-import React, { useCallback } from 'react';
-import { useCat } from 'usecat';
+import './FontSize.css';
 
-import { fontScalingCat } from './AppWrapper.jsx';
+import { Box, RadioGroup, Text } from '@radix-ui/themes';
+import React, { useCallback, useState } from 'react';
+
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 
+const mapper = {
+  1: 'peng-scaling-1',
+  1.1: 'peng-scaling-1-1',
+  1.25: 'peng-scaling-1-25',
+  1.5: 'peng-scaling-1-5',
+};
+export function updateFontSize(fontSize) {
+  const classes = Array.from(document.body.classList) || [];
+  const newClasses = classes.filter(c => !c.startsWith('peng-scaling-'));
+  const newValue = mapper[fontSize] || mapper[1];
+  newClasses.push(newValue);
+  document.body.classList = newClasses;
+}
+
 export const FontSize = React.memo(() => {
-  const scaling = useCat(fontScalingCat);
+  const [scaling, setScaling] = useState(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
 
   const handleChange = useCallback(value => {
+    setScaling(value);
     LocalStorage.set(sharedLocalStorageKeys.fontScaling, value);
-    fontScalingCat.set(value);
+    const classes = Array.from(document.body.classList) || [];
+    const newClasses = classes.filter(c => !c.startsWith('peng-scaling-'));
+    const newValue = mapper[value] || mapper[1];
+    newClasses.push(newValue);
+    document.body.classList = newClasses;
   }, []);
 
   return (
