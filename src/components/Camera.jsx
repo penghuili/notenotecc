@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
+import { isMobileWidth } from '../shared/react/device';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -58,8 +59,8 @@ export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
 
 const ImagesWrapper = styled.div`
   position: absolute;
-  top: ${props => `${props.top}px`};
-  left: 12px;
+  top: ${props => `calc(${props.cameraSize}px + var(--space-8) + var(--space-2) + 12px)`};
+  left: ${props => `calc(50% - ${props.cameraSize / 2}px + ${isMobileWidth() ? '12px' : '0px'})`};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,7 +101,7 @@ const ImagesPreview = React.memo(({ images }) => {
   const cameraSize = getCameraSize();
 
   return (
-    <ImagesWrapper top={cameraSize + 48 + 12}>
+    <ImagesWrapper cameraSize={cameraSize}>
       <PreviewItem key={reversedImages[0].url} image={reversedImages[0]} />
       {reversedImages.length}
     </ImagesWrapper>

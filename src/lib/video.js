@@ -28,3 +28,36 @@ export function getVideoDuration(videoUrl) {
     video.src = videoUrl;
   });
 }
+
+export function getVideoPreviewImage(videoUrl) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+
+    video.onloadedmetadata = function () {
+      const canvas = document.createElement('canvas');
+      canvas.width = 720;
+      canvas.height = 720;
+
+      // Seek to a specific time  for the preview
+      video.currentTime = 0.5;
+
+      video.addEventListener(
+        'seeked',
+        () => {
+          // Draw the current frame to the canvas
+          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          resolve(canvas.toDataURL('image/webp'));
+        },
+        { once: true }
+      );
+    };
+
+    video.onerror = function () {
+      reject('Error loading video');
+    };
+
+    video.src = videoUrl;
+  });
+}

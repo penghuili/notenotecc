@@ -19,6 +19,8 @@ const Wrapper = styled.div`
   background-color: white;
 `;
 const Content = styled.div`
+  position: relative;
+
   width: 100%;
   max-width: 600px;
   height: 100%;

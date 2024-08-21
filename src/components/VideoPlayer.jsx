@@ -3,11 +3,12 @@ import { RiPlayLargeLine, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/re
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { getVideoDuration } from '../lib/getVideoDuration';
+import { getVideoDuration, getVideoPreviewImage } from '../lib/video';
 
 export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidden }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
   const togglePlayPause = useCallback(() => {
     const video = videoRef.current;
@@ -56,6 +57,12 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
     };
   }, []);
 
+  useEffect(() => {
+    getVideoPreviewImage(src)
+      .then(setPreviewImageUrl)
+      .catch(e => console.log(e));
+  }, [src]);
+
   return (
     <Wrapper hidden={hidden}>
       <Video
@@ -65,6 +72,7 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
         muted={muted}
         playsInline
         preload="auto"
+        poster={previewImageUrl}
       >
         <source src={src} type={type} />
       </Video>
