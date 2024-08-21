@@ -3,7 +3,6 @@ import { RiArrowLeftLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
-import { hasPageMinHeightCat } from '../shared/react/AppWrapper.jsx';
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
 
 const Wrapper = styled.div`
@@ -41,11 +40,9 @@ const TopPlaceholder = styled.div`
 
 export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClose, children }) => {
   useEffect(() => {
-    hasPageMinHeightCat.set(false);
     disableBodyScroll();
 
     return () => {
-      hasPageMinHeightCat.set(true);
       enableBodyScroll();
     };
   }, []);

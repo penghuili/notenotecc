@@ -18,13 +18,12 @@ export const albumSelectedKeysCat = createCat([]);
 export const AlbumsSelector = React.memo(({ onChange }) => {
   return (
     <>
-      <Flex direction="column" gap="4">
-        <div>
-          <Heading as="h3" size="3" mb="2">
-            Tags
-          </Heading>
-          <AlbumItems onChange={onChange} />
-        </div>
+      <Flex direction="column" gap="2">
+        <Heading as="h3" size="3">
+          Tags
+        </Heading>
+
+        <AlbumItems onChange={onChange} />
 
         <AddNewAlbum onChange={onChange} />
       </Flex>
