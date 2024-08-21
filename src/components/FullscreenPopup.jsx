@@ -4,34 +4,41 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
+import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth';
 
 const Wrapper = styled.div`
   position: fixed;
   top: env(safe-area-inset-top);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   z-index: 3000;
 
-  width: 100vw;
-  max-width: 600px;
+  width: ${widthWithoutScrollbar}px;
   height: 100vh;
+  overflow: hidden;
+
   background-color: white;
+`;
+const Content = styled.div`
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 0 0.5rem;
   box-sizing: border-box;
-  overflow: hidden;
 `;
 const Top = styled(Flex)`
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 1rem);
   max-width: 600px;
   height: var(--space-8);
-  padding: 0.5rem;
+  padding: 0.5rem 0;
 `;
 const TopPlaceholder = styled.div`
   width: 100%;
@@ -49,26 +56,28 @@ export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClos
 
   return (
     <Wrapper>
-      <Top justify="between" width="100%">
-        {onBack ? (
-          <IconButton variant="soft" onClick={onBack} disabled={disabled}>
-            <RiArrowLeftLine />
-          </IconButton>
-        ) : (
-          <>
-            <IconButton variant="soft" onClick={onClose}>
-              <RiCloseLine />
+      <Content>
+        <Top justify="between" width="100%">
+          {onBack ? (
+            <IconButton variant="soft" onClick={onBack} disabled={disabled}>
+              <RiArrowLeftLine />
             </IconButton>
+          ) : (
+            <>
+              <IconButton variant="soft" onClick={onClose}>
+                <RiCloseLine />
+              </IconButton>
 
-            <IconButton onClick={onConfirm} disabled={disabled}>
-              <RiCheckLine />
-            </IconButton>
-          </>
-        )}
-      </Top>
-      <TopPlaceholder />
+              <IconButton onClick={onConfirm} disabled={disabled}>
+                <RiCheckLine />
+              </IconButton>
+            </>
+          )}
+        </Top>
+        <TopPlaceholder />
 
-      {children}
+        {children}
+      </Content>
     </Wrapper>
   );
 });

@@ -4,6 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
+import { widthWithoutScrollbar } from './getScrollbarWidth.js';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
 import { navigate } from './my-router.jsx';
@@ -68,7 +69,7 @@ export function PageHeader({ fixed, title, right, isLoading, hasBack }) {
         justify="center"
         align="center"
         zindex={2000}
-        width={document.documentElement.clientWidth}
+        width={widthWithoutScrollbar}
         fixed={fixed ? 'fixed' : ''}
       >
         <Content direction="row" justify="between">

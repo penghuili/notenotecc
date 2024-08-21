@@ -6,8 +6,8 @@ const Wrapper = styled.div`
   max-width: 600px;
   min-height: ${props => (props.hasMinHeight ? '105vh' : '0')};
   margin: 0 auto;
-  margin-bottom: ${props => (props.hasMinHeight ? '4rem' : '0')};
   padding: 0 0.5rem;
+  padding-bottom: 4rem;
   box-sizing: border-box;
 `;
 
