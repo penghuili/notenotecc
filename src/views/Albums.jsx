@@ -1,12 +1,14 @@
-import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
-import { RiMore2Line, RiSortDesc } from '@remixicon/react';
+import { Box, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
+import { RiCircleLine, RiMore2Line, RiSortDesc } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
+import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
+import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
-import { navigate, RouteLink } from '../shared/react/my-router.jsx';
+import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { userCat } from '../shared/react/store/sharedCats.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
@@ -25,7 +27,9 @@ export function Albums() {
 
       <AlbumItems />
 
-      <NoAlbumNotesLink />
+      <Box mt="6">
+        <AddNewAlbum />
+      </Box>
     </PrepareData>
   );
 }
@@ -33,10 +37,16 @@ export function Albums() {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);
   const isDeleting = useCat(isDeletingAlbumCat);
+  const account = useCat(userCat);
 
   const handleNavigateToReorder = useCallback(() => {
     navigate('/albums/reorder');
   }, []);
+
+  const handleNavigateToWithoutTags = useCallback(() => {
+    const url = `/albums/album_noalbum_${account?.id}`;
+    navigate(url);
+  }, [account?.id]);
 
   const rightElement = useMemo(
     () => (
@@ -52,10 +62,14 @@ const Header = React.memo(() => {
             <RiSortDesc />
             Reorder tags
           </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={handleNavigateToWithoutTags}>
+            <RiCircleLine />
+            Notes without tags
+          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     ),
-    [handleNavigateToReorder]
+    [handleNavigateToReorder, handleNavigateToWithoutTags]
   );
 
   return (
@@ -72,23 +86,23 @@ const Header = React.memo(() => {
 const AlbumItems = React.memo(() => {
   const albums = useCat(albumsCat);
 
-  if (!albums?.length) {
-    return null;
+  if (albums?.length) {
+    return (
+      <Flex wrap="wrap">
+        {albums?.map(album => (
+          <AlbumItem key={album.sortKey} album={album} />
+        ))}
+      </Flex>
+    );
   }
 
-  return (
-    <Flex wrap="wrap" mb="6">
-      {albums?.map(album => (
-        <AlbumItem key={album.sortKey} album={album} />
-      ))}
-    </Flex>
-  );
-});
+  if (!albums?.length) {
+    return (
+      <PageEmpty>
+        <Text>No tags yet.</Text>
+      </PageEmpty>
+    );
+  }
 
-const NoAlbumNotesLink = React.memo(() => {
-  const account = useCat(userCat);
-
-  const noalbumSortKey = `album_noalbum_${account?.id}`;
-
-  return <RouteLink to={`/albums/${noalbumSortKey}`}>Notes without tags</RouteLink>;
+  return null;
 });

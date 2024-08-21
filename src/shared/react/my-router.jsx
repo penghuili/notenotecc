@@ -23,7 +23,7 @@ export const replaceTo = to => {
 
 export const goBack = () => window.history.back();
 
-export const RouteLink = React.memo(({ to, children, mr, mb }) => {
+export const RouteLink = React.memo(({ to, children, mr, mb, mt, ml }) => {
   const handleClick = useCallback(
     e => {
       handleNavigateForLink(e, to);
@@ -32,7 +32,7 @@ export const RouteLink = React.memo(({ to, children, mr, mb }) => {
   );
 
   return (
-    <Link href={to} onClick={handleClick} mr={mr} mb={mb}>
+    <Link href={to} onClick={handleClick} mr={mr} mb={mb} mt={mt} ml={ml}>
       {children}
     </Link>
   );

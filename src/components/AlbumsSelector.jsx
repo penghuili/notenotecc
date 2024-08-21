@@ -1,9 +1,9 @@
-import { Button, CheckboxGroup, Flex, Text } from '@radix-ui/themes';
+import { Button, CheckboxGroup, Flex, Heading, Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { InputField } from '../shared/react/InputField.jsx';
-import { albumsCat } from '../store/album/albumCats.js';
+import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { createAlbumEffect } from '../store/album/albumEffects.js';
 
 const checkboxRootStyle = {
@@ -19,34 +19,40 @@ export const AlbumsSelector = React.memo(({ onChange }) => {
   return (
     <>
       <Flex direction="column" gap="4">
-        <AlbumItems onChange={onChange} />
+        <div>
+          <Heading as="h3" size="3" mb="2">
+            Tags
+          </Heading>
+          <AlbumItems onChange={onChange} />
+        </div>
 
-        <AlbumDescription onChange={onChange} />
+        <AddNewAlbum onChange={onChange} />
       </Flex>
     </>
   );
 });
 
-const AlbumDescription = React.memo(({ onChange }) => {
+export const AddNewAlbum = React.memo(({ onChange }) => {
   const description = useCat(albumDescriptionCat);
+  const isCreating = useCat(isCreatingAlbumCat);
 
   const handleCreate = useCallback(async () => {
     await createAlbumEffect({
       title: description,
       onSucceeded: () => {
-        onChange(albumSelectedKeysCat.get());
+        onChange?.(albumSelectedKeysCat.get());
       },
     });
   }, [description, onChange]);
 
   return (
-    <Flex gap="2">
+    <Flex gap="2" direction="column" align="start">
       <InputField
         placeholder="New tag name"
         value={description}
         onChange={albumDescriptionCat.set}
       />
-      <Button onClick={handleCreate} variant="soft">
+      <Button onClick={handleCreate} variant="soft" disabled={!description || isCreating}>
         Add new tag
       </Button>
     </Flex>
@@ -60,7 +66,7 @@ const AlbumItems = React.memo(({ onChange }) => {
   const handleSelectedKeysChange = useCallback(
     value => {
       albumSelectedKeysCat.set(value);
-      onChange(albumSelectedKeysCat.get());
+      onChange?.(albumSelectedKeysCat.get());
     },
     [onChange]
   );

@@ -1,6 +1,7 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 
+import { PageEmpty } from './PageEmpty.jsx';
 import { PageLoading } from './PageLoading.jsx';
 
 const PrepareDataStatus = {
@@ -33,9 +34,9 @@ export const PrepareData = React.memo(({ load, children, source }) => {
 
   if (status === PrepareDataStatus.error) {
     return (
-      <Flex justify="center" py="8">
+      <PageEmpty>
         <Text>Something went wrong.</Text>
-      </Flex>
+      </PageEmpty>
     );
   }
 

@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
+import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -12,6 +12,7 @@ import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
+import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
@@ -150,9 +151,9 @@ const NoteItems = React.memo(() => {
   }
   if (!isLoading) {
     return (
-      <Flex justify="center" py="8">
+      <PageEmpty>
         <Text align="center">Click actions below to take your first note.</Text>
-      </Flex>
+      </PageEmpty>
     );
   }
   return null;

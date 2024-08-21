@@ -125,6 +125,7 @@ const ConfirmDelete = React.memo(({ ref, onDelete, isDeleting }) => {
     setShowDeleteConfirm(false);
   }, [onDelete]);
 
+  // eslint-disable-next-line react-compiler/react-compiler
   useImperativeHandle(ref, () => ({
     show: handleShow,
   }));

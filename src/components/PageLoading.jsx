@@ -1,10 +1,12 @@
-import { Flex, Spinner } from '@radix-ui/themes';
+import { Spinner } from '@radix-ui/themes';
 import React from 'react';
+
+import { PageEmpty } from './PageEmpty.jsx';
 
 export const PageLoading = React.memo(() => {
   return (
-    <Flex justify="center" py="8">
+    <PageEmpty>
       <Spinner size="3" />
-    </Flex>
+    </PageEmpty>
   );
 });

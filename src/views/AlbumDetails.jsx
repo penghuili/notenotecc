@@ -1,12 +1,14 @@
-import { DropdownMenu, IconButton } from '@radix-ui/themes';
+import { DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
+import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
+import { Confirm } from '../shared/react/Confirm.jsx';
 import { FormButton } from '../shared/react/FormButton.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
@@ -40,14 +42,20 @@ const Header = React.memo(({ albumId }) => {
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingAlbumCat);
 
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   const handleEdit = useCallback(() => {
     navigate(`/albums/${albumId}/edit`);
   }, [albumId]);
 
+  const handleShowDelete = useCallback(() => {
+    setShowDeleteConfirm(true);
+  }, []);
+
   const handleDelete = useCallback(
     e => {
       e.stopPropagation();
-      deleteAlbumEffect(albumId, {});
+      deleteAlbumEffect(albumId, { goBack: true });
     },
     [albumId]
   );
@@ -57,44 +65,68 @@ const Header = React.memo(({ albumId }) => {
       <>
         <ScrollToTop />
 
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton mr="2" ml="2" variant="ghost">
-              <RiMore2Line />
-            </IconButton>
-          </DropdownMenu.Trigger>
+        {!albumId?.startsWith('album_noalbum_') && (
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <IconButton mr="2" ml="2" variant="ghost">
+                <RiMore2Line />
+              </IconButton>
+            </DropdownMenu.Trigger>
 
-          <DropdownMenu.Content variant="soft">
-            <DropdownMenu.Item onClick={handleEdit}>
-              <RiPencilLine />
-              Edit
-            </DropdownMenu.Item>
+            <DropdownMenu.Content variant="soft">
+              <DropdownMenu.Item onClick={handleEdit}>
+                <RiPencilLine />
+                Edit
+              </DropdownMenu.Item>
 
-            <DropdownMenu.Item onClick={handleDelete} color={errorColor} disabled={isDeleting}>
-              <RiDeleteBinLine />
-              Delete
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+              <DropdownMenu.Item
+                onClick={handleShowDelete}
+                color={errorColor}
+                disabled={isDeleting}
+              >
+                <RiDeleteBinLine />
+                Delete
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        )}
       </>
     );
-  }, [handleDelete, handleEdit, isDeleting]);
+  }, [albumId, handleEdit, handleShowDelete, isDeleting]);
 
   return (
-    <PageHeader
-      title="Tag details"
-      isLoading={isLoading || isAddingImages || isDeleting}
-      fixed
-      hasBack
-      right={rightElement}
-    />
+    <>
+      <PageHeader
+        title="Tag details"
+        isLoading={isLoading || isAddingImages || isDeleting}
+        fixed
+        hasBack
+        right={rightElement}
+      />
+
+      <Confirm
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+        message="This tag will be deleted, notes within this tag won't be deleted. Are you sure?"
+        onConfirm={handleDelete}
+        isSaving={isDeleting}
+      />
+    </>
   );
 });
 
 const Notes = React.memo(({ albumId }) => {
   const { items: notes } = useAlbumNotes(albumId);
 
-  return <NotesList notes={notes} />;
+  if (notes?.length) {
+    return <NotesList notes={notes} />;
+  }
+
+  return (
+    <PageEmpty>
+      <Text align="center">No notes in this tag.</Text>
+    </PageEmpty>
+  );
 });
 
 const LoadMore = React.memo(({ albumId }) => {

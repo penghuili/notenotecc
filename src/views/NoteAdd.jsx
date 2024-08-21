@@ -1,6 +1,7 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
 
+import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { navigate, replaceTo } from '../shared/react/my-router.jsx';
@@ -25,9 +26,9 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType, editor } }) => {
 
   return (
     <PrepareData load={prepareData}>
-      <Flex justify="center" py="8">
+      <PageEmpty>
         <Text>Something went wrong.</Text>
-      </Flex>
+      </PageEmpty>
     </PrepareData>
   );
 });

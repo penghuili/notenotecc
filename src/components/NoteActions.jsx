@@ -10,7 +10,6 @@ import {
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
-import { useRerenderDetector } from '../lib/useRerenderDetector.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
 import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
@@ -106,12 +105,6 @@ export const NoteActions = React.memo(({ note, goBackAfterDelete, onEdit }) => {
 
 const DeleteAction = React.memo(({ noteId, goBackAfterDelete }) => {
   const isDeleting = useCat(isDeletingNoteCat);
-
-  useRerenderDetector('DeleteAction', {
-    noteId,
-    goBackAfterDelete,
-    isDeleting,
-  });
 
   const handleDelete = useCallback(async () => {
     deleteNoteEffect(noteId, {
