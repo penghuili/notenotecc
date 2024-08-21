@@ -13,7 +13,6 @@ export const Editor = styled.div`
   letter-spacing: var(--letter-spacing, inherit);
 
   &[contenteditable='true'] {
-    min-height: 100px;
     overflow-y: auto;
     scrollbar-width: none;
 
@@ -26,6 +25,7 @@ export const Editor = styled.div`
   }
 
   &[contenteditable='true']:focus {
+    min-height: 100px;
     outline: 0;
   }
 
