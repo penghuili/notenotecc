@@ -9,6 +9,7 @@ import { useInView } from '../shared/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
 import { decryptBlob } from '../store/note/noteNetwork.js';
 import { AudioPlayer } from './AudioPlayer.jsx';
+import { fullScreenImageUrlCat } from './FullScreenImage.jsx';
 import { ImageActions } from './ImageActions.jsx';
 import { VideoPlayer } from './VideoPlayer.jsx';
 
@@ -84,6 +85,10 @@ const InnerImage = React.memo(
       onDelete(path || hash);
     }, [hash, onDelete, path]);
 
+    const handleOpenFullScreen = useCallback(() => {
+      fullScreenImageUrlCat.set(innerUrl);
+    }, [innerUrl]);
+
     useEffect(() => {
       if (!path) {
         setInnerUrl(localUrl);
@@ -123,7 +128,9 @@ const InnerImage = React.memo(
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
-              <ImageElement src={innerUrl} onLoad={handleLoaded} />
+              <div onDoubleClick={handleOpenFullScreen}>
+                <ImageElement src={innerUrl} onLoad={handleLoaded} />
+              </div>
             )}
 
             <Box position="absolute" top="2" right="2">
