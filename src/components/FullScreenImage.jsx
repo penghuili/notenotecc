@@ -44,7 +44,7 @@ export function FullScreenImage() {
       disableBodyScroll();
       document
         .querySelector('meta[name="viewport"]')
-        .setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1.0');
+        .setAttribute('content', 'width=device-width, initial-scale=1');
     } else {
       document
         .querySelector('meta[name="viewport"]')
