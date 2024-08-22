@@ -13,7 +13,7 @@ import { ImageActions } from './ImageActions.jsx';
 import { VideoPlayer } from './VideoPlayer.jsx';
 
 export const MediaItem = React.memo(
-  ({ noteId, encryptedPassword, url, path, size, encryptedSize, type, onDeleteLocal }) => {
+  ({ noteId, encryptedPassword, localUrl, path, hash, size, encryptedSize, type, onDelete }) => {
     const [showImage, setShowImage] = useState(false);
 
     const ref = useInView(
@@ -34,12 +34,13 @@ export const MediaItem = React.memo(
         <InnerImage
           noteId={noteId}
           encryptedPassword={encryptedPassword}
-          url={url}
+          localUrl={localUrl}
           path={path}
+          hash={hash}
           size={size}
           encryptedSize={encryptedSize}
           type={type}
-          onDeleteLocal={onDeleteLocal}
+          onDelete={onDelete}
         />
       );
     }
@@ -61,7 +62,7 @@ const ImageElement = styled.img`
 `;
 
 const InnerImage = React.memo(
-  ({ noteId, encryptedPassword, url, path, size, encryptedSize, type, onDeleteLocal }) => {
+  ({ noteId, encryptedPassword, localUrl, path, hash, size, encryptedSize, type, onDelete }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [innerUrl, setInnerUrl] = useState(null);
 
@@ -79,13 +80,13 @@ const InnerImage = React.memo(
       setIsLoading(false);
     }, []);
 
-    const handleDeleteLocal = useCallback(() => {
-      onDeleteLocal(imageForAction);
-    }, [imageForAction, onDeleteLocal]);
+    const handleDelete = useCallback(() => {
+      onDelete(path || hash);
+    }, [hash, onDelete, path]);
 
     useEffect(() => {
       if (!path) {
-        setInnerUrl(url);
+        setInnerUrl(localUrl);
         return;
       }
 
@@ -105,7 +106,7 @@ const InnerImage = React.memo(
           setInnerUrl(null);
           setIsLoading(false);
         });
-    }, [encryptedPassword, path, type, url]);
+    }, [encryptedPassword, path, type, localUrl]);
 
     return (
       <>
@@ -126,11 +127,7 @@ const InnerImage = React.memo(
             )}
 
             <Box position="absolute" top="2" right="2">
-              <ImageActions
-                noteId={noteId}
-                image={imageForAction}
-                onDeleteLocal={url ? handleDeleteLocal : undefined}
-              />
+              <ImageActions noteId={noteId} image={imageForAction} onDelete={handleDelete} />
             </Box>
           </>
         )}

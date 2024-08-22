@@ -12,10 +12,10 @@ import { Confirm } from '../shared/react/Confirm.jsx';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { isDeletingAlbumCat } from '../store/album/albumCats.js';
-import { deleteAlbumEffect } from '../store/album/albumEffects.js';
+import { isDeletingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
 import { NotesList } from './Notes.jsx';
 
@@ -41,6 +41,7 @@ const Header = React.memo(({ albumId }) => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingAlbumCat);
+  const album = useAlbum(albumId);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -52,13 +53,12 @@ const Header = React.memo(({ albumId }) => {
     setShowDeleteConfirm(true);
   }, []);
 
-  const handleDelete = useCallback(
-    e => {
-      e.stopPropagation();
-      deleteAlbumEffect(albumId, { goBack: true });
-    },
-    [albumId]
-  );
+  const handleDelete = useCallback(() => {
+    dispatchAction({
+      type: actionTypes.DELETE_ALBUM,
+      payload: { sortKey: albumId },
+    });
+  }, [albumId]);
 
   const rightElement = useMemo(() => {
     return (
@@ -97,7 +97,7 @@ const Header = React.memo(({ albumId }) => {
   return (
     <>
       <PageHeader
-        title="Tag details"
+        title={album?.title || 'Tag details'}
         isLoading={isLoading || isAddingImages || isDeleting}
         fixed
         hasBack

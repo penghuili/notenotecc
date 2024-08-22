@@ -6,11 +6,11 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { InputField } from '../shared/react/InputField.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { albumsCat, findAlbum, isUpdatingAlbumCat } from '../store/album/albumCats.js';
-import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
+import { albumsCat, findAlbum, isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
+import { fetchAlbumsEffect } from '../store/album/albumEffects';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 
 const titleCat = createCat('');
-const encryptedPasswordCat = createCat('');
 
 export const AlbumEdit = React.memo(({ pathParams: { albumId } }) => {
   const load = useCallback(async () => {
@@ -18,7 +18,6 @@ export const AlbumEdit = React.memo(({ pathParams: { albumId } }) => {
     const album = findAlbum(albumsCat.get(), albumId);
     if (album) {
       titleCat.set(album.title);
-      encryptedPasswordCat.set(album.encryptedPassword);
     }
   }, [albumId]);
 
@@ -36,17 +35,13 @@ export const AlbumEdit = React.memo(({ pathParams: { albumId } }) => {
 const Header = React.memo(({ albumId }) => {
   const isUpdating = useCat(isUpdatingAlbumCat);
   const title = useCat(titleCat);
-  const encryptedPassword = useCat(encryptedPasswordCat);
+  const album = useAlbum(albumId);
 
   const hasTitle = useMemo(() => !!title, [title]);
 
   const handleSend = useCallback(() => {
-    updateAlbumEffect(albumId, {
-      encryptedPassword,
-      title,
-      goBack: false,
-    });
-  }, [albumId, encryptedPassword, title]);
+    dispatchAction({ type: actionTypes.UPDATE_ALBUM, payload: { ...album, title, goBack: true } });
+  }, [album, title]);
 
   const rightElement = useMemo(
     () => (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -6,7 +6,8 @@ import { Reorder } from '../components/Reorder.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
-import { fetchAlbumsEffect, updateAlbumEffect } from '../store/album/albumEffects';
+import { fetchAlbumsEffect } from '../store/album/albumEffects';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 
 async function load() {
   await fetchAlbumsEffect();
@@ -33,19 +34,17 @@ const Header = React.memo(() => {
 const ReorderAlbums = React.memo(() => {
   const albums = useCat(albumsCat);
 
-  return (
-    <Reorder
-      items={albums}
-      onReorder={({ newItems, newPosition, itemId }) => {
-        albumsCat.set(newItems);
+  const handleReorder = useCallback(({ newItems, itemId }) => {
+    albumsCat.set(newItems);
 
-        if (itemId && newPosition) {
-          updateAlbumEffect(itemId, {
-            position: newPosition,
-          });
-        }
-      }}
-      reverse
-    />
-  );
+    const item = newItems.find(item => item.sortKey === itemId);
+    if (item) {
+      dispatchAction({
+        type: actionTypes.UPDATE_ALBUM,
+        payload: { ...item, goBack: false },
+      });
+    }
+  }, []);
+
+  return <Reorder items={albums} onReorder={handleReorder} reverse />;
 });

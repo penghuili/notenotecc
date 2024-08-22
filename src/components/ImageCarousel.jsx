@@ -6,7 +6,7 @@ import { fileTypes } from '../lib/constants';
 import { isMobile } from '../shared/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
-export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDeleteLocal }) => {
+export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDelete }) => {
   const isSwipable = images.length > 1;
   const [currentIndex, setCurrentIndex] = useState(isSwipable ? 1 : 0); // Start at the first actual image
   const [touchStart, setTouchStart] = useState(0);
@@ -222,18 +222,19 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              url={images[images.length - 1].url}
+              localUrl={images[images.length - 1].localUrl}
               path={images[images.length - 1].path}
+              hash={images[images.length - 1].hash}
               size={images[images.length - 1].size}
               encryptedSize={images[images.length - 1].encryptedSize}
               type={getMediaType(images[images.length - 1])}
-              onDeleteLocal={onDeleteLocal}
+              onDelete={onDelete}
             />
           </div>
         )}
         {images.map(image => (
           <div
-            key={image.url || image.path}
+            key={image.localUrl || image.path}
             className="carousel-slide"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -246,12 +247,13 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              url={image.url}
+              localUrl={image.localUrl}
               path={image.path}
+              hash={image.hash}
               size={image.size}
               encryptedSize={image.encryptedSize}
               type={getMediaType(image)}
-              onDeleteLocal={onDeleteLocal}
+              onDelete={onDelete}
             />
           </div>
         ))}
@@ -269,12 +271,13 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              url={images[0].url}
+              localUrl={images[0].localUrl}
               path={images[0].path}
+              hash={images[0].hash}
               size={images[0].size}
               encryptedSize={images[0].encryptedSize}
               type={getMediaType(images[0])}
-              onDeleteLocal={onDeleteLocal}
+              onDelete={onDelete}
             />
           </div>
         )}

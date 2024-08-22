@@ -1,11 +1,9 @@
-import { albumDescriptionCat, albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
+import { albumDescriptionCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
 import { orderByPosition } from '../../shared/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared/react/eventEmitter';
 import { LocalStorage } from '../../shared/react/LocalStorage';
 import { settingsCat } from '../../shared/react/store/sharedCats';
-import { goBackEffect, setToastEffect } from '../../shared/react/store/sharedEffects';
-import { toastTypes } from '../../shared/react/Toast.jsx';
 import {
   albumsCat,
   isCreatingAlbumCat,
@@ -14,8 +12,6 @@ import {
   isUpdatingAlbumCat,
 } from './albumCats';
 import { createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
-
-const albumsChangedAtKey = 'notenote-albumsChangedAt';
 
 export async function fetchAlbumsEffect(force) {
   const albumsInStore = albumsCat.get();
@@ -29,7 +25,7 @@ export async function fetchAlbumsEffect(force) {
     albumsCat.set(cachedAlbums);
 
     if (!force) {
-      const lastChangedAt = LocalStorage.get(albumsChangedAtKey);
+      const lastChangedAt = LocalStorage.get(localStorageKeys.albumsChangedAt);
       if (lastChangedAt && settings?.albumsChangedAt <= lastChangedAt) {
         return;
       }
@@ -42,38 +38,26 @@ export async function fetchAlbumsEffect(force) {
   if (data) {
     albumsCat.set(data.items);
 
-    LocalStorage.set(albumsChangedAtKey, settingsCat.get()?.albumsChangedAt);
+    LocalStorage.set(localStorageKeys.albumsChangedAt, settingsCat.get()?.albumsChangedAt);
   }
 
   isLoadingAlbumsCat.set(false);
 }
 
-export async function createAlbumEffect({ title, onSucceeded, goBack }) {
+export async function createAlbumEffect({ sortKey, timestamp, title }) {
   isCreatingAlbumCat.set(true);
 
-  const { data } = await createAlbum({ title });
+  const { data } = await createAlbum({ sortKey, timestamp, title });
   if (data) {
-    albumsCat.set([...albumsCat.get(), data]);
-    albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
+    updateAlbumsState(data, 'update');
     albumDescriptionCat.set('');
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
   }
 
   isCreatingAlbumCat.set(false);
 }
 
-export async function updateAlbumEffect(
-  albumId,
-  { encryptedPassword, title, position, onSucceeded, goBack }
-) {
+export async function updateAlbumEffect(albumId, { encryptedPassword, title, position }) {
   isUpdatingAlbumCat.set(true);
-  setToastEffect('Encrypting ...', toastTypes.info);
 
   const { data } = await updateAlbum(albumId, {
     encryptedPassword,
@@ -82,44 +66,41 @@ export async function updateAlbumEffect(
   });
 
   if (data) {
-    const newAlbums = orderByPosition(
-      (albumsCat.get() || []).map(album => (album.sortKey === albumId ? data : album)),
-      true
-    );
-    albumsCat.set(newAlbums);
-
-    setToastEffect('Saved!');
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
+    updateAlbumsState(data, 'update');
   }
 
   isUpdatingAlbumCat.set(false);
 }
 
-export async function deleteAlbumEffect(albumId, { onSucceeded, goBack }) {
+export async function deleteAlbumEffect(albumId) {
   isDeletingAlbumCat.set(true);
 
   const { data } = await deleteAlbum(albumId);
 
   if (data) {
-    albumsCat.set((albumsCat.get() || []).filter(album => album.sortKey !== albumId));
-
-    setToastEffect('Deleted!');
-
-    if (onSucceeded) {
-      onSucceeded();
-    }
-    if (goBack) {
-      goBackEffect();
-    }
+    updateAlbumsState(data, 'delete');
   }
 
   isDeletingAlbumCat.set(false);
 }
 
 eventEmitter.on(eventEmitterEvents.settingsFetched, () => fetchAlbumsEffect());
+
+export function updateAlbumsState(newAlbum, type) {
+  const albumsInState = albumsCat.get() || [];
+
+  let newItems = albumsInState;
+  if (type === 'update') {
+    newItems = orderByPosition(
+      newItems.map(item => (item.sortKey === newAlbum.sortKey ? newAlbum : item)),
+      true
+    );
+  } else if (type === 'delete') {
+    newItems = newItems.filter(item => item.sortKey !== newAlbum.sortKey);
+  } else if (type === 'create') {
+    newItems = [...newItems, newAlbum];
+  }
+
+  albumsCat.set(newItems);
+  LocalStorage.set(localStorageKeys.albums, newItems);
+}

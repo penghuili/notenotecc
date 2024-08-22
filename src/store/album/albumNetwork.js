@@ -40,7 +40,7 @@ export async function fetchAlbumItems(albumId, { startKey }) {
     );
 
     if (!startKey) {
-      LocalStorage.set(albumId, decrypted);
+      LocalStorage.set(`${localStorageKeys.album}-${albumId}`, decrypted);
     }
 
     return {
@@ -56,7 +56,7 @@ export async function fetchAlbumItems(albumId, { startKey }) {
   }
 }
 
-export async function createAlbum({ title }) {
+export async function createAlbum({ sortKey, timestamp, title }) {
   try {
     const password = generatePassword(20, true);
     const encryptedPassword = await encryptMessageAsymmetric(
@@ -66,13 +66,13 @@ export async function createAlbum({ title }) {
     const encryptedTitle = title ? await encryptMessageSymmetric(password, title) : title;
 
     const data = await HTTP.post(appName, `/v1/albums`, {
+      sortKey,
+      timestamp,
       encryptedPassword,
       title: encryptedTitle,
     });
 
     const decrypted = await decryptAlbum(data);
-
-    updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -91,8 +91,6 @@ export async function updateAlbum(albumId, { encryptedPassword, title, position 
 
     const decrypted = await decryptAlbum(data);
 
-    updateCache(decrypted, 'update');
-
     return { data: decrypted, error: null };
   } catch (error) {
     return { data: null, error };
@@ -103,30 +101,10 @@ export async function deleteAlbum(albumId) {
   try {
     const data = await HTTP.delete(appName, `/v1/albums/${albumId}`);
 
-    updateCache({ sortKey: albumId }, 'delete');
-
     return { data, error: null };
   } catch (error) {
     return { data: null, error };
   }
-}
-
-function updateCache(album, type) {
-  const cachedItems = LocalStorage.get(localStorageKeys.albums) || [];
-
-  let newItems = cachedItems;
-  if (type === 'update') {
-    newItems = orderByPosition(
-      cachedItems.map(item => (item.sortKey === album.sortKey ? album : item)),
-      true
-    );
-  } else if (type === 'delete') {
-    newItems = cachedItems.filter(item => item.sortKey !== album.sortKey);
-  } else if (type === 'create') {
-    newItems = [...cachedItems, album];
-  }
-
-  LocalStorage.set(localStorageKeys.albums, newItems);
 }
 
 export async function decryptAlbum(album) {

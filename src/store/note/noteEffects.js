@@ -1,17 +1,9 @@
-import { albumDescriptionCat, albumSelectedKeysCat } from '../../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared/js/date';
 import { LocalStorage } from '../../shared/react/LocalStorage';
 import { settingsCat } from '../../shared/react/store/sharedCats';
-import {
-  fetchSettingsEffect,
-  goBackEffect,
-  setToastEffect,
-} from '../../shared/react/store/sharedEffects';
-import { toastTypes } from '../../shared/react/Toast.jsx';
-import { albumsCat } from '../album/albumCats.js';
+import { fetchSettingsEffect, setToastEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
-import { createAlbum } from '../album/albumNetwork.js';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -30,14 +22,10 @@ import {
   createNote,
   deleteImage,
   deleteNote,
-  encryptExistingNote,
   fetchNote,
   fetchNotes,
   updateNote,
 } from './noteNetwork';
-
-const notesChangedAtKey = 'notenote-notesChangedAt';
-const encryptingMessage = 'Encrypting ...';
 
 export async function fetchNotesEffect(startKey, force) {
   if (!force && notesCat.get()?.items?.length) {
@@ -51,7 +39,12 @@ export async function fetchNotesEffect(startKey, force) {
 
       await fetchSettingsEffect();
 
-      if (!isNewer(settingsCat.get()?.notesChangedAt, LocalStorage.get(notesChangedAtKey))) {
+      if (
+        !isNewer(
+          settingsCat.get()?.notesChangedAt,
+          LocalStorage.get(localStorageKeys.notesChangedAtKey)
+        )
+      ) {
         return;
       }
     }
@@ -67,7 +60,7 @@ export async function fetchNotesEffect(startKey, force) {
       hasMore: data.hasMore,
     });
 
-    LocalStorage.set(notesChangedAtKey, settingsCat.get()?.notesChangedAt);
+    LocalStorage.set(localStorageKeys.notesChangedAtKey, settingsCat.get()?.notesChangedAt);
   }
 
   isLoadingNotesCat.set(false);
@@ -98,15 +91,20 @@ async function forceFetchNoteEffect(noteId) {
     data &&
     (stateNote?.sortKey !== noteId || isNewer(data.updatedAt, noteCat.get()?.updatedAt))
   ) {
-    updateStates(data, 'update');
+    updateNoteStates(data, 'update');
   }
 
   isLoadingNoteCat.set(false);
 }
 
 export async function fetchNoteEffect(noteId) {
-  if (noteCat.get()?.sortKey !== noteId) {
-    const cachedNote = LocalStorage.get(noteId);
+  const noteInState = noteCat.get();
+  if (noteInState?.sortKey === noteId && noteInState.isLocal) {
+    return;
+  }
+
+  if (noteInState?.sortKey !== noteId) {
+    const cachedNote = LocalStorage.get(`${localStorageKeys.note}-${noteId}`);
     if (cachedNote) {
       noteCat.set(cachedNote);
     }
@@ -119,113 +117,43 @@ export async function fetchNoteEffect(noteId) {
   }
 }
 
-export async function createNoteEffect({
-  note,
-  images,
-  albumIds,
-  albumDescription,
-  onSucceeded,
-  goBack,
-  showSuccess = true,
-}) {
+export async function createNoteEffect({ sortKey, timestamp, note, images, albumIds }) {
   isCreatingNoteCat.set(true);
-  if (showSuccess) {
-    setToastEffect(encryptingMessage, toastTypes.info);
-  }
 
-  const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
-
-  const { data } = await createNote({
-    note,
-    images,
-    albumIds: updatedAlbumIds,
-  });
+  const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
-    updateStates(data, 'create');
-
-    if (showSuccess) {
-      setToastEffect('Saved!');
-    }
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
-
+    updateNoteStates(data, 'update');
     fetchSettingsEffect();
   }
 
   isCreatingNoteCat.set(false);
 }
 
-export async function updateNoteEffect(
-  noteId,
-  { encryptedPassword, note, albumIds, albumDescription, onSucceeded, goBack, showSuccess = true }
-) {
+export async function updateNoteEffect(noteId, { encryptedPassword, note, albumIds }) {
   isUpdatingNoteCat.set(true);
-  if (showSuccess && note !== undefined) {
-    setToastEffect(encryptingMessage, toastTypes.info);
-  }
-
-  const updatedAlbumIds = await getAlbumIds(albumIds, albumDescription);
 
   const { data } = await updateNote(noteId, {
     encryptedPassword,
     note,
-    albumIds: updatedAlbumIds,
+    albumIds,
   });
 
   if (data) {
-    updateStates(data, 'update');
-
-    if (showSuccess) {
-      setToastEffect('Saved!');
-    }
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
+    updateNoteStates(data, 'update');
   }
 
   isUpdatingNoteCat.set(false);
 }
 
-export async function encryptExistingNoteEffect(note) {
-  isUpdatingNoteCat.set(true);
-  setToastEffect(encryptingMessage, toastTypes.info);
-
-  const { data } = await encryptExistingNote(note);
-
-  if (data) {
-    updateStates(data, 'update');
-
-    setToastEffect('Encrypted!');
-  }
-
-  isUpdatingNoteCat.set(false);
-}
-
-export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack }) {
+export async function deleteImageEffect(noteId, { imagePath }) {
   isDeletingImageCat.set(true);
 
   const { data } = await deleteImage(noteId, imagePath);
 
   if (data) {
-    updateStates(data, 'update');
+    updateNoteStates(data, 'update');
 
     setToastEffect('Deleted!');
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
 
     fetchSettingsEffect();
   }
@@ -233,23 +161,13 @@ export async function deleteImageEffect(noteId, { imagePath, onSucceeded, goBack
   isDeletingImageCat.set(false);
 }
 
-export async function addImagesEffect(noteId, { encryptedPassword, images, onSucceeded, goBack }) {
+export async function addImagesEffect(noteId, { encryptedPassword, images }) {
   isAddingImagesCat.set(true);
-  setToastEffect(encryptingMessage, toastTypes.info);
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
 
   if (data) {
-    updateStates(data, 'update');
-
-    setToastEffect('Saved!');
-
-    if (onSucceeded) {
-      onSucceeded(data);
-    }
-    if (goBack) {
-      goBackEffect();
-    }
+    updateNoteStates(data, 'update');
 
     fetchSettingsEffect();
   }
@@ -257,22 +175,15 @@ export async function addImagesEffect(noteId, { encryptedPassword, images, onSuc
   isAddingImagesCat.set(false);
 }
 
-export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
+export async function deleteNoteEffect(noteId) {
   isDeletingNoteCat.set(true);
 
   const { data } = await deleteNote(noteId);
 
   if (data) {
-    updateStates(data, 'delete');
+    updateNoteStates(data, 'delete');
 
     setToastEffect('Deleted!');
-
-    if (onSucceeded) {
-      onSucceeded();
-    }
-    if (goBack) {
-      goBackEffect();
-    }
 
     fetchSettingsEffect();
   }
@@ -280,42 +191,53 @@ export async function deleteNoteEffect(noteId, { onSucceeded, goBack }) {
   isDeletingNoteCat.set(false);
 }
 
-function updateStates(newNote, type) {
+export function updateNoteStates(newNote, type) {
   const fn =
     type === 'update'
-      ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? item : i))
+      ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? { ...i, ...item } : i))
       : type === 'create'
         ? (items, item) => [item, ...items]
         : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
 
   // home
   const currentNotes = notesCat.get();
-  notesCat.set({
+  const updatedHome = {
     ...currentNotes,
     items: fn(currentNotes.items || [], newNote),
-  });
+  };
+  notesCat.set(updatedHome);
+  LocalStorage.set(localStorageKeys.notes, updatedHome);
 
   // single
   if (type === 'update' || type === 'create') {
     noteCat.set(newNote);
+    LocalStorage.set(`${localStorageKeys.note}-${newNote.sortKey}`, newNote);
+  } else if (type === 'delete') {
+    LocalStorage.remove(`${localStorageKeys.note}-${newNote.sortKey}`);
   }
 
   // album items
   const albumItems = albumItemsCat.get();
-  if (type === 'create' && newNote.albumIds?.find(i => i.albumId === albumItems.albumId)) {
-    albumItemsCat.set({
+  let updatedAlbumItems;
+  if (type === 'create' && newNote.albumIds?.find(id => id === albumItems.albumId)) {
+    updatedAlbumItems = {
       ...albumItems,
       items: [newNote, ...albumItems.items],
-    });
+    };
   } else if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
     const newItems =
-      type === 'update' && newNote.albumIds?.find(i => i.albumId === albumItems.albumId)
+      type === 'update' && newNote.albumIds?.find(id => id === albumItems.albumId)
         ? albumItems.items.map(i => (i.sortKey === newNote.sortKey ? newNote : i))
         : albumItems.items.filter(i => i.sortKey !== newNote.sortKey);
-    albumItemsCat.set({
+
+    updatedAlbumItems = {
       ...albumItems,
       items: newItems,
-    });
+    };
+  }
+  if (updatedAlbumItems) {
+    albumItemsCat.set(updatedAlbumItems);
+    LocalStorage.set(`${localStorageKeys.album}-${albumItems.albumId}`, updatedAlbumItems);
   }
 
   // on this day
@@ -327,19 +249,4 @@ function updateStates(newNote, type) {
       [date]: fn(currentOnThisDayNotes[date] || [], newNote),
     });
   }
-}
-
-async function getAlbumIds(albumIds, albumDescription) {
-  if (albumDescription) {
-    const { data } = await createAlbum({ title: albumDescription });
-    if (data) {
-      albumsCat.set([...albumsCat.get(), data]);
-      albumSelectedKeysCat.set([data.sortKey, ...albumSelectedKeysCat.get()]);
-      albumDescriptionCat.set('');
-
-      return [...(albumIds || []), data.sortKey];
-    }
-  }
-
-  return albumIds;
 }

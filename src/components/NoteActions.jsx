@@ -1,26 +1,15 @@
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
-import {
-  RiDeleteBinLine,
-  RiImageAddLine,
-  RiLockLine,
-  RiMore2Line,
-  RiPencilLine,
-} from '@remixicon/react';
+import { RiDeleteBinLine, RiImageAddLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { currentPathCat, navigate } from '../shared/react/my-router.jsx';
-import { isDeletingNoteCat, isUpdatingNoteCat } from '../store/note/noteCats.js';
-import {
-  addImagesEffect,
-  deleteNoteEffect,
-  encryptExistingNoteEffect,
-} from '../store/note/noteEffects';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
+import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { Camera } from './Camera.jsx';
 
 export const NoteActions = React.memo(({ note }) => {
-  const isUpdating = useCat(isUpdatingNoteCat);
   const currentPath = useCat(currentPathCat);
   const isDetailsPage = useMemo(() => {
     return currentPath === `/notes/${note.sortKey}`;
@@ -28,23 +17,15 @@ export const NoteActions = React.memo(({ note }) => {
 
   const [showCamera, setShowCamera] = useState(false);
 
-  const handleEncrypt = useCallback(
-    e => {
-      e.stopPropagation();
-      encryptExistingNoteEffect(note);
-    },
-    [note]
-  );
-
   const handleAddImages = useCallback(
     async newImages => {
-      addImagesEffect(note.sortKey, {
-        encryptedPassword: note.encryptedPassword,
-        images: newImages,
+      dispatchAction({
+        type: actionTypes.ADD_IMAGES,
+        payload: { ...note, newImages },
       });
       setShowCamera(false);
     },
-    [note.encryptedPassword, note.sortKey]
+    [note]
   );
 
   const handleShowCamera = useCallback(e => {
@@ -62,14 +43,6 @@ export const NoteActions = React.memo(({ note }) => {
 
   if (!note) {
     return null;
-  }
-
-  if (!note.encrypted) {
-    return (
-      <IconButton variant="ghost" onClick={handleEncrypt} mr="2" disabled={isUpdating}>
-        <RiLockLine />
-      </IconButton>
-    );
   }
 
   return (
@@ -95,7 +68,7 @@ export const NoteActions = React.memo(({ note }) => {
 
           <DropdownMenu.Separator />
 
-          <DeleteAction noteId={note.sortKey} goBackAfterDelete={isDetailsPage} />
+          <DeleteAction note={note} goBackAfterDelete={isDetailsPage} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
@@ -104,14 +77,15 @@ export const NoteActions = React.memo(({ note }) => {
   );
 });
 
-const DeleteAction = React.memo(({ noteId, goBackAfterDelete }) => {
+const DeleteAction = React.memo(({ note, goBackAfterDelete }) => {
   const isDeleting = useCat(isDeletingNoteCat);
 
   const handleDelete = useCallback(async () => {
-    deleteNoteEffect(noteId, {
-      goBack: !!goBackAfterDelete,
+    dispatchAction({
+      type: actionTypes.DELETE_NOTE,
+      payload: { ...note, goBack: !!goBackAfterDelete },
     });
-  }, [noteId, goBackAfterDelete]);
+  }, [goBackAfterDelete, note]);
 
   return (
     <DropdownMenu.Item onClick={handleDelete} color={errorColor} disabled={isDeleting}>

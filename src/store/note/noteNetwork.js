@@ -1,7 +1,4 @@
 import { fileTypes, localStorageKeys } from '../../lib/constants';
-import { fetchFileWithUrl } from '../../lib/fetchFileWithUrl';
-import { imagePathToUrl } from '../../lib/imagePathToUrl';
-import { asyncForEach } from '../../shared/js/asyncForEach';
 import {
   decryptFileSymmetric,
   encryptFileSymmetric,
@@ -11,9 +8,9 @@ import {
 import { generatePassword } from '../../shared/js/generatePassword';
 import { blobToUint8Array, uint8ArrayToBlob } from '../../shared/react/file';
 import { HTTP } from '../../shared/react/HTTP';
+import { idbStorage } from '../../shared/react/indexDB';
 import { appName } from '../../shared/react/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
-import { md5 } from '../../shared/react/md5';
 import { objectToQueryString } from '../../shared/react/routeHelpers';
 import {
   decryptNote,
@@ -50,7 +47,7 @@ export async function fetchNote(noteId) {
 
     const decrypted = await decryptNote(note);
 
-    LocalStorage.set(decrypted.sortKey, decrypted);
+    LocalStorage.set(`${localStorageKeys.note}-${noteId}`, decrypted);
 
     return {
       data: decrypted,
@@ -82,8 +79,7 @@ async function uploadImages(password, images) {
   const octetType = 'application/octet-stream';
   const encrypted = await Promise.all(
     images.map(async item => {
-      const hash = await md5(item.blob);
-      const name = getName(item.type, hash);
+      const name = getName(item.type, item.hash);
 
       const uint8 = await blobToUint8Array(item.blob);
       const encrypted = await encryptFileSymmetric(password, uint8);
@@ -117,6 +113,12 @@ async function uploadImages(password, images) {
     })
   );
 
+  await Promise.all(
+    images.map(async item => {
+      await idbStorage.removeItem(item.hash);
+    })
+  );
+
   return uploadUrls.map((u, i) => ({
     path: u.path,
     type: images[i].type,
@@ -125,49 +127,7 @@ async function uploadImages(password, images) {
   }));
 }
 
-export async function encryptExistingNote(note) {
-  if (note?.encrypted) {
-    return { data: note };
-  }
-
-  const images = note.images || [];
-  const imageBlobs = await Promise.all(images.map(i => fetchFileWithUrl(imagePathToUrl(i.path))));
-  const password = generatePassword(20, true);
-  const encryptedPassword = await encryptMessageAsymmetric(
-    LocalStorage.get(sharedLocalStorageKeys.publicKey),
-    password
-  );
-
-  const { data } = await addImages(note.sortKey, {
-    encryptedPassword,
-    images: imageBlobs,
-  });
-  if (data) {
-    await asyncForEach(images, async i => {
-      await deleteImage(note.sortKey, i.path);
-    });
-  }
-
-  try {
-    const encryptedNote = note.note
-      ? await encryptMessageSymmetric(password, note.note)
-      : note.note;
-    const encrypted = await HTTP.put(appName, `/v1/notes/${note.sortKey}/encrypt`, {
-      encryptedPassword,
-      note: encryptedNote,
-    });
-
-    const decrypted = await decryptNote(encrypted);
-
-    updateCache(decrypted, 'update');
-
-    return { data: decrypted, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}
-
-export async function createNote({ note, images, albumIds }) {
+export async function createNote({ sortKey, timestamp, note, images, albumIds }) {
   try {
     const password = generatePassword(20, true);
     const encryptedPassword = await encryptMessageAsymmetric(
@@ -179,6 +139,8 @@ export async function createNote({ note, images, albumIds }) {
     const encryptedNote = note ? await encryptMessageSymmetric(password, note) : note;
 
     const data = await HTTP.post(appName, `/v1/notes`, {
+      sortKey,
+      timestamp,
       encryptedPassword,
       note: encryptedNote,
       images: uploadedImages,
@@ -186,8 +148,6 @@ export async function createNote({ note, images, albumIds }) {
     });
 
     const decrypted = await decryptNote(data);
-
-    updateCache(decrypted, 'create');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -206,8 +166,6 @@ export async function updateNote(noteId, { encryptedPassword, note, albumIds }) 
 
     const decrypted = await decryptNote(data);
 
-    updateCache(decrypted, 'update');
-
     return { data: decrypted, error: null };
   } catch (error) {
     return { data: null, error };
@@ -221,8 +179,6 @@ export async function deleteImage(noteId, imagePath) {
     });
 
     const decrypted = await decryptNote(data);
-
-    updateCache(decrypted, 'update');
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -240,8 +196,6 @@ export async function addImages(noteId, { encryptedPassword, images }) {
 
     const decrypted = await decryptNote(data);
 
-    updateCache(decrypted, 'update');
-
     return { data: decrypted, error: null };
   } catch (error) {
     return { data: null, error };
@@ -252,37 +206,10 @@ export async function deleteNote(noteId) {
   try {
     const data = await HTTP.delete(appName, `/v1/notes/${noteId}`);
 
-    updateCache({ sortKey: noteId }, 'delete');
-
     return { data, error: null };
   } catch (error) {
     return { data: null, error };
   }
-}
-
-function updateCache(note, type) {
-  if (type === 'update' || type === 'create') {
-    LocalStorage.set(note.sortKey, note);
-  } else if (type === 'delete') {
-    LocalStorage.remove(note.sortKey);
-  }
-
-  const cachedItems = LocalStorage.get(localStorageKeys.notes) || [];
-
-  let newItems = cachedItems?.items;
-  if (!newItems?.length) {
-    return;
-  }
-
-  if (type === 'update') {
-    newItems = newItems.map(item => (item.sortKey === note.sortKey ? note : item));
-  } else if (type === 'delete') {
-    newItems = newItems.filter(item => item.sortKey !== note.sortKey);
-  } else if (type === 'create') {
-    newItems = [note, ...newItems];
-  }
-
-  LocalStorage.set(localStorageKeys.notes, { ...cachedItems, items: newItems });
 }
 
 export async function encryptBlob(password, blob) {

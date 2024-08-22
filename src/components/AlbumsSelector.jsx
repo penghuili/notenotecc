@@ -2,9 +2,10 @@ import { Button, CheckboxGroup, Flex, Heading, Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
 import { createCat, useCat } from 'usecat';
 
+import { generateAlbumSortKey } from '../lib/generateSortKey.js';
 import { InputField } from '../shared/react/InputField.jsx';
 import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
-import { createAlbumEffect } from '../store/album/albumEffects.js';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 
 const checkboxRootStyle = {
   flexDirection: 'row',
@@ -36,12 +37,17 @@ export const AddNewAlbum = React.memo(({ onChange }) => {
   const isCreating = useCat(isCreatingAlbumCat);
 
   const handleCreate = useCallback(async () => {
-    await createAlbumEffect({
-      title: description,
-      onSucceeded: () => {
-        onChange?.(albumSelectedKeysCat.get());
+    const timestamp = Date.now();
+    const sortKey = generateAlbumSortKey(timestamp);
+    dispatchAction({
+      type: actionTypes.CREATE_ALBUM,
+      payload: {
+        sortKey,
+        timestamp,
+        title: description,
       },
     });
+    onChange?.(albumSelectedKeysCat.get());
   }, [description, onChange]);
 
   return (

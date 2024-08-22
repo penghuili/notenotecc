@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { isMobileWidth } from '../shared/react/device';
+import { idbStorage } from '../shared/react/indexDB.js';
+import { md5 } from '../shared/react/md5';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -20,8 +22,11 @@ export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
   }, [images, onSelect]);
 
   const handleAddNewImage = useCallback(
-    newImage => {
-      setImages([...images, newImage]);
+    async newImage => {
+      const hash = await md5(newImage.blob);
+      setImages([...images, { ...newImage, hash }]);
+
+      idbStorage.setItem(hash, newImage.blob);
     },
     [images]
   );
@@ -102,7 +107,7 @@ const ImagesPreview = React.memo(({ images }) => {
 
   return (
     <ImagesWrapper cameraSize={cameraSize}>
-      <PreviewItem key={reversedImages[0].url} image={reversedImages[0]} />
+      <PreviewItem image={reversedImages[0]} />
       {reversedImages.length}
     </ImagesWrapper>
   );
@@ -112,12 +117,17 @@ const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
   return (
     <div>
       {(image.type === fileTypes.webp || image.type === fileTypes.jpeg) && (
-        <PreviewImage src={image.url} translateX={translateX} zIndex={zIndex} />
+        <PreviewImage src={image.localUrl} translateX={translateX} zIndex={zIndex} />
       )}
 
       {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
         <>
-          <PreviewVideo src={image.url} controls={false} translateX={translateX} zIndex={zIndex} />
+          <PreviewVideo
+            src={image.localUrl}
+            controls={false}
+            translateX={translateX}
+            zIndex={zIndex}
+          />
           <Flex justify="center" width="100%" position="absolute" top="30px">
             <IconButton size="1">
               <RiPlayLine />

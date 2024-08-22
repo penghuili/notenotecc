@@ -132,8 +132,8 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     stopMediaRecorder();
 
     const blob = new Blob(recordedChunksRef.current, { type: videoType });
-    const url = URL.createObjectURL(blob);
-    onSelect({ blob, url, size: blob.size, type: videoType });
+    const localUrl = URL.createObjectURL(blob);
+    onSelect({ blob, localUrl, size: blob.size, type: videoType });
 
     setIsRecording(false);
     setIsPaused(false);

@@ -52,7 +52,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
     const imageUrl = tempCanvas.toDataURL(imageType);
 
-    onSelect({ blob, url: imageUrl, size: blob.size, type: imageType });
+    onSelect({ blob, localUrl: imageUrl, size: blob.size, type: imageType });
   }, [onSelect]);
 
   const handleChangeFacingMode = useCallback(() => {

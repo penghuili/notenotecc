@@ -49,7 +49,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const canvas = cropperRef.current.crop(900);
     const blob = await canvasToBlob(canvas, imageType, 0.8);
     const imageUrl = canvas.toDataURL(imageType);
-    onSelect({ blob, url: imageUrl, size: blob.size, type: imageType });
+    onSelect({ blob, localUrl: imageUrl, size: blob.size, type: imageType });
 
     handleNextPhoto();
   }, [handleNextPhoto, onSelect]);
@@ -59,7 +59,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
     const imageUrl = resizedCanvas.toDataURL(imageType);
-    onSelect({ blob, url: imageUrl, type: imageType });
+    onSelect({ blob, localUrl: imageUrl, type: imageType });
 
     handleNextPhoto();
   }, [handleNextPhoto, onSelect, pickedPhotos]);

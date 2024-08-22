@@ -1,10 +1,11 @@
+import { localStorageKeys } from '../../lib/constants';
 import { LocalStorage } from '../../shared/react/LocalStorage';
 import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 
 export async function fetchAlbumItemsEffect(albumId, { startKey }) {
   if (!startKey && albumItemsCat.get()?.albumId !== albumId) {
-    const cachedAlbumItems = LocalStorage.get(albumId);
+    const cachedAlbumItems = LocalStorage.get(`${localStorageKeys.album}-${albumId}`);
     if (cachedAlbumItems?.length) {
       albumItemsCat.set({
         items: cachedAlbumItems,

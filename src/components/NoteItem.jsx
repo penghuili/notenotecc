@@ -3,6 +3,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { navigate } from '../shared/react/my-router.jsx';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { AlbumItem } from './AlbumItem.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { Markdown } from './MarkdownEditor/Markdown.jsx';
@@ -20,6 +21,16 @@ export const NoteItem = React.memo(({ note, albums }) => {
   const handleNavigate = useCallback(() => {
     navigate(`/notes/${note.sortKey}`);
   }, [note.sortKey]);
+
+  const handleDeleteImage = useCallback(
+    imagePath => {
+      dispatchAction({
+        type: actionTypes.DELETE_IMAGE,
+        payload: { ...note, imagePath },
+      });
+    },
+    [note]
+  );
 
   const albumsElement = useMemo(() => {
     if (!albums?.length) {
@@ -57,6 +68,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
           noteId={note.sortKey}
           encryptedPassword={note.encryptedPassword}
           images={note.images}
+          onDelete={handleDeleteImage}
         />
       )}
       {!!note.note && (

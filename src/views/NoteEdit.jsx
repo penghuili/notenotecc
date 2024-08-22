@@ -11,7 +11,6 @@ import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
-import { addRequestToQueue } from '../lib/requestQueue.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
@@ -20,6 +19,7 @@ import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { goBack, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
+import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -30,55 +30,52 @@ import {
   noteCat,
   useNote,
 } from '../store/note/noteCats.js';
-import { addImagesEffect, fetchNoteEffect, updateNoteEffect } from '../store/note/noteEffects';
+import { fetchNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
-const noteIdCat = createCat(null);
-const encryptedPasswordCat = createCat('');
 const showCameraCat = createCat(false);
 
-export const NoteEdit = React.memo(({ pathParams: { noteId }, queryParams: { cameraType } }) => {
-  const prepareData = useCallback(async () => {
-    showCameraCat.set(!!cameraType);
+export const NoteEdit = React.memo(
+  ({ pathParams: { noteId }, queryParams: { cameraType, add } }) => {
+    const prepareData = useCallback(async () => {
+      showCameraCat.set(!!cameraType);
 
-    if (noteId) {
-      noteIdCat.set(noteId);
-      await fetchNoteEffect(noteId);
+      if (noteId) {
+        await fetchNoteEffect(noteId);
 
-      const note = noteCat.get();
-      if (note) {
-        descriptionCat.set(note.note || '');
-        encryptedPasswordCat.set(note.encryptedPassword);
-        albumSelectedKeysCat.set((note.albumIds || []).map(a => a.albumId));
+        const note = noteCat.get();
+        if (note) {
+          descriptionCat.set(note.note || '');
+          albumSelectedKeysCat.set(note.albumIds || []);
 
-        return;
+          return;
+        }
       }
-    }
 
-    replaceTo('/notes');
-  }, [cameraType, noteId]);
+      replaceTo('/notes');
+    }, [cameraType, noteId]);
 
-  useScrollToTop();
+    useScrollToTop();
 
-  return (
-    <PrepareData load={prepareData}>
-      <Header noteId={noteId} />
+    return (
+      <PrepareData load={prepareData}>
+        <Header noteId={noteId} />
 
-      <NoteView />
+        <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
 
-      <AddImages cameraType={cameraType} />
-    </PrepareData>
-  );
-});
+        <AddImages noteId={noteId} cameraType={cameraType} />
+      </PrepareData>
+    );
+  }
+);
 
-const Header = React.memo(() => {
+const Header = React.memo(({ noteId }) => {
   const isLoading = useCat(isLoadingNoteCat);
   const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const isDeleting = useCat(isDeletingNoteCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeletingImage = useCat(isDeletingImageCat);
-  const noteId = useCat(noteIdCat);
   const noteItem = useNote(noteId);
 
   const rightElement = useMemo(() => !!noteItem && <NoteActions note={noteItem} />, [noteItem]);
@@ -96,10 +93,19 @@ const Header = React.memo(() => {
   );
 });
 
-const NoteView = React.memo(() => {
-  const noteId = useCat(noteIdCat);
+const NoteView = React.memo(({ noteId, isAddingNote }) => {
   const noteItem = useNote(noteId);
   const getNoteAlbums = useGetNoteAlbums();
+
+  const handleDeleteImage = useCallback(
+    imagePath => {
+      dispatchAction({
+        type: actionTypes.DELETE_IMAGE,
+        payload: { ...noteItem, imagePath },
+      });
+    },
+    [noteItem]
+  );
 
   const albumsElement = useMemo(() => {
     const albums = getNoteAlbums(noteItem);
@@ -132,51 +138,47 @@ const NoteView = React.memo(() => {
           noteId={noteItem.sortKey}
           encryptedPassword={noteItem.encryptedPassword}
           images={noteItem.images}
+          onDelete={handleDeleteImage}
         />
       )}
-      <Editor />
+      <Editor noteId={noteId} autoFocus={isAddingNote} />
 
       {albumsElement}
 
-      <AddAlbums />
+      <AddAlbums noteId={noteId} />
     </>
   );
 });
 
-const saveDescription = async ({ noteId, description, encryptedPassword }) => {
-  await updateNoteEffect(noteId, {
-    encryptedPassword: encryptedPassword,
-    note: description || null,
-    goBack: false,
-    showSuccess: false,
+const saveDescription = async newNote => {
+  dispatchAction({
+    type: actionTypes.UPDATE_NOTE,
+    payload: newNote,
   });
 };
 const debouncedSaveDescription = debounceAndQueue(saveDescription, 500);
 
-const Editor = React.memo(() => {
+const Editor = React.memo(({ noteId, autoFocus }) => {
+  const noteItem = useNote(noteId);
   const description = useCat(descriptionCat);
 
-  const handleChange = useCallback(newDescription => {
-    descriptionCat.set(newDescription);
+  const handleChange = useCallback(
+    newDescription => {
+      descriptionCat.set(newDescription);
 
-    debouncedSaveDescription({
-      noteId: noteIdCat.get(),
-      description: newDescription,
-      encryptedPassword: encryptedPasswordCat.get(),
-    });
-  }, []);
+      debouncedSaveDescription({
+        ...noteItem,
+        note: newDescription,
+      });
+    },
+    [noteItem]
+  );
 
-  return <MarkdownEditor defaultText={description} onChange={handleChange} />;
+  return <MarkdownEditor autoFocus={autoFocus} defaultText={description} onChange={handleChange} />;
 });
 
-const saveImages = async ({ noteId, images, encryptedPassword }) => {
-  await addImagesEffect(noteId, {
-    encryptedPassword: encryptedPassword,
-    images,
-  });
-};
-
-const AddImages = React.memo(({ cameraType }) => {
+const AddImages = React.memo(({ noteId, cameraType }) => {
+  const noteItem = useNote(noteId);
   const showCamera = useCat(showCameraCat);
   const isAddingImages = useCat(isAddingImagesCat);
 
@@ -186,18 +188,17 @@ const AddImages = React.memo(({ cameraType }) => {
     goBack();
   }, []);
 
-  const handleAddImages = useCallback(async newImages => {
-    const noteId = noteIdCat.get();
-    const encryptedPassword = encryptedPasswordCat.get();
-    if (!noteId || !encryptedPassword) {
-      return;
-    }
-    addRequestToQueue({
-      args: [{ noteId, images: newImages, encryptedPassword }],
-      handler: saveImages,
-    });
-    goBack();
-  }, []);
+  const handleAddImages = useCallback(
+    async newImages => {
+      dispatchAction({
+        type: actionTypes.ADD_IMAGES,
+        payload: { ...noteItem, newImages },
+      });
+
+      goBack();
+    },
+    [noteItem]
+  );
 
   useEffect(() => {
     if (!isIOS()) {
@@ -241,27 +242,26 @@ const AddImages = React.memo(({ cameraType }) => {
   );
 });
 
-const saveAlbums = async ({ noteId, encryptedPassword, albumIds }) => {
-  await updateNoteEffect(noteId, {
-    encryptedPassword: encryptedPassword,
-    albumIds,
-    goBack: false,
-  });
-};
+const AddAlbums = React.memo(({ noteId }) => {
+  const noteItem = useNote(noteId);
 
-const AddAlbums = React.memo(() => {
-  const handleChange = useCallback(async albumIds => {
-    const noteId = noteIdCat.get();
-    const encryptedPassword = encryptedPasswordCat.get();
-    if (!noteId || !encryptedPassword) {
-      return;
-    }
+  const handleChange = useCallback(
+    async albumIds => {
+      const encryptedPassword = noteItem?.encryptedPassword;
+      if (!noteId || !encryptedPassword) {
+        return;
+      }
 
-    addRequestToQueue({
-      args: [{ noteId, encryptedPassword, albumIds }],
-      handler: saveAlbums,
-    });
-  }, []);
+      dispatchAction({
+        type: actionTypes.UPDATE_NOTE,
+        payload: {
+          ...noteItem,
+          albumIds,
+        },
+      });
+    },
+    [noteId, noteItem]
+  );
 
   return <AlbumsSelector onChange={handleChange} mt="6" />;
 });

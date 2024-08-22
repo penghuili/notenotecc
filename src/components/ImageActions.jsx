@@ -1,6 +1,5 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
-  RiCloseLine,
   RiDeleteBinLine,
   RiDownloadLine,
   RiInformationLine,
@@ -16,9 +15,8 @@ import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { getFileSizeString } from '../shared/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
-import { deleteImageEffect } from '../store/note/noteEffects';
 
-export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
+export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
   const isDeleting = useCat(isDeletingImageCat);
 
   const deleteRef = useRef(null);
@@ -35,63 +33,46 @@ export const ImageActions = React.memo(({ noteId, image, onDeleteLocal }) => {
     deleteRef.current.show();
   }, []);
 
-  const handleDelete = useCallback(async () => {
-    if (onDeleteLocal) {
-      onDeleteLocal();
-      return;
-    }
-
-    if (noteId) {
-      await deleteImageEffect(noteId, { imagePath: image.path });
-    }
-  }, [onDeleteLocal, noteId, image.path]);
-
   return (
     <>
-      {onDeleteLocal ? (
-        <IconButton onClick={handleShowDeleteConfirm} radius="full">
-          <RiCloseLine />
-        </IconButton>
-      ) : (
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton radius="full">
-              <RiMore2Line />
-            </IconButton>
-          </DropdownMenu.Trigger>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton radius="full">
+            <RiMore2Line />
+          </IconButton>
+        </DropdownMenu.Trigger>
 
-          <DropdownMenu.Content variant="soft">
-            {supportShare() && !!noteId && (
-              <>
-                <DropdownMenu.Item onClick={handleShare}>
-                  <RiShareLine />
-                  Share
-                </DropdownMenu.Item>
-              </>
-            )}
+        <DropdownMenu.Content variant="soft">
+          {supportShare() && !!noteId && (
+            <>
+              <DropdownMenu.Item onClick={handleShare}>
+                <RiShareLine />
+                Share
+              </DropdownMenu.Item>
+            </>
+          )}
 
-            <DropdownMenu.Item onClick={handleDownload}>
-              <RiDownloadLine />
-              Download
-            </DropdownMenu.Item>
+          <DropdownMenu.Item onClick={handleDownload}>
+            <RiDownloadLine />
+            Download
+          </DropdownMenu.Item>
 
-            <DropdownMenu.Separator />
+          <DropdownMenu.Separator />
 
-            <DropdownMenu.Item
-              onClick={handleShowDeleteConfirm}
-              color={errorColor}
-              disabled={isDeleting}
-            >
-              <RiDeleteBinLine />
-              Delete
-            </DropdownMenu.Item>
+          <DropdownMenu.Item
+            onClick={handleShowDeleteConfirm}
+            color={errorColor}
+            disabled={isDeleting}
+          >
+            <RiDeleteBinLine />
+            Delete
+          </DropdownMenu.Item>
 
-            <FileSize size={image.size} />
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      )}
+          <FileSize size={image.size} />
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
 
-      <ConfirmDelete ref={deleteRef} onDelete={handleDelete} isDeleting={isDeleting} />
+      <ConfirmDelete ref={deleteRef} onDelete={onDelete} isDeleting={isDeleting} />
     </>
   );
 });
