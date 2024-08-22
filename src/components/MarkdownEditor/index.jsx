@@ -30,7 +30,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
   const undoHistoryRef = useRef([]);
   const redoHistoryRef = useRef([]);
   const historyTimerIdRef = useRef(null);
-  const [isFocusing, setIsFocusing] = useState(false);
 
   const handleCheckActiveElements = useCallback(() => {
     const elements = checkActiveElements(editorRef.current, prevActiveElements.current);
@@ -91,14 +90,6 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
     handleChange();
   }, [handleChange]);
 
-  const handleFocus = useCallback(() => {
-    setIsFocusing(true);
-  }, []);
-
-  const handleBlur = useCallback(() => {
-    setIsFocusing(false);
-  }, []);
-
   useEffect(() => {
     editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
 
@@ -133,20 +124,16 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
         onMouseUp={handleCheckActiveElements}
         onTouchEnd={handleCheckActiveElements}
         onKeyUp={handleCheckActiveElements}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         data-placeholder="Start typing here..."
         isEmpty={isEmpty}
       />
-      {isFocusing && (
-        <Toolbar
-          editorRef={editorRef}
-          undoHistoryRef={undoHistoryRef}
-          redoHistoryRef={redoHistoryRef}
-          activeElements={activeElements}
-          onChange={handleChange}
-        />
-      )}
+      <Toolbar
+        editorRef={editorRef}
+        undoHistoryRef={undoHistoryRef}
+        redoHistoryRef={redoHistoryRef}
+        activeElements={activeElements}
+        onChange={handleChange}
+      />
     </Wrapper>
   );
 });

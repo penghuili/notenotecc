@@ -2,7 +2,7 @@ import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared/js/date';
 import { LocalStorage } from '../../shared/react/LocalStorage';
 import { settingsCat } from '../../shared/react/store/sharedCats';
-import { fetchSettingsEffect, setToastEffect } from '../../shared/react/store/sharedEffects';
+import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import {
   isAddingImagesCat,
@@ -153,8 +153,6 @@ export async function deleteImageEffect(noteId, { imagePath }) {
   if (data) {
     updateNoteStates(data, 'update');
 
-    setToastEffect('Deleted!');
-
     fetchSettingsEffect();
   }
 
@@ -182,8 +180,6 @@ export async function deleteNoteEffect(noteId) {
 
   if (data) {
     updateNoteStates(data, 'delete');
-
-    setToastEffect('Deleted!');
 
     fetchSettingsEffect();
   }

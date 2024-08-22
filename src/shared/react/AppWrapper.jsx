@@ -7,7 +7,6 @@ import { createCat, useCat } from 'usecat';
 
 import { updateFontSize } from './FontSize.jsx';
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
-import { KeyboardHandler } from './KeyboardHandler.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
@@ -36,7 +35,7 @@ export function AppWrapper({ children }) {
   return (
     <Theme accentColor={themeColor} appearance="light" style={wrapperWidth}>
       <PageWrapper hasMinHeight={hasMinHeight}>{children}</PageWrapper>
-      <KeyboardHandler />
+      {/* <KeyboardHandler /> */}
     </Theme>
   );
 }

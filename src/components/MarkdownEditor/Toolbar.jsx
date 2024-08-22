@@ -167,7 +167,7 @@ export const Toolbar = React.memo(
     }, [activeElements.BLOCKQUOTE, editorRef, onChange]);
 
     return (
-      <Wrapper>
+      <Wrapper className="toolbar">
         <IconButton
           variant="soft"
           onClick={handleUndo}

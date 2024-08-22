@@ -2,7 +2,6 @@ import { Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { AlbumItem } from '../components/AlbumItem.jsx';
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
 import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
@@ -11,7 +10,6 @@ import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
-import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
 import { isIOS } from '../shared/react/device.js';
@@ -95,7 +93,6 @@ const Header = React.memo(({ noteId }) => {
 
 const NoteView = React.memo(({ noteId, isAddingNote }) => {
   const noteItem = useNote(noteId);
-  const getNoteAlbums = useGetNoteAlbums();
 
   const handleDeleteImage = useCallback(
     imagePath => {
@@ -106,21 +103,6 @@ const NoteView = React.memo(({ noteId, isAddingNote }) => {
     },
     [noteItem]
   );
-
-  const albumsElement = useMemo(() => {
-    const albums = getNoteAlbums(noteItem);
-    if (!albums?.length) {
-      return null;
-    }
-
-    return (
-      <Flex wrap="wrap" mt="2">
-        {albums.map(album => (
-          <AlbumItem key={album.sortKey} album={album} to={`/albums/${album.sortKey}`} />
-        ))}
-      </Flex>
-    );
-  }, [getNoteAlbums, noteItem]);
 
   if (!noteItem) {
     return null;
@@ -142,8 +124,6 @@ const NoteView = React.memo(({ noteId, isAddingNote }) => {
         />
       )}
       <Editor noteId={noteId} autoFocus={isAddingNote} />
-
-      {albumsElement}
 
       <AddAlbums noteId={noteId} />
     </>
@@ -247,11 +227,6 @@ const AddAlbums = React.memo(({ noteId }) => {
 
   const handleChange = useCallback(
     async albumIds => {
-      const encryptedPassword = noteItem?.encryptedPassword;
-      if (!noteId || !encryptedPassword) {
-        return;
-      }
-
       dispatchAction({
         type: actionTypes.UPDATE_NOTE,
         payload: {
@@ -260,8 +235,8 @@ const AddAlbums = React.memo(({ noteId }) => {
         },
       });
     },
-    [noteId, noteItem]
+    [noteItem]
   );
 
-  return <AlbumsSelector onChange={handleChange} mt="6" />;
+  return <AlbumsSelector onChange={handleChange} mt="4" />;
 });
