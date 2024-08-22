@@ -11,11 +11,10 @@ export const Markdown = React.memo(({ markdown, onClick }) => {
 export const Editor = styled.div`
   line-height: var(--line-height, var(--default-line-height));
   letter-spacing: var(--letter-spacing, inherit);
-  padding: var(--space-3) 0;
 
   &[contenteditable='true'] {
     overflow-y: auto;
-    scrollbar-width: none;
+    padding: var(--space-3) 0;
 
     & + .toolbar {
       visibility: hidden;
