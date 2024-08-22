@@ -11,12 +11,10 @@ export const Reorder = React.memo(({ items, onReorder, reverse }) => {
       values={items}
       onChange={({ oldIndex, newIndex }) => {
         const newItems = arrayMove(items, oldIndex, newIndex);
-        onReorder(newItems);
-
         const newPosition = calculateItemPosition(newItems, newIndex - 1, newIndex + 1, reverse);
+
         onReorder({
-          itemId: items[oldIndex]?.sortKey,
-          newPosition,
+          item: { ...items[oldIndex], position: newPosition },
           newItems,
         });
       }}

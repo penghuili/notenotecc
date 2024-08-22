@@ -34,10 +34,9 @@ const Header = React.memo(() => {
 const ReorderAlbums = React.memo(() => {
   const albums = useCat(albumsCat);
 
-  const handleReorder = useCallback(({ newItems, itemId }) => {
+  const handleReorder = useCallback(({ newItems, item }) => {
     albumsCat.set(newItems);
 
-    const item = newItems.find(item => item.sortKey === itemId);
     if (item) {
       dispatchAction({
         type: actionTypes.UPDATE_ALBUM,
