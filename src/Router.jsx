@@ -84,7 +84,6 @@ const AllRoutes = React.memo(() => {
 
   if (isLoggedIn) {
     if (isVerified === undefined) {
-      console.log('page loading');
       return <PageLoading />;
     }
 
