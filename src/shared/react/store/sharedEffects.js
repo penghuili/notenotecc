@@ -232,10 +232,14 @@ export async function logOutEffect() {
 }
 
 export async function resetEffect() {
-  resetAllCats();
+  isLoggedInCat.set(false);
 
-  await idbStorage.clear();
-  LocalStorage.clear();
+  setTimeout(async () => {
+    resetAllCats();
+
+    await idbStorage.clear();
+    LocalStorage.clear();
+  }, 50);
 }
 
 export async function logOutFromAllDevicesEffect() {

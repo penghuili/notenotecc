@@ -13,7 +13,7 @@ import { RouteLink } from './my-router.jsx';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 
-export function VerifyEmail() {
+export const VerifyEmail = React.memo(() => {
   const isVerifying = useCat(isVerifyingEmailCat);
   const isResending = useCat(isResendingVerificationCodeCat);
 
@@ -62,4 +62,4 @@ export function VerifyEmail() {
       </ItemsWrapper>
     </>
   );
-}
+});

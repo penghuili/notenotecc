@@ -8,6 +8,8 @@ import { useWindowBlur } from '../lib/useWindowBlur';
 import { useWindowFocus } from '../lib/useWindowFocus';
 import { canvasToBlob } from '../shared/react/canvasToBlob';
 import { isMobile } from '../shared/react/device.js';
+import { idbStorage } from '../shared/react/indexDB.js';
+import { md5Hash } from '../shared/react/md5Hash';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, renderError, stopStream, VideoWrapper } from './TakeVideo.jsx';
 
@@ -50,9 +52,10 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     context.drawImage(videoRef.current, 0, 0, width, height);
 
     const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
-    const imageUrl = tempCanvas.toDataURL(imageType);
+    const hash = await md5Hash(blob);
+    await idbStorage.setItem(hash, blob);
 
-    onSelect({ blob, localUrl: imageUrl, size: blob.size, type: imageType });
+    onSelect({ hash, size: blob.size, type: imageType });
   }, [onSelect]);
 
   const handleChangeFacingMode = useCallback(() => {

@@ -10,7 +10,6 @@ import { AppVersion } from '../shared/react/AppVersion.jsx';
 import { themeCssColor } from '../shared/react/AppWrapper.jsx';
 import { copyToClipboard } from '../shared/react/copyToClipboard';
 import { getFileSizeString } from '../shared/react/file';
-import { FontSize } from '../shared/react/FontSize.jsx';
 import { HorizontalCenter } from '../shared/react/HorizontalCenter.jsx';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared/react/LogoutLink.jsx';
@@ -30,10 +29,6 @@ export const Account = React.memo(() => {
       <Header />
 
       <AccountInfo />
-
-      <ItemsWrapper align="start">
-        <FontSize />
-      </ItemsWrapper>
 
       <ItemsWrapper align="start">
         <HorizontalCenter gap="1">

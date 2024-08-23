@@ -11,7 +11,7 @@ import { setToastEffect } from './store/sharedEffects';
 import { resetPasswordSave, resetPasswordTrigger } from './store/sharedNetwork';
 import { toastTypes } from './Toast.jsx';
 
-export function ResetPassword() {
+export const ResetPassword = React.memo(() => {
   const [email, setEmail] = useState('');
   const [isTriggered, setIsTriggered] = useState(false);
   const [isTriggering, setIsTriggering] = useState(false);
@@ -124,4 +124,4 @@ export function ResetPassword() {
       </ItemsWrapper>
     </>
   );
-}
+});

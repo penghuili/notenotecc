@@ -25,7 +25,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
   async publicPost(server, path, body) {
@@ -38,7 +38,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
   async publicPut(server, path, body) {
@@ -51,7 +51,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
 
@@ -71,7 +71,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
   async get(server, path) {
@@ -84,7 +84,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
   async put(server, path, body) {
@@ -102,7 +102,7 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
   async delete(server, path) {
@@ -116,13 +116,13 @@ export const HTTP = {
       if (!response.ok) throw response;
       return await response.json();
     } catch (error) {
-      throw HTTP.handleError(error);
+      throw await HTTP.handleError(error);
     }
   },
 
-  handleError(error) {
+  async handleError(error) {
     const status = error.status;
-    const errorCode = error.statusText;
+    const errorCode = await error.json();
     if (status === 401) {
       LocalStorage.resetTokens();
       resetEffect();

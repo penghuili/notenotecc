@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { fileTypes } from '../lib/constants.js';
 import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
 import { imagePathToUrl } from '../lib/imagePathToUrl.js';
+import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
 import { decryptBlob } from '../store/note/noteNetwork.js';
@@ -14,7 +15,7 @@ import { ImageActions } from './ImageActions.jsx';
 import { VideoPlayer } from './VideoPlayer.jsx';
 
 export const MediaItem = React.memo(
-  ({ noteId, encryptedPassword, localUrl, path, hash, size, encryptedSize, type, onDelete }) => {
+  ({ noteId, encryptedPassword, path, hash, size, encryptedSize, type, onDelete }) => {
     const [showImage, setShowImage] = useState(false);
 
     const ref = useInView(
@@ -35,7 +36,6 @@ export const MediaItem = React.memo(
         <InnerImage
           noteId={noteId}
           encryptedPassword={encryptedPassword}
-          localUrl={localUrl}
           path={path}
           hash={hash}
           size={size}
@@ -63,19 +63,21 @@ const ImageElement = styled.img`
 `;
 
 const InnerImage = React.memo(
-  ({ noteId, encryptedPassword, localUrl, path, hash, size, encryptedSize, type, onDelete }) => {
+  ({ noteId, encryptedPassword, path, hash, size, encryptedSize, type, onDelete }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [innerUrl, setInnerUrl] = useState(null);
+    const [remoteUrl, setRemoteUrl] = useState(null);
+    const localUrl = useImageLocalUrl(hash);
+    const url = remoteUrl || localUrl;
 
     const imageForAction = useMemo(() => {
       return {
-        url: innerUrl,
+        url,
         path,
         size,
         encryptedSize,
         type,
       };
-    }, [innerUrl, path, size, encryptedSize, type]);
+    }, [url, path, size, encryptedSize, type]);
 
     const handleLoaded = useCallback(() => {
       setIsLoading(false);
@@ -86,17 +88,11 @@ const InnerImage = React.memo(
     }, [hash, onDelete, path]);
 
     const handleOpenFullScreen = useCallback(() => {
-      fullScreenImageUrlCat.set(innerUrl);
-    }, [innerUrl]);
+      fullScreenImageUrlCat.set(remoteUrl);
+    }, [remoteUrl]);
 
     useEffect(() => {
-      if (!path) {
-        setInnerUrl(localUrl);
-        return;
-      }
-
-      if (!encryptedPassword) {
-        setInnerUrl(imagePathToUrl(path));
+      if (!path || !encryptedPassword) {
         return;
       }
 
@@ -104,32 +100,32 @@ const InnerImage = React.memo(
       fetchFileWithUrl(imagePathToUrl(path), type)
         .then(data => decryptBlob(encryptedPassword, data.blob, type))
         .then(blob => {
-          setInnerUrl(URL.createObjectURL(blob));
+          setRemoteUrl(URL.createObjectURL(blob));
         })
         .catch(e => {
           console.log(e);
-          setInnerUrl(null);
+          setRemoteUrl(null);
           setIsLoading(false);
         });
-    }, [encryptedPassword, path, type, localUrl]);
+    }, [encryptedPassword, path, type]);
 
     return (
       <>
         {isLoading && <LoadingSkeleton width="100%" height="100%" />}
 
-        {!!innerUrl && (
+        {!!url && (
           <>
             {(type === fileTypes.webm || type === fileTypes.mp4) && (
-              <VideoPlayer src={innerUrl} type={type} hidden={isLoading} onLoaded={handleLoaded} />
+              <VideoPlayer src={url} type={type} hidden={isLoading} onLoaded={handleLoaded} />
             )}
 
             {type === fileTypes.weba && (
-              <AudioPlayer src={innerUrl} onLoaded={handleLoaded} hidden={isLoading} />
+              <AudioPlayer src={url} onLoaded={handleLoaded} hidden={isLoading} />
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
               <div onDoubleClick={handleOpenFullScreen}>
-                <ImageElement src={innerUrl} onLoad={handleLoaded} />
+                <ImageElement src={url} onLoad={handleLoaded} />
               </div>
             )}
 

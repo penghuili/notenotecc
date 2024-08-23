@@ -79,9 +79,13 @@ async function uploadImages(password, images) {
   const octetType = 'application/octet-stream';
   const encrypted = await Promise.all(
     images.map(async item => {
-      const name = getName(item.type, item.hash);
+      const blob = await idbStorage.getItem(item.hash);
+      if (!blob) {
+        return null;
+      }
 
-      const uint8 = await blobToUint8Array(item.blob);
+      const name = getName(item.type, item.hash);
+      const uint8 = await blobToUint8Array(blob);
       const encrypted = await encryptFileSymmetric(password, uint8);
       const encryptedBlob = uint8ArrayToBlob(encrypted, octetType);
 
@@ -94,14 +98,15 @@ async function uploadImages(password, images) {
       };
     })
   );
+  const filteredEncrypted = encrypted.filter(Boolean);
   const uploadUrls = await HTTP.post(appName, `/v1/upload-urls`, {
-    images: encrypted.map(e => ({
+    images: filteredEncrypted.filter(Boolean).map(e => ({
       name: e.name,
       type: octetType,
     })),
   });
   await Promise.all(
-    encrypted.map(async (item, i) => {
+    filteredEncrypted.map(async (item, i) => {
       await fetch(uploadUrls[i].url, {
         method: 'PUT',
         body: item.blob,
@@ -123,7 +128,7 @@ async function uploadImages(password, images) {
     path: u.path,
     type: images[i].type,
     size: images[i].size,
-    encryptedSize: encrypted[i].encryptedSize,
+    encryptedSize: filteredEncrypted[i].encryptedSize,
   }));
 }
 

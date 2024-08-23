@@ -18,7 +18,7 @@ async function load() {
   await fetchAlbumsEffect();
 }
 
-export function Albums() {
+export const Albums = React.memo(() => {
   useScrollToTop();
 
   return (
@@ -32,7 +32,7 @@ export function Albums() {
       </Box>
     </PrepareData>
   );
-}
+});
 
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);

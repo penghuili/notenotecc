@@ -13,7 +13,7 @@ import { PageHeader } from './PageHeader.jsx';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 
-export function Security() {
+export const Security = React.memo(() => {
   const isLoggingOutFromAllDevices = useCat(isLoggingOutFromAllDevicesCat);
   const isDeletingAccount = useCat(isDeletingAccountCat);
 
@@ -52,4 +52,4 @@ export function Security() {
       </ItemsWrapper>
     </>
   );
-}
+});

@@ -8,7 +8,7 @@ import { PasswordInput } from './PasswordInput.jsx';
 import { isChangingPasswordCat } from './store/sharedCats.js';
 import { changePasswordEffect } from './store/sharedEffects';
 
-export function ChangePassword() {
+export const ChangePassword = React.memo(() => {
   const isChanging = useCat(isChangingPasswordCat);
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -47,4 +47,4 @@ export function ChangePassword() {
       </ItemsWrapper>
     </>
   );
-}
+});

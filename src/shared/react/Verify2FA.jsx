@@ -11,7 +11,7 @@ import { PageHeader } from './PageHeader.jsx';
 import { authErrorCat, isVerifying2FACat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, verify2FAEffect } from './store/sharedEffects';
 
-export function Verify2FA() {
+export const Verify2FA = React.memo(() => {
   const errorMessage = useCat(authErrorCat);
   const isVerifying = useCat(isVerifying2FACat);
 
@@ -56,4 +56,4 @@ export function Verify2FA() {
       </ItemsWrapper>
     </>
   );
-}
+});

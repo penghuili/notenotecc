@@ -3,7 +3,6 @@ import './style.css';
 
 import { Theme } from '@radix-ui/themes';
 import React, { useEffect } from 'react';
-import { createCat, useCat } from 'usecat';
 
 import { updateFontSize } from './FontSize.jsx';
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
@@ -21,20 +20,16 @@ export const warningCssColor = 'var(--amber-9)';
 export const errorCssColor = 'var(--red-9)';
 export const textCssColor = 'var(--gray-12)';
 
-export const hasPageMinHeightCat = createCat(true);
-
 const wrapperWidth = { width: widthWithoutScrollbar };
 
 export function AppWrapper({ children }) {
-  const hasMinHeight = useCat(hasPageMinHeightCat);
-
   useEffect(() => {
     updateFontSize(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
   }, []);
 
   return (
     <Theme accentColor={themeColor} appearance="light" style={wrapperWidth}>
-      <PageWrapper hasMinHeight={hasMinHeight}>{children}</PageWrapper>
+      <PageWrapper>{children}</PageWrapper>
       {/* <KeyboardHandler /> */}
     </Theme>
   );

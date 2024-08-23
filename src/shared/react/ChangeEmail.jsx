@@ -11,7 +11,7 @@ import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
 import { changeEmailTrigger } from './store/sharedNetwork';
 import { toastTypes } from './Toast.jsx';
 
-export function ChangeEmail() {
+export const ChangeEmail = React.memo(() => {
   const user = useCat(userCat);
   const isChanging = useCat(isChangingEmailCat);
 
@@ -106,4 +106,4 @@ export function ChangeEmail() {
       </ItemsWrapper>
     </>
   );
-}
+});

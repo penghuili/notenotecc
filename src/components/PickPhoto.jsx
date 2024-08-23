@@ -8,6 +8,8 @@ import { makeImageSquare } from '../lib/makeImageSquare';
 import { resizeCanvas } from '../lib/resizeCanvas';
 import { canvasToBlob } from '../shared/react/canvasToBlob.js';
 import { ImageCropper } from '../shared/react/ImageCropper.jsx';
+import { idbStorage } from '../shared/react/indexDB.js';
+import { md5Hash } from '../shared/react/md5Hash.js';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
@@ -48,8 +50,9 @@ export const PickPhoto = React.memo(({ onSelect }) => {
   const handleCrop = useCallback(async () => {
     const canvas = cropperRef.current.crop(900);
     const blob = await canvasToBlob(canvas, imageType, 0.8);
-    const imageUrl = canvas.toDataURL(imageType);
-    onSelect({ blob, localUrl: imageUrl, size: blob.size, type: imageType });
+    const hash = await md5Hash(blob);
+    await idbStorage.setItem(hash, blob);
+    onSelect({ hash, size: blob.size, type: imageType });
 
     handleNextPhoto();
   }, [handleNextPhoto, onSelect]);
@@ -58,8 +61,9 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const squareCanvas = await makeImageSquare(pickedPhotos[0]);
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
-    const imageUrl = resizedCanvas.toDataURL(imageType);
-    onSelect({ blob, localUrl: imageUrl, type: imageType });
+    const hash = await md5Hash(blob);
+    await idbStorage.setItem(hash, blob);
+    onSelect({ hash, type: imageType });
 
     handleNextPhoto();
   }, [handleNextPhoto, onSelect, pickedPhotos]);

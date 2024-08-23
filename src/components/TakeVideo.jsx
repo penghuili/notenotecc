@@ -13,6 +13,8 @@ import { videoType } from '../lib/constants.js';
 import { useWindowBlur } from '../lib/useWindowBlur.js';
 import { useWindowFocus } from '../lib/useWindowFocus.js';
 import { isIOS, isMobile } from '../shared/react/device.js';
+import { idbStorage } from '../shared/react/indexDB.js';
+import { md5Hash } from '../shared/react/md5Hash.js';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { TimeProgress } from './TimeProgress.jsx';
 
@@ -128,12 +130,13 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     }
   }, []);
 
-  const handleStopRecording = useCallback(() => {
+  const handleStopRecording = useCallback(async () => {
     stopMediaRecorder();
 
     const blob = new Blob(recordedChunksRef.current, { type: videoType });
-    const localUrl = URL.createObjectURL(blob);
-    onSelect({ blob, localUrl, size: blob.size, type: videoType });
+    const hash = await md5Hash(blob);
+    await idbStorage.setItem(hash, blob);
+    onSelect({ hash, size: blob.size, type: videoType });
 
     setIsRecording(false);
     setIsPaused(false);

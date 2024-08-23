@@ -13,7 +13,7 @@ import { PasswordInput } from './PasswordInput.jsx';
 import { authErrorCat, isSigningUpCat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, signUpEffect } from './store/sharedEffects';
 
-export function SignUp() {
+export const SignUp = React.memo(() => {
   const errorMessage = useCat(authErrorCat);
   const isSigningUp = useCat(isSigningUpCat);
 
@@ -80,4 +80,4 @@ export function SignUp() {
       </ItemsWrapper>
     </>
   );
-}
+});

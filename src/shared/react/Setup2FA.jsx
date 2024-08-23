@@ -16,7 +16,7 @@ import {
 } from './store/sharedCats.js';
 import { disable2FAEffect, enable2FAEffect, generate2FASecretEffect } from './store/sharedEffects';
 
-export function Setup2FA() {
+export const Setup2FA = React.memo(() => {
   const user = useCat(userCat);
   const isGenerating = useCat(isGenerating2FACat);
   const isEnabling = useCat(isEnabling2FACat);
@@ -99,4 +99,4 @@ export function Setup2FA() {
       </ItemsWrapper>
     </>
   );
-}
+});

@@ -1,6 +1,7 @@
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared/js/date';
 import { LocalStorage } from '../../shared/react/LocalStorage';
+import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import {
@@ -27,19 +28,21 @@ import {
 } from './noteNetwork';
 
 export function fetchHomeNotesEffect() {
-  if (notesCat.get()?.items?.length) {
-    return;
-  }
-
-  const cachedNotes = LocalStorage.get(localStorageKeys.notes);
-  if (cachedNotes?.items?.length) {
-    notesCat.set(cachedNotes);
+  if (!notesCat.get()?.items?.length) {
+    const cachedNotes = LocalStorage.get(localStorageKeys.notes);
+    if (cachedNotes?.items?.length) {
+      notesCat.set(cachedNotes);
+    }
   }
 
   forceFetchHomeNotesEffect(null);
 }
 
 export async function forceFetchHomeNotesEffect(startKey) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isLoadingNotesCat.set(true);
 
   const { data } = await fetchNotes(startKey);
@@ -61,6 +64,10 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
     return;
   }
 
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isLoadingOnThisDayNotesCat.set(true);
 
   const { data } = await fetchNotes(null, startTime, endTime);
@@ -72,6 +79,10 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 }
 
 async function forceFetchNoteEffect(noteId) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isLoadingNoteCat.set(true);
 
   const { data } = await fetchNote(noteId);
@@ -107,6 +118,10 @@ export async function fetchNoteEffect(noteId) {
 }
 
 export async function createNoteEffect({ sortKey, timestamp, note, images, albumIds }) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isCreatingNoteCat.set(true);
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
@@ -119,6 +134,10 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
 }
 
 export async function updateNoteEffect(noteId, { encryptedPassword, note, albumIds }) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isUpdatingNoteCat.set(true);
 
   const { data } = await updateNote(noteId, {
@@ -135,6 +154,10 @@ export async function updateNoteEffect(noteId, { encryptedPassword, note, albumI
 }
 
 export async function deleteImageEffect(noteId, { imagePath }) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isDeletingImageCat.set(true);
 
   const { data } = await deleteImage(noteId, imagePath);
@@ -149,6 +172,10 @@ export async function deleteImageEffect(noteId, { imagePath }) {
 }
 
 export async function addImagesEffect(noteId, { encryptedPassword, images }) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isAddingImagesCat.set(true);
 
   const { data } = await addImages(noteId, { encryptedPassword, images });
@@ -163,6 +190,10 @@ export async function addImagesEffect(noteId, { encryptedPassword, images }) {
 }
 
 export async function deleteNoteEffect(noteId) {
+  if (!isLoggedInCat.get()) {
+    return;
+  }
+
   isDeletingNoteCat.set(true);
 
   const { data } = await deleteNote(noteId);

@@ -6,7 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { FullScreenImage } from './components/FullScreenImage.jsx';
 import { Router } from './Router.jsx';
 import { apps } from './shared/js/apps';
-import { AppWrapper, hasPageMinHeightCat } from './shared/react/AppWrapper.jsx';
+import { AppWrapper } from './shared/react/AppWrapper.jsx';
 import { initShared } from './shared/react/initShared';
 import { registerSW } from './shared/react/registerSW.js';
 import { Toast } from './shared/react/Toast.jsx';
@@ -20,8 +20,6 @@ initShared({
 });
 
 registerSW();
-
-hasPageMinHeightCat.set(false);
 
 function App() {
   return (

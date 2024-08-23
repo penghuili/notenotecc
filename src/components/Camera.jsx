@@ -5,9 +5,8 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
+import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
-import { idbStorage } from '../shared/react/indexDB.js';
-import { md5 } from '../shared/react/md5';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -23,10 +22,7 @@ export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
 
   const handleAddNewImage = useCallback(
     async newImage => {
-      const hash = await md5(newImage.blob);
-      setImages([...images, { ...newImage, hash }]);
-
-      idbStorage.setItem(hash, newImage.blob);
+      setImages([...images, newImage]);
     },
     [images]
   );
@@ -114,20 +110,20 @@ const ImagesPreview = React.memo(({ images }) => {
 });
 
 const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
+  const url = useImageLocalUrl(image.hash);
+  if (!url) {
+    return null;
+  }
+
   return (
     <div>
       {(image.type === fileTypes.webp || image.type === fileTypes.jpeg) && (
-        <PreviewImage src={image.localUrl} translateX={translateX} zIndex={zIndex} />
+        <PreviewImage src={url} translateX={translateX} zIndex={zIndex} />
       )}
 
       {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
         <>
-          <PreviewVideo
-            src={image.localUrl}
-            controls={false}
-            translateX={translateX}
-            zIndex={zIndex}
-          />
+          <PreviewVideo src={url} controls={false} translateX={translateX} zIndex={zIndex} />
           <Flex justify="center" width="100%" position="absolute" top="30px">
             <IconButton size="1">
               <RiPlayLine />

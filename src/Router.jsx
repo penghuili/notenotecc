@@ -3,10 +3,11 @@ import { useCat } from 'usecat';
 
 import { PageLoading } from './components/PageLoading.jsx';
 import { PrepareData } from './components/PrepareData.jsx';
+import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.jsx';
+import { Waiting } from './components/Waiting.jsx';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
-import { LocalStorage, sharedLocalStorageKeys } from './shared/react/LocalStorage';
-import { navigate, Routes } from './shared/react/my-router.jsx';
+import { Routes } from './shared/react/my-router.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
 import { Setup2FA } from './shared/react/Setup2FA.jsx';
@@ -26,7 +27,7 @@ import { NoteAdd } from './views/NoteAdd.jsx';
 import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
-import { Welcome } from './views/Welcome.jsx';
+import { Settings } from './views/Settings.jsx';
 
 async function load() {
   initEffect();
@@ -44,7 +45,7 @@ const verifyEmailRoutes = [
   { path: '/security/email', component: VerifyEmail },
   { path: '/', component: VerifyEmail },
 ];
-const loggedInRoutes = [
+const commonRoutes = [
   { path: '/notes/add', component: NoteAdd },
   { path: '/notes/:noteId', component: NoteEdit },
 
@@ -52,6 +53,11 @@ const loggedInRoutes = [
   { path: '/albums/:albumId/edit', component: AlbumEdit },
   { path: '/albums/:albumId', component: AlbumDetails },
   { path: '/albums', component: Albums },
+
+  { path: '/settings', component: Settings },
+];
+const loggedInRoutes = [
+  ...commonRoutes,
 
   { path: '/account', component: Account },
   { path: '/on-this-day', component: OnThisDay },
@@ -65,19 +71,21 @@ const loggedInRoutes = [
   { path: '/', component: Notes },
 ];
 const publicRoutes = [
+  ...commonRoutes,
+
   { path: '/sign-up', component: SignUp },
   { path: '/sign-in', component: SignIn },
   { path: '/sign-in/2fa', component: Verify2FA },
   { path: '/reset-password', component: ResetPassword },
-  { path: '/', component: Welcome },
+  { path: '/waiting', component: Waiting },
+
+  { path: '/', component: Notes },
 ];
 
 const AllRoutes = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const isVerified = useIsEmailVerified();
-
-  const pathname = location.pathname;
-  const pathWithQuery = `${pathname}${location.search}`;
+  const hasLocalNotes = useCat(hasLocalNotesCat);
 
   if (isLoggedIn) {
     if (isVerified === undefined) {
@@ -88,18 +96,12 @@ const AllRoutes = React.memo(() => {
       return <Routes routes={verifyEmailRoutes} />;
     }
 
-    const redirectUrl = LocalStorage.get(sharedLocalStorageKeys.redirectUrl);
-    if (redirectUrl) {
-      LocalStorage.remove(sharedLocalStorageKeys.redirectUrl);
-      navigate(redirectUrl);
+    if (hasLocalNotes) {
+      return <SaveLocalNotes />;
     }
 
     return <Routes routes={loggedInRoutes} />;
   }
 
-  if (!publicRoutes.map(route => route.path).includes(pathname)) {
-    LocalStorage.set(sharedLocalStorageKeys.redirectUrl, pathWithQuery);
-  }
-
-  return <Routes routes={publicRoutes} />;
+  return <Routes routes={publicRoutes} defaultRoute="/waiting" />;
 });

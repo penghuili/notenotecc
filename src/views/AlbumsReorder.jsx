@@ -13,7 +13,7 @@ async function load() {
   await fetchAlbumsEffect();
 }
 
-export function AlbumsReorder() {
+export const AlbumsReorder = React.memo(() => {
   useScrollToTop();
 
   return (
@@ -23,7 +23,7 @@ export function AlbumsReorder() {
       <ReorderAlbums />
     </PrepareData>
   );
-}
+});
 
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);

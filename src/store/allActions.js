@@ -1,4 +1,4 @@
-import { albumSelectedKeysCat } from '../components/AlbumsSelector.jsx';
+import { albumDescriptionCat, albumSelectedKeysCat } from '../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../lib/constants';
 import { eventEmitter, eventEmitterEvents } from '../shared/react/eventEmitter.js';
 import { LocalStorage } from '../shared/react/LocalStorage';
@@ -113,6 +113,7 @@ const actionHandlers = {
       };
       updateAlbumsState(newAlbum, 'create');
       albumSelectedKeysCat.set([sortKey, ...albumSelectedKeysCat.get()]);
+      albumDescriptionCat.set('');
     },
     async: async ({ sortKey, timestamp, title }) => {
       await createAlbumEffect({ sortKey, timestamp, title });

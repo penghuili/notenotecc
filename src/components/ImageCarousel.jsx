@@ -222,7 +222,6 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              localUrl={images[images.length - 1].localUrl}
               path={images[images.length - 1].path}
               hash={images[images.length - 1].hash}
               size={images[images.length - 1].size}
@@ -234,7 +233,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
         )}
         {images.map(image => (
           <div
-            key={image.localUrl || image.path}
+            key={image.hash || image.path}
             className="carousel-slide"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -247,7 +246,6 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              localUrl={image.localUrl}
               path={image.path}
               hash={image.hash}
               size={image.size}
@@ -271,7 +269,6 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
-              localUrl={images[0].localUrl}
               path={images[0].path}
               hash={images[0].hash}
               size={images[0].size}

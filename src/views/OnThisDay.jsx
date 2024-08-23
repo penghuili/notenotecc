@@ -31,7 +31,7 @@ const tabsCat = createCat([]);
 const activeTabCat = createCat(null);
 const randomDateCat = createCat(null);
 
-export function OnThisDay() {
+export const OnThisDay = React.memo(() => {
   const userCreatedAt = useUserCreatedAt();
 
   const load = useCallback(async () => {
@@ -58,7 +58,7 @@ export function OnThisDay() {
       <Notes />
     </PrepareData>
   );
-}
+});
 
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);

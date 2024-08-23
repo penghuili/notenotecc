@@ -1,6 +1,6 @@
 import SparkMD5 from 'spark-md5';
 
-export async function md5(data) {
+export async function md5Hash(data) {
   if (typeof data === 'string') {
     return SparkMD5.hash(data);
   }
