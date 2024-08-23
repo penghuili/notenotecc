@@ -3,7 +3,6 @@ import { useCat } from 'usecat';
 
 import { PageLoading } from './components/PageLoading.jsx';
 import { PrepareData } from './components/PrepareData.jsx';
-import { useRerenderDetector } from './lib/useRerenderDetector.js';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
 import { LocalStorage, sharedLocalStorageKeys } from './shared/react/LocalStorage';
@@ -30,7 +29,7 @@ import { OnThisDay } from './views/OnThisDay.jsx';
 import { Welcome } from './views/Welcome.jsx';
 
 async function load() {
-  await initEffect();
+  initEffect();
 }
 
 export function Router() {
@@ -79,8 +78,6 @@ const AllRoutes = React.memo(() => {
 
   const pathname = location.pathname;
   const pathWithQuery = `${pathname}${location.search}`;
-
-  useRerenderDetector('AllRoutes', { isLoggedIn, isVerified, pathWithQuery });
 
   if (isLoggedIn) {
     if (isVerified === undefined) {

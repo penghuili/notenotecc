@@ -20,7 +20,6 @@ import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { navigate } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { fetchSettingsEffect } from '../shared/react/store/sharedEffects';
 import {
   isAddingImagesCat,
   isDeletingImageCat,
@@ -28,10 +27,10 @@ import {
   isLoadingNotesCat,
   notesCat,
 } from '../store/note/noteCats.js';
-import { fetchNotesEffect } from '../store/note/noteEffects';
+import { fetchHomeNotesEffect, forceFetchHomeNotesEffect } from '../store/note/noteEffects';
 
 async function load() {
-  await fetchNotesEffect();
+  fetchHomeNotesEffect();
 }
 
 export function Notes() {
@@ -55,9 +54,7 @@ const Header = React.memo(() => {
   const isDeletingImage = useCat(isDeletingImageCat);
 
   const handleFetch = useCallback(async () => {
-    isLoadingNotesCat.set(true);
-    await fetchSettingsEffect(true);
-    await fetchNotesEffect(null, true);
+    await forceFetchHomeNotesEffect();
   }, []);
 
   const rightElement = useMemo(
@@ -176,7 +173,7 @@ const LoadMore = React.memo(() => {
   const { startKey, hasMore } = useCat(notesCat);
 
   const handleFetch = useCallback(() => {
-    fetchNotesEffect(startKey, true);
+    forceFetchHomeNotesEffect(startKey);
   }, [startKey]);
 
   const ref = useInView(

@@ -1,7 +1,6 @@
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared/js/date';
 import { LocalStorage } from '../../shared/react/LocalStorage';
-import { settingsCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import {
@@ -27,40 +26,30 @@ import {
   updateNote,
 } from './noteNetwork';
 
-export async function fetchNotesEffect(startKey, force) {
-  if (!force && notesCat.get()?.items?.length) {
+export function fetchHomeNotesEffect() {
+  if (notesCat.get()?.items?.length) {
     return;
   }
 
-  if (!force && !startKey) {
-    const cachedNotes = LocalStorage.get(localStorageKeys.notes);
-    if (cachedNotes?.items?.length) {
-      notesCat.set(cachedNotes);
-
-      await fetchSettingsEffect();
-
-      if (
-        !isNewer(
-          settingsCat.get()?.notesChangedAt,
-          LocalStorage.get(localStorageKeys.notesChangedAtKey)
-        )
-      ) {
-        return;
-      }
-    }
+  const cachedNotes = LocalStorage.get(localStorageKeys.notes);
+  if (cachedNotes?.items?.length) {
+    notesCat.set(cachedNotes);
   }
 
+  forceFetchHomeNotesEffect(null);
+}
+
+export async function forceFetchHomeNotesEffect(startKey) {
   isLoadingNotesCat.set(true);
 
   const { data } = await fetchNotes(startKey);
+
   if (data) {
     notesCat.set({
       items: startKey ? [...notesCat.get().items, ...data.items] : data.items,
       startKey: data.startKey,
       hasMore: data.hasMore,
     });
-
-    LocalStorage.set(localStorageKeys.notesChangedAtKey, settingsCat.get()?.notesChangedAt);
   }
 
   isLoadingNotesCat.set(false);

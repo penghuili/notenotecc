@@ -78,7 +78,7 @@ async function handleWindowFocus() {
   }
 }
 
-export async function initEffect() {
+export function initEffect() {
   const { isValid } = checkRefreshToken();
   isLoggedInEffect(isValid);
 
