@@ -19,6 +19,7 @@ import {
   isLoadingAccountCat,
   isLoadingSettingsCat,
   isLoggedInCat,
+  isLoggingOutCat,
   isLoggingOutFromAllDevicesCat,
   isResendingVerificationCodeCat,
   isSigningInCat,
@@ -226,8 +227,9 @@ export async function disable2FAEffect(code) {
 }
 
 export async function logOutEffect() {
+  isLoggingOutCat.set(true);
   await idbStorage.clear();
-  LocalStorage.clear();
+  LocalStorage.clear('settings-');
   location.reload();
 }
 

@@ -1,4 +1,4 @@
-import { Avatar, Heading, Text } from '@radix-ui/themes';
+import { Avatar, Button, Heading, Text } from '@radix-ui/themes';
 import React, { useState } from 'react';
 import { useCat } from 'usecat';
 
@@ -7,7 +7,6 @@ import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo } from './initShared';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { RouteLink } from './my-router.jsx';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
@@ -50,9 +49,9 @@ export const VerifyEmail = React.memo(() => {
       </ItemsWrapper>
 
       <ItemsWrapper align="start">
-        <LinkButton onClick={resendVerificationCodeEffect} disabled={isResending}>
+        <Button variant="ghost" onClick={resendVerificationCodeEffect} disabled={isResending}>
           Resend code
-        </LinkButton>
+        </Button>
 
         <LogoutLink />
 

@@ -26,8 +26,17 @@ export const LocalStorage = {
   remove(key) {
     localStorage.removeItem(key);
   },
-  clear() {
-    localStorage.clear();
+  clear(prefix) {
+    if (!prefix) {
+      localStorage.clear();
+    } else {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith(prefix)) {
+          localStorage.removeItem(key);
+        }
+      }
+    }
   },
 
   resetTokens() {

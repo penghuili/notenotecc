@@ -1,11 +1,10 @@
+import { Button } from '@radix-ui/themes';
 import { RiUserUnfollowLine } from '@remixicon/react';
 import React, { useState } from 'react';
 import { useCat } from 'usecat';
 
-import { errorColor, errorCssColor } from './AppWrapper.jsx';
+import { errorColor } from './AppWrapper.jsx';
 import { Confirm } from './Confirm.jsx';
-import { HorizontalCenter } from './HorizontalCenter.jsx';
-import { LinkButton } from './LinkButton.jsx';
 import { isDeletingAccountCat } from './store/sharedCats.js';
 import { deleteAccountEffect } from './store/sharedEffects';
 
@@ -15,12 +14,15 @@ export function DeleteAccountLink() {
 
   return (
     <>
-      <HorizontalCenter gap="1">
-        <RiUserUnfollowLine color={errorCssColor} />
-        <LinkButton onClick={() => setShowConfirm(true)} color={errorColor} disabled={isDeleting}>
-          Delete account
-        </LinkButton>
-      </HorizontalCenter>
+      <Button
+        variant="ghost"
+        onClick={() => setShowConfirm(true)}
+        color={errorColor}
+        disabled={isDeleting}
+      >
+        <RiUserUnfollowLine />
+        Delete account
+      </Button>
 
       <Confirm
         message="All your data will be deleted. Are you sure?"

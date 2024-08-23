@@ -20,6 +20,7 @@ export const isUpdatingSettingsCat = createCat(false);
 export const isDeletingAccountCat = createCat(false);
 export const isChangingEmailCat = createCat(false);
 export const isChangingPasswordCat = createCat(false);
+export const isLoggingOutCat = createCat(false);
 
 export function useUserCreatedAt() {
   const user = useCat(userCat);

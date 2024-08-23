@@ -1,3 +1,4 @@
+import { Button } from '@radix-ui/themes';
 import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@remixicon/react';
 import React from 'react';
 import { useCat } from 'usecat';
@@ -6,7 +7,6 @@ import { themeCssColor } from './AppWrapper.jsx';
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { LinkButton } from './LinkButton.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
@@ -43,10 +43,10 @@ export const Security = React.memo(() => {
 
         <LogoutLink />
 
-        <HorizontalCenter gap="1">
-          <RiDeviceLine color={themeCssColor} />
-          <LinkButton onClick={logOutFromAllDevicesEffect}>Log out from all devices</LinkButton>
-        </HorizontalCenter>
+        <Button variant="ghost" onClick={logOutFromAllDevicesEffect}>
+          <RiDeviceLine />
+          Log out from all devices
+        </Button>
 
         <DeleteAccountLink />
       </ItemsWrapper>
