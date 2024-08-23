@@ -16,10 +16,6 @@ export const Editor = styled.div`
     overflow-y: auto;
     padding: var(--space-3) 0;
 
-    & + .toolbar {
-      visibility: hidden;
-    }
-
     &::before {
       content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
       color: var(--gray-7);
@@ -30,10 +26,6 @@ export const Editor = styled.div`
 
   &[contenteditable='true']:focus {
     outline: 0;
-
-    & + .toolbar {
-      visibility: visible;
-    }
   }
 
   code {
