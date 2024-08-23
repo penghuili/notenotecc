@@ -14,6 +14,7 @@ export const localStorageKeys = {
 export const fileTypes = {
   webp: 'image/webp',
   jpeg: 'image/jpeg',
+  png: 'image/png',
   webm: 'video/webm',
   mp4: 'video/mp4',
   weba: 'audio/webm',

@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { saveAs } from 'file-saver';
 
 import { fileTypes } from './constants';
+import { convertImageTo } from './convertImage';
 
 export async function shareFile(file) {
   try {
@@ -20,12 +21,20 @@ export async function downloadFileWithUrl(url, type) {
   try {
     const response = await fetch(url, { mode: 'cors' });
     const blob = await response.blob();
-    const fileSuffix = fileTypeToSuffix(type);
     const fileName = `notenote-${format(new Date(), 'yyyy-MM-dd-HH-mm-ss')}`;
 
-    const file = new File([blob], `${fileName}.${fileSuffix}`, {
-      type,
-    });
+    let file;
+    if (type.includes('image')) {
+      const pngBlob = await convertImageTo(blob, fileTypes.png);
+      file = new File([pngBlob], `${fileName}.png`, {
+        type: fileTypes.png,
+      });
+    } else {
+      const fileSuffix = fileTypeToSuffix(type);
+      file = new File([blob], `${fileName}.${fileSuffix}`, {
+        type,
+      });
+    }
 
     saveAs(file);
   } catch (e) {
