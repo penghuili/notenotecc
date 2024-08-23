@@ -8,10 +8,8 @@ export const sharedLocalStorageKeys = {
   publicKey: 'publicKey',
   privateKey: 'privateKey',
 
-  themeMode: 'themeMode',
-  fontScaling: 'fontScaling',
-  redirectUrl: 'redirectUrl',
-  pdfFileContent: 'pdfFileContent',
+  themeMode: 'settings-themeMode',
+  fontScaling: 'settings-fontScaling',
 };
 
 export const LocalStorage = {

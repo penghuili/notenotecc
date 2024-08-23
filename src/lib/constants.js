@@ -7,7 +7,7 @@ export const localStorageKeys = {
   albums: 'notenote-albums',
   albumsChangedAt: 'notenote-albumsChangedAt',
   album: 'notenote-album',
-  showIOSCameraBanner: 'notenote-show-ios-camera-banner',
+  showIOSCameraBanner: 'settings-notenote-show-ios-camera-banner',
   actions: 'notenote-actions',
 };
 
