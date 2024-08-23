@@ -1,5 +1,3 @@
-import { resetAllCats } from 'usecat';
-
 import { isNewer } from '../../js/date';
 import { httpErrorCodes } from '../../js/httpErrorCodes';
 import { isValidEmail } from '../../js/regex';
@@ -228,18 +226,9 @@ export async function disable2FAEffect(code) {
 }
 
 export async function logOutEffect() {
-  resetEffect();
-}
-
-export async function resetEffect() {
-  isLoggedInCat.set(false);
-
-  setTimeout(async () => {
-    resetAllCats();
-
-    await idbStorage.clear();
-    LocalStorage.clear();
-  }, 50);
+  await idbStorage.clear();
+  LocalStorage.clear();
+  location.reload();
 }
 
 export async function logOutFromAllDevicesEffect() {

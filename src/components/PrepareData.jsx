@@ -1,8 +1,8 @@
 import { Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 
-import { PageEmpty } from './PageEmpty.jsx';
-import { PageLoading } from './PageLoading.jsx';
+import { PageEmpty } from '../shared/react/PageEmpty.jsx';
+import { PageLoading } from '../shared/react/PageLoading.jsx';
 
 const PrepareDataStatus = {
   pending: 'pending',

@@ -6,9 +6,9 @@ import { localStorageKeys } from '../lib/constants.js';
 import { asyncForEach } from '../shared/js/asyncForEach.js';
 import { eventEmitter, eventEmitterEvents } from '../shared/react/eventEmitter.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
+import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { createAlbumEffect } from '../store/album/albumEffects.js';
 import { createNoteEffect } from '../store/note/noteEffects.js';
-import { PageEmpty } from './PageEmpty.jsx';
 
 export const hasLocalNotesCat = createCat(false);
 

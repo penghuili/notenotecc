@@ -2,7 +2,7 @@ import { apps } from '../js/apps';
 import { eventEmitter, eventEmitterEvents } from './eventEmitter';
 import { appName } from './initShared';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage';
-import { resetEffect, setToastEffect } from './store/sharedEffects';
+import { logOutEffect, setToastEffect } from './store/sharedEffects';
 import { toastTypes } from './Toast.jsx';
 
 const serverToUrl = {
@@ -125,7 +125,7 @@ export const HTTP = {
     const errorCode = await error.json();
     if (status === 401) {
       LocalStorage.resetTokens();
-      resetEffect();
+      logOutEffect();
     }
 
     if (status === 403) {

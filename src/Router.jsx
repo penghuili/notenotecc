@@ -1,13 +1,12 @@
 import React from 'react';
 import { useCat } from 'usecat';
 
-import { PageLoading } from './components/PageLoading.jsx';
 import { PrepareData } from './components/PrepareData.jsx';
 import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.jsx';
-import { Waiting } from './components/Waiting.jsx';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
 import { Routes } from './shared/react/my-router.jsx';
+import { PageLoading } from './shared/react/PageLoading.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
 import { Setup2FA } from './shared/react/Setup2FA.jsx';
@@ -77,7 +76,6 @@ const publicRoutes = [
   { path: '/sign-in', component: SignIn },
   { path: '/sign-in/2fa', component: Verify2FA },
   { path: '/reset-password', component: ResetPassword },
-  { path: '/waiting', component: Waiting },
 
   { path: '/', component: Notes },
 ];
@@ -103,5 +101,5 @@ const AllRoutes = React.memo(() => {
     return <Routes routes={loggedInRoutes} />;
   }
 
-  return <Routes routes={publicRoutes} defaultRoute="/waiting" />;
+  return <Routes routes={publicRoutes} />;
 });

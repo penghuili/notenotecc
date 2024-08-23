@@ -13,13 +13,13 @@ import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
-import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { CustomRouteLink, navigate } from '../shared/react/my-router.jsx';
+import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
 import {

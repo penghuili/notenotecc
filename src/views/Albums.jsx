@@ -5,10 +5,10 @@ import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
-import { PageEmpty } from '../components/PageEmpty.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { navigate } from '../shared/react/my-router.jsx';
+import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { userCat } from '../shared/react/store/sharedCats.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
