@@ -80,7 +80,7 @@ export const Editor = styled.div`
   p,
   div {
     margin: 0 0 0.25em;
-    min-height: 1em;
+    min-height: var(--line-height-3);
     font-size: var(--font-size-3);
   }
   blockquote {
