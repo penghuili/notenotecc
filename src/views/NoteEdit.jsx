@@ -57,7 +57,7 @@ export const NoteEdit = React.memo(
 
     return (
       <PrepareData load={prepareData}>
-        <Header noteId={noteId} />
+        <Header noteId={noteId} fromNewNote={!!add} />
 
         <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
 
@@ -67,7 +67,7 @@ export const NoteEdit = React.memo(
   }
 );
 
-const Header = React.memo(({ noteId }) => {
+const Header = React.memo(({ noteId, fromNewNote }) => {
   const isLoading = useCat(isLoadingNoteCat);
   const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
@@ -77,6 +77,22 @@ const Header = React.memo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
   const rightElement = useMemo(() => !!noteItem && <NoteActions note={noteItem} />, [noteItem]);
+
+  useEffect(() => {
+    return () => {
+      if (!fromNewNote) {
+        return;
+      }
+
+      const newNote = noteCat.get();
+      if (newNote && !newNote.note && !newNote.images?.length) {
+        dispatchAction({
+          type: actionTypes.DELETE_NOTE,
+          payload: { ...newNote, goBack: false },
+        });
+      }
+    };
+  }, [fromNewNote]);
 
   return (
     <PageHeader

@@ -36,7 +36,7 @@ export const Actions = React.memo(() => {
   }, []);
 
   const handleTakeNote = useCallback(() => {
-    navigate(`/notes/add?editor=1`);
+    navigate(`/notes/add`);
   }, []);
 
   return (

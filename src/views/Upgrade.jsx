@@ -98,7 +98,6 @@ const FeatureItem = React.memo(({ title, price, benifits, accent }) => {
         border: '1px solid var(--gray-6)',
         borderRadius: '6px',
         padding: 'var(--space-4)',
-        width: '280px',
         ...(accent && {
           backgroundColor: 'var(--accent-9)',
           color: 'var(--accent-contrast)',
