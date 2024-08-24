@@ -59,9 +59,11 @@ const Header = React.memo(({ albumId }) => {
     });
   }, [albumId]);
 
+  const isNoAlbum = albumId?.startsWith('album_noalbum_');
+
   const rightElement = useMemo(() => {
     return (
-      !albumId?.startsWith('album_noalbum_') && (
+      !isNoAlbum && (
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             <IconButton mr="2" ml="2" variant="ghost">
@@ -83,12 +85,12 @@ const Header = React.memo(({ albumId }) => {
         </DropdownMenu.Root>
       )
     );
-  }, [albumId, handleEdit, handleShowDelete, isDeleting]);
+  }, [handleEdit, handleShowDelete, isDeleting, isNoAlbum]);
 
   return (
     <>
       <PageHeader
-        title={album?.title || 'Tag details'}
+        title={isNoAlbum ? 'Notes without tags' : album?.title || 'Tag details'}
         isLoading={isLoading || isAddingImages || isDeleting}
         fixed
         hasBack

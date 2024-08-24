@@ -76,12 +76,13 @@ const InnerImage = React.memo(
     const imageForAction = useMemo(() => {
       return {
         url,
+        hash,
         path,
         size,
         encryptedSize,
         type,
       };
-    }, [url, path, size, encryptedSize, type]);
+    }, [url, hash, path, size, encryptedSize, type]);
 
     const handleContentLoaded = useCallback(() => {
       setIsLoadingContent(false);

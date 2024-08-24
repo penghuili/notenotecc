@@ -1,12 +1,12 @@
 import { Box, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
-import { RiCircleLine, RiMore2Line, RiSortDesc } from '@remixicon/react';
+import { RiMore2Line, RiSortDesc } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { navigate } from '../shared/react/my-router.jsx';
+import { navigate, RouteLink } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
@@ -27,6 +27,8 @@ export const Albums = React.memo(() => {
 
       <AlbumItems />
 
+      <NotesWithoutTags />
+
       <Box mt="6">
         <AddNewAlbum />
       </Box>
@@ -37,16 +39,10 @@ export const Albums = React.memo(() => {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);
   const isDeleting = useCat(isDeletingAlbumCat);
-  const account = useCat(userCat);
 
   const handleNavigateToReorder = useCallback(() => {
     navigate('/albums/reorder');
   }, []);
-
-  const handleNavigateToWithoutTags = useCallback(() => {
-    const url = `/albums/album_noalbum_${account?.id}`;
-    navigate(url);
-  }, [account?.id]);
 
   const rightElement = useMemo(
     () => (
@@ -62,14 +58,10 @@ const Header = React.memo(() => {
             <RiSortDesc />
             Reorder tags
           </DropdownMenu.Item>
-          <DropdownMenu.Item onClick={handleNavigateToWithoutTags}>
-            <RiCircleLine />
-            Notes without tags
-          </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     ),
-    [handleNavigateToReorder, handleNavigateToWithoutTags]
+    [handleNavigateToReorder]
   );
 
   return (
@@ -105,4 +97,14 @@ const AlbumItems = React.memo(() => {
   }
 
   return null;
+});
+
+const NotesWithoutTags = React.memo(() => {
+  const account = useCat(userCat);
+
+  if (!account?.id) {
+    return null;
+  }
+
+  return <RouteLink to={`/albums/album_noalbum_${account?.id}`}>Notes without tags</RouteLink>;
 });

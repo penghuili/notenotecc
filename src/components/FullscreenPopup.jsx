@@ -36,9 +36,9 @@ const Top = styled(Flex)`
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% - 0.5rem));
   width: calc(100% - 1rem);
-  max-width: 600px;
+  max-width: calc(600px - 1rem);
   height: var(--space-8);
   padding: 0.5rem 0;
 `;
