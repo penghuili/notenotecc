@@ -1,14 +1,12 @@
 import { Box } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { fileTypes } from '../lib/constants.js';
-import { fetchFileWithUrl } from '../lib/fetchFileWithUrl.js';
-import { imagePathToUrl } from '../lib/imagePathToUrl.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
+import { useImageRemoteUrl } from '../lib/useImageRemoteUrl.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
-import { decryptBlob } from '../store/note/noteNetwork.js';
 import { AudioPlayer } from './AudioPlayer.jsx';
 import { fullScreenImageUrlCat } from './FullScreenImage.jsx';
 import { ImageActions } from './ImageActions.jsx';
@@ -59,15 +57,21 @@ const Wrapper = styled.div`
 
 const ImageElement = styled.img`
   width: 100%;
-  display: ${props => (props.isLoading ? 'none' : 'block')};
+  display: ${props => (props.hidden ? 'none' : 'block')};
 `;
 
 const InnerImage = React.memo(
   ({ noteId, encryptedPassword, path, hash, size, encryptedSize, type, onDelete }) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [remoteUrl, setRemoteUrl] = useState(null);
-    const localUrl = useImageLocalUrl(hash);
+    const { url: remoteUrl, isLoading: isLoadingRemote } = useImageRemoteUrl(
+      encryptedPassword,
+      path,
+      type
+    );
+    const { url: localUrl, isLoading: isLoadingLocal } = useImageLocalUrl(hash);
+    const [isLoadingContent, setIsLoadingContent] = useState(true);
+
     const url = remoteUrl || localUrl;
+    const isLoading = isLoadingRemote || isLoadingLocal || isLoadingContent;
 
     const imageForAction = useMemo(() => {
       return {
@@ -79,8 +83,8 @@ const InnerImage = React.memo(
       };
     }, [url, path, size, encryptedSize, type]);
 
-    const handleLoaded = useCallback(() => {
-      setIsLoading(false);
+    const handleContentLoaded = useCallback(() => {
+      setIsLoadingContent(false);
     }, []);
 
     const handleDelete = useCallback(() => {
@@ -91,24 +95,6 @@ const InnerImage = React.memo(
       fullScreenImageUrlCat.set(remoteUrl);
     }, [remoteUrl]);
 
-    useEffect(() => {
-      if (!path || !encryptedPassword) {
-        return;
-      }
-
-      setIsLoading(true);
-      fetchFileWithUrl(imagePathToUrl(path), type)
-        .then(data => decryptBlob(encryptedPassword, data.blob, type))
-        .then(blob => {
-          setRemoteUrl(URL.createObjectURL(blob));
-        })
-        .catch(e => {
-          console.log(e);
-          setRemoteUrl(null);
-          setIsLoading(false);
-        });
-    }, [encryptedPassword, path, type]);
-
     return (
       <>
         {isLoading && <LoadingSkeleton width="100%" height="100%" />}
@@ -116,16 +102,21 @@ const InnerImage = React.memo(
         {!!url && (
           <>
             {(type === fileTypes.webm || type === fileTypes.mp4) && (
-              <VideoPlayer src={url} type={type} hidden={isLoading} onLoaded={handleLoaded} />
+              <VideoPlayer
+                src={url}
+                type={type}
+                hidden={isLoading}
+                onLoaded={handleContentLoaded}
+              />
             )}
 
             {type === fileTypes.weba && (
-              <AudioPlayer src={url} onLoaded={handleLoaded} hidden={isLoading} />
+              <AudioPlayer src={url} onLoaded={handleContentLoaded} hidden={isLoading} />
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
               <div onDoubleClick={handleOpenFullScreen}>
-                <ImageElement src={url} onLoad={handleLoaded} />
+                <ImageElement hidden={isLoading} src={url} onLoad={handleContentLoaded} />
               </div>
             )}
 

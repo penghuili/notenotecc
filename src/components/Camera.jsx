@@ -110,7 +110,7 @@ const ImagesPreview = React.memo(({ images }) => {
 });
 
 const PreviewItem = React.memo(({ image, translateX, zIndex }) => {
-  const url = useImageLocalUrl(image.hash);
+  const { url } = useImageLocalUrl(image.hash);
   if (!url) {
     return null;
   }
