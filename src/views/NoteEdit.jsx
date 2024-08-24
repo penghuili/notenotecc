@@ -10,12 +10,12 @@ import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
-import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
 import { isIOS } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { goBack, replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {

@@ -1,23 +1,28 @@
-import { Text } from '@radix-ui/themes';
+import { Button, Text } from '@radix-ui/themes';
 import { differenceInCalendarDays } from 'date-fns';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { useCat } from 'usecat';
 
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
-import { useExpiresAt } from './store/sharedCats.js';
+import { currentPathCat, navigate } from './my-router.jsx';
+import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
-export function PaymentStatus() {
+export const PaymentStatus = React.memo(() => {
   const expiresAt = useExpiresAt();
+  const freeTrialUntil = useFreeTrialsUntil();
 
-  if (!expiresAt) {
-    return null;
+  if (!expiresAt && !freeTrialUntil) {
+    return <Text>Free account</Text>;
   }
 
   if (expiresAt === 'forever') {
     return <Text weight="bold">Life time access</Text>;
   }
 
-  const expiresDate = new Date(expiresAt);
+  const isFreeTrial = !expiresAt && !!freeTrialUntil;
+
+  const expiresDate = new Date(expiresAt || freeTrialUntil);
   const formattedExpiresDate = formatDate(expiresDate);
   const today = new Date();
   const formattedToday = formatDate(today);
@@ -26,20 +31,70 @@ export function PaymentStatus() {
   const willBeExpiredSoon = validDays <= 7;
 
   if (isExpired) {
-    return <Text color={errorColor}>Expired (valid until {formattedExpiresDate})</Text>;
+    return (
+      <Text color={errorColor}>
+        {isFreeTrial ? 'Free trial expired' : 'Expired'} (valid until {formattedExpiresDate})
+      </Text>
+    );
   }
 
   if (willBeExpiredSoon) {
     return (
       <Text color={warningColor}>
-        {formattedExpiresDate} ({validDays} {validDays > 1 ? 'days' : 'day'} left)
+        {isFreeTrial ? 'Free trial until' : ''} {formattedExpiresDate} ({validDays}{' '}
+        {validDays > 1 ? 'days' : 'day'} left)
       </Text>
     );
   }
 
   return (
     <Text>
-      {formattedExpiresDate} ({validDays} days left)
+      {isFreeTrial ? 'Free trial until' : ''} {formattedExpiresDate} ({validDays} days left)
     </Text>
   );
-}
+});
+
+export const UpgradeButton = React.memo(() => {
+  const expiresAt = useExpiresAt();
+  const freeTrialUntil = useFreeTrialsUntil();
+  const isLoggedIn = useCat(isLoggedInCat);
+
+  const currentPath = useCat(currentPathCat);
+  const isUpgradePage = useMemo(() => {
+    return currentPath === `/upgrade`;
+  }, [currentPath]);
+
+  const handleNavigate = useCallback(() => {
+    navigate('/upgrade');
+  }, []);
+
+  if (!isLoggedIn || isUpgradePage) {
+    return null;
+  }
+
+  if (!expiresAt && !freeTrialUntil) {
+    return (
+      <Button size="1" variant="soft" color="green" mr="2" onClick={handleNavigate}>
+        Try Pro for free
+      </Button>
+    );
+  }
+
+  if (!expiresAt && freeTrialUntil && freeTrialUntil >= formatDate(new Date())) {
+    return (
+      <Button size="1" variant="soft" color="violet" mr="2" onClick={handleNavigate}>
+        Free trying
+      </Button>
+    );
+  }
+
+  if ((expiresAt || freeTrialUntil) < formatDate(new Date())) {
+    return (
+      <Button size="1" variant="soft" color="violet" mr="2" onClick={handleNavigate}>
+        Upgrade to Pro
+      </Button>
+    );
+  }
+
+  return null;
+});

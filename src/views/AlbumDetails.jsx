@@ -4,14 +4,13 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { ScrollToTop } from '../components/ScrollToTop.jsx';
-import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { navigate } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { isDeletingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
@@ -62,35 +61,27 @@ const Header = React.memo(({ albumId }) => {
 
   const rightElement = useMemo(() => {
     return (
-      <>
-        <ScrollToTop />
+      !albumId?.startsWith('album_noalbum_') && (
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton mr="2" ml="2" variant="ghost">
+              <RiMore2Line />
+            </IconButton>
+          </DropdownMenu.Trigger>
 
-        {!albumId?.startsWith('album_noalbum_') && (
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <IconButton mr="2" ml="2" variant="ghost">
-                <RiMore2Line />
-              </IconButton>
-            </DropdownMenu.Trigger>
+          <DropdownMenu.Content variant="soft">
+            <DropdownMenu.Item onClick={handleEdit}>
+              <RiPencilLine />
+              Edit
+            </DropdownMenu.Item>
 
-            <DropdownMenu.Content variant="soft">
-              <DropdownMenu.Item onClick={handleEdit}>
-                <RiPencilLine />
-                Edit
-              </DropdownMenu.Item>
-
-              <DropdownMenu.Item
-                onClick={handleShowDelete}
-                color={errorColor}
-                disabled={isDeleting}
-              >
-                <RiDeleteBinLine />
-                Delete
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        )}
-      </>
+            <DropdownMenu.Item onClick={handleShowDelete} color={errorColor} disabled={isDeleting}>
+              <RiDeleteBinLine />
+              Delete
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      )
     );
   }, [albumId, handleEdit, handleShowDelete, isDeleting]);
 

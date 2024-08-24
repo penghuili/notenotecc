@@ -27,6 +27,7 @@ import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
 import { Settings } from './views/Settings.jsx';
+import { Upgrade } from './views/Upgrade.jsx';
 
 async function load() {
   initEffect();
@@ -54,6 +55,7 @@ const commonRoutes = [
   { path: '/albums', component: Albums },
 
   { path: '/settings', component: Settings },
+  { path: '/upgrade', component: Upgrade },
 ];
 const loggedInRoutes = [
   ...commonRoutes,

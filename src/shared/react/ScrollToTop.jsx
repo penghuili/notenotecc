@@ -2,14 +2,12 @@ import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine } from '@remixicon/react';
 import React, { useEffect, useState } from 'react';
 
-import { scrollToTop } from '../lib/scrollToTop';
-
 export const ScrollToTop = React.memo(() => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     const handleToggle = () => {
-      setShow(window.scrollY > 1000);
+      setShow(window.scrollY > 1500);
     };
     window.addEventListener('scroll', handleToggle);
 
@@ -26,3 +24,13 @@ export const ScrollToTop = React.memo(() => {
     )
   );
 });
+
+export function scrollToTop() {
+  window.scrollTo(0, 0);
+}
+
+export function useScrollToTop() {
+  useEffect(() => {
+    scrollToTop();
+  }, []);
+}

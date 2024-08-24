@@ -14,7 +14,6 @@ import { useCat } from 'usecat';
 import { Actions } from '../components/Actions.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
@@ -59,16 +58,7 @@ const Header = React.memo(() => {
     await forceFetchHomeNotesEffect();
   }, []);
 
-  const rightElement = useMemo(
-    () => (
-      <>
-        <ScrollToTop />
-
-        <HeaderMenu />
-      </>
-    ),
-    []
-  );
+  const rightElement = useMemo(() => <HeaderMenu />, []);
 
   return (
     <PageHeader

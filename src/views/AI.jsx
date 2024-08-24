@@ -5,10 +5,10 @@ import styled from 'styled-components';
 
 import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { AreaField } from '../shared/react/AreaField.jsx';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 import { toastTypes } from '../shared/react/Toast.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';

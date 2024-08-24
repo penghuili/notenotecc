@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { cameraTypes } from '../lib/cameraTypes';
 import { navigate } from '../shared/react/my-router.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
+import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -40,15 +41,21 @@ export const Actions = React.memo(() => {
 
   return (
     <Wrapper>
-      <IconButtonWithText onClick={handleTakePhoto} text="Camera">
-        <RiCameraLine />
-      </IconButtonWithText>
-      <IconButtonWithText onClick={handleTakeVideo} text="Video">
-        <RiVideoAddLine />
-      </IconButtonWithText>
-      <IconButtonWithText onClick={handlePickPhotos} text="Photo">
-        <RiImageAddLine />
-      </IconButtonWithText>
+      <ProRequired>
+        <IconButtonWithText onClick={handleTakePhoto} text="Camera">
+          <RiCameraLine />
+        </IconButtonWithText>
+      </ProRequired>
+      <ProRequired>
+        <IconButtonWithText onClick={handleTakeVideo} text="Video">
+          <RiVideoAddLine />
+        </IconButtonWithText>
+      </ProRequired>
+      <ProRequired>
+        <IconButtonWithText onClick={handlePickPhotos} text="Photo">
+          <RiImageAddLine />
+        </IconButtonWithText>
+      </ProRequired>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
         <RiStickyNoteAddLine />
       </IconButtonWithText>

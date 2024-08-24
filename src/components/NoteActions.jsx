@@ -9,6 +9,7 @@ import { currentPathCat, navigate } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { Camera } from './Camera.jsx';
+import { ProRequired } from './ProRequired.jsx';
 
 export const NoteActions = React.memo(({ note }) => {
   const currentPath = useCat(currentPathCat);
@@ -61,9 +62,11 @@ export const NoteActions = React.memo(({ note }) => {
 
   return (
     <Flex align="center" gap="2">
-      <IconButton variant="ghost" onClick={handleShowCamera} mr="2">
-        <RiImageAddLine />
-      </IconButton>
+      <ProRequired>
+        <IconButton variant="ghost" onClick={handleShowCamera} mr="2">
+          <RiImageAddLine />
+        </IconButton>
+      </ProRequired>
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>

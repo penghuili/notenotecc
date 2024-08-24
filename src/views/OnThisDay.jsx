@@ -16,7 +16,6 @@ import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { ScrollToTop } from '../components/ScrollToTop.jsx';
 import { asyncForEach } from '../shared/js/asyncForEach';
 import { formatDate } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber';
@@ -64,9 +63,7 @@ export const OnThisDay = React.memo(({ queryParams: { tab } }) => {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
-  return (
-    <PageHeader title="On this day" isLoading={isLoading} fixed hasBack right={<ScrollToTop />} />
-  );
+  return <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />;
 });
 
 const HistoryTabs = React.memo(() => {

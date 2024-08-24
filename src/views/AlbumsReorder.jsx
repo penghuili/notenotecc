@@ -3,8 +3,8 @@ import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { Reorder } from '../components/Reorder.jsx';
-import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

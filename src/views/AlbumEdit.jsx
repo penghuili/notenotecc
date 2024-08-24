@@ -3,9 +3,9 @@ import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { useScrollToTop } from '../lib/useScrollToTop.js';
 import { InputField } from '../shared/react/InputField.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { albumsCat, findAlbum, isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

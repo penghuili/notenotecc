@@ -1,15 +1,14 @@
 import { Avatar, Flex, Heading, IconButton, Spinner } from '@radix-ui/themes';
-import { RiAccountCircleLine, RiArrowLeftLine } from '@remixicon/react';
-import React, { useCallback, useMemo } from 'react';
+import { RiArrowLeftLine } from '@remixicon/react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { useCat } from 'usecat';
 
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
-import { navigate } from './my-router.jsx';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
-import { isLoggedInCat } from './store/sharedCats.js';
+import { UpgradeButton } from './PaymentStatus.jsx';
+import { ScrollToTop } from './ScrollToTop.jsx';
 import { goBackEffect } from './store/sharedEffects';
 import { TopBanner } from './TopBanner.jsx';
 
@@ -36,10 +35,6 @@ const Placeholder = styled.div`
 `;
 
 export function PageHeader({ title, right, isLoading, hasBack }) {
-  const isLoggedIn = useCat(isLoggedInCat);
-
-  const handleNavigateToAccount = useCallback(() => navigate('/account'), []);
-
   const iconElement = useMemo(() => {
     if (hasBack) {
       return (
@@ -51,18 +46,6 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
 
     return <Avatar src={logo} />;
   }, [hasBack]);
-
-  const userElement = useMemo(() => {
-    if (!isLoggedIn || hasBack || right) {
-      return null;
-    }
-
-    return (
-      <IconButton onClick={handleNavigateToAccount} variant="ghost">
-        <RiAccountCircleLine />
-      </IconButton>
-    );
-  }, [handleNavigateToAccount, hasBack, isLoggedIn, right]);
 
   return (
     <>
@@ -79,8 +62,9 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
           </HorizontalCenter>
 
           <HorizontalCenter gap="1">
+            <ScrollToTop />
+            <UpgradeButton />
             {right}
-            {userElement}
           </HorizontalCenter>
         </Content>
       </Wrapper>

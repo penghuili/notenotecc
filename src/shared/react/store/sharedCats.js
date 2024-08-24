@@ -30,6 +30,10 @@ export function useExpiresAt() {
   const settings = useCat(settingsCat);
   return settings?.expiresAt;
 }
+export function useFreeTrialsUntil() {
+  const settings = useCat(settingsCat);
+  return settings?.freeTrial;
+}
 export function useTwoFactorEnabled() {
   const user = useCat(userCat);
   return user?.twoFactorEnabled;
