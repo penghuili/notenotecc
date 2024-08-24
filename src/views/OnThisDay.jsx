@@ -21,6 +21,7 @@ import { asyncForEach } from '../shared/js/asyncForEach';
 import { formatDate } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber';
 import { randomBetween } from '../shared/js/utils.js';
+import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
@@ -31,21 +32,21 @@ const tabsCat = createCat([]);
 const activeTabCat = createCat(null);
 const randomDateCat = createCat(null);
 
-export const OnThisDay = React.memo(() => {
+export const OnThisDay = React.memo(({ queryParams: { tab } }) => {
   const userCreatedAt = useUserCreatedAt();
 
   const load = useCallback(async () => {
     const tabs = getTabs(userCreatedAt);
 
     tabsCat.set(tabs);
-    activeTabCat.set(tabs[0].value);
+    activeTabCat.set(tab || tabs[0].value);
 
     await fetchNotesForDate(tabs[0].date);
 
     asyncForEach(tabs.slice(1), async tabObj => {
       await fetchNotesForDate(tabObj.date);
     });
-  }, [userCreatedAt]);
+  }, [tab, userCreatedAt]);
 
   return (
     <PrepareData load={load}>
@@ -75,8 +76,13 @@ const HistoryTabs = React.memo(() => {
   const activeTab = useCat(activeTabCat);
   const randomDate = useCat(randomDateCat);
 
+  const handleChangeTab = useCallback(tab => {
+    activeTabCat.set(tab);
+    replaceTo(`/on-this-day?tab=${tab}`);
+  }, []);
+
   return (
-    <Tabs.Root defaultValue="account" value={activeTab} onValueChange={activeTabCat.set} mb="4">
+    <Tabs.Root defaultValue="account" value={activeTab} onValueChange={handleChangeTab} mb="4">
       <Tabs.List>
         {tabs.map(tab => (
           <Tabs.Trigger key={tab.label} value={tab.value}>
