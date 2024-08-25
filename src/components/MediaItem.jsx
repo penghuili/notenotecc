@@ -1,5 +1,5 @@
 import { Box } from '@radix-ui/themes';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { fileTypes } from '../lib/constants.js';
@@ -70,8 +70,22 @@ const InnerImage = React.memo(
     const { url: localUrl, isLoading: isLoadingLocal } = useImageLocalUrl(hash);
     const [isLoadingContent, setIsLoadingContent] = useState(true);
 
+    const [isLoadingTotal, setIsLoadingTotal] = useState(false);
+    const timerRef = useRef(null);
+
+    useEffect(() => {
+      clearTimeout(timerRef.current);
+
+      timerRef.current = setTimeout(() => {
+        setIsLoadingTotal(isLoadingRemote || isLoadingLocal || isLoadingContent);
+      }, 400);
+
+      return () => {
+        clearTimeout(timerRef.current);
+      };
+    }, [isLoadingContent, isLoadingLocal, isLoadingRemote]);
+
     const url = remoteUrl || localUrl;
-    const isLoading = isLoadingRemote || isLoadingLocal || isLoadingContent;
 
     const imageForAction = useMemo(() => {
       return {
@@ -98,7 +112,7 @@ const InnerImage = React.memo(
 
     return (
       <>
-        {isLoading && <LoadingSkeleton width="100%" height="100%" />}
+        {isLoadingTotal && <LoadingSkeleton width="100%" height="100%" />}
 
         {!!url && (
           <>
@@ -106,18 +120,18 @@ const InnerImage = React.memo(
               <VideoPlayer
                 src={url}
                 type={type}
-                hidden={isLoading}
+                hidden={isLoadingTotal}
                 onLoaded={handleContentLoaded}
               />
             )}
 
             {type === fileTypes.weba && (
-              <AudioPlayer src={url} onLoaded={handleContentLoaded} hidden={isLoading} />
+              <AudioPlayer src={url} onLoaded={handleContentLoaded} hidden={isLoadingTotal} />
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
               <div onDoubleClick={handleOpenFullScreen}>
-                <ImageElement hidden={isLoading} src={url} onLoad={handleContentLoaded} />
+                <ImageElement hidden={isLoadingTotal} src={url} onLoad={handleContentLoaded} />
               </div>
             )}
 
