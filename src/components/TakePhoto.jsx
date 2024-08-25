@@ -1,6 +1,6 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import { RiCameraLensLine, RiRefreshLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
@@ -29,8 +29,11 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   const videoStreamError = useCat(videoStreamErrorCat);
 
   const videoRef = useRef(null);
+  const [isTaking, setIsTaking] = useState(false);
 
   const handleCapture = useCallback(async () => {
+    setIsTaking(true);
+
     const tempCanvas = document.createElement('canvas');
     const width = videoRef.current.videoWidth;
     const height = videoRef.current.videoHeight;
@@ -44,11 +47,9 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     await idbStorage.setItem(hash, blob);
 
     onSelect({ hash, size: blob.size, type: imageType });
-  }, [onSelect]);
 
-  const handleChangeFacingMode = useCallback(() => {
-    rotateCamera();
-  }, []);
+    setIsTaking(false);
+  }, [onSelect]);
 
   useEffect(() => {
     isUsingVideoStreamCat.set(true);
@@ -87,7 +88,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
         <IconButton
           size="4"
           onClick={handleCapture}
-          disabled={!!videoStreamError || !videoStream}
+          disabled={!!videoStreamError || !videoStream || isTaking}
           radius="full"
         >
           <RiCameraLensLine style={{ '--font-size': '40px' }} />
@@ -95,7 +96,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
 
         <IconButton
           size="4"
-          onClick={handleChangeFacingMode}
+          onClick={rotateCamera}
           variant="soft"
           radius="full"
           style={{ position: 'absolute', top: size + 12, right: 12 }}

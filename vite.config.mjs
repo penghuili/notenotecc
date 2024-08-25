@@ -46,25 +46,6 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks: id => {
             if (id.includes('node_modules')) {
-              if (id.includes('openpgp')) {
-                return 'openpgp';
-              }
-              if (id.includes('@ffmpeg/ffmpeg')) {
-                return 'ffmpeg';
-              }
-              if (id.includes('file-saver')) {
-                return 'file-saver';
-              }
-              if (id.includes('styled-components')) {
-                return 'styled-components';
-              }
-              if (id.includes('spark-md5')) {
-                return 'spark-md5';
-              }
-              if (id.includes('date-fns')) {
-                return 'date-fns';
-              }
-
               return 'vendor';
             }
           },
