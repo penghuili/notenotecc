@@ -1,11 +1,5 @@
-import { Flex, Text } from '@radix-ui/themes';
-import {
-  RiPauseLine,
-  RiPlayLine,
-  RiRefreshLine,
-  RiRestartLine,
-  RiStopLine,
-} from '@remixicon/react';
+import { Flex, IconButton, Text } from '@radix-ui/themes';
+import { RiRecordCircleLine, RiRefreshLine, RiStopCircleLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
@@ -20,10 +14,9 @@ import {
   videoStreamCat,
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
-import { isIOS } from '../shared/react/device.js';
+import { isIOS, isMobile } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { md5Hash } from '../shared/react/md5Hash.js';
-import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -93,19 +86,12 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const videoStreamError = useCat(videoStreamErrorCat);
 
   const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
 
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
   const timerIdRef = useRef(null);
-  const startTimeRef = useRef(null);
-  const elapsedTimeRef = useRef(0);
   const progressElementRef = useRef(null);
-
-  const handleSwitchCamera = useCallback(() => {
-    rotateCamera();
-  }, []);
 
   const clearTimers = useCallback(() => {
     if (timerIdRef.current) {
@@ -118,25 +104,34 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.ondataavailable = null;
+      mediaRecorderRef.current.onstop = null;
       mediaRecorderRef.current = null;
     }
   }, []);
 
   const handleStopRecording = useCallback(async () => {
-    stopMediaRecorder();
+    const handleStop = async () => {
+      stopMediaRecorder();
+      setIsRecording(false);
+      clearTimers();
 
-    const blob = new Blob(recordedChunksRef.current, { type: videoType });
-    const hash = await md5Hash(blob);
-    await idbStorage.setItem(hash, blob);
-    onSelect({ hash, size: blob.size, type: videoType });
+      progressElementRef.current.stop();
 
-    setIsRecording(false);
-    setIsPaused(false);
-    clearTimers();
+      console.log('Stop recording', recordedChunksRef.current.length);
+      const blob = new Blob(recordedChunksRef.current, { type: videoType });
+      const hash = await md5Hash(blob);
+      await idbStorage.setItem(hash, blob);
+      onSelect({ hash, size: blob.size, type: videoType });
 
-    recordedChunksRef.current = [];
-    elapsedTimeRef.current = 0;
-    progressElementRef.current.stop();
+      recordedChunksRef.current = [];
+    };
+    mediaRecorderRef.current.onstop = handleStop;
+
+    if (mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    } else {
+      handleStop();
+    }
   }, [clearTimers, onSelect, stopMediaRecorder]);
 
   const handleSetupTimer = useCallback(() => {
@@ -145,7 +140,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     timerIdRef.current = setTimeout(() => {
       handleStopRecording();
       clearTimers();
-    }, RECORDING_DURATION - elapsedTimeRef.current);
+    }, RECORDING_DURATION);
   }, [clearTimers, handleStopRecording]);
 
   const createMediaRecorder = useCallback(async () => {
@@ -153,6 +148,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       stopMediaRecorder();
     }
 
+    console.log('Starting recording', videoStream);
     const mediaRecorder = new MediaRecorder(videoStream, {
       mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
       videoBitsPerSecond: 1000000,
@@ -160,6 +156,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     mediaRecorderRef.current = mediaRecorder;
 
     mediaRecorder.ondataavailable = event => {
+      console.log('ondataavailable', event.data.size);
       if (event.data.size > 0) {
         recordedChunksRef.current.push(event.data);
       }
@@ -172,34 +169,11 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     createMediaRecorder();
 
     setIsRecording(true);
-    setIsPaused(false);
 
-    startTimeRef.current = Date.now();
-    elapsedTimeRef.current = 0;
     progressElementRef.current.start();
 
     handleSetupTimer();
   }, [createMediaRecorder, handleSetupTimer]);
-
-  const handlePauseRecording = useCallback(() => {
-    if (mediaRecorderRef.current && !isPaused) {
-      mediaRecorderRef.current.pause();
-      clearTimers();
-      elapsedTimeRef.current += Date.now() - startTimeRef.current;
-      progressElementRef.current.pause();
-      setIsPaused(true);
-    }
-  }, [clearTimers, isPaused]);
-
-  const handleResumeRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isPaused) {
-      mediaRecorderRef.current.resume();
-      startTimeRef.current = Date.now();
-      progressElementRef.current.resume();
-      handleSetupTimer();
-      setIsPaused(false);
-    }
-  }, [handleSetupTimer, isPaused]);
 
   useEffect(() => {
     isUsingVideoStreamCat.set(true);
@@ -227,6 +201,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     if (videoRef.current) {
       if (videoStream) {
         videoRef.current.srcObject = videoStream;
+        console.log('has stream');
       } else {
         videoRef.current.srcObject = null;
         videoRef.current.load();
@@ -234,12 +209,12 @@ export const TakeVideo = React.memo(({ onSelect }) => {
         stopMediaRecorder();
 
         setIsRecording(false);
-        setIsPaused(false);
         clearTimers();
 
         recordedChunksRef.current = [];
-        elapsedTimeRef.current = 0;
         progressElementRef.current.stop();
+
+        console.log('no stream');
       }
     }
     // eslint-disable-next-line react-compiler/react-compiler
@@ -258,53 +233,41 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
       {errorElement}
 
-      <Flex justify="center" align="center" py="2" gap="2">
+      <Flex justify="center" align="center" pt="12px" gap="2">
         {!isRecording && (
           <>
-            <IconButtonWithText
+            <IconButton
+              size="4"
+              radius="full"
               onClick={handleStartRecording}
-              text="Record"
-              disabled={!!videoStreamError}
+              disabled={!!videoStreamError || !videoStream}
             >
-              <RiPlayLine />
-            </IconButtonWithText>
+              <RiRecordCircleLine style={{ '--font-size': '40px' }} />
+            </IconButton>
 
-            <IconButtonWithText onClick={handleSwitchCamera} variant="soft" text="Flip">
-              <RiRefreshLine />
-            </IconButtonWithText>
+            {isMobile() && (
+              <IconButton
+                size="4"
+                radius="full"
+                onClick={rotateCamera}
+                variant="soft"
+                style={{ position: 'absolute', top: size + 12, right: 12 }}
+              >
+                <RiRefreshLine />
+              </IconButton>
+            )}
           </>
         )}
 
-        {isRecording && !isPaused && (
-          <IconButtonWithText
-            onClick={handlePauseRecording}
-            text="Pause"
-            disabled={!!videoStreamError}
-            variant="soft"
-          >
-            <RiPauseLine />
-          </IconButtonWithText>
-        )}
-
-        {isRecording && isPaused && (
-          <IconButtonWithText
-            onClick={handleResumeRecording}
-            text="Resume"
-            disabled={!!videoStreamError}
-            variant="soft"
-          >
-            <RiRestartLine />
-          </IconButtonWithText>
-        )}
-
         {isRecording && (
-          <IconButtonWithText
+          <IconButton
+            size="4"
+            radius="full"
             onClick={handleStopRecording}
-            text="Finish"
             disabled={!!videoStreamError}
           >
-            <RiStopLine />
-          </IconButtonWithText>
+            <RiStopCircleLine style={{ '--font-size': '40px' }} />
+          </IconButton>
         )}
       </Flex>
     </VideoWrapper>

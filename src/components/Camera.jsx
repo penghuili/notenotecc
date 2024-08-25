@@ -1,11 +1,5 @@
-import { Flex, IconButton, Tabs } from '@radix-ui/themes';
-import {
-  RiArrowLeftLine,
-  RiCameraLine,
-  RiImageAddLine,
-  RiPlayLine,
-  RiVideoOnLine,
-} from '@remixicon/react';
+import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
+import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
@@ -55,19 +49,11 @@ export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
 
       {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
 
-      <Tabs.Root value={activeTab} onValueChange={setActiveTab}>
-        <Tabs.List>
-          <Tabs.Trigger value={cameraTypes.takePhoto}>
-            <RiCameraLine />
-          </Tabs.Trigger>
-          <Tabs.Trigger value={cameraTypes.takeVideo}>
-            <RiVideoOnLine />
-          </Tabs.Trigger>
-          <Tabs.Trigger value={cameraTypes.pickPhoto}>
-            <RiImageAddLine />
-          </Tabs.Trigger>
-        </Tabs.List>
-      </Tabs.Root>
+      <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
+        <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
+        <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
+        <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
+      </SegmentedControl.Root>
 
       {!!images?.length && <ImagesPreview images={images} onDelete={handleDeleteImage} />}
     </FullscreenPopup>
