@@ -1,17 +1,24 @@
 import { Flex } from '@radix-ui/themes';
 import { RiCameraLine, RiRefreshLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
+import { useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
-import { useWindowBlur } from '../lib/useWindowBlur';
-import { useWindowFocus } from '../lib/useWindowFocus';
+import {
+  hasAudioCat,
+  isUsingVideoStreamCat,
+  requestVideoStream,
+  rotateCamera,
+  stopVideoStream,
+  videoStreamCat,
+  videoStreamErrorCat,
+} from '../lib/videoStream.js';
 import { canvasToBlob } from '../shared/react/canvasToBlob';
-import { isMobile } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { md5Hash } from '../shared/react/md5Hash';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
-import { getCameraSize, renderError, stopStream, VideoWrapper } from './TakeVideo.jsx';
+import { getCameraSize, renderError, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`
   width: ${props => `${props.size}px`};
@@ -19,28 +26,10 @@ const Video = styled.video`
 `;
 
 export const TakePhoto = React.memo(({ onSelect }) => {
-  const streamRef = useRef(null);
+  const videoStream = useCat(videoStreamCat);
+  const videoStreamError = useCat(videoStreamErrorCat);
+
   const videoRef = useRef(null);
-  const [error, setError] = useState(null);
-
-  const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
-  const isDestroyedRef = useRef(false);
-
-  const handleRequestCamera = useCallback(async mode => {
-    setError(null);
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    const { data, error } = await requestStream(mode);
-    if (data) {
-      streamRef.current = data;
-      if (videoRef.current) {
-        videoRef.current.srcObject = data;
-      }
-    }
-    if (error) {
-      setError(error);
-    }
-  }, []);
 
   const handleCapture = useCallback(async () => {
     const tempCanvas = document.createElement('canvas');
@@ -59,60 +48,35 @@ export const TakePhoto = React.memo(({ onSelect }) => {
   }, [onSelect]);
 
   const handleChangeFacingMode = useCallback(() => {
-    const mode = facingModeRef.current === 'user' ? 'environment' : 'user';
-    facingModeRef.current = mode;
-    handleRequestCamera(mode);
-  }, [handleRequestCamera]);
-
-  const handleWindowBlur = useCallback(() => {
-    if (streamRef.current) {
-      stopStream(streamRef.current);
-      streamRef.current = null;
-    }
+    rotateCamera();
   }, []);
 
-  const handleWindowFocus = useCallback(() => {
-    if (!streamRef.current) {
-      handleRequestCamera(facingModeRef.current);
-    }
-  }, [handleRequestCamera]);
-
   useEffect(() => {
-    isDestroyedRef.current = false;
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    requestStream(facingModeRef.current).then(({ data, error }) => {
-      if (data) {
-        if (isDestroyedRef.current) {
-          stopStream(data);
-          return;
-        }
-
-        streamRef.current = data;
-        if (videoRef.current) {
-          videoRef.current.srcObject = data;
-        }
-      }
-      if (error) {
-        setError(error);
-      }
-    });
+    isUsingVideoStreamCat.set(true);
+    hasAudioCat.set(false);
+    requestVideoStream();
 
     return () => {
-      stopStream(streamRef.current);
-      streamRef.current = null;
-      isDestroyedRef.current = true;
+      isUsingVideoStreamCat.set(false);
+      stopVideoStream();
     };
   }, []);
 
-  // eslint-disable-next-line react-compiler/react-compiler
-  useWindowBlur(handleWindowBlur);
-  // eslint-disable-next-line react-compiler/react-compiler
-  useWindowFocus(handleWindowFocus);
+  useEffect(() => {
+    if (videoRef.current) {
+      if (videoStream) {
+        videoRef.current.srcObject = videoStream;
+      } else {
+        videoRef.current.srcObject = null;
+        videoRef.current.load();
+      }
+    }
+    // eslint-disable-next-line react-compiler/react-compiler
+  }, [videoStream]);
 
   const size = getCameraSize();
 
-  const errorElement = useMemo(() => renderError(error, size), [error, size]);
+  const errorElement = useMemo(() => renderError(videoStreamError, size), [size, videoStreamError]);
 
   return (
     <VideoWrapper>
@@ -121,7 +85,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
       {errorElement}
 
       <Flex justify="center" align="center" py="2" gap="2">
-        <IconButtonWithText onClick={handleCapture} disabled={!!error} text="Capture">
+        <IconButtonWithText onClick={handleCapture} disabled={!!videoStreamError} text="Capture">
           <RiCameraLine />
         </IconButtonWithText>
 
@@ -132,19 +96,3 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     </VideoWrapper>
   );
 });
-
-async function requestStream(mode) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: mode },
-        width: { ideal: 900 },
-        height: { ideal: 900 },
-      },
-    });
-
-    return { data: stream, error: null };
-  } catch (error) {
-    return { data: null, error };
-  }
-}

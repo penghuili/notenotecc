@@ -8,11 +8,19 @@ import {
 } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { useCat } from 'usecat';
 
 import { videoType } from '../lib/constants.js';
-import { useWindowBlur } from '../lib/useWindowBlur.js';
-import { useWindowFocus } from '../lib/useWindowFocus.js';
-import { isIOS, isMobile } from '../shared/react/device.js';
+import {
+  hasAudioCat,
+  isUsingVideoStreamCat,
+  requestVideoStream,
+  rotateCamera,
+  stopVideoStream,
+  videoStreamCat,
+  videoStreamErrorCat,
+} from '../lib/videoStream.js';
+import { isIOS } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { md5Hash } from '../shared/react/md5Hash.js';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
@@ -81,12 +89,12 @@ const Video = styled.video`
 export const RECORDING_DURATION = 15600;
 
 export const TakeVideo = React.memo(({ onSelect }) => {
+  const videoStream = useCat(videoStreamCat);
+  const videoStreamError = useCat(videoStreamErrorCat);
+
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [error, setError] = useState(null);
 
-  const facingModeRef = useRef(isMobile() ? 'environment' : 'user');
-  const streamRef = useRef(null);
   const videoRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const recordedChunksRef = useRef([]);
@@ -94,25 +102,9 @@ export const TakeVideo = React.memo(({ onSelect }) => {
   const startTimeRef = useRef(null);
   const elapsedTimeRef = useRef(0);
   const progressElementRef = useRef(null);
-  const isDestroyedRef = useRef(false);
 
-  const handleSwitchCamera = useCallback(async () => {
-    const newMode = facingModeRef.current === 'user' ? 'environment' : 'user';
-    facingModeRef.current = newMode;
-
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    videoRef.current.srcObject = null;
-    videoRef.current.load();
-    const { data: stream, error: requestError } = await requestStream(newMode);
-    if (stream) {
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } else {
-      setError(requestError);
-    }
+  const handleSwitchCamera = useCallback(() => {
+    rotateCamera();
   }, []);
 
   const clearTimers = useCallback(() => {
@@ -161,49 +153,32 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       stopMediaRecorder();
     }
 
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    videoRef.current.srcObject = null;
-    videoRef.current.load();
-    const { data } = await requestStream(facingModeRef.current);
+    const mediaRecorder = new MediaRecorder(videoStream, {
+      mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
+      videoBitsPerSecond: 1000000,
+    });
+    mediaRecorderRef.current = mediaRecorder;
 
-    if (data) {
-      streamRef.current = data;
-      if (videoRef.current) {
-        videoRef.current.srcObject = data;
+    mediaRecorder.ondataavailable = event => {
+      if (event.data.size > 0) {
+        recordedChunksRef.current.push(event.data);
       }
-
-      const mediaRecorder = new MediaRecorder(data, {
-        mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
-        videoBitsPerSecond: 1000000,
-      });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = event => {
-        if (event.data.size > 0) {
-          recordedChunksRef.current.push(event.data);
-        }
-      };
-      mediaRecorder.start(100);
-    }
-  }, [stopMediaRecorder]);
+    };
+    mediaRecorder.start(100);
+  }, [stopMediaRecorder, videoStream]);
 
   const handleStartRecording = useCallback(async () => {
-    try {
-      recordedChunksRef.current = [];
-      createMediaRecorder();
+    recordedChunksRef.current = [];
+    createMediaRecorder();
 
-      setIsRecording(true);
-      setIsPaused(false);
+    setIsRecording(true);
+    setIsPaused(false);
 
-      startTimeRef.current = Date.now();
-      elapsedTimeRef.current = 0;
-      progressElementRef.current.start();
+    startTimeRef.current = Date.now();
+    elapsedTimeRef.current = 0;
+    progressElementRef.current.start();
 
-      handleSetupTimer();
-    } catch (e) {
-      setError(e);
-    }
+    handleSetupTimer();
   }, [createMediaRecorder, handleSetupTimer]);
 
   const handlePauseRecording = useCallback(() => {
@@ -226,65 +201,16 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     }
   }, [handleSetupTimer, isPaused]);
 
-  const handleWindowFocus = useCallback(async () => {
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    videoRef.current.srcObject = null;
-    videoRef.current.load();
-    const { data: stream, error: requestError } = await requestStream(facingModeRef.current);
-    if (stream) {
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    }
-    if (requestError) {
-      setError(requestError);
-    }
-  }, []);
-
-  const handleWindowBlur = useCallback(() => {
-    stopStream(streamRef.current);
-    streamRef.current = null;
-
-    stopMediaRecorder();
-
-    setIsRecording(false);
-    setIsPaused(false);
-    clearTimers();
-
-    recordedChunksRef.current = [];
-    elapsedTimeRef.current = 0;
-    progressElementRef.current.stop();
-  }, [clearTimers, stopMediaRecorder]);
-
   useEffect(() => {
-    isDestroyedRef.current = false;
-
-    stopStream(streamRef.current);
-    streamRef.current = null;
-    videoRef.current.srcObject = null;
-    videoRef.current.load();
-    requestStream(facingModeRef.current).then(({ data, error }) => {
-      if (data) {
-        if (isDestroyedRef.current) {
-          stopStream(data);
-          return;
-        }
-        streamRef.current = data;
-        if (videoRef.current) {
-          videoRef.current.srcObject = data;
-        }
-      }
-      if (error) {
-        setError(error);
-      }
-    });
+    isUsingVideoStreamCat.set(true);
+    hasAudioCat.set(true);
+    requestVideoStream();
 
     return () => {
+      stopVideoStream();
+      isUsingVideoStreamCat.set(false);
+
       recordedChunksRef.current = [];
-      stopStream(streamRef.current);
-      streamRef.current = null;
       if (timerIdRef.current) {
         clearTimeout(timerIdRef.current);
         timerIdRef.current = null;
@@ -294,18 +220,34 @@ export const TakeVideo = React.memo(({ onSelect }) => {
         mediaRecorderRef.current.ondataavailable = null;
         mediaRecorderRef.current = null;
       }
-      isDestroyedRef.current = true;
     };
   }, []);
 
-  // eslint-disable-next-line react-compiler/react-compiler
-  useWindowFocus(handleWindowFocus);
-  // eslint-disable-next-line react-compiler/react-compiler
-  useWindowBlur(handleWindowBlur);
+  useEffect(() => {
+    if (videoRef.current) {
+      if (videoStream) {
+        videoRef.current.srcObject = videoStream;
+      } else {
+        videoRef.current.srcObject = null;
+        videoRef.current.load();
+
+        stopMediaRecorder();
+
+        setIsRecording(false);
+        setIsPaused(false);
+        clearTimers();
+
+        recordedChunksRef.current = [];
+        elapsedTimeRef.current = 0;
+        progressElementRef.current.stop();
+      }
+    }
+    // eslint-disable-next-line react-compiler/react-compiler
+  }, [clearTimers, stopMediaRecorder, videoStream]);
 
   const size = getCameraSize();
 
-  const errorElement = useMemo(() => renderError(error, size), [error, size]);
+  const errorElement = useMemo(() => renderError(videoStreamError, size), [size, videoStreamError]);
 
   return (
     <VideoWrapper>
@@ -319,7 +261,11 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       <Flex justify="center" align="center" py="2" gap="2">
         {!isRecording && (
           <>
-            <IconButtonWithText onClick={handleStartRecording} text="Record" disabled={!!error}>
+            <IconButtonWithText
+              onClick={handleStartRecording}
+              text="Record"
+              disabled={!!videoStreamError}
+            >
               <RiPlayLine />
             </IconButtonWithText>
 
@@ -330,19 +276,33 @@ export const TakeVideo = React.memo(({ onSelect }) => {
         )}
 
         {isRecording && !isPaused && (
-          <IconButtonWithText onClick={handlePauseRecording} text="Pause" disabled={!!error}>
+          <IconButtonWithText
+            onClick={handlePauseRecording}
+            text="Pause"
+            disabled={!!videoStreamError}
+            variant="soft"
+          >
             <RiPauseLine />
           </IconButtonWithText>
         )}
 
         {isRecording && isPaused && (
-          <IconButtonWithText onClick={handleResumeRecording} text="Resume" disabled={!!error}>
+          <IconButtonWithText
+            onClick={handleResumeRecording}
+            text="Resume"
+            disabled={!!videoStreamError}
+            variant="soft"
+          >
             <RiRestartLine />
           </IconButtonWithText>
         )}
 
         {isRecording && (
-          <IconButtonWithText onClick={handleStopRecording} text="Finish" disabled={!!error}>
+          <IconButtonWithText
+            onClick={handleStopRecording}
+            text="Finish"
+            disabled={!!videoStreamError}
+          >
             <RiStopLine />
           </IconButtonWithText>
         )}
@@ -350,31 +310,3 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     </VideoWrapper>
   );
 });
-
-async function requestStream(mode) {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 720 },
-        height: { ideal: 720 },
-        frameRate: 30,
-        facingMode: { ideal: mode },
-      },
-      audio: true,
-    });
-
-    return { data: stream, error: null };
-  } catch (error) {
-    console.log(error);
-    return { data: null, error };
-  }
-}
-
-export function stopStream(stream) {
-  if (stream) {
-    stream.getTracks().forEach(track => {
-      track.stop();
-      stream.removeTrack(track);
-    });
-  }
-}
