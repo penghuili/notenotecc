@@ -91,7 +91,7 @@ async function forceFetchNoteEffect(noteId) {
     data &&
     (stateNote?.sortKey !== noteId || isNewer(data.updatedAt, noteCat.get()?.updatedAt))
   ) {
-    updateNoteStates(data, 'update');
+    updateNoteStates(data, 'update', true);
   }
 
   isLoadingNoteCat.set(false);
@@ -126,7 +126,7 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
-    updateNoteStates(data, 'update');
+    updateNoteStates(data, 'update', true);
     fetchSettingsEffect();
   }
 
@@ -147,7 +147,7 @@ export async function updateNoteEffect(noteId, { encryptedPassword, note, albumI
   });
 
   if (data) {
-    updateNoteStates(data, 'update');
+    updateNoteStates(data, 'update', true);
   }
 
   isUpdatingNoteCat.set(false);
@@ -163,7 +163,7 @@ export async function deleteImageEffect(noteId, { imagePath }) {
   const { data } = await deleteImage(noteId, imagePath);
 
   if (data) {
-    updateNoteStates(data, 'update');
+    updateNoteStates(data, 'update', true);
 
     fetchSettingsEffect();
   }
@@ -181,7 +181,7 @@ export async function addImagesEffect(noteId, { encryptedPassword, images }) {
   const { data } = await addImages(noteId, { encryptedPassword, images });
 
   if (data) {
-    updateNoteStates(data, 'update');
+    updateNoteStates(data, 'update', true);
 
     fetchSettingsEffect();
   }
@@ -199,7 +199,7 @@ export async function deleteNoteEffect(noteId) {
   const { data } = await deleteNote(noteId);
 
   if (data) {
-    updateNoteStates(data, 'delete');
+    updateNoteStates(data, 'delete', true);
 
     fetchSettingsEffect();
   }
@@ -207,13 +207,12 @@ export async function deleteNoteEffect(noteId) {
   isDeletingNoteCat.set(false);
 }
 
-export function updateNoteStates(newNote, type) {
-  const fn =
-    type === 'update'
-      ? (items, item) => items.map(i => (i.sortKey === item.sortKey ? { ...i, ...item } : i))
-      : type === 'create'
-        ? (items, item) => [item, ...items]
-        : (items, item) => items.filter(i => i.sortKey !== item.sortKey);
+export function updateNoteStates(newNote, type, isServer = false) {
+  const updateFn = (items, item) =>
+    items.map(i => (i.sortKey === item.sortKey ? { ...i, ...item, isLocal: !isServer } : i));
+  const createFn = (items, item) => [item, ...items];
+  const deleteFn = (items, item) => items.filter(i => i.sortKey !== item.sortKey);
+  const fn = type === 'update' ? updateFn : type === 'create' ? createFn : deleteFn;
 
   // home
   const currentNotes = notesCat.get();
@@ -226,8 +225,9 @@ export function updateNoteStates(newNote, type) {
 
   // single
   if (type === 'update' || type === 'create') {
-    noteCat.set(newNote);
-    LocalStorage.set(`${localStorageKeys.note}-${newNote.sortKey}`, newNote);
+    const mergedNote = { ...noteCat.get(), ...newNote, isLocal: !isServer };
+    noteCat.set(mergedNote);
+    LocalStorage.set(`${localStorageKeys.note}-${newNote.sortKey}`, mergedNote);
   } else if (type === 'delete') {
     LocalStorage.remove(`${localStorageKeys.note}-${newNote.sortKey}`);
   }
@@ -238,13 +238,13 @@ export function updateNoteStates(newNote, type) {
   if (type === 'create' && newNote.albumIds?.find(id => id === albumItems.albumId)) {
     updatedAlbumItems = {
       ...albumItems,
-      items: [newNote, ...albumItems.items],
+      items: createFn(albumItems.items || [], newNote),
     };
   } else if (albumItems?.items?.find(i => i.sortKey === newNote.sortKey)) {
     const newItems =
       type === 'update' && newNote.albumIds?.find(id => id === albumItems.albumId)
-        ? albumItems.items.map(i => (i.sortKey === newNote.sortKey ? newNote : i))
-        : albumItems.items.filter(i => i.sortKey !== newNote.sortKey);
+        ? updateFn(albumItems.items, newNote)
+        : deleteFn(albumItems.items, newNote);
 
     updatedAlbumItems = {
       ...albumItems,

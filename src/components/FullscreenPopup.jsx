@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
+import { isMobileWidth } from '../shared/react/device';
 import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth';
 
 const Wrapper = styled.div`
@@ -36,7 +37,7 @@ const Top = styled(Flex)`
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translateX(calc(-50% - 0.5rem));
+  transform: ${isMobileWidth() ? 'translateX(-50%)' : 'translateX(calc(-50% - 0.5rem))'};
   width: calc(100% - 1rem);
   max-width: calc(600px - 1rem);
   height: var(--space-8);

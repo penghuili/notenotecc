@@ -92,13 +92,15 @@ export async function deleteAlbumEffect(albumId) {
 fetchAlbumsEffect();
 eventEmitter.on(eventEmitterEvents.settingsFetched, () => fetchAlbumsEffect());
 
-export function updateAlbumsState(newAlbum, type) {
+export function updateAlbumsState(newAlbum, type, isServer) {
   const albumsInState = albumsCat.get() || [];
 
   let newItems = albumsInState;
   if (type === 'update') {
     newItems = orderByPosition(
-      newItems.map(item => (item.sortKey === newAlbum.sortKey ? newAlbum : item)),
+      newItems.map(item =>
+        item.sortKey === newAlbum.sortKey ? { ...newAlbum, isLocal: !isServer } : item
+      ),
       true
     );
   } else if (type === 'delete') {

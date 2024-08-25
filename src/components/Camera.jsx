@@ -14,6 +14,7 @@ import { fileTypes } from '../lib/constants.js';
 import { stopPropagation } from '../lib/stopPropagation.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
+import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
@@ -110,7 +111,7 @@ const CarouselWrapper = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: ${widthWithoutScrollbar}px;
   max-width: 600px;
   height: 100%;
   display: flex;
