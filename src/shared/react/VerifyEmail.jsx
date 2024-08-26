@@ -4,7 +4,7 @@ import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
-import { logo } from './initShared';
+import { appName, logo } from './initShared';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
@@ -26,7 +26,7 @@ export const VerifyEmail = React.memo(() => {
     <>
       <ItemsWrapper>
         <HorizontalCenter p="2rem 0 0" gap="2">
-          <Avatar src={logo} /> <Heading as="h2">remiind.cc</Heading>
+          <Avatar src={logo} /> <Heading as="h2">{appName}</Heading>
         </HorizontalCenter>
         <Heading>Verify your email</Heading>
       </ItemsWrapper>
