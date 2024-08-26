@@ -14,7 +14,9 @@ export const hasLocalNotesCat = createCat(false);
 
 eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
   const localNotes =
-    LocalStorage.get(localStorageKeys.notes)?.items?.filter(note => note.isLocal) || [];
+    LocalStorage.get(localStorageKeys.notes)?.items?.filter(
+      note => note.isLocal && !note.isWelcome
+    ) || [];
   const localAlbums =
     LocalStorage.get(localStorageKeys.albums)?.filter(album => album.isLocal) || [];
 
@@ -48,7 +50,7 @@ export const SaveLocalNotes = React.memo(() => {
   return (
     <PageEmpty>
       <Spinner size="3" />
-      <Text>Encrypting and saving local notes to server...</Text>
+      <Text mt="4">Encrypting and saving local notes to server...</Text>
     </PageEmpty>
   );
 });

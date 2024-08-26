@@ -13,7 +13,7 @@ import { ImageActions } from './ImageActions.jsx';
 import { VideoPlayer } from './VideoPlayer.jsx';
 
 export const MediaItem = React.memo(
-  ({ noteId, encryptedPassword, path, hash, size, encryptedSize, type, onDelete }) => {
+  ({ noteId, encryptedPassword, url, path, hash, size, encryptedSize, type, onDelete }) => {
     const [showImage, setShowImage] = useState(false);
 
     const ref = useInView(
@@ -34,6 +34,7 @@ export const MediaItem = React.memo(
         <InnerImage
           noteId={noteId}
           encryptedPassword={encryptedPassword}
+          url={url}
           path={path}
           hash={hash}
           size={size}
@@ -61,7 +62,7 @@ const ImageElement = styled.img`
 `;
 
 const InnerImage = React.memo(
-  ({ noteId, encryptedPassword, path, hash, size, encryptedSize, type, onDelete }) => {
+  ({ noteId, encryptedPassword, url, path, hash, size, encryptedSize, type, onDelete }) => {
     const { url: remoteUrl, isLoading: isLoadingRemote } = useImageRemoteUrl(
       encryptedPassword,
       path,
@@ -85,18 +86,18 @@ const InnerImage = React.memo(
       };
     }, [isLoadingContent, isLoadingLocal, isLoadingRemote]);
 
-    const url = remoteUrl || localUrl;
+    const innerUrl = url || remoteUrl || localUrl;
 
     const imageForAction = useMemo(() => {
       return {
-        url,
+        url: innerUrl,
         hash,
         path,
         size,
         encryptedSize,
         type,
       };
-    }, [url, hash, path, size, encryptedSize, type]);
+    }, [innerUrl, hash, path, size, encryptedSize, type]);
 
     const handleContentLoaded = useCallback(() => {
       setIsLoadingContent(false);
@@ -114,11 +115,11 @@ const InnerImage = React.memo(
       <>
         {isLoadingTotal && <LoadingSkeleton width="100%" height="100%" />}
 
-        {!!url && (
+        {!!innerUrl && (
           <>
             {(type === fileTypes.webm || type === fileTypes.mp4) && (
               <VideoPlayer
-                src={url}
+                src={innerUrl}
                 type={type}
                 hidden={isLoadingTotal}
                 onLoaded={handleContentLoaded}
@@ -126,12 +127,12 @@ const InnerImage = React.memo(
             )}
 
             {type === fileTypes.weba && (
-              <AudioPlayer src={url} onLoaded={handleContentLoaded} hidden={isLoadingTotal} />
+              <AudioPlayer src={innerUrl} onLoaded={handleContentLoaded} hidden={isLoadingTotal} />
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
               <div onDoubleClick={handleOpenFullScreen}>
-                <ImageElement hidden={isLoadingTotal} src={url} onLoad={handleContentLoaded} />
+                <ImageElement hidden={isLoadingTotal} src={innerUrl} onLoad={handleContentLoaded} />
               </div>
             )}
 

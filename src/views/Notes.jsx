@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
+import { Button, DropdownMenu, IconButton } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -12,13 +12,13 @@ import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
+import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { CustomRouteLink, navigate } from '../shared/react/my-router.jsx';
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
 import {
@@ -170,9 +170,15 @@ const NoteItems = React.memo(() => {
   }
   if (!isLoading) {
     return (
-      <PageEmpty>
-        <Text align="center">Click actions below to take your first note.</Text>
-      </PageEmpty>
+      <Markdown
+        markdown={`## Welcome to notenote.cc!
+A brief list of what you get with notenote.cc:
+- **Encrypted**: All your notes and images are encrypted before they are sent to server, nobody but you can read them; You can check the [source code in github](https://github.com/penghuili/notenotecc);
+- **Instagram style**: Photos at the top, words below them, good way to record your daily life;
+- **Unlimited**: You can take unlimited notes without photos \`for free\`; With a small subscription ($1.99/Month), you can take unlimited photos and short videos;
+- **Fast**: I have invested a lot of time on making the note taking fast.
+Click the actions below to get started!`}
+      />
     );
   }
   return null;

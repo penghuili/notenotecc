@@ -1,14 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { useCat } from 'usecat';
 
 import { formatDate } from '../shared/js/date';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
-import { useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
+import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
 
 export const ProRequired = React.memo(({ children }) => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
+  const isLoggedIn = useCat(isLoggedInCat);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const isPro = useMemo(() => {
@@ -27,7 +29,7 @@ export const ProRequired = React.memo(({ children }) => {
     <>
       <Wrapper>
         {children}
-        {!isPro && <Overlay onClick={handleShowConfirm} />}
+        {!isPro && isLoggedIn && <Overlay onClick={handleShowConfirm} />}
       </Wrapper>
 
       <Confirm

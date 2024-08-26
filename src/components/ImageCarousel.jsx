@@ -222,6 +222,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
+              url={images[images.length - 1].url}
               path={images[images.length - 1].path}
               hash={images[images.length - 1].hash}
               size={images[images.length - 1].size}
@@ -246,6 +247,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
+              url={image.url}
               path={image.path}
               hash={image.hash}
               size={image.size}
@@ -269,6 +271,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
             <MediaItem
               noteId={noteId}
               encryptedPassword={encryptedPassword}
+              url={images[0].url}
               path={images[0].path}
               hash={images[0].hash}
               size={images[0].size}

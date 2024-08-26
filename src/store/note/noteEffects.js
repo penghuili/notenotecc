@@ -4,6 +4,7 @@ import { LocalStorage } from '../../shared/react/LocalStorage';
 import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
+import { welcomeNotes } from '../welcome';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -26,6 +27,17 @@ import {
   fetchNotes,
   updateNote,
 } from './noteNetwork';
+
+if (!isLoggedInCat.get()) {
+  const cachedNotes = LocalStorage.get(localStorageKeys.notes);
+  if (!cachedNotes?.items) {
+    LocalStorage.set(localStorageKeys.notes, {
+      items: welcomeNotes,
+      startKey: null,
+      hasMore: false,
+    });
+  }
+}
 
 export function fetchHomeNotesEffect() {
   if (!notesCat.get()?.items?.length) {
