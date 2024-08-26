@@ -26,7 +26,7 @@ export const AI = React.memo(() => {
 });
 
 const Header = React.memo(() => {
-  return <PageHeader title="AI" fixed hasBack />;
+  return <PageHeader title="AI" hasBack />;
 });
 
 const Form = React.memo(() => {

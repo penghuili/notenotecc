@@ -67,29 +67,31 @@ const Prices = React.memo(() => {
             { text: 'Unlimited short videos', bold: true },
           ]}
           accent
-        />
+        >
+          {(!expiresAt || expiresAt < formatDate(new Date())) && (
+            <Box mt="4">
+              <a href={import.meta.env.VITE_MONTHLY_LINK} target="_blank" rel="noreferrer">
+                <Button variant="solid" color="yellow">
+                  Upgrade to Pro
+                </Button>
+              </a>
+            </Box>
+          )}
+
+          {!expiresAt && !freeTrialUntil && (
+            <Box mt="4">
+              <Button variant="solid" color="green" onClick={handleTry} disabled={isTrying}>
+                Try Pro 14 days for free
+              </Button>
+            </Box>
+          )}
+        </FeatureItem>
       </Flex>
-
-      {(!expiresAt || expiresAt < formatDate(new Date())) && (
-        <Box mt="4">
-          <a href={import.meta.env.VITE_MONTHLY_LINK} target="_blank" rel="noreferrer">
-            <Button variant="solid">Upgrade to Pro</Button>
-          </a>
-        </Box>
-      )}
-
-      {!expiresAt && !freeTrialUntil && (
-        <Box mt="4">
-          <Button variant="soft" onClick={handleTry} disabled={isTrying}>
-            Try Pro 14 days for free
-          </Button>
-        </Box>
-      )}
     </>
   );
 });
 
-const FeatureItem = React.memo(({ title, price, benifits, accent }) => {
+const FeatureItem = React.memo(({ title, price, benifits, accent, children }) => {
   return (
     <Flex
       direction="column"
@@ -119,6 +121,7 @@ const FeatureItem = React.memo(({ title, price, benifits, accent }) => {
           </Flex>
         ))}
       </Flex>
+      {children}
     </Flex>
   );
 });

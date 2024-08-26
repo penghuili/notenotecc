@@ -54,7 +54,7 @@ export const Account = React.memo(() => {
 const Header = React.memo(() => {
   const isLoadingAccount = useCat(isLoadingAccountCat);
 
-  return <PageHeader title="Account" isLoading={isLoadingAccount} fixed hasBack />;
+  return <PageHeader title="Account" isLoading={isLoadingAccount} hasBack />;
 });
 
 const AccountInfo = React.memo(() => {

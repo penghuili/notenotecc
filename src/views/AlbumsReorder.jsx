@@ -28,7 +28,7 @@ export const AlbumsReorder = React.memo(() => {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);
 
-  return <PageHeader title="Reorder tags" isLoading={isLoading} fixed hasBack />;
+  return <PageHeader title="Reorder tags" isLoading={isLoading} hasBack />;
 });
 
 const ReorderAlbums = React.memo(() => {

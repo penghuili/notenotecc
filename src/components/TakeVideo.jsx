@@ -117,7 +117,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
       progressElementRef.current.stop();
 
-      console.log('Stop recording', recordedChunksRef.current.length);
       const blob = new Blob(recordedChunksRef.current, { type: videoType });
       const hash = await md5Hash(blob);
       await idbStorage.setItem(hash, blob);

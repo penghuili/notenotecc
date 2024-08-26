@@ -63,7 +63,7 @@ export const OnThisDay = React.memo(({ queryParams: { tab } }) => {
 const Header = React.memo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
-  return <PageHeader title="On this day" isLoading={isLoading} fixed hasBack />;
+  return <PageHeader title="On this day" isLoading={isLoading} hasBack />;
 });
 
 const HistoryTabs = React.memo(() => {

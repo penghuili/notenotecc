@@ -13,7 +13,7 @@ export async function freeTrialEffect() {
   const { data } = await freeTrial();
   if (data) {
     settingsCat.set(data);
-    setToastEffect('Now you have full access for 30 days! Enjoy!');
+    setToastEffect('Now you have full access for 14 days! Enjoy!');
   }
 
   isFreeTryingCat.set(false);
