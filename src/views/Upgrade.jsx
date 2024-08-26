@@ -81,7 +81,7 @@ const Prices = React.memo(() => {
       {!expiresAt && !freeTrialUntil && (
         <Box mt="4">
           <Button variant="soft" onClick={handleTry} disabled={isTrying}>
-            Try Pro 30 days for free
+            Try Pro 14 days for free
           </Button>
         </Box>
       )}
