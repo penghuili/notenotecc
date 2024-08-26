@@ -1,6 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from '@radix-ui/themes';
 import { RiCheckLine } from '@remixicon/react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -38,6 +38,20 @@ const Prices = React.memo(() => {
     freeTrialEffect();
   }, []);
 
+  const manageElement = useMemo(() => {
+    if (expiresAt && expiresAt >= formatDate(new Date())) {
+      return (
+        <Flex mt="4">
+          <a href={import.meta.env.VITE_MANAGE_SUBSCRIPTION} target="_blank" rel="noreferrer">
+            <Button variant="solid">Manage your subscription</Button>
+          </a>
+        </Flex>
+      );
+    }
+
+    return null;
+  }, [expiresAt]);
+
   return (
     <>
       <Heading as="h2" size="4">
@@ -45,6 +59,8 @@ const Prices = React.memo(() => {
       </Heading>
 
       <PaymentStatus />
+
+      {manageElement}
 
       <Flex mt="6" mb="6" gap="2" direction={isMobileWidth() ? 'column' : 'row'}>
         <FeatureItem
