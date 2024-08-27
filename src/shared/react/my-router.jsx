@@ -65,6 +65,7 @@ export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
     renderPage = () => {
       setPage(getPageComponent(routes));
     };
+    renderPage();
   }, [routes]);
 
   useEffect(() => {
