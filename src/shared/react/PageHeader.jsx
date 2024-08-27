@@ -4,7 +4,6 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
 import { widthWithoutScrollbar } from './getScrollbarWidth.js';
-import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { logo, showNewVersion } from './initShared';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { UpgradeButton } from './PaymentStatus.jsx';
@@ -51,7 +50,7 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
     <>
       <Wrapper justify="center" align="center">
         <Content direction="row" justify="between">
-          <HorizontalCenter gap="2">
+          <Flex align="center" gap="2">
             {iconElement}
 
             <Heading size="4" as="h1">
@@ -59,13 +58,13 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
             </Heading>
 
             {!!isLoading && <Spinner />}
-          </HorizontalCenter>
+          </Flex>
 
-          <HorizontalCenter gap="1">
+          <Flex align="center" gap="1">
             <ScrollToTop />
             <UpgradeButton />
             {right}
-          </HorizontalCenter>
+          </Flex>
         </Content>
       </Wrapper>
 

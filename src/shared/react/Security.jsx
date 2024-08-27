@@ -3,12 +3,10 @@ import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@r
 import React from 'react';
 import { useCat } from 'usecat';
 
-import { themeCssColor } from './AppWrapper.jsx';
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
-import { HorizontalCenter } from './HorizontalCenter.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
-import { RouteLink } from './my-router.jsx';
+import { CustomRouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
@@ -26,20 +24,23 @@ export const Security = React.memo(() => {
       />
 
       <ItemsWrapper align="start">
-        <HorizontalCenter gap="1">
-          <RiLockStarLine color={themeCssColor} />
-          <RouteLink to="/security/2fa">2-Factor Authentication</RouteLink>
-        </HorizontalCenter>
+        <CustomRouteLink to="/security/2fa">
+          <Button variant="ghost">
+            <RiLockStarLine /> 2-Factor Authentication
+          </Button>
+        </CustomRouteLink>
 
-        <HorizontalCenter gap="1">
-          <RiMailLine color={themeCssColor} />
-          <RouteLink to="/security/email">Change email</RouteLink>
-        </HorizontalCenter>
+        <CustomRouteLink to="/security/email">
+          <Button variant="ghost">
+            <RiMailLine /> Change email
+          </Button>
+        </CustomRouteLink>
 
-        <HorizontalCenter gap="1">
-          <RiLockPasswordLine color={themeCssColor} />
-          <RouteLink to="/security/password">Change password</RouteLink>
-        </HorizontalCenter>
+        <CustomRouteLink to="/security/password">
+          <Button variant="ghost">
+            <RiLockPasswordLine /> Change password
+          </Button>
+        </CustomRouteLink>
 
         <LogoutLink />
 
