@@ -23,7 +23,7 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
       replaceTo(`/notes/details?noteId=${note.sortKey}&add=1`);
       if (cameraType) {
         const query = objectToQueryString({ noteId: note.sortKey, cameraType, add: 1 });
-        navigate(`/notes/details/?noteId=${note.sortKey}&${query}`);
+        navigate(`/notes/details?${query}`);
       }
     }
   }, [cameraType]);
