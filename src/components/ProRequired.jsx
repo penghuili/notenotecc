@@ -4,6 +4,7 @@ import { useCat } from 'usecat';
 
 import { formatDate } from '../shared/js/date';
 import { Confirm } from '../shared/react/Confirm.jsx';
+import { isTesting } from '../shared/react/isTesting.js';
 import { navigate } from '../shared/react/my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
 
@@ -11,7 +12,7 @@ export const ProRequired = React.memo(({ children }) => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
   const isLoggedIn = useCat(isLoggedInCat);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const isPro = useMemo(() => {
     const date = expiresAt || freeTrialUntil;
@@ -19,7 +20,7 @@ export const ProRequired = React.memo(({ children }) => {
   }, [expiresAt, freeTrialUntil]);
 
   const handleShowConfirm = useCallback(() => {
-    setShowDeleteConfirm(true);
+    setShowConfirm(true);
   }, []);
   const handleGoToUpgrade = useCallback(() => {
     navigate('/upgrade');
@@ -29,12 +30,12 @@ export const ProRequired = React.memo(({ children }) => {
     <>
       <Wrapper>
         {children}
-        {!isPro && isLoggedIn && <Overlay onClick={handleShowConfirm} />}
+        {!isTesting() && !isPro && isLoggedIn && <Overlay onClick={handleShowConfirm} />}
       </Wrapper>
 
       <Confirm
-        open={showDeleteConfirm}
-        onOpenChange={setShowDeleteConfirm}
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
         message="This is a Pro feature, please pay a tiny fee to get full access, or try 14 days for free."
         onConfirm={handleGoToUpgrade}
         confirmButtonLabel="Check Pro details"

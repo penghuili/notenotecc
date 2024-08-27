@@ -17,6 +17,7 @@ import { formatDateTime } from '../shared/js/date';
 import { AppVersion } from '../shared/react/AppVersion.jsx';
 import { copyToClipboard } from '../shared/react/copyToClipboard';
 import { getFileSizeString } from '../shared/react/file';
+import { isTesting } from '../shared/react/isTesting.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared/react/LogoutLink.jsx';
 import { CustomRouteLink } from '../shared/react/my-router.jsx';
@@ -37,11 +38,13 @@ export const Account = React.memo(() => {
       <AccountInfo />
 
       <ItemsWrapper align="start">
-        <CustomRouteLink to="/upgrade">
-          <Button variant="ghost">
-            <RiMoneyDollarCircleLine /> Subscription
-          </Button>
-        </CustomRouteLink>
+        {!isTesting() && (
+          <CustomRouteLink to="/upgrade">
+            <Button variant="ghost">
+              <RiMoneyDollarCircleLine /> Subscription
+            </Button>
+          </CustomRouteLink>
+        )}
 
         <CustomRouteLink to="/security">
           <Button variant="ghost">

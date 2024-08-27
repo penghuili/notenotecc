@@ -14,9 +14,9 @@ import {
   videoStreamCat,
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
+import { randomHash } from '../shared/js/randomHash.js';
 import { isIOS, isMobile } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
-import { md5Hash } from '../shared/react/md5Hash.js';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -118,7 +118,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       progressElementRef.current.stop();
 
       const blob = new Blob(recordedChunksRef.current, { type: videoType });
-      const hash = await md5Hash(blob);
+      const hash = randomHash();
       await idbStorage.setItem(hash, blob);
       onSelect({ hash, size: blob.size, type: videoType });
 

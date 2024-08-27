@@ -41,7 +41,6 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }
       await fetchNoteEffect(noteId);
 
       const note = noteCat.get();
-      console.log('note', note);
       if (note) {
         descriptionCat.set(note.note || '');
         albumSelectedKeysCat.set(note.albumIds || []);

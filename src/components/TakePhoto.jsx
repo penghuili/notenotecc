@@ -14,9 +14,9 @@ import {
   videoStreamCat,
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
+import { randomHash } from '../shared/js/randomHash.js';
 import { canvasToBlob } from '../shared/react/canvasToBlob';
 import { idbStorage } from '../shared/react/indexDB.js';
-import { md5Hash } from '../shared/react/md5Hash';
 import { getCameraSize, renderError, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`
@@ -43,7 +43,7 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     context.drawImage(videoRef.current, 0, 0, width, height);
 
     const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
-    const hash = await md5Hash(blob);
+    const hash = randomHash();
     await idbStorage.setItem(hash, blob);
 
     onSelect({ hash, size: blob.size, type: imageType });

@@ -5,12 +5,17 @@ import { useCat } from 'usecat';
 
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
+import { isTesting } from './isTesting.js';
 import { navigate } from './my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
 export const PaymentStatus = React.memo(() => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
+
+  if (isTesting()) {
+    return null;
+  }
 
   if (!expiresAt && !freeTrialUntil) {
     return <Text>Free account</Text>;
@@ -65,7 +70,7 @@ export const UpgradeButton = React.memo(() => {
     navigate('/upgrade');
   }, []);
 
-  if (!isLoggedIn || isUpgradePage) {
+  if (isTesting() || !isLoggedIn || isUpgradePage) {
     return null;
   }
 

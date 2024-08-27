@@ -17,7 +17,6 @@
     "react-dom": "19.0.0-rc-b57d2823-20240822",
     "react-error-boundary": "4.0.13",
     "react-movable": "3.3.1",
-    "spark-md5": "3.0.2",
     "styled-components": "5.3.11",
     "usecat": "1.1.3"
   },

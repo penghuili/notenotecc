@@ -66,11 +66,9 @@ export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
       setPage(getPageComponent(routes));
     };
     renderPage();
-    console.log('first render');
   }, [routes]);
 
   useEffect(() => {
-    console.log(page);
     if (!page) {
       navigate(defaultRoute);
     }
@@ -112,7 +110,7 @@ function isUrlChanged(to) {
 
 function getPageComponent(routes) {
   const { pathname, search } = window.location;
-  console.log(pathname, routes, routes[pathname]);
+
   if (routes[pathname]) {
     const Component = routes[pathname];
     const queryParams = parseSearch(search);
