@@ -51,7 +51,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const canvas = cropperRef.current.crop(900);
     const blob = await canvasToBlob(canvas, imageType, 0.8);
     const hash = randomHash();
-    await idbStorage.setItem(hash, blob);
+    idbStorage.setItem(hash, blob);
     onSelect({ hash, size: blob.size, type: imageType });
 
     handleNextPhoto();
@@ -62,7 +62,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
     const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
     const hash = randomHash();
-    await idbStorage.setItem(hash, blob);
+    idbStorage.setItem(hash, blob);
     onSelect({ hash, type: imageType });
 
     handleNextPhoto();

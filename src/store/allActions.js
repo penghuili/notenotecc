@@ -15,6 +15,8 @@ import {
   createNoteEffect,
   deleteImageEffect,
   deleteNoteEffect,
+  fetchHomeNotesEffect,
+  forceFetchHomeNotesEffect,
   updateNoteEffect,
   updateNoteStates,
 } from './note/noteEffects';
@@ -25,6 +27,7 @@ export const actionTypes = {
   ADD_IMAGES: 'ADD_IMAGES',
   DELETE_IMAGE: 'DELETE_IMAGE',
   DELETE_NOTE: 'DELETE_NOTE',
+  FETCH_NOTES: 'FETCH_NOTES',
   CREATE_ALBUM: 'CREATE_ALBUM',
   UPDATE_ALBUM: 'UPDATE_ALBUM',
   DELETE_ALBUM: 'DELETE_ALBUM',
@@ -100,6 +103,14 @@ const actionHandlers = {
     },
     async: async ({ sortKey }) => {
       await deleteNoteEffect(sortKey);
+    },
+  },
+  [actionTypes.FETCH_NOTES]: {
+    sync: () => {
+      fetchHomeNotesEffect();
+    },
+    async: async () => {
+      await forceFetchHomeNotesEffect();
     },
   },
   [actionTypes.CREATE_ALBUM]: {

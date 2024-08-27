@@ -1,3 +1,5 @@
+import { isTesting } from '../shared/react/isTesting';
+
 const webpType = 'image/webp';
 
 export const welcomeNotes = [
@@ -10,7 +12,7 @@ export const welcomeNotes = [
 A brief list of what you get with notenote.cc:
 - **Encrypted**: All your notes and images are encrypted before they are sent to server, nobody but you can read them; You can check the [source code in github](https://github.com/penghuili/notenotecc);
 - **Instagram style**: Photos at the top, words below them, like this one you are reading;
-- **Unlimited**: You can take unlimited notes without photos \`for free\`; With a small subscription ($1.99/Month), you can take unlimited photos and short videos;
+- **Unlimited**: ${isTesting() ? 'You can take unlimited notes;' : 'You can take unlimited notes without photos `for free`; With a small subscription ($1.99/Month), you can take unlimited photos and short videos;'}
 - **Fast**: I have invested a lot of time on making the note taking fast.
 Is notenote.cc for you? Try it!`,
     images: [],
@@ -54,7 +56,7 @@ So I created notenote.cc
     isWelcome: true,
     note: `## Why you shouldn't use notenote.cc?
 - **I need a native app**. notenote.cc is a web app, if you need something as smooth as native apps, this may not for you;
-- **I need high quality photos**. notenote.cc doesn't store orginal photos, it processes your photos before encrypting and sending them to server, to keep the file size small and good enough quality. So I can offer such a low price ($1.99/Month) for **unlimited** photos. Are you ok with the photos above?
+- **I need high quality photos**. notenote.cc doesn't store orginal photos, it processes your photos before encrypting and sending them to server, to keep the file size small and good enough quality. ${isTesting() ? '' : 'So I can offer such a low price ($1.99/Month) for **unlimited** photos. '}Are you ok with the photos above?
 - **I need high quality and long videos**. You can take short videos(15s) with notenote.cc, and you can't pick videos from your device. Same reason as above;
 If you don't need these, try notenote.cc, and it's for you!`,
     images: [

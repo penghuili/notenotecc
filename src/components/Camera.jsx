@@ -121,7 +121,6 @@ const ImagesPreview = React.memo(({ images, onDelete }) => {
   const handleDelete = useCallback(
     hash => {
       onDelete(hash);
-      console.log(hash);
     },
     [onDelete]
   );
@@ -177,7 +176,7 @@ const PreviewItem = React.memo(({ image, onClick }) => {
         <>
           <PreviewVideo src={url} controls={false} />
           <Flex justify="center" width="100%" position="absolute" top="30px">
-            <IconButton size="1">
+            <IconButton size="1" variant="soft">
               <RiPlayLine />
             </IconButton>
           </Flex>

@@ -46,8 +46,6 @@ export function fetchHomeNotesEffect() {
       notesCat.set(cachedNotes);
     }
   }
-
-  forceFetchHomeNotesEffect(null);
 }
 
 export async function forceFetchHomeNotesEffect(startKey) {
@@ -269,12 +267,14 @@ export function updateNoteStates(newNote, type, isServer = false) {
   }
 
   // on this day
-  const currentOnThisDayNotes = onThisDayNotesCat.get();
-  const date = formatDate(newNote.createdAt);
-  if (currentOnThisDayNotes?.[date]) {
-    onThisDayNotesCat.set({
-      ...currentOnThisDayNotes,
-      [date]: fn(currentOnThisDayNotes[date] || [], newNote),
-    });
+  if (newNote.createdAt) {
+    const currentOnThisDayNotes = onThisDayNotesCat.get();
+    const date = formatDate(newNote.createdAt);
+    if (currentOnThisDayNotes?.[date]) {
+      onThisDayNotesCat.set({
+        ...currentOnThisDayNotes,
+        [date]: fn(currentOnThisDayNotes[date] || [], newNote),
+      });
+    }
   }
 }

@@ -70,11 +70,6 @@ async function handleWindowFocus() {
     await HTTP.refreshTokenIfNecessary(2 * 60 * 1000);
     // eslint-disable-next-line no-empty
   } catch (e) {}
-
-  const isLogged = isLoggedInCat.get();
-  if (isLogged) {
-    await fetchSettingsEffect();
-  }
 }
 
 export function initEffect() {

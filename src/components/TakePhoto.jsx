@@ -42,13 +42,13 @@ export const TakePhoto = React.memo(({ onSelect }) => {
     const context = tempCanvas.getContext('2d');
     context.drawImage(videoRef.current, 0, 0, width, height);
 
-    const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
-    const hash = randomHash();
-    await idbStorage.setItem(hash, blob);
-
-    onSelect({ hash, size: blob.size, type: imageType });
-
-    setIsTaking(false);
+    requestAnimationFrame(async () => {
+      const blob = await canvasToBlob(tempCanvas, imageType, 0.8);
+      const hash = randomHash();
+      await idbStorage.setItem(hash, blob);
+      onSelect({ hash, size: blob.size, type: imageType });
+      setIsTaking(false);
+    });
   }, [onSelect]);
 
   useEffect(() => {

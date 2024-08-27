@@ -90,7 +90,7 @@ export async function deleteAlbumEffect(albumId) {
 }
 
 fetchAlbumsEffect();
-eventEmitter.on(eventEmitterEvents.settingsFetched, () => fetchAlbumsEffect());
+eventEmitter.on(eventEmitterEvents.loggedIn, () => fetchAlbumsEffect());
 
 export function updateAlbumsState(newAlbum, type, isServer) {
   const albumsInState = albumsCat.get() || [];

@@ -141,12 +141,14 @@ const AccountInfo = React.memo(() => {
           </DataList.Value>
         </DataList.Item>
 
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Valid until</DataList.Label>
-          <DataList.Value>
-            <PaymentStatus />
-          </DataList.Value>
-        </DataList.Item>
+        {!isTesting() && (
+          <DataList.Item>
+            <DataList.Label minWidth="88px">Valid until</DataList.Label>
+            <DataList.Value>
+              <PaymentStatus />
+            </DataList.Value>
+          </DataList.Item>
+        )}
 
         <DataList.Item>
           <DataList.Label minWidth="88px">Notes count</DataList.Label>

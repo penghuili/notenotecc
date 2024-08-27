@@ -134,6 +134,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
         activeElements={activeElements}
         onChange={handleChange}
       />
+      <HelperText />
     </Wrapper>
   );
 });
@@ -372,6 +373,7 @@ const helperText = `&#42;&#42;bold&#42;&#42;: becomes **bold**;
 &#95;&#95;italic&#95;&#95;: becomes __italic__ (2 underscores);
 &#126;&#126;strikethrough&#126;&#126;: becomes ~~strikethrough~~;
 &#61;&#61;highlight&#61;&#61;: becomes ==highlight==;
+&#96;code&#96;: becomes \`code\`;
 &#91;notenote.cc&#93;(https://app.notenote.cc/): becomes [notenote.cc](https://app.notenote.cc/);
 Start with # you get a header (supports up to 6 levels);
 Start with > you get a blockquote;
@@ -398,9 +400,7 @@ export const HelperText = React.memo(() => {
         )}
       </HelperTitleWrapper>
       <AnimatedBox visible={open}>
-        <HelperContentWrapper>
-          <Markdown markdown={helperText} />
-        </HelperContentWrapper>
+        <Markdown markdown={helperText} />
       </AnimatedBox>
     </>
   );
@@ -408,9 +408,4 @@ export const HelperText = React.memo(() => {
 
 const HelperTitleWrapper = styled(Flex)`
   user-select: none;
-`;
-const HelperContentWrapper = styled.div`
-  & * {
-    font-size: var(--font-size-1);
-  }
 `;

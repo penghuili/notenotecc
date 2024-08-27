@@ -78,7 +78,7 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
       </Video>
       {!isPlaying && (
         <PauseWrapper>
-          <IconButton size="4" onClick={handlePlay}>
+          <IconButton size="4" variant="outline" onClick={handlePlay}>
             <RiPlayLargeLine />
           </IconButton>
         </PauseWrapper>

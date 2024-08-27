@@ -119,7 +119,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
       const blob = new Blob(recordedChunksRef.current, { type: videoType });
       const hash = randomHash();
-      await idbStorage.setItem(hash, blob);
+      idbStorage.setItem(hash, blob);
       onSelect({ hash, size: blob.size, type: videoType });
 
       recordedChunksRef.current = [];
@@ -147,7 +147,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
       stopMediaRecorder();
     }
 
-    console.log('Starting recording', videoStream);
     const mediaRecorder = new MediaRecorder(videoStream, {
       mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
       videoBitsPerSecond: 1000000,
@@ -155,7 +154,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     mediaRecorderRef.current = mediaRecorder;
 
     mediaRecorder.ondataavailable = event => {
-      console.log('ondataavailable', event.data.size);
       if (event.data.size > 0) {
         recordedChunksRef.current.push(event.data);
       }
@@ -200,7 +198,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     if (videoRef.current) {
       if (videoStream) {
         videoRef.current.srcObject = videoStream;
-        console.log('has stream');
       } else {
         videoRef.current.srcObject = null;
         videoRef.current.load();
@@ -212,8 +209,6 @@ export const TakeVideo = React.memo(({ onSelect }) => {
 
         recordedChunksRef.current = [];
         progressElementRef.current.stop();
-
-        console.log('no stream');
       }
     }
     // eslint-disable-next-line react-compiler/react-compiler
