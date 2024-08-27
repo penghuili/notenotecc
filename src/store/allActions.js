@@ -181,14 +181,23 @@ async function processQueue() {
   isProcessing = true;
   while (actionsQueue.length > 0) {
     const { type, payload } = actionsQueue.shift();
-    await actionHandlers[type].async(payload);
-    LocalStorage.set(localStorageKeys.actions, actionsQueue);
+    await processOneAction({ type, payload });
   }
   isProcessing = false;
 }
 
-window.addEventListener('focus', loadFromLocalStorage);
 eventEmitter.on(eventEmitterEvents.loggedIn, loadFromLocalStorage);
+
+async function processOneAction({ type, payload }) {
+  if (
+    !actionsQueue.find(
+      action => action.type === type && action.payload?.sortKey === payload?.sortKey
+    )
+  ) {
+    await actionHandlers[type].async(payload);
+  }
+  LocalStorage.set(localStorageKeys.actions, actionsQueue);
+}
 
 function loadFromLocalStorage() {
   if (!isLoggedInCat.get()) {

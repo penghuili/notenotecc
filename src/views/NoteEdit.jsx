@@ -32,6 +32,7 @@ import { fetchNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
 const showCameraCat = createCat(false);
+let deletedNoteKey;
 
 export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }) => {
   const prepareData = useCallback(async () => {
@@ -54,9 +55,28 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }
 
   useScrollToTop();
 
+  useEffect(() => {
+    deletedNoteKey = null;
+
+    return () => {
+      if (!add) {
+        return;
+      }
+
+      const newNote = noteCat.get();
+      if (newNote && !descriptionCat.get() && !newNote.images?.length) {
+        dispatchAction({
+          type: actionTypes.DELETE_NOTE,
+          payload: { ...newNote, goBack: false },
+        });
+        deletedNoteKey = newNote.sortKey;
+      }
+    };
+  }, [add]);
+
   return (
     <PrepareData load={prepareData}>
-      <Header noteId={noteId} fromNewNote={!!add} />
+      <Header noteId={noteId} />
 
       <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
 
@@ -65,7 +85,7 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }
   );
 });
 
-const Header = React.memo(({ noteId, fromNewNote }) => {
+const Header = React.memo(({ noteId }) => {
   const isLoading = useCat(isLoadingNoteCat);
   const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
@@ -75,22 +95,6 @@ const Header = React.memo(({ noteId, fromNewNote }) => {
   const noteItem = useNote(noteId);
 
   const rightElement = useMemo(() => !!noteItem && <NoteActions note={noteItem} />, [noteItem]);
-
-  useEffect(() => {
-    return () => {
-      if (!fromNewNote) {
-        return;
-      }
-
-      const newNote = noteCat.get();
-      if (newNote && !newNote.note && !newNote.images?.length) {
-        dispatchAction({
-          type: actionTypes.DELETE_NOTE,
-          payload: { ...newNote, goBack: false },
-        });
-      }
-    };
-  }, [fromNewNote]);
 
   return (
     <PageHeader
@@ -145,6 +149,10 @@ const NoteView = React.memo(({ noteId, isAddingNote }) => {
 });
 
 const saveDescription = async newNote => {
+  if (deletedNoteKey && newNote?.sortKey === deletedNoteKey) {
+    return;
+  }
+
   dispatchAction({
     type: actionTypes.UPDATE_NOTE,
     payload: newNote,
