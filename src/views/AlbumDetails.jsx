@@ -18,7 +18,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
 import { NotesList } from './Notes.jsx';
 
-export const AlbumDetails = React.memo(({ pathParams: { albumId } }) => {
+export const AlbumDetails = React.memo(({ queryParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumItemsEffect(albumId, { startKey: null });
   }, [albumId]);
@@ -45,7 +45,7 @@ const Header = React.memo(({ albumId }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleEdit = useCallback(() => {
-    navigate(`/albums/${albumId}/edit`);
+    navigate(`/albums/edit?albumId=${albumId}`);
   }, [albumId]);
 
   const handleShowDelete = useCallback(() => {

@@ -1,11 +1,11 @@
 import { Button, Text } from '@radix-ui/themes';
 import { differenceInCalendarDays } from 'date-fns';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
-import { currentPathCat, navigate } from './my-router.jsx';
+import { navigate } from './my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
 export const PaymentStatus = React.memo(() => {
@@ -59,10 +59,7 @@ export const UpgradeButton = React.memo(() => {
   const freeTrialUntil = useFreeTrialsUntil();
   const isLoggedIn = useCat(isLoggedInCat);
 
-  const currentPath = useCat(currentPathCat);
-  const isUpgradePage = useMemo(() => {
-    return currentPath === `/upgrade`;
-  }, [currentPath]);
+  const isUpgradePage = window.location.pathname === '/upgrade';
 
   const handleNavigate = useCallback(() => {
     navigate('/upgrade');

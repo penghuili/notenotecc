@@ -106,5 +106,9 @@ const NotesWithoutTags = React.memo(() => {
     return null;
   }
 
-  return <RouteLink to={`/albums/album_noalbum_${account?.id}`}>Notes without tags</RouteLink>;
+  return (
+    <RouteLink to={`/albums/details?albumId=album_noalbum_${account?.id}`}>
+      Notes without tags
+    </RouteLink>
+  );
 });

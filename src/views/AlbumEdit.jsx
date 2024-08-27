@@ -12,7 +12,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 
 const titleCat = createCat('');
 
-export const AlbumEdit = React.memo(({ pathParams: { albumId } }) => {
+export const AlbumEdit = React.memo(({ queryParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumsEffect();
     const album = findAlbum(albumsCat.get(), albumId);

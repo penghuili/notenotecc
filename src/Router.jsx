@@ -41,46 +41,45 @@ export function Router() {
   );
 }
 
-const verifyEmailRoutes = [
-  { path: '/security/email', component: VerifyEmail },
-  { path: '/', component: VerifyEmail },
-];
-const commonRoutes = [
-  { path: '/notes/add', component: NoteAdd },
-  { path: '/notes/:noteId', component: NoteEdit },
+const verifyEmailRoutes = {
+  '/security/email': VerifyEmail,
+  '/': VerifyEmail,
+};
+const commonRoutes = {
+  '/notes/add': NoteAdd,
+  '/notes/details': NoteEdit,
 
-  { path: '/albums/reorder', component: AlbumsReorder },
-  { path: '/albums/:albumId/edit', component: AlbumEdit },
-  { path: '/albums/:albumId', component: AlbumDetails },
-  { path: '/albums', component: Albums },
+  '/albums/reorder': AlbumsReorder,
+  '/albums/edit': AlbumEdit,
+  '/albums/details': AlbumDetails,
+  '/albums': Albums,
 
-  { path: '/settings', component: Settings },
-  { path: '/upgrade', component: Upgrade },
-];
-const loggedInRoutes = [
+  '/settings': Settings,
+  '/upgrade': Upgrade,
+};
+const loggedInRoutes = {
   ...commonRoutes,
 
-  { path: '/account', component: Account },
-  { path: '/on-this-day', component: OnThisDay },
-  { path: '/security', component: Security },
-  { path: '/security/2fa', component: Setup2FA },
-  { path: '/security/email', component: ChangeEmail },
-  { path: '/security/password', component: ChangePassword },
+  '/account': Account,
+  '/on-this-day': OnThisDay,
+  '/security': Security,
+  '/security/2fa': Setup2FA,
+  '/security/email': ChangeEmail,
+  '/security/password': ChangePassword,
 
-  { path: '/ai', component: AI },
-
-  { path: '/', component: Notes },
-];
-const publicRoutes = [
+  '/ai': AI,
+  '/': Notes,
+};
+const publicRoutes = {
   ...commonRoutes,
 
-  { path: '/sign-up', component: SignUp },
-  { path: '/sign-in', component: SignIn },
-  { path: '/sign-in/2fa', component: Verify2FA },
-  { path: '/reset-password', component: ResetPassword },
+  '/sign-up': SignUp,
+  '/sign-in': SignIn,
+  '/sign-in/2fa': Verify2FA,
+  '/reset-password': ResetPassword,
 
-  { path: '/', component: Notes },
-];
+  '/': Notes,
+};
 
 const AllRoutes = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);

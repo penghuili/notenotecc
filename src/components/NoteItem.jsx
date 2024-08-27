@@ -21,7 +21,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
 
   const handleNavigate = useCallback(() => {
     noteCat.set(note);
-    navigate(`/notes/${note.sortKey}`);
+    navigate(`/notes/details?noteId=${note.sortKey}`);
   }, [note]);
 
   const handleDeleteImage = useCallback(
@@ -42,7 +42,11 @@ export const NoteItem = React.memo(({ note, albums }) => {
     return (
       <Flex wrap="wrap">
         {albums?.map(album => (
-          <AlbumItem key={album.sortKey} album={album} to={`/albums/${album.sortKey}`} />
+          <AlbumItem
+            key={album.sortKey}
+            album={album}
+            to={`/albums/details?albumId=${album.sortKey}`}
+          />
         ))}
       </Flex>
     );

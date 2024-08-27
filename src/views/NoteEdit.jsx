@@ -33,39 +33,37 @@ import { fetchNoteEffect } from '../store/note/noteEffects';
 const descriptionCat = createCat('');
 const showCameraCat = createCat(false);
 
-export const NoteEdit = React.memo(
-  ({ pathParams: { noteId }, queryParams: { cameraType, add } }) => {
-    const prepareData = useCallback(async () => {
-      showCameraCat.set(!!cameraType);
+export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }) => {
+  const prepareData = useCallback(async () => {
+    showCameraCat.set(!!cameraType);
 
-      if (noteId) {
-        await fetchNoteEffect(noteId);
+    if (noteId) {
+      await fetchNoteEffect(noteId);
 
-        const note = noteCat.get();
-        if (note) {
-          descriptionCat.set(note.note || '');
-          albumSelectedKeysCat.set(note.albumIds || []);
+      const note = noteCat.get();
+      if (note) {
+        descriptionCat.set(note.note || '');
+        albumSelectedKeysCat.set(note.albumIds || []);
 
-          return;
-        }
+        return;
       }
+    }
 
-      replaceTo('/notes');
-    }, [cameraType, noteId]);
+    replaceTo('/notes');
+  }, [cameraType, noteId]);
 
-    useScrollToTop();
+  useScrollToTop();
 
-    return (
-      <PrepareData load={prepareData}>
-        <Header noteId={noteId} fromNewNote={!!add} />
+  return (
+    <PrepareData load={prepareData}>
+      <Header noteId={noteId} fromNewNote={!!add} />
 
-        <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
+      <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
 
-        <AddImages noteId={noteId} cameraType={cameraType} />
-      </PrepareData>
-    );
-  }
-);
+      <AddImages noteId={noteId} cameraType={cameraType} />
+    </PrepareData>
+  );
+});
 
 const Header = React.memo(({ noteId, fromNewNote }) => {
   const isLoading = useCat(isLoadingNoteCat);
