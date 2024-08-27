@@ -1,17 +1,15 @@
 import { Button, DataList, Flex, IconButton, Text } from '@radix-ui/themes';
 import {
-  RiCodeLine,
   RiFileCopyLine,
-  RiHeartLine,
-  RiHomeLine,
   RiMoneyDollarCircleLine,
-  RiServiceLine,
+  RiSettings3Line,
   RiShieldCheckLine,
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
+import { PublicLinks } from '../components/PublicLinks.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { formatDateTime } from '../shared/js/date';
 import { AppVersion } from '../shared/react/AppVersion.jsx';
@@ -51,37 +49,15 @@ export const Account = React.memo(() => {
             <RiShieldCheckLine /> Security
           </Button>
         </CustomRouteLink>
+
+        <CustomRouteLink to="/settings">
+          <Button variant="ghost">
+            <RiSettings3Line /> Settings
+          </Button>
+        </CustomRouteLink>
       </ItemsWrapper>
 
-      <ItemsWrapper align="start">
-        <a href="https://notenote.cc" target="_blank" rel="noreferrer">
-          <Button variant="ghost">
-            <RiHomeLine />
-            Learn more
-          </Button>
-        </a>
-
-        <a href="https://notenote.cc/privacy" target="_blank" rel="noreferrer">
-          <Button variant="ghost">
-            <RiHeartLine />
-            Privacy
-          </Button>
-        </a>
-
-        <a href="https://notenote.cc/terms" target="_blank" rel="noreferrer">
-          <Button variant="ghost">
-            <RiServiceLine />
-            Terms
-          </Button>
-        </a>
-
-        <a href="https://github.com/penghuili/notenotecc" target="_blank" rel="noreferrer">
-          <Button variant="ghost">
-            <RiCodeLine />
-            Source code
-          </Button>
-        </a>
-      </ItemsWrapper>
+      <PublicLinks />
 
       <ItemsWrapper align="start">
         <LogoutLink />
