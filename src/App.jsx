@@ -14,8 +14,8 @@ import { Toast } from './shared/react/Toast.jsx';
 initShared({
   logo: '/icons2/t/icon-192.png',
   app: apps.simplestcam.name,
-  privacyUrl: 'https://remiind.cc/privacy/',
-  termsUrl: 'https://remiind.cc/terms/',
+  privacyUrl: 'https://notenote.cc/privacy/',
+  termsUrl: 'https://notenote.cc/terms/',
   showNewVersion: true,
 });
 

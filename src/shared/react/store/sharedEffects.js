@@ -130,6 +130,7 @@ export async function verifyEmailEffect(code) {
   if (data) {
     userCat.set(data);
     setToastEffect('Your email is verified!');
+    navigate('/');
   } else {
     setToastEffect('Something is wrong', toastTypes.error);
   }

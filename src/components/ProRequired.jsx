@@ -35,7 +35,7 @@ export const ProRequired = React.memo(({ children }) => {
       <Confirm
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
-        message="This is a Pro feature, please pay a tiny fee to get full access, or try 30 days for free."
+        message="This is a Pro feature, please pay a tiny fee to get full access, or try 14 days for free."
         onConfirm={handleGoToUpgrade}
         confirmButtonLabel="Check Pro details"
       />

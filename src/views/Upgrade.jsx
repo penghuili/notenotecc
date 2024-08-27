@@ -93,16 +93,16 @@ const Prices = React.memo(() => {
               </a>
             </Box>
           )}
-
-          {!expiresAt && !freeTrialUntil && (
-            <Box mt="4">
-              <Button variant="solid" color="green" onClick={handleTry} disabled={isTrying}>
-                Try Pro 14 days for free
-              </Button>
-            </Box>
-          )}
         </FeatureItem>
       </Flex>
+
+      {!expiresAt && !freeTrialUntil && (
+        <Flex justify="center" mt="6">
+          <Button variant="solid" color="green" onClick={handleTry} disabled={isTrying}>
+            Try Pro 14 days for free
+          </Button>
+        </Flex>
+      )}
     </>
   );
 });
