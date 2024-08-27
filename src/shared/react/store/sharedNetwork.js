@@ -222,7 +222,7 @@ export async function disable2FA(code) {
 
 export async function deleteAccount() {
   try {
-    await HTTP.delete(appName, `/v1/me`);
+    await HTTP.delete(appName, `/v1/user/me`);
 
     return { data: { success: true }, error: null };
   } catch (error) {
