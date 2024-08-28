@@ -6,14 +6,14 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOS } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { goBack, replaceTo } from '../shared/react/my-router.jsx';
+import { goBack, navigate, replaceTo } from '../shared/react/my-router.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat, noteCat, useNote } from '../store/note/noteCats.js';
 import { fetchNoteEffect } from '../store/note/noteEffects';
 
-export const AddImagess = React.memo(({ queryParams: { noteId, cameraType } }) => {
+export const AddImagess = React.memo(({ queryParams: { noteId, cameraType, preview } }) => {
   const prepareData = useCallback(async () => {
     if (noteId) {
       await fetchNoteEffect(noteId);
@@ -31,12 +31,12 @@ export const AddImagess = React.memo(({ queryParams: { noteId, cameraType } }) =
 
   return (
     <PrepareData load={prepareData}>
-      <AddImages noteId={noteId} cameraType={cameraType} />
+      <AddImages noteId={noteId} cameraType={cameraType} preview={preview} />
     </PrepareData>
   );
 });
 
-export const AddImages = React.memo(({ noteId, cameraType }) => {
+export const AddImages = React.memo(({ noteId, cameraType, preview }) => {
   const noteItem = useNote(noteId);
   const isAddingImages = useCat(isAddingImagesCat);
 
@@ -48,6 +48,10 @@ export const AddImages = React.memo(({ noteId, cameraType }) => {
       payload: { ...noteCat.get(), newImages },
     });
   }, []);
+
+  const handleShowPreview = useCallback(() => {
+    navigate(`/add-images?noteId=${noteId}&cameraType=${cameraType}&preview=1`);
+  }, [cameraType, noteId]);
 
   useEffect(() => {
     if (!isIOS()) {
@@ -85,6 +89,8 @@ export const AddImages = React.memo(({ noteId, cameraType }) => {
     <Camera
       type={cameraType}
       disabled={isAddingImages}
+      showPreviewCarousel={!!preview}
+      onShowPreviewCaruosel={handleShowPreview}
       onSelect={handleAddImages}
       onClose={goBack}
     />

@@ -9,59 +9,69 @@ import { stopPropagation } from '../lib/stopPropagation.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
 import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
+import { goBack } from '../shared/react/my-router.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
-export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
-  const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
-  const [images, setImages] = useState([]);
-  const imagesRef = useRef([]);
+export const Camera = React.memo(
+  ({ type, disabled, showPreviewCarousel, onShowPreviewCaruosel, onSelect, onClose }) => {
+    const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
+    const [images, setImages] = useState([]);
+    const imagesRef = useRef([]);
 
-  const handleAddNewImage = useCallback(
-    async newImage => {
-      const updated = [...images, newImage];
-      setImages(updated);
-      imagesRef.current = updated;
-    },
-    [images]
-  );
+    const handleAddNewImage = useCallback(
+      async newImage => {
+        const updated = [...images, newImage];
+        setImages(updated);
+        imagesRef.current = updated;
+      },
+      [images]
+    );
 
-  const handleDeleteImage = useCallback(
-    hash => {
-      const updated = images.filter(image => image.hash !== hash);
-      setImages(updated);
-      imagesRef.current = updated;
-    },
-    [images]
-  );
+    const handleDeleteImage = useCallback(
+      hash => {
+        const updated = images.filter(image => image.hash !== hash);
+        setImages(updated);
+        imagesRef.current = updated;
+      },
+      [images]
+    );
 
-  useEffect(() => {
-    return () => {
-      onSelect(imagesRef.current);
-    };
-  }, [onSelect]);
+    useEffect(() => {
+      return () => {
+        onSelect(imagesRef.current);
+      };
+    }, [onSelect]);
 
-  return (
-    <FullscreenPopup onBack={onClose} disabled={disabled}>
-      {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
+    return (
+      <FullscreenPopup onBack={onClose} disabled={disabled}>
+        {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
+        {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-      {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
+        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
 
-      <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
-        <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
-        <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
-        <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
-      </SegmentedControl.Root>
+        <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
+          <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
+          <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
+          <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
+        </SegmentedControl.Root>
 
-      {!!images?.length && <ImagesPreview images={images} onDelete={handleDeleteImage} />}
-    </FullscreenPopup>
-  );
-});
+        {!!images?.length && (
+          <ImagesPreview
+            images={images}
+            showPreviewCaruosel={showPreviewCarousel}
+            onShowPreviewCaruosel={onShowPreviewCaruosel}
+            onDelete={handleDeleteImage}
+          />
+        )}
+      </FullscreenPopup>
+    );
+  }
+);
 
 const ImagesWrapper = styled.div`
   position: absolute;
@@ -116,52 +126,51 @@ const CarouselTop = styled.div`
   padding: 0.5rem;
 `;
 
-const ImagesPreview = React.memo(({ images, onDelete }) => {
-  const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
+const ImagesPreview = React.memo(
+  ({ images, showPreviewCaruosel, onShowPreviewCaruosel, onDelete }) => {
+    const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
 
-  const [showCarousel, setShowCarousel] = useState(false);
+    const handleDelete = useCallback(
+      hash => {
+        onDelete(hash);
+      },
+      [onDelete]
+    );
 
-  const handleDelete = useCallback(
-    hash => {
-      onDelete(hash);
-    },
-    [onDelete]
-  );
-  const handleHideCarousel = useCallback(() => {
-    setShowCarousel(false);
-  }, []);
-  const handleShowCarousel = useCallback(() => {
-    setShowCarousel(true);
-  }, []);
+    const handleGoBack = useCallback(e => {
+      e.stopPropagation();
+      goBack();
+    }, []);
 
-  if (!reversedImages.length) {
-    return null;
+    if (!reversedImages.length) {
+      return null;
+    }
+
+    const cameraSize = getCameraSize();
+
+    return (
+      <>
+        <ImagesWrapper cameraSize={cameraSize}>
+          <PreviewItem image={reversedImages[0]} onClick={onShowPreviewCaruosel} />
+          {reversedImages.length}
+        </ImagesWrapper>
+
+        {showPreviewCaruosel && (
+          <CarouselWrapper onClick={handleGoBack}>
+            <CarouselTop>
+              <IconButton onClick={handleGoBack}>
+                <RiArrowLeftLine />
+              </IconButton>
+            </CarouselTop>
+            <div onClick={stopPropagation}>
+              <ImageCarousel images={reversedImages} onDelete={handleDelete} />
+            </div>
+          </CarouselWrapper>
+        )}
+      </>
+    );
   }
-
-  const cameraSize = getCameraSize();
-
-  return (
-    <>
-      <ImagesWrapper cameraSize={cameraSize}>
-        <PreviewItem image={reversedImages[0]} onClick={handleShowCarousel} />
-        {reversedImages.length}
-      </ImagesWrapper>
-
-      {showCarousel && (
-        <CarouselWrapper onClick={handleHideCarousel}>
-          <CarouselTop>
-            <IconButton onClick={handleHideCarousel}>
-              <RiArrowLeftLine />
-            </IconButton>
-          </CarouselTop>
-          <div onClick={stopPropagation}>
-            <ImageCarousel images={reversedImages} onDelete={handleDelete} />
-          </div>
-        </CarouselWrapper>
-      )}
-    </>
-  );
-});
+);
 
 const PreviewItem = React.memo(({ image, onClick }) => {
   const { url } = useImageLocalUrl(image.hash);
