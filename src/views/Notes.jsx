@@ -12,6 +12,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
+import { BackupBitte } from '../components/BackupBitte.jsx';
 import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -40,6 +41,8 @@ export const Notes = React.memo(() => {
   return (
     <PrepareData load={load} source="Notes">
       <Header />
+
+      <BackupBitte />
 
       <NoteItems />
 

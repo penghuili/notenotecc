@@ -34,7 +34,7 @@ export function TopBanner() {
   }
 
   return (
-    <Banner open right={rightElement} mb="6">
+    <Banner open right={rightElement}>
       <Text as="p">{message}</Text>
     </Banner>
   );
