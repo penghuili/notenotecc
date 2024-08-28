@@ -14,6 +14,10 @@ import { createNoteEffect } from '../store/note/noteEffects.js';
 export const hasLocalNotesCat = createCat(undefined);
 
 eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
+  if (hasLocalNotesCat.get() !== undefined) {
+    return;
+  }
+
   notesCat.set({ items: [], startKey: null, hasMore: false });
 
   const localNotes =

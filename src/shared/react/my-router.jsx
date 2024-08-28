@@ -77,7 +77,7 @@ export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
   return page;
 });
 
-function parseSearch(search) {
+export function parseSearch(search) {
   const obj = {};
 
   if (search) {

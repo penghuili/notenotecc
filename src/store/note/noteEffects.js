@@ -36,6 +36,9 @@ if (!isLoggedInCat.get()) {
       startKey: null,
       hasMore: false,
     });
+    welcomeNotes.forEach(note => {
+      LocalStorage.set(`${localStorageKeys.note}-${note.sortKey}`, note);
+    });
   }
 }
 

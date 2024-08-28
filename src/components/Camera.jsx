@@ -1,6 +1,6 @@
 import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
@@ -18,31 +18,34 @@ import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 export const Camera = React.memo(({ type, disabled, onSelect, onClose }) => {
   const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
   const [images, setImages] = useState([]);
-
-  const handleSelect = useCallback(() => {
-    onSelect(images);
-  }, [images, onSelect]);
+  const imagesRef = useRef([]);
 
   const handleAddNewImage = useCallback(
     async newImage => {
-      setImages([...images, newImage]);
+      const updated = [...images, newImage];
+      setImages(updated);
+      imagesRef.current = updated;
     },
     [images]
   );
 
   const handleDeleteImage = useCallback(
     hash => {
-      setImages(images.filter(image => image.hash !== hash));
+      const updated = images.filter(image => image.hash !== hash);
+      setImages(updated);
+      imagesRef.current = updated;
     },
     [images]
   );
 
+  useEffect(() => {
+    return () => {
+      onSelect(imagesRef.current);
+    };
+  }, [onSelect]);
+
   return (
-    <FullscreenPopup
-      onConfirm={handleSelect}
-      onClose={onClose}
-      disabled={disabled || !images?.length}
-    >
+    <FullscreenPopup onBack={onClose} disabled={disabled}>
       {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
       {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}

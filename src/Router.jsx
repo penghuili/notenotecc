@@ -17,6 +17,7 @@ import { initEffect } from './shared/react/store/sharedEffects.js';
 import { Verify2FA } from './shared/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared/react/VerifyEmail.jsx';
 import { Account } from './views/Account.jsx';
+import { AddImagess } from './views/AddImages.jsx';
 import { AI } from './views/AI.jsx';
 import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
@@ -46,6 +47,7 @@ const verifyEmailRoutes = {
   '/': VerifyEmail,
 };
 const commonRoutes = {
+  '/add-images': AddImagess,
   '/notes/add': NoteAdd,
   '/notes/details': NoteEdit,
 

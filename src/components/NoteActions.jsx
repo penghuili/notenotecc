@@ -3,12 +3,12 @@ import { RiDeleteBinLine, RiImageAddLine, RiMore2Line, RiPencilLine } from '@rem
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
+import { cameraTypes } from '../lib/cameraTypes.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
-import { isDeletingNoteCat } from '../store/note/noteCats.js';
-import { Camera } from './Camera.jsx';
+import { isDeletingNoteCat, noteCat } from '../store/note/noteCats.js';
 import { ProRequired } from './ProRequired.jsx';
 
 export const NoteActions = React.memo(({ note }) => {
@@ -16,27 +16,15 @@ export const NoteActions = React.memo(({ note }) => {
   const isDeleting = useCat(isDeletingNoteCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
 
-  const handleAddImages = useCallback(
-    async newImages => {
-      dispatchAction({
-        type: actionTypes.ADD_IMAGES,
-        payload: { ...note, newImages },
-      });
-      setShowCamera(false);
+  const handleShowCamera = useCallback(
+    e => {
+      e.stopPropagation();
+      noteCat.set(note);
+      navigate(`/add-images?noteId=${note.sortKey}&cameraType=${cameraTypes.takePhoto}`);
     },
     [note]
   );
-
-  const handleShowCamera = useCallback(e => {
-    e.stopPropagation();
-    setShowCamera(true);
-  }, []);
-
-  const handleHideCamera = useCallback(() => {
-    setShowCamera(false);
-  }, []);
 
   const handleNavigateToDetails = useCallback(() => {
     navigate(`/notes/details?noteId=${note.sortKey}`);
@@ -86,7 +74,6 @@ export const NoteActions = React.memo(({ note }) => {
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
-      {!!showCamera && <Camera onSelect={handleAddImages} onClose={handleHideCamera} />}
       <Confirm
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}

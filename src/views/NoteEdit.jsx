@@ -1,22 +1,17 @@
 import { Flex, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
-import { Camera } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { localStorageKeys } from '../lib/constants.js';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
-import { isIOS } from '../shared/react/device.js';
-import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { goBack, replaceTo } from '../shared/react/my-router.jsx';
+import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
-import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,
@@ -31,13 +26,10 @@ import {
 import { fetchNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
-const showCameraCat = createCat(false);
 let deletedNoteKey;
 
-export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }) => {
+export const NoteEdit = React.memo(({ queryParams: { noteId, add } }) => {
   const prepareData = useCallback(async () => {
-    showCameraCat.set(!!cameraType);
-
     if (noteId) {
       await fetchNoteEffect(noteId);
 
@@ -51,7 +43,7 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }
     }
 
     replaceTo('/notes');
-  }, [cameraType, noteId]);
+  }, [noteId]);
 
   useScrollToTop();
 
@@ -78,9 +70,7 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, cameraType, add } }
     <PrepareData load={prepareData}>
       <Header noteId={noteId} />
 
-      <NoteView noteId={noteId} isAddingNote={!cameraType && !!add} />
-
-      <AddImages noteId={noteId} cameraType={cameraType} />
+      <NoteView noteId={noteId} isAddingNote={!!add} />
     </PrepareData>
   );
 });
@@ -177,71 +167,6 @@ const Editor = React.memo(({ noteId, autoFocus }) => {
   );
 
   return <MarkdownEditor autoFocus={autoFocus} defaultText={description} onChange={handleChange} />;
-});
-
-const AddImages = React.memo(({ noteId, cameraType }) => {
-  const noteItem = useNote(noteId);
-  const showCamera = useCat(showCameraCat);
-  const isAddingImages = useCat(isAddingImagesCat);
-
-  const prevShowCamera = useRef();
-
-  const handleClose = useCallback(() => {
-    goBack();
-  }, []);
-
-  const handleAddImages = useCallback(
-    async newImages => {
-      dispatchAction({
-        type: actionTypes.ADD_IMAGES,
-        payload: { ...noteItem, newImages },
-      });
-
-      goBack();
-    },
-    [noteItem]
-  );
-
-  useEffect(() => {
-    if (!isIOS()) {
-      return;
-    }
-
-    if (prevShowCamera.current && !showCamera) {
-      const prevTimestamp = LocalStorage.get(localStorageKeys.showIOSCameraBanner);
-      if (
-        !prevTimestamp ||
-        prevTimestamp.timestamp <
-          Date.now() - Math.min(prevTimestamp.times * 2, 90) * 24 * 60 * 60 * 1000
-      ) {
-        topBannerCat.set({
-          message:
-            'Your iPhone may shows that notenote.cc is still recording, but it isn’t. iOS browsers have limitations.',
-          buttonText: 'Close',
-        });
-
-        LocalStorage.set(localStorageKeys.showIOSCameraBanner, {
-          timestamp: Date.now(),
-          times: (prevTimestamp?.times || 0) + 1,
-        });
-      }
-    } else {
-      prevShowCamera.current = showCamera;
-    }
-  }, [showCamera]);
-
-  if (!showCamera) {
-    return null;
-  }
-
-  return (
-    <Camera
-      type={cameraType}
-      disabled={isAddingImages}
-      onSelect={handleAddImages}
-      onClose={handleClose}
-    />
-  );
 });
 
 const AddAlbums = React.memo(({ noteId }) => {
