@@ -95,6 +95,9 @@ const AllRoutes = React.memo(() => {
       return <Routes routes={verifyEmailRoutes} />;
     }
 
+    if (hasLocalNotes === undefined) {
+      return <PageLoading />;
+    }
     if (hasLocalNotes) {
       return <SaveLocalNotes />;
     }

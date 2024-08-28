@@ -70,7 +70,7 @@ Same for your photos, and those encrypted-nobody-can-understand things are saved
         type: webpType,
       },
       {
-        hash: 'cf57d10a-b403-4253-ad36-4507f85c9cd4',
+        hash: '0367c7c5-900b-4d25-9e95-deaf4e7314ba',
         url: 'https://app.notenote.cc/assets/0367c7c5-900b-4d25-9e95-deaf4e7314ba.webp',
         type: webpType,
       },
@@ -78,7 +78,7 @@ Same for your photos, and those encrypted-nobody-can-understand things are saved
   },
 
   {
-    sortKey: 'note_202408261006000_123',
+    sortKey: 'note_202408261005000_123',
     createdAt: 1724666780000,
     isLocal: true,
     isWelcome: true,
@@ -93,15 +93,15 @@ If you don't need these, try notenote.cc, and it's for you!`,
         type: webpType,
       },
       {
-        hash: 'cf57d10a-b403-4253-ad36-4507f85c9cd4',
-        url: 'https://app.notenote.cc/assets/cf57d10a-b403-4253-ad36-4507f85c9cd4.webp',
+        hash: 'f9e1e537-94e2-4b25-9d44-75818fc4f28d',
+        url: 'https://app.notenote.cc/assets/f9e1e537-94e2-4b25-9d44-75818fc4f28d.webp',
         type: webpType,
       },
     ],
   },
 
   {
-    sortKey: 'note_202408261005000_123',
+    sortKey: 'note_202408261004000_123',
     createdAt: 1724666740000,
     isLocal: true,
     isWelcome: true,

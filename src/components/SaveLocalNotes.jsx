@@ -8,11 +8,14 @@ import { eventEmitter, eventEmitterEvents } from '../shared/react/eventEmitter.j
 import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { createAlbumEffect } from '../store/album/albumEffects.js';
+import { notesCat } from '../store/note/noteCats.js';
 import { createNoteEffect } from '../store/note/noteEffects.js';
 
-export const hasLocalNotesCat = createCat(false);
+export const hasLocalNotesCat = createCat(undefined);
 
 eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
+  notesCat.set({ items: [], startKey: null, hasMore: false });
+
   const localNotes =
     LocalStorage.get(localStorageKeys.notes)?.items?.filter(
       note => note.isLocal && !note.isWelcome
@@ -21,9 +24,9 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
     LocalStorage.get(localStorageKeys.albums)?.filter(album => album.isLocal) || [];
 
   const hasLocal = !!localNotes.length || !!localAlbums.length;
-  hasLocalNotesCat.set(hasLocal);
 
   if (hasLocal) {
+    hasLocalNotesCat.set(hasLocal);
     await asyncForEach(localAlbums, async album => {
       await createAlbumEffect({
         sortKey: album.sortKey,
@@ -41,9 +44,11 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
         albumIds: note.albumIds,
       });
     });
-
-    hasLocalNotesCat.set(false);
   }
+
+  LocalStorage.remove(localStorageKeys.notes);
+  LocalStorage.remove(localStorageKeys.albums);
+  hasLocalNotesCat.set(false);
 });
 
 export const SaveLocalNotes = React.memo(() => {

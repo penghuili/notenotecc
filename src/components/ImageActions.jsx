@@ -33,8 +33,6 @@ export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
     deleteRef.current.show();
   }, []);
 
-  console.log(image);
-
   return (
     <>
       <DropdownMenu.Root>
