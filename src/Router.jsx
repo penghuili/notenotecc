@@ -6,6 +6,7 @@ import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.js
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
 import { Routes } from './shared/react/my-router.jsx';
+import { PageLoading } from './shared/react/PageLoading.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
 import { Setup2FA } from './shared/react/Setup2FA.jsx';
@@ -86,6 +87,10 @@ const AllRoutes = React.memo(() => {
   const hasLocalNotes = useCat(hasLocalNotesCat);
 
   if (isLoggedIn) {
+    if (isVerified === undefined) {
+      return <PageLoading />;
+    }
+
     if (!isVerified) {
       return <Routes routes={verifyEmailRoutes} />;
     }
