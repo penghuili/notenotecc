@@ -9,7 +9,9 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
 import { navigate } from '../shared/react/my-router.jsx';
+import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
+import { pickedPhotosCat } from './PickPhoto.jsx';
 import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
@@ -31,7 +33,11 @@ export const Actions = React.memo(() => {
     navigate(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
-  const handlePickPhotos = useCallback(() => {
+  const handlePickPhotos = useCallback(photos => {
+    if (!photos?.length) {
+      return;
+    }
+    pickedPhotosCat.set(Array.from(photos));
     navigate(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
   }, []);
 
@@ -52,9 +58,17 @@ export const Actions = React.memo(() => {
         </IconButtonWithText>
       </ProRequired>
       <ProRequired>
-        <IconButtonWithText onClick={handlePickPhotos} text="Photo">
-          <RiImageAddLine />
-        </IconButtonWithText>
+        <FilePicker
+          accept="image/*"
+          takePhoto={false}
+          multiple
+          onSelect={handlePickPhotos}
+          height="auto"
+        >
+          <IconButtonWithText text="Photo">
+            <RiImageAddLine />
+          </IconButtonWithText>
+        </FilePicker>
       </ProRequired>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
         <RiStickyNoteAddLine />

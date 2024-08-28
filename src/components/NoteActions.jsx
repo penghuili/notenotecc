@@ -65,6 +65,12 @@ export const NoteActions = React.memo(({ note }) => {
         </IconButton>
       </ProRequired>
 
+      {!isDetailsPage && (
+        <IconButton variant="ghost" onClick={handleNavigateToDetails} mr="2">
+          <RiPencilLine />
+        </IconButton>
+      )}
+
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" mr="2">
@@ -73,16 +79,6 @@ export const NoteActions = React.memo(({ note }) => {
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content variant="soft">
-          {!isDetailsPage && (
-            <>
-              <DropdownMenu.Item onClick={handleNavigateToDetails}>
-                <RiPencilLine />
-                Update
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-            </>
-          )}
-
           <DropdownMenu.Item onClick={handleShowConfirm} color={errorColor}>
             <RiDeleteBinLine />
             Delete

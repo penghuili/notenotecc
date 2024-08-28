@@ -2,6 +2,7 @@ import { Button, Flex, Text } from '@radix-ui/themes';
 import { RiCropLine, RiDeleteBinLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
 import { makeImageSquare } from '../lib/makeImageSquare';
@@ -28,8 +29,10 @@ const HelperTextWrapper = styled.div`
   position: absolute;
 `;
 
+export const pickedPhotosCat = createCat([]);
+
 export const PickPhoto = React.memo(({ onSelect }) => {
-  const [pickedPhotos, setPickedPhotos] = useState([]);
+  const pickedPhotos = useCat(pickedPhotosCat);
   const [error, setError] = useState(null);
 
   const cropperRef = useRef(null);
@@ -37,13 +40,13 @@ export const PickPhoto = React.memo(({ onSelect }) => {
   const handleNextPhoto = useCallback(() => {
     setError(null);
     const left = pickedPhotos.slice(1);
-    setPickedPhotos(left);
+    pickedPhotosCat.set(left);
   }, [pickedPhotos]);
 
   const handlePickPhotos = useCallback(photos => {
     setError(null);
     if (photos) {
-      setPickedPhotos(Array.from(photos));
+      pickedPhotosCat.set(Array.from(photos));
     }
   }, []);
 
@@ -135,6 +138,11 @@ export const PickPhoto = React.memo(({ onSelect }) => {
           </FilePicker>
         )}
       </Flex>
+      {pickedPhotos[0] && !error && (
+        <Flex position="absolute" top="-2rem">
+          <Text>Crop it or turn it into a square photo.</Text>
+        </Flex>
+      )}
     </VideoWrapper>
   );
 });

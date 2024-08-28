@@ -17,7 +17,7 @@ export async function downloadFileWithUrl(url, type) {
 
 export async function shareFileWithUrl(url, type) {
   try {
-    const file = fetchFileWithUrl(url, type);
+    const file = await fetchFileWithUrl(url, type);
 
     return await shareFile(file);
   } catch (e) {

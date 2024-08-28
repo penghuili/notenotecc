@@ -33,13 +33,7 @@ export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
     deleteRef.current.show();
   }, []);
 
-  if (image?.hash) {
-    return (
-      <IconButton radius="full" onClick={onDelete}>
-        <RiDeleteBinLine />
-      </IconButton>
-    );
-  }
+  console.log(image);
 
   return (
     <>

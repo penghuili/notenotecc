@@ -104,12 +104,12 @@ const InnerImage = React.memo(
     }, []);
 
     const handleDelete = useCallback(() => {
-      onDelete(path || hash);
-    }, [hash, onDelete, path]);
+      onDelete(path || hash || url);
+    }, [hash, onDelete, path, url]);
 
     const handleOpenFullScreen = useCallback(() => {
-      fullScreenImageUrlCat.set(remoteUrl);
-    }, [remoteUrl]);
+      fullScreenImageUrlCat.set(url);
+    }, [url]);
 
     return (
       <>
