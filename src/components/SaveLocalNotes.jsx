@@ -18,8 +18,6 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
     return;
   }
 
-  notesCat.set({ items: [], startKey: null, hasMore: false });
-
   const localNotes =
     LocalStorage.get(localStorageKeys.notes)?.items?.filter(
       note => note.isLocal && !note.isWelcome
@@ -30,6 +28,8 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
   const hasLocal = !!localNotes.length || !!localAlbums.length;
 
   if (hasLocal) {
+    notesCat.set({ items: [], startKey: null, hasMore: false });
+
     hasLocalNotesCat.set(hasLocal);
     await asyncForEach(localAlbums, async album => {
       await createAlbumEffect({
@@ -48,10 +48,11 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
         albumIds: note.albumIds,
       });
     });
+
+    LocalStorage.remove(localStorageKeys.notes);
+    LocalStorage.remove(localStorageKeys.albums);
   }
 
-  LocalStorage.remove(localStorageKeys.notes);
-  LocalStorage.remove(localStorageKeys.albums);
   hasLocalNotesCat.set(false);
 });
 
