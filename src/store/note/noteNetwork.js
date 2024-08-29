@@ -37,6 +37,7 @@ export async function fetchNotes(startKey, startTime, endTime) {
 
     return { data, error: null };
   } catch (error) {
+    console.log(error);
     return { data: null, error };
   }
 }
@@ -54,6 +55,7 @@ export async function fetchNote(noteId) {
       error: null,
     };
   } catch (error) {
+    console.log(error);
     return { data: null, error };
   }
 }

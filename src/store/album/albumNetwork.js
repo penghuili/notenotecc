@@ -138,18 +138,23 @@ export async function encryptMessageWithEncryptedPassword(encryptedPassword, mes
   return await encryptMessageSymmetric(password, message);
 }
 export async function decryptNote(note) {
-  if (!note?.encrypted) {
+  try {
+    if (!note?.encrypted) {
+      return note;
+    }
+
+    const decryptedPassword = await decryptMessageAsymmetric(
+      LocalStorage.get(sharedLocalStorageKeys.privateKey),
+      note.encryptedPassword
+    );
+
+    const decryptedTitle = note.note
+      ? await decryptMessageSymmetric(decryptedPassword, note.note)
+      : note.note;
+
+    return { ...note, note: decryptedTitle };
+  } catch (e) {
+    console.log(e);
     return note;
   }
-
-  const decryptedPassword = await decryptMessageAsymmetric(
-    LocalStorage.get(sharedLocalStorageKeys.privateKey),
-    note.encryptedPassword
-  );
-
-  const decryptedTitle = note.note
-    ? await decryptMessageSymmetric(decryptedPassword, note.note)
-    : note.note;
-
-  return { ...note, note: decryptedTitle };
 }
