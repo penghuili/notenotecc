@@ -4,7 +4,7 @@ import { useCat } from 'usecat';
 import { Camera } from '../components/Camera.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
-import { isIOS } from '../shared/react/device.js';
+import { isIOSBrowser } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { goBack, navigate, replaceTo } from '../shared/react/my-router.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
@@ -54,7 +54,7 @@ export const AddImages = React.memo(({ noteId, cameraType, preview }) => {
   }, [cameraType, noteId]);
 
   useEffect(() => {
-    if (!isIOS()) {
+    if (!isIOSBrowser()) {
       return;
     }
 

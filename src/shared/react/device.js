@@ -1,9 +1,13 @@
-export function isAndroidPhone() {
+export function isAndroidApp() {
+  return navigator.userAgent.includes('TWA');
+}
+
+export function isAndroidBrowser() {
   const userAgent = navigator.userAgent.toLowerCase();
   return /android/i.test(userAgent) && /mobile/i.test(userAgent);
 }
 
-export function isIOS() {
+export function isIOSBrowser() {
   const userAgent = window.navigator.userAgent.toLowerCase();
   const iOS_devices = /iphone|ipad|ipod/;
 
@@ -20,8 +24,14 @@ export function isIOS() {
   return false;
 }
 
-export function isMobile() {
-  return isAndroidPhone() || isIOS();
+export function isMobileBrowser() {
+  return isAndroidBrowser() || isIOSBrowser();
+}
+
+export function isInstalledOnHomeScreen() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+  );
 }
 
 export function isMobileWidth() {

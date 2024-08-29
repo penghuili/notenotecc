@@ -3,10 +3,13 @@ import { RiCodeLine, RiHeartLine, RiHomeLine, RiMailLine, RiServiceLine } from '
 import React from 'react';
 
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { InstallApp } from './InstallApp.jsx';
 
 export const PublicLinks = React.memo(() => {
   return (
     <ItemsWrapper align="start">
+      <InstallApp />
+
       <a href="https://notenote.cc" target="_blank" rel="noreferrer">
         <Button variant="ghost">
           <RiHomeLine />

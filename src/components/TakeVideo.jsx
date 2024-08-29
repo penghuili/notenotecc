@@ -15,7 +15,7 @@ import {
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
 import { randomHash } from '../shared/js/randomHash.js';
-import { isIOS, isMobile } from '../shared/react/device.js';
+import { isIOSBrowser, isMobileBrowser } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { TimeProgress } from './TimeProgress.jsx';
 
@@ -148,7 +148,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
     }
 
     const mediaRecorder = new MediaRecorder(videoStream, {
-      mimeType: isIOS() ? 'video/mp4' : 'video/webm;codecs=vp9',
+      mimeType: isIOSBrowser() ? 'video/mp4' : 'video/webm;codecs=vp9',
       videoBitsPerSecond: 1000000,
     });
     mediaRecorderRef.current = mediaRecorder;
@@ -239,7 +239,7 @@ export const TakeVideo = React.memo(({ onSelect }) => {
               <RiRecordCircleLine style={{ '--font-size': '40px' }} />
             </IconButton>
 
-            {isMobile() && (
+            {isMobileBrowser() && (
               <IconButton
                 size="4"
                 radius="full"

@@ -3,7 +3,7 @@ import './ImageCarousel.css';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { fileTypes } from '../lib/constants';
-import { isMobile } from '../shared/react/device';
+import { isMobileBrowser } from '../shared/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
 export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDelete }) => {
@@ -285,7 +285,7 @@ export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, on
 
       {images.length > 1 && (
         <>
-          {!isMobile() && (
+          {!isMobileBrowser() && (
             <>
               <button className="carousel-button prev" onClick={handlePrevSlide}>
                 &#10094;

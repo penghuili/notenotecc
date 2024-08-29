@@ -1,4 +1,4 @@
-import { isIOS } from '../shared/react/device';
+import { isIOSBrowser } from '../shared/react/device';
 
 export const localStorageKeys = {
   notes: 'notenote-notes-2',
@@ -20,5 +20,5 @@ export const fileTypes = {
   weba: 'audio/webm',
 };
 
-export const imageType = isIOS() ? fileTypes.jpeg : fileTypes.webp;
-export const videoType = isIOS() ? fileTypes.mp4 : fileTypes.webm;
+export const imageType = isIOSBrowser() ? fileTypes.jpeg : fileTypes.webp;
+export const videoType = isIOSBrowser() ? fileTypes.mp4 : fileTypes.webm;

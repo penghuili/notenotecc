@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 import { disablePullToRefresh, enablePullToRefresh } from './bodySccroll';
-import { isAndroidPhone, isIOS } from './device';
+import { isAndroidBrowser, isIOSBrowser } from './device';
 
 const PADDING = 10;
 
@@ -85,7 +85,7 @@ export const ImageCropper = forwardRef(({ width, pickedImage, onError }, ref) =>
   useEffect(() => {
     const drag = e => {
       if (!isDragging) return;
-      if (!isAndroidPhone() && !isIOS()) {
+      if (!isAndroidBrowser() && !isIOSBrowser()) {
         e.preventDefault();
       }
       const currentX = e.clientX || e.touches?.[0]?.clientX;
@@ -139,7 +139,7 @@ export const ImageCropper = forwardRef(({ width, pickedImage, onError }, ref) =>
   }, [isDragging, isLandscape, squareSize]);
 
   const startDragging = e => {
-    if (!isAndroidPhone() && !isIOS()) {
+    if (!isAndroidBrowser() && !isIOSBrowser()) {
       e.preventDefault();
     }
     setIsDragging(true);

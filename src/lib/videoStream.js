@@ -1,8 +1,8 @@
 import { createCat } from 'usecat';
 
-import { isMobile } from '../shared/react/device';
+import { isMobileBrowser } from '../shared/react/device';
 
-const facingModeCat = createCat(isMobile() ? 'environment' : 'user');
+const facingModeCat = createCat(isMobileBrowser() ? 'environment' : 'user');
 export const isUsingVideoStreamCat = createCat(false);
 export const hasAudioCat = createCat(false);
 export const videoStreamCat = createCat(null);
