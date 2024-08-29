@@ -1,5 +1,5 @@
 import { Box } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { fileTypes } from '../lib/constants.js';
@@ -93,21 +93,7 @@ const InnerImage = React.memo(
     const { url: localUrl, isLoading: isLoadingLocal } = useImageLocalUrl(hash);
     const [isLoadingContent, setIsLoadingContent] = useState(true);
 
-    const [isLoadingTotal, setIsLoadingTotal] = useState(false);
-    const timerRef = useRef(null);
-
-    useEffect(() => {
-      clearTimeout(timerRef.current);
-
-      timerRef.current = setTimeout(() => {
-        setIsLoadingTotal(isLoadingRemote || isLoadingLocal || isLoadingContent);
-      }, 400);
-
-      return () => {
-        clearTimeout(timerRef.current);
-      };
-    }, [isLoadingContent, isLoadingLocal, isLoadingRemote]);
-
+    const isLoadingTotal = isLoadingRemote || isLoadingLocal || isLoadingContent;
     const innerUrl = url || remoteUrl || localUrl;
 
     const imageForAction = useMemo(() => {
