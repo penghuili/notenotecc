@@ -1,6 +1,6 @@
 import { Button, Flex, Text } from '@radix-ui/themes';
 import { RiCropLine, RiDeleteBinLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
@@ -70,6 +70,12 @@ export const PickPhoto = React.memo(({ onSelect }) => {
 
     handleNextPhoto();
   }, [handleNextPhoto, onSelect, pickedPhotos]);
+
+  useEffect(() => {
+    return () => {
+      pickedPhotosCat.set([]);
+    };
+  }, []);
 
   const size = getCameraSize();
 

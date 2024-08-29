@@ -1,5 +1,5 @@
 import { IconButton, Slider } from '@radix-ui/themes';
-import { RiPlayLargeLine, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
+import { RiPlayLargeFill, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -78,9 +78,7 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
       </Video>
       {!isPlaying && (
         <PauseWrapper>
-          <IconButton size="4" variant="outline" onClick={handlePlay}>
-            <RiPlayLargeLine />
-          </IconButton>
+          <RiPlayLargeFill style={{ '--font-size': '50px' }} color="white" onClick={handlePlay} />
         </PauseWrapper>
       )}
       <PlayerActions videoRef={videoRef} src={src} onLoaded={onLoaded} muted={muted} />
@@ -152,7 +150,7 @@ const PlayerActions = React.memo(({ videoRef, src, onLoaded, muted }) => {
         style={{ width: '100%' }}
       />
       <IconButton onClick={toggleMute} variant="ghost" ml="2">
-        {isMuted ? <RiVolumeMuteLine /> : <RiVolumeUpLine />}
+        {isMuted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
       </IconButton>
     </Actions>
   );

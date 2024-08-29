@@ -108,8 +108,8 @@ const InnerImage = React.memo(
     }, [hash, onDelete, path, url]);
 
     const handleOpenFullScreen = useCallback(() => {
-      fullScreenImageUrlCat.set(url);
-    }, [url]);
+      fullScreenImageUrlCat.set(innerUrl);
+    }, [innerUrl]);
 
     return (
       <>
