@@ -1,25 +1,30 @@
 import { Button, Flex, Link, Text } from '@radix-ui/themes';
 import { RiExternalLinkLine, RiSmartphoneLine } from '@remixicon/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
+import { copyToClipboard } from '../shared/react/copyToClipboard.js';
 import {
   isAndroidApp,
   isAndroidBrowser,
   isInstalledOnHomeScreen,
   isIOSBrowser,
 } from '../shared/react/device.js';
+import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 
 const playStoreLink = 'https://play.google.com/store/apps/details?id=cc.notenote.app.twa';
 
 export const InstallApp = React.memo(() => {
+  const handleCopyUserId = useCallback(async () => {
+    await copyToClipboard('https://app.notenote.cc');
+    setToastEffect('Link copied!');
+  }, []);
+
   if (isAndroidApp() || isInstalledOnHomeScreen()) {
     return (
       <Flex direction="column" align="start">
-        <Link href="https://app.notenote.cc" target="_blank" rel="noreferrer">
-          <Button variant="ghost">
-            <RiExternalLinkLine /> app.notenote.cc
-          </Button>
-        </Link>
+        <Button variant="ghost" onClick={handleCopyUserId}>
+          <RiExternalLinkLine /> app.notenote.cc
+        </Button>
         <Text size="1">Use the web app on your laptop.</Text>
       </Flex>
     );

@@ -56,9 +56,31 @@ const Wrapper = styled.div`
   max-width: 600px;
 `;
 
-const ImageElement = styled.img`
+const ImageWrapper = styled.div`
   width: 100%;
+  height: 100%;
+  background-image: url(${props => props.imageUrl});
+  background-size: cover;
+
   display: ${props => (props.hidden ? 'none' : 'block')};
+`;
+const ImageBGCover = styled.div`
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(139, 137, 137, 0.52);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+`;
+const ImageElement = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 `;
 
 const InnerImage = React.memo(
@@ -131,9 +153,16 @@ const InnerImage = React.memo(
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
-              <div onDoubleClick={handleOpenFullScreen}>
-                <ImageElement hidden={isLoadingTotal} src={innerUrl} onLoad={handleContentLoaded} />
-              </div>
+              <ImageWrapper
+                hidden={isLoadingTotal}
+                imageUrl={innerUrl}
+                onLoad={handleContentLoaded}
+                onDoubleClick={handleOpenFullScreen}
+              >
+                <ImageBGCover>
+                  <ImageElement src={innerUrl} />
+                </ImageBGCover>
+              </ImageWrapper>
             )}
 
             <Box position="absolute" top="2" right="2">

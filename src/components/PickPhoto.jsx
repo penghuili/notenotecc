@@ -1,15 +1,12 @@
-import { Button, Flex, Text } from '@radix-ui/themes';
-import { RiCropLine, RiDeleteBinLine, RiImageAddLine, RiSquareLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Flex, Text } from '@radix-ui/themes';
+import { RiImageAddLine } from '@remixicon/react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
-import { makeImageSquare } from '../lib/makeImageSquare';
-import { resizeCanvas } from '../lib/resizeCanvas';
+import { resizeImage } from '../lib/resizeImage.js';
 import { randomHash } from '../shared/js/randomHash.js';
-import { canvasToBlob } from '../shared/react/canvasToBlob.js';
-import { ImageCropper } from '../shared/react/ImageCropper.jsx';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
@@ -35,14 +32,6 @@ export const PickPhoto = React.memo(({ onSelect }) => {
   const pickedPhotos = useCat(pickedPhotosCat);
   const [error, setError] = useState(null);
 
-  const cropperRef = useRef(null);
-
-  const handleNextPhoto = useCallback(() => {
-    setError(null);
-    const left = pickedPhotos.slice(1);
-    pickedPhotosCat.set(left);
-  }, [pickedPhotos]);
-
   const handlePickPhotos = useCallback(photos => {
     setError(null);
     if (photos) {
@@ -50,26 +39,32 @@ export const PickPhoto = React.memo(({ onSelect }) => {
     }
   }, []);
 
-  const handleCrop = useCallback(async () => {
-    const canvas = cropperRef.current.crop(900);
-    const blob = await canvasToBlob(canvas, imageType, 0.8);
-    const hash = randomHash();
-    idbStorage.setItem(hash, blob);
-    onSelect({ hash, size: blob.size, type: imageType });
+  useEffect(() => {
+    if (!pickedPhotos.length) {
+      return;
+    }
 
-    handleNextPhoto();
-  }, [handleNextPhoto, onSelect]);
+    setError(null);
+    Promise.all(pickedPhotos.map(photo => resizeImage(photo))).then(blobs => {
+      const succeeded = blobs.filter(b => b.data).map(b => b.data);
+      const photos = succeeded.map(resized => ({
+        hash: randomHash(),
+        size: resized.size,
+        type: imageType,
+      }));
 
-  const handleSquare = useCallback(async () => {
-    const squareCanvas = await makeImageSquare(pickedPhotos[0]);
-    const resizedCanvas = resizeCanvas(squareCanvas, 900, 900);
-    const blob = await canvasToBlob(resizedCanvas, imageType, 0.8);
-    const hash = randomHash();
-    idbStorage.setItem(hash, blob);
-    onSelect({ hash, type: imageType });
+      succeeded.forEach((blob, index) => {
+        idbStorage.setItem(photos[index].hash, blob);
+      });
 
-    handleNextPhoto();
-  }, [handleNextPhoto, onSelect, pickedPhotos]);
+      onSelect(photos);
+
+      const failed = pickedPhotos.filter(b => b.error).map(b => b.error);
+      setError(failed[0]);
+
+      pickedPhotosCat.set([]);
+    });
+  }, [onSelect, pickedPhotos]);
 
   useEffect(() => {
     return () => {
@@ -90,22 +85,14 @@ export const PickPhoto = React.memo(({ onSelect }) => {
             notenote.cc can't process this photo, you can take a screenshot of it, and choose the
             screenshot.
           </Text>
-          {pickedPhotos.length > 1 && <Button onClick={handleNextPhoto}>Check next photo</Button>}
         </Flex>
       </HelperTextWrapper>
     );
-  }, [error, handleNextPhoto, pickedPhotos.length]);
+  }, [error]);
 
   return (
     <VideoWrapper>
       <CropperWrapper size={size}>
-        <ImageCropper
-          ref={cropperRef}
-          width={size}
-          pickedImage={pickedPhotos[0]}
-          onError={setError}
-        />
-
         {!pickedPhotos[0] && !error && (
           <HelperTextWrapper>
             <Text>Pick photos from your device.</Text>
@@ -116,21 +103,7 @@ export const PickPhoto = React.memo(({ onSelect }) => {
       </CropperWrapper>
 
       <Flex justify="center" align="center" py="2" gap="2">
-        {pickedPhotos[0] && !error && (
-          <>
-            <IconButtonWithText onClick={handleCrop} text="Crop">
-              <RiCropLine />
-            </IconButtonWithText>
-            <IconButtonWithText onClick={handleSquare} text="Square">
-              <RiSquareLine />
-            </IconButtonWithText>
-            <IconButtonWithText onClick={handleNextPhoto} text="Delete" variant="soft">
-              <RiDeleteBinLine />
-            </IconButtonWithText>
-          </>
-        )}
-
-        {(!pickedPhotos[0] || (!!error && pickedPhotos.length === 1)) && (
+        {(!pickedPhotos?.length || !error) && (
           <FilePicker
             accept="image/*"
             takePhoto={false}
@@ -144,11 +117,6 @@ export const PickPhoto = React.memo(({ onSelect }) => {
           </FilePicker>
         )}
       </Flex>
-      {pickedPhotos[0] && !error && (
-        <Flex position="absolute" top="-2rem">
-          <Text>Crop it or turn it into a square photo.</Text>
-        </Flex>
-      )}
     </VideoWrapper>
   );
 });

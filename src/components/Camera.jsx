@@ -31,6 +31,15 @@ export const Camera = React.memo(
       [images]
     );
 
+    const handleAddNewImages = useCallback(
+      async newImages => {
+        const updated = [...images, ...newImages];
+        setImages(updated);
+        imagesRef.current = updated;
+      },
+      [images]
+    );
+
     const handleDeleteImage = useCallback(
       hash => {
         const updated = images.filter(image => image.hash !== hash);
@@ -52,7 +61,7 @@ export const Camera = React.memo(
 
         {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImage} />}
+        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
         <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
           <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
