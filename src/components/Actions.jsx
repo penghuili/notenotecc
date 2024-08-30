@@ -47,6 +47,9 @@ export const Actions = React.memo(() => {
 
   return (
     <Wrapper>
+      <IconButtonWithText onClick={handleTakeNote} text="Text">
+        <RiStickyNoteAddLine />
+      </IconButtonWithText>
       <ProRequired>
         <IconButtonWithText onClick={handleTakePhoto} text="Camera">
           <RiCameraLine />
@@ -70,9 +73,6 @@ export const Actions = React.memo(() => {
           </IconButtonWithText>
         </FilePicker>
       </ProRequired>
-      <IconButtonWithText onClick={handleTakeNote} text="Text">
-        <RiStickyNoteAddLine />
-      </IconButtonWithText>
     </Wrapper>
   );
 });

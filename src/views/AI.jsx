@@ -41,7 +41,7 @@ const templateKeys = {
 };
 const templates = {
   [templateKeys.chinese]: `翻译成中文:`,
-  [templateKeys.extractTextAndTranslate]: `提取照片里的文本并翻译成中文:`,
+  [templateKeys.extractTextAndTranslate]: `Extract text from the image and translate the text to Chinese:`,
   [templateKeys.empty]: ``,
 };
 
