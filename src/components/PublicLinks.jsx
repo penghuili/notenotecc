@@ -1,11 +1,18 @@
 import { Button } from '@radix-ui/themes';
 import { RiCodeLine, RiHeartLine, RiHomeLine, RiMailLine, RiServiceLine } from '@remixicon/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
+import { copyToClipboard } from '../shared/react/copyToClipboard.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
+import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 import { InstallApp } from './InstallApp.jsx';
 
 export const PublicLinks = React.memo(() => {
+  const handleCopyEmail = useCallback(async () => {
+    await copyToClipboard('peng@tuta.com');
+    setToastEffect('Contact email is copied!');
+  }, []);
+
   return (
     <ItemsWrapper align="start">
       <InstallApp />
@@ -38,7 +45,7 @@ export const PublicLinks = React.memo(() => {
         </Button>
       </a>
 
-      <Button variant="ghost">
+      <Button variant="ghost" onClick={handleCopyEmail}>
         <RiMailLine />
         Contact: peng@tuta.com
       </Button>
