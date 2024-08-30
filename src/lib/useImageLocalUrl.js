@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 
 import { idbStorage } from '../shared/react/indexDB';
 
+const cachedUrls = {};
+
 export function useImageLocalUrl(imageHash) {
-  const [url, setUrl] = useState(null);
+  const [url, setUrl] = useState(cachedUrls[imageHash]);
+  const [imageBlob, setImageBlob] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!imageHash) {
+    if (!imageHash || cachedUrls[imageHash]) {
       return;
     }
 
@@ -16,7 +19,10 @@ export function useImageLocalUrl(imageHash) {
       .getItem(imageHash)
       .then(blob => {
         if (blob) {
-          setUrl(URL.createObjectURL(blob));
+          setImageBlob(blob);
+          const blobUrl = URL.createObjectURL(blob);
+          setUrl(blobUrl);
+          cachedUrls[imageHash] = blobUrl;
         }
       })
       .catch(e => {
@@ -28,5 +34,5 @@ export function useImageLocalUrl(imageHash) {
       });
   }, [imageHash]);
 
-  return { url, isLoading };
+  return { url, blob: imageBlob, isLoading };
 }

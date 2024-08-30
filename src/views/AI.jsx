@@ -2,12 +2,13 @@ import { Button, Flex, IconButton, RadioGroup, Text } from '@radix-ui/themes';
 import { RiCameraLine, RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
 
-import { FilePicker } from '../components/FilePicker.jsx';
+import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { fileTypes } from '../lib/constants.js';
-import { convertImageTo } from '../lib/convertImage.js';
+import { TakePhoto } from '../components/TakePhoto.jsx';
+import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { AreaField } from '../shared/react/AreaField.jsx';
 import { inputFileToBase64 } from '../shared/react/file.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
@@ -44,25 +45,28 @@ const templates = {
   [templateKeys.empty]: ``,
 };
 
+const imageCat = createCat(null);
+
 const Form = React.memo(() => {
   const [template, setTemplate] = useState(templateKeys.chinese);
   const [prefix, setPrefix] = useState(templates[templateKeys.chinese]);
   const [propmt, setPrompt] = useState('');
   const [showPrompt, setShowPrompt] = useState(true);
-  const [image, setImage] = useState(null);
+  const imageObject = useCat(imageCat);
   const [showImage, setShowImage] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [answer, setAnswer] = useState('');
   const [tokens, setTokens] = useState(0);
+  const [showCamera, setShowCamera] = useState(false);
+
+  const { url: imageUrl, blob: imageBlob } = useImageLocalUrl(imageObject?.hash);
 
   const handleSend = useCallback(async () => {
     setIsSending(true);
 
     let imageBase64;
-    if (image) {
-      const imageBlob = new Blob([image], { type: image.type });
-      const webpImage = await convertImageTo(imageBlob, fileTypes.webp);
-      imageBase64 = await inputFileToBase64(webpImage);
+    if (imageBlob) {
+      imageBase64 = await inputFileToBase64(imageBlob);
     }
 
     const { data } = await getSuggestion(prefix, propmt, imageBase64);
@@ -73,10 +77,11 @@ const Form = React.memo(() => {
       setToastEffect('Something is wrong', toastTypes.error);
     }
     setIsSending(false);
-  }, [image, prefix, propmt]);
+  }, [imageBlob, prefix, propmt]);
 
   const handleTemplateChange = useCallback(value => {
     setTemplate(value);
+    imageCat.reset();
 
     if (value === templateKeys.empty) {
       setPrefix('');
@@ -104,8 +109,12 @@ const Form = React.memo(() => {
     setPrompt('');
   }, []);
 
-  const handlePickPhoto = useCallback(files => {
-    setImage(files[0]);
+  const handleShowCamera = useCallback(() => {
+    setShowCamera(true);
+  }, []);
+
+  const handleCloseCamera = useCallback(() => {
+    setShowCamera(false);
   }, []);
 
   return (
@@ -139,14 +148,12 @@ const Form = React.memo(() => {
       )}
 
       {showImage && (
-        <Flex align="start" my="4">
-          <FilePicker takePhoto onSelect={handlePickPhoto}>
-            <IconButton text="Pick">
-              <RiCameraLine />
-            </IconButton>
-          </FilePicker>
+        <Flex align="start" my="4" direction="column" gap="2">
+          <IconButton onClick={handleShowCamera}>
+            <RiCameraLine />
+          </IconButton>
 
-          {!!image && <Image src={URL.createObjectURL(image)} alt="image" />}
+          {!!imageUrl && <Image src={imageUrl} alt="image" />}
         </Flex>
       )}
 
@@ -157,6 +164,8 @@ const Form = React.memo(() => {
       {!!answer && <Markdown markdown={answer} />}
 
       {!!tokens && <Text as="p">{tokens}</Text>}
+
+      {!!showCamera && <Camera onClose={handleCloseCamera} />}
     </ItemsWrapper>
   );
 });
@@ -173,3 +182,19 @@ const IconWrapper = styled.div`
 const Image = styled.img`
   width: 300px;
 `;
+
+const Camera = React.memo(({ onClose }) => {
+  const handleAddImage = useCallback(
+    image => {
+      imageCat.set(image);
+      onClose();
+    },
+    [onClose]
+  );
+
+  return (
+    <FullscreenPopup onBack={onClose}>
+      <TakePhoto onSelect={handleAddImage} />
+    </FullscreenPopup>
+  );
+});
