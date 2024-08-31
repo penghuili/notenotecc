@@ -8,7 +8,7 @@ import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { navigate } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
-import { isDeletingNoteCat, noteCat } from '../store/note/noteCats.js';
+import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { ProRequired } from './ProRequired.jsx';
 
 export const NoteActions = React.memo(({ note }) => {
@@ -20,10 +20,9 @@ export const NoteActions = React.memo(({ note }) => {
   const handleShowCamera = useCallback(
     e => {
       e.stopPropagation();
-      noteCat.set(note);
       navigate(`/add-images?noteId=${note.sortKey}&cameraType=${cameraTypes.takePhoto}`);
     },
-    [note]
+    [note.sortKey]
   );
 
   const handleNavigateToDetails = useCallback(() => {

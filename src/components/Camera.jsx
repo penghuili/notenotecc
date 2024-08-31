@@ -103,6 +103,7 @@ const PreviewImage = styled.img`
 
   border-radius: 8px;
   overflow: hidden;
+  object-fit: cover;
 `;
 const PreviewVideo = styled.video`
   position: relative;

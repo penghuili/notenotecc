@@ -1,5 +1,5 @@
 import { Flex, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -47,24 +47,24 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, add } }) => {
 
   useScrollToTop();
 
-  useEffect(() => {
-    deletedNoteKey = null;
+  // useEffect(() => {
+  //   deletedNoteKey = null;
 
-    return () => {
-      if (!add) {
-        return;
-      }
+  //   return () => {
+  //     if (!add) {
+  //       return;
+  //     }
 
-      const newNote = noteCat.get();
-      if (newNote && !descriptionCat.get() && !newNote.images?.length) {
-        dispatchAction({
-          type: actionTypes.DELETE_NOTE,
-          payload: { ...newNote, goBack: false },
-        });
-        deletedNoteKey = newNote.sortKey;
-      }
-    };
-  }, [add]);
+  //     const newNote = noteCat.get();
+  //     if (newNote && !descriptionCat.get() && !newNote.images?.length) {
+  //       dispatchAction({
+  //         type: actionTypes.DELETE_NOTE,
+  //         payload: { ...newNote, goBack: false },
+  //       });
+  //       deletedNoteKey = newNote.sortKey;
+  //     }
+  //   };
+  // }, [add]);
 
   return (
     <PrepareData load={prepareData}>

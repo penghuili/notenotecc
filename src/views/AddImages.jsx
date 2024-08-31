@@ -42,7 +42,7 @@ export const AddImages = React.memo(({ noteId, cameraType, preview }) => {
 
   const prevShowCamera = useRef();
 
-  const handleAddImages = useCallback(async newImages => {
+  const handleAddImages = useCallback(newImages => {
     dispatchAction({
       type: actionTypes.ADD_IMAGES,
       payload: { ...noteCat.get(), newImages },
