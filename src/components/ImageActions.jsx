@@ -1,19 +1,11 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
-import {
-  RiDeleteBinLine,
-  RiDownloadLine,
-  RiInformationLine,
-  RiMore2Line,
-  RiShareLine,
-} from '@remixicon/react';
+import { RiDeleteBinLine, RiDownloadLine, RiMore2Line, RiShareLine } from '@remixicon/react';
 import React, { useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
-import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
-import { getFileSizeString } from '../shared/react/file';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 
 export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
@@ -67,30 +59,10 @@ export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
             <RiDeleteBinLine />
             Delete
           </DropdownMenu.Item>
-
-          <FileSize size={image.size} />
         </DropdownMenu.Content>
       </DropdownMenu.Root>
 
       <ConfirmDelete ref={deleteRef} onDelete={onDelete} isDeleting={isDeleting} />
-    </>
-  );
-});
-
-const FileSize = React.memo(({ size }) => {
-  const isAdmin = useIsAdmin();
-
-  if (!size || !isAdmin) {
-    return null;
-  }
-
-  return (
-    <>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item>
-        <RiInformationLine />
-        {getFileSizeString(size)}
-      </DropdownMenu.Item>
     </>
   );
 });
