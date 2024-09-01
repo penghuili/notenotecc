@@ -1,13 +1,19 @@
 import { Link } from '@radix-ui/themes';
-import React from 'react';
-import { BabyLink } from 'react-baby-router';
+import React, { useCallback } from 'react';
+import { navigateTo } from 'react-baby-router';
 
 export const RouteLink = React.memo(({ to, children, mr, mb }) => {
+  const handleClick = useCallback(
+    e => {
+      e.preventDefault();
+      navigateTo(to);
+    },
+    [to]
+  );
+
   return (
-    <BabyLink to={to}>
-      <Link mr={mr} mb={mb}>
-        {children}
-      </Link>
-    </BabyLink>
+    <Link href={to} mr={mr} mb={mb} underline="hover" onClick={handleClick}>
+      {children}
+    </Link>
   );
 });
