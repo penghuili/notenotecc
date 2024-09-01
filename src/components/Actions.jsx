@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
-import { navigate } from '../shared/react/my-router.jsx';
+import { navigateTo } from '../shared/react/my-router.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { pickedPhotosCat } from './PickPhoto.jsx';
@@ -26,11 +26,11 @@ const Wrapper = styled.div`
 
 export const Actions = React.memo(() => {
   const handleTakePhoto = useCallback(() => {
-    navigate(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
+    navigateTo(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
   }, []);
 
   const handleTakeVideo = useCallback(() => {
-    navigate(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
+    navigateTo(`/notes/add?cameraType=${cameraTypes.takeVideo}`);
   }, []);
 
   const handlePickPhotos = useCallback(photos => {
@@ -38,11 +38,11 @@ export const Actions = React.memo(() => {
       return;
     }
     pickedPhotosCat.set(Array.from(photos));
-    navigate(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
+    navigateTo(`/notes/add?cameraType=${cameraTypes.pickPhoto}`);
   }, []);
 
   const handleTakeNote = useCallback(() => {
-    navigate(`/notes/add`);
+    navigateTo(`/notes/add`);
   }, []);
 
   return (

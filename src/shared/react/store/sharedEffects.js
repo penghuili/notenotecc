@@ -6,7 +6,7 @@ import { HTTP } from '../HTTP';
 import { idbStorage } from '../indexDB';
 import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
-import { goBack, navigate } from '../my-router.jsx';
+import { goBack, navigateTo } from '../my-router.jsx';
 import { toastCat, toastTypes } from '../Toast.jsx';
 import {
   authErrorCat,
@@ -125,7 +125,7 @@ export async function verifyEmailEffect(code) {
   if (data) {
     userCat.set(data);
     setToastEffect('Your email is verified!');
-    navigate('/');
+    navigateTo('/');
   } else {
     setToastEffect('Something is wrong', toastTypes.error);
   }
@@ -147,7 +147,7 @@ export async function signInEffect(email, password) {
     }
   } else {
     if (data.tempToken) {
-      navigate('/sign-in/2fa');
+      navigateTo('/sign-in/2fa');
     } else {
       isLoggedInEffect(true);
     }

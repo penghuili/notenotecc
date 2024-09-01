@@ -6,7 +6,7 @@ import { useCat } from 'usecat';
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
 import { isTesting } from './isTesting.js';
-import { navigate } from './my-router.jsx';
+import { navigateTo } from './my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
 export const PaymentStatus = React.memo(() => {
@@ -67,7 +67,7 @@ export const UpgradeButton = React.memo(() => {
   const isUpgradePage = window.location.pathname === '/upgrade';
 
   const handleNavigate = useCallback(() => {
-    navigate('/upgrade');
+    navigateTo('/upgrade');
   }, []);
 
   if (isTesting() || !isLoggedIn || isUpgradePage) {

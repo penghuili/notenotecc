@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { generateNoteSortKey } from '../lib/generateSortKey.js';
-import { navigate, replaceTo } from '../shared/react/my-router.jsx';
+import { navigateTo, replaceTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { objectToQueryString } from '../shared/react/routeHelpers.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
@@ -23,7 +23,7 @@ export const NoteAdd = React.memo(({ queryParams: { cameraType } }) => {
       replaceTo(`/notes/details?noteId=${note.sortKey}&add=1`);
       if (cameraType) {
         const query = objectToQueryString({ noteId: note.sortKey, cameraType });
-        navigate(`/add-images?${query}`);
+        navigateTo(`/add-images?${query}`);
       }
     }
   }, [cameraType]);

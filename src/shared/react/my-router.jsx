@@ -1,14 +1,11 @@
 import { Link } from '@radix-ui/themes';
 import React, { useCallback, useEffect, useState } from 'react';
-import { createCat } from 'usecat';
 
 let renderPage = () => {};
 
-export const currentPathCat = createCat(window.location.pathname);
-
 listenToPopStateChange();
 
-export const navigate = to => {
+export const navigateTo = to => {
   if (isUrlChanged(to)) {
     window.history.pushState({}, '', to);
     renderPage();
@@ -70,7 +67,7 @@ export const Routes = React.memo(({ routes, defaultRoute = '/' }) => {
 
   useEffect(() => {
     if (!page) {
-      navigate(defaultRoute);
+      navigateTo(defaultRoute);
     }
   }, [defaultRoute, page]);
 
@@ -100,7 +97,7 @@ function listenToPopStateChange() {
 
 function handleNavigateForLink(e, to) {
   e.preventDefault();
-  navigate(to);
+  navigateTo(to);
 }
 
 function isUrlChanged(to) {

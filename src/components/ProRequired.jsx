@@ -5,7 +5,7 @@ import { useCat } from 'usecat';
 import { formatDate } from '../shared/js/date';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { isTesting } from '../shared/react/isTesting.js';
-import { navigate } from '../shared/react/my-router.jsx';
+import { navigateTo } from '../shared/react/my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
 
 export const ProRequired = React.memo(({ children }) => {
@@ -23,7 +23,7 @@ export const ProRequired = React.memo(({ children }) => {
     setShowConfirm(true);
   }, []);
   const handleGoToUpgrade = useCallback(() => {
-    navigate('/upgrade');
+    navigateTo('/upgrade');
   }, []);
 
   return (

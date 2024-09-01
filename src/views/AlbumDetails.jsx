@@ -7,7 +7,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { useInView } from '../shared/react/hooks/useInView.js';
-import { navigate } from '../shared/react/my-router.jsx';
+import { navigateTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
@@ -45,7 +45,7 @@ const Header = React.memo(({ albumId }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleEdit = useCallback(() => {
-    navigate(`/albums/edit?albumId=${albumId}`);
+    navigateTo(`/albums/edit?albumId=${albumId}`);
   }, [albumId]);
 
   const handleShowDelete = useCallback(() => {

@@ -18,7 +18,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
-import { CustomRouteLink, navigate } from '../shared/react/my-router.jsx';
+import { CustomRouteLink, navigateTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
@@ -87,23 +87,23 @@ const HeaderMenu = React.memo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
 
   const handleNavigateToAccount = useCallback(() => {
-    navigate('/account');
+    navigateTo('/account');
   }, []);
 
   const handleNavigateToHistory = useCallback(() => {
-    navigate('/on-this-day');
+    navigateTo('/on-this-day');
   }, []);
 
   const handleNavigateToAlbums = useCallback(() => {
-    navigate('/albums');
+    navigateTo('/albums');
   }, []);
 
   const handleNavigateToSettings = useCallback(() => {
-    navigate('/settings');
+    navigateTo('/settings');
   }, []);
 
   const handleNavigateToAI = useCallback(() => {
-    navigate('/ai');
+    navigateTo('/ai');
   }, []);
 
   return (

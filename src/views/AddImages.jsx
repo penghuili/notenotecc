@@ -6,7 +6,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOSBrowser } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { goBack, navigate, replaceTo } from '../shared/react/my-router.jsx';
+import { goBack, navigateTo, replaceTo } from '../shared/react/my-router.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
@@ -50,7 +50,7 @@ export const AddImages = React.memo(({ noteId, cameraType, preview }) => {
   }, []);
 
   const handleShowPreview = useCallback(() => {
-    navigate(`/add-images?noteId=${noteId}&cameraType=${cameraType}&preview=1`);
+    navigateTo(`/add-images?noteId=${noteId}&cameraType=${cameraType}&preview=1`);
   }, [cameraType, noteId]);
 
   useEffect(() => {

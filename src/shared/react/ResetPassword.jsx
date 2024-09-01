@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { navigate, RouteLink } from './my-router.jsx';
+import { navigateTo, RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
 import { setToastEffect } from './store/sharedEffects';
@@ -82,7 +82,7 @@ export const ResetPassword = React.memo(() => {
             setIsSaving(true);
             const { data } = await resetPasswordSave(email, password, code);
             if (data) {
-              navigate('/sign-in');
+              navigateTo('/sign-in');
               setToastEffect(
                 'Your password is reset successfully. Now you can login. You need to reenable 2FA if you want.'
               );

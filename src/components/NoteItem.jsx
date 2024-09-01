@@ -2,7 +2,7 @@ import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
-import { navigate } from '../shared/react/my-router.jsx';
+import { navigateTo } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { AlbumItem } from './AlbumItem.jsx';
@@ -21,7 +21,7 @@ export const NoteItem = React.memo(({ note, albums }) => {
 
   const handleNavigate = useCallback(() => {
     noteCat.set(note);
-    navigate(`/notes/details?noteId=${note.sortKey}`);
+    navigateTo(`/notes/details?noteId=${note.sortKey}`);
   }, [note]);
 
   const handleDeleteImage = useCallback(
