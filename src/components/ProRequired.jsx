@@ -44,11 +44,11 @@ export const ProRequired = React.memo(({ children }) => {
   );
 });
 
-const Wrapper = styled.span`
+const Wrapper = styled.div`
   display: inline-block;
   position: relative;
 `;
-const Overlay = styled.span`
+const Overlay = styled.div`
   display: inline-block;
   position: absolute;
   top: 0;

@@ -47,20 +47,20 @@ export const NoteActions = React.memo(({ note }) => {
   return (
     <Flex align="center" gap="2">
       <ProRequired>
-        <IconButton variant="ghost" onClick={handleShowCamera} mr="2">
+        <IconButton variant="soft" onClick={handleShowCamera}>
           <RiImageAddLine />
         </IconButton>
       </ProRequired>
 
       {!isDetailsPage && (
-        <IconButton variant="ghost" onClick={handleNavigateToDetails} mr="2">
+        <IconButton variant="soft" onClick={handleNavigateToDetails} ml="2">
           <RiPencilLine />
         </IconButton>
       )}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <IconButton variant="ghost" mr="2">
+          <IconButton variant="ghost" ml="2">
             <RiMore2Line />
           </IconButton>
         </DropdownMenu.Trigger>

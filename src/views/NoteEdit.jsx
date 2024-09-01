@@ -88,7 +88,7 @@ const Header = React.memo(({ noteId }) => {
 
   return (
     <PageHeader
-      title="Note details"
+      title="Note"
       isLoading={
         isLoading || isAddingImages || isUpdating || isDeleting || isDeletingImage || isCreating
       }
