@@ -1,13 +1,13 @@
 import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
+import { navigateTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { useInView } from '../shared/react/hooks/useInView.js';
-import { navigateTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';

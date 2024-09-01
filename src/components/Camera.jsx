@@ -1,6 +1,7 @@
 import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { goBack } from 'react-baby-router';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
@@ -9,7 +10,6 @@ import { stopPropagation } from '../lib/stopPropagation.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
 import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
-import { goBack } from '../shared/react/my-router.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';

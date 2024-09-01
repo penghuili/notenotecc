@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useCat } from 'usecat';
 
 import { Banner } from '../shared/react/Banner.jsx';
-import { RouteLink } from '../shared/react/my-router.jsx';
+import { RouteLink } from '../shared/react/RouteLink.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats';
 import { notesCat } from '../store/note/noteCats.js';
 

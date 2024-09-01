@@ -1,14 +1,15 @@
 import { Box, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiMore2Line, RiSortDesc } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
+import { navigateTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { navigateTo, RouteLink } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { RouteLink } from '../shared/react/RouteLink.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { userCat } from '../shared/react/store/sharedCats.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';

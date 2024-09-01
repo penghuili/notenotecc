@@ -9,6 +9,7 @@ import {
   RiSettings3Line,
 } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
+import { BabyLink, navigateTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
@@ -18,7 +19,6 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
-import { CustomRouteLink, navigateTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
@@ -110,16 +110,16 @@ const HeaderMenu = React.memo(() => {
     <>
       {!isLoggedIn && (
         <>
-          <CustomRouteLink to="/sign-up">
+          <BabyLink to="/sign-up">
             <Button variant="solid" size="1" mr="2">
               Sign up
             </Button>
-          </CustomRouteLink>
-          <CustomRouteLink to="/sign-in">
+          </BabyLink>
+          <BabyLink to="/sign-in">
             <Button variant="soft" size="1" mr="2">
               Sign in
             </Button>
-          </CustomRouteLink>
+          </BabyLink>
         </>
       )}
       <DropdownMenu.Root>

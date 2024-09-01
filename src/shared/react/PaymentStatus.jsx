@@ -1,12 +1,12 @@
 import { Button, Text } from '@radix-ui/themes';
 import { differenceInCalendarDays } from 'date-fns';
 import React, { useCallback } from 'react';
+import { navigateTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
 import { isTesting } from './isTesting.js';
-import { navigateTo } from './my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
 export const PaymentStatus = React.memo(() => {

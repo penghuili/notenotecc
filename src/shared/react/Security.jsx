@@ -1,12 +1,12 @@
 import { Button } from '@radix-ui/themes';
 import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@remixicon/react';
 import React from 'react';
+import { BabyLink } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
-import { CustomRouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
@@ -24,23 +24,23 @@ export const Security = React.memo(() => {
       />
 
       <ItemsWrapper align="start">
-        <CustomRouteLink to="/security/2fa">
+        <BabyLink to="/security/2fa">
           <Button variant="ghost">
             <RiLockStarLine /> 2-Factor Authentication
           </Button>
-        </CustomRouteLink>
+        </BabyLink>
 
-        <CustomRouteLink to="/security/email">
+        <BabyLink to="/security/email">
           <Button variant="ghost">
             <RiMailLine /> Change email
           </Button>
-        </CustomRouteLink>
+        </BabyLink>
 
-        <CustomRouteLink to="/security/password">
+        <BabyLink to="/security/password">
           <Button variant="ghost">
             <RiLockPasswordLine /> Change password
           </Button>
-        </CustomRouteLink>
+        </BabyLink>
 
         <LogoutLink />
 

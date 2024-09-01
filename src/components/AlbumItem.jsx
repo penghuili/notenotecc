@@ -1,12 +1,13 @@
 import { Badge } from '@radix-ui/themes';
 import React from 'react';
-
-import { CustomRouteLink } from '../shared/react/my-router.jsx';
+import { BabyLink } from 'react-baby-router';
 
 export const AlbumItem = React.memo(({ album, to, color }) => {
   return (
-    <CustomRouteLink to={to || `/albums/details?albumId=${album.sortKey}`} mr="3" mb="2">
-      <Badge color={color}>{album.title}</Badge>
-    </CustomRouteLink>
+    <BabyLink to={to || `/albums/details?albumId=${album.sortKey}`}>
+      <Badge color={color} mr="3" mb="2">
+        {album.title}
+      </Badge>
+    </BabyLink>
   );
 });

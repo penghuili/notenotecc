@@ -1,8 +1,8 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
+import { navigateTo } from 'react-baby-router';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
-import { navigateTo } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { AlbumItem } from './AlbumItem.jsx';

@@ -7,9 +7,9 @@ import { FormButton } from './FormButton.jsx';
 import { privacyUrl, termsUrl } from './initShared';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { RouteLink } from './my-router.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
+import { RouteLink } from './RouteLink.jsx';
 import { authErrorCat, isSigningUpCat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, signUpEffect } from './store/sharedEffects';
 

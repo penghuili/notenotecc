@@ -1,13 +1,13 @@
 import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiImageAddLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
+import { navigateTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { isMobileWidth } from '../shared/react/device.js';
-import { navigateTo } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { ProRequired } from './ProRequired.jsx';

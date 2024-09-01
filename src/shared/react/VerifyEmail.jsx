@@ -8,7 +8,7 @@ import { appName, logo } from './initShared';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
-import { RouteLink } from './my-router.jsx';
+import { RouteLink } from './RouteLink.jsx';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 

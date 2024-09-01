@@ -5,10 +5,10 @@ import {
   RiVideoAddLine,
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
+import { navigateTo } from 'react-baby-router';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
-import { navigateTo } from '../shared/react/my-router.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { pickedPhotosCat } from './PickPhoto.jsx';

@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { navigateTo } from 'react-baby-router';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { formatDate } from '../shared/js/date';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { isTesting } from '../shared/react/isTesting.js';
-import { navigateTo } from '../shared/react/my-router.jsx';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
 
 export const ProRequired = React.memo(({ children }) => {

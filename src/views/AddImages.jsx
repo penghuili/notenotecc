@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { goBack, navigateTo, replaceTo } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { Camera } from '../components/Camera.jsx';
@@ -6,7 +7,6 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOSBrowser } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { goBack, navigateTo, replaceTo } from '../shared/react/my-router.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

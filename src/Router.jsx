@@ -1,11 +1,11 @@
 import React from 'react';
+import { BabyRoutes } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { PrepareData } from './components/PrepareData.jsx';
 import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.jsx';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
-import { Routes } from './shared/react/my-router.jsx';
 import { PageLoading } from './shared/react/PageLoading.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
@@ -94,7 +94,7 @@ const AllRoutes = React.memo(() => {
     }
 
     if (!isVerified) {
-      return <Routes routes={verifyEmailRoutes} />;
+      return <BabyRoutes routes={verifyEmailRoutes} />;
     }
 
     if (hasLocalNotes === undefined) {
@@ -104,8 +104,8 @@ const AllRoutes = React.memo(() => {
       return <SaveLocalNotes />;
     }
 
-    return <Routes routes={loggedInRoutes} />;
+    return <BabyRoutes routes={loggedInRoutes} />;
   }
 
-  return <Routes routes={publicRoutes} />;
+  return <BabyRoutes routes={publicRoutes} />;
 });

@@ -1,3 +1,5 @@
+import { goBack, navigateTo } from 'react-baby-router';
+
 import { isNewer } from '../../js/date';
 import { httpErrorCodes } from '../../js/httpErrorCodes';
 import { isValidEmail } from '../../js/regex';
@@ -6,7 +8,6 @@ import { HTTP } from '../HTTP';
 import { idbStorage } from '../indexDB';
 import { appName } from '../initShared';
 import { LocalStorage } from '../LocalStorage';
-import { goBack, navigateTo } from '../my-router.jsx';
 import { toastCat, toastTypes } from '../Toast.jsx';
 import {
   authErrorCat,

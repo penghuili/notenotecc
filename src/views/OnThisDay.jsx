@@ -12,6 +12,7 @@ import {
   subYears,
 } from 'date-fns';
 import React, { useCallback, useMemo } from 'react';
+import { replaceTo } from 'react-baby-router';
 import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
@@ -20,7 +21,6 @@ import { asyncForEach } from '../shared/js/asyncForEach';
 import { formatDate } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber';
 import { randomBetween } from '../shared/js/utils.js';
-import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';

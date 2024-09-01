@@ -6,6 +6,7 @@ import {
   RiShieldCheckLine,
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
+import { BabyLink } from 'react-baby-router';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -18,7 +19,6 @@ import { getFileSizeString } from '../shared/react/file';
 import { isTesting } from '../shared/react/isTesting.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared/react/LogoutLink.jsx';
-import { CustomRouteLink } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { PaymentStatus } from '../shared/react/PaymentStatus.jsx';
 import { isLoadingAccountCat, settingsCat, userCat } from '../shared/react/store/sharedCats.js';
@@ -37,24 +37,24 @@ export const Account = React.memo(() => {
 
       <ItemsWrapper align="start">
         {!isTesting() && (
-          <CustomRouteLink to="/upgrade">
+          <BabyLink to="/upgrade">
             <Button variant="ghost">
               <RiMoneyDollarCircleLine /> Subscription
             </Button>
-          </CustomRouteLink>
+          </BabyLink>
         )}
 
-        <CustomRouteLink to="/security">
+        <BabyLink to="/security">
           <Button variant="ghost">
             <RiShieldCheckLine /> Security
           </Button>
-        </CustomRouteLink>
+        </BabyLink>
 
-        <CustomRouteLink to="/settings">
+        <BabyLink to="/settings">
           <Button variant="ghost">
             <RiSettings3Line /> Settings
           </Button>
-        </CustomRouteLink>
+        </BabyLink>
       </ItemsWrapper>
 
       <PublicLinks />

@@ -1,9 +1,9 @@
 import { Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
+import { navigateTo, replaceTo } from 'react-baby-router';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { generateNoteSortKey } from '../lib/generateSortKey.js';
-import { navigateTo, replaceTo } from '../shared/react/my-router.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { objectToQueryString } from '../shared/react/routeHelpers.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

@@ -1,5 +1,6 @@
 import { Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
+import { replaceTo } from 'react-baby-router';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -9,7 +10,6 @@ import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
-import { replaceTo } from '../shared/react/my-router.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
