@@ -65,7 +65,7 @@ const Prices = React.memo(() => {
       <Flex mt="6" mb="6" gap="2" direction={isMobileWidth() ? 'column' : 'row'}>
         <FeatureItem
           title="Free"
-          price={0}
+          price={'$0 / month'}
           benifits={[
             { text: 'Unlimited notes' },
             { text: 'All notes are encrypted' },
@@ -76,13 +76,13 @@ const Prices = React.memo(() => {
 
         <FeatureItem
           title="Pro"
-          price={1.99}
+          price={'$1.99 / month'}
           benifits={[
             { text: 'Everything in Free' },
             { text: 'Unlimited images', bold: true },
             { text: 'Unlimited short videos', bold: true },
           ]}
-          accent
+          color="accent"
         >
           {(!expiresAt || expiresAt < formatDate(new Date())) && (
             <Box mt="4">
@@ -92,6 +92,31 @@ const Prices = React.memo(() => {
                 </Button>
               </a>
             </Box>
+          )}
+        </FeatureItem>
+
+        <FeatureItem
+          title="Lifetime"
+          price={'$39 once'}
+          benifits={[
+            { text: 'Everything in Free' },
+            { text: 'Unlimited images', bold: true },
+            { text: 'Unlimited short videos', bold: true },
+          ]}
+          color="gold"
+        >
+          {(!expiresAt || expiresAt < formatDate(new Date())) && (
+            <Flex direction="column" align="center" mt="4">
+              <a href={import.meta.env.VITE_LIFETIME_LINK} target="_blank" rel="noreferrer">
+                <Button variant="solid" color="yellow">
+                  Get lifetime deal
+                </Button>
+              </a>
+
+              <Text weight="bold" mt="4" align="center">
+                Only for short time
+              </Text>
+            </Flex>
           )}
         </FeatureItem>
       </Flex>
@@ -107,7 +132,7 @@ const Prices = React.memo(() => {
   );
 });
 
-const FeatureItem = React.memo(({ title, price, benifits, accent, children }) => {
+const FeatureItem = React.memo(({ title, price, benifits, color, children }) => {
   return (
     <Flex
       direction="column"
@@ -116,23 +141,27 @@ const FeatureItem = React.memo(({ title, price, benifits, accent, children }) =>
         border: '1px solid var(--gray-6)',
         borderRadius: '6px',
         padding: 'var(--space-4)',
-        ...(accent && {
+        ...(color === 'accent' && {
           backgroundColor: 'var(--accent-9)',
           color: 'var(--accent-contrast)',
+        }),
+        ...(color === 'gold' && {
+          backgroundColor: 'var(--gold-9)',
+          color: 'var(--gold-contrast)',
         }),
       }}
     >
       <Heading as="h3" size="3">
         {title}
       </Heading>
-      <Text mb="4" mt="2" size="5">
-        ${price}/month
+      <Text mb="4" mt="2" size="4" weight="bold">
+        {price}
       </Text>
 
       <Flex direction="column">
         {benifits.map(benifit => (
           <Flex key={benifit.text} align="center" gap="2">
-            <RiCheckLine color={accent ? 'var(--accent-contrast)' : successCssColor} />{' '}
+            <RiCheckLine color={color ? 'var(--accent-contrast)' : successCssColor} />{' '}
             <Text weight={benifit.bold ? 'bold' : 'normal'}>{benifit.text}</Text>
           </Flex>
         ))}

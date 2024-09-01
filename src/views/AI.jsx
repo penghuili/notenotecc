@@ -41,7 +41,7 @@ const templateKeys = {
 };
 const templates = {
   [templateKeys.chinese]: `翻译成中文:`,
-  [templateKeys.extractTextAndTranslate]: `Extract text from the image and translate the text to Chinese:`,
+  [templateKeys.extractTextAndTranslate]: `Extract the text from this image, after you get the text, let me know the language, no need to send the original text back, but please translate the text to Chinese:`,
   [templateKeys.empty]: ``,
 };
 
