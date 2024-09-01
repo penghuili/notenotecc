@@ -3,7 +3,7 @@ import { RiArrowLeftLine } from '@remixicon/react';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { widthWithoutScrollbar } from './getScrollbarWidth.js';
+import { useWidthWithoutScrollbar } from './getScrollbarWidth.js';
 import { logo, showNewVersion } from './initShared';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { UpgradeButton } from './PaymentStatus.jsx';
@@ -12,7 +12,7 @@ import { goBackEffect } from './store/sharedEffects';
 import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`
-  width: ${widthWithoutScrollbar}px;
+  width: ${props => props.width}px;
   height: var(--space-8);
   padding: 0.5rem 0;
 
@@ -34,6 +34,8 @@ const Placeholder = styled.div`
 `;
 
 export function PageHeader({ title, right, isLoading, hasBack }) {
+  const windowWidth = useWidthWithoutScrollbar();
+
   const iconElement = useMemo(() => {
     if (hasBack) {
       return (
@@ -48,7 +50,7 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
 
   return (
     <>
-      <Wrapper justify="center" align="center">
+      <Wrapper justify="center" align="center" width={windowWidth}>
         <Content direction="row" justify="between">
           <Flex align="center" gap="2">
             {iconElement}

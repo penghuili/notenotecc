@@ -6,6 +6,7 @@ import { useCat } from 'usecat';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
+import { isMobileWidth } from '../shared/react/device.js';
 import { navigateTo } from '../shared/react/my-router.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
@@ -47,20 +48,20 @@ export const NoteActions = React.memo(({ note }) => {
   return (
     <Flex align="center" gap="2">
       <ProRequired>
-        <IconButton variant="soft" onClick={handleShowCamera}>
+        <IconButton variant="soft" onClick={handleShowCamera} mr="2">
           <RiImageAddLine />
         </IconButton>
       </ProRequired>
 
       {!isDetailsPage && (
-        <IconButton variant="soft" onClick={handleNavigateToDetails} ml="2">
+        <IconButton variant="soft" onClick={handleNavigateToDetails} mr="2">
           <RiPencilLine />
         </IconButton>
       )}
 
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <IconButton variant="ghost" ml="2">
+          <IconButton variant="ghost" mr={isMobileWidth() ? '2' : '4'}>
             <RiMore2Line />
           </IconButton>
         </DropdownMenu.Trigger>

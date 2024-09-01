@@ -2,10 +2,10 @@ import '@radix-ui/themes/styles.css';
 import './style.css';
 
 import { Theme } from '@radix-ui/themes';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { updateFontSize } from './FontSize.jsx';
-import { widthWithoutScrollbar } from './getScrollbarWidth.js';
+import { useWidthWithoutScrollbar } from './getScrollbarWidth.js';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
@@ -20,15 +20,19 @@ export const warningCssColor = 'var(--amber-9)';
 export const errorCssColor = 'var(--red-9)';
 export const textCssColor = 'var(--gray-12)';
 
-const wrapperWidth = { width: widthWithoutScrollbar };
-
 export function AppWrapper({ children }) {
+  const windowWidth = useWidthWithoutScrollbar();
+
+  const widthStyle = useMemo(() => {
+    return { width: windowWidth };
+  }, [windowWidth]);
+
   useEffect(() => {
     updateFontSize(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
   }, []);
 
   return (
-    <Theme accentColor={themeColor} appearance="light" style={wrapperWidth}>
+    <Theme accentColor={themeColor} appearance="light" style={widthStyle}>
       <PageWrapper>{children}</PageWrapper>
       {/* <KeyboardHandler /> */}
     </Theme>
