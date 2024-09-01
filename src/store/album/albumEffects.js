@@ -1,8 +1,10 @@
 import { localStorageKeys } from '../../lib/constants';
 import { orderByPosition } from '../../shared/js/position';
 import { eventEmitter, eventEmitterEvents } from '../../shared/react/eventEmitter';
-import { LocalStorage } from '../../shared/react/LocalStorage';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
 import { isLoggedInCat } from '../../shared/react/store/sharedCats';
+import { workerActionTypes } from '../workerHelpers';
+import { myWorker } from '../workerListener';
 import {
   albumsCat,
   isCreatingAlbumCat,
@@ -13,14 +15,18 @@ import {
 import { createAlbum, deleteAlbum, fetchAlbums, updateAlbum } from './albumNetwork';
 
 export async function fetchAlbumsEffect() {
+  fetchLocalAlbums();
+
+  forceFetchAlbumsEffect();
+}
+
+function fetchLocalAlbums() {
   if (!albumsCat.get()?.length) {
     const cachedAlbums = LocalStorage.get(localStorageKeys.albums);
     if (cachedAlbums?.length) {
       albumsCat.set(cachedAlbums);
     }
   }
-
-  forceFetchAlbumsEffect();
 }
 
 async function forceFetchAlbumsEffect() {
@@ -32,10 +38,12 @@ async function forceFetchAlbumsEffect() {
 
   const { data } = await fetchAlbums();
   if (data) {
-    albumsCat.set(data.items);
+    myWorker.postMessage({
+      type: workerActionTypes.DECRYPT_ALBUMS,
+      albums: data,
+      privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
+    });
   }
-
-  isLoadingAlbumsCat.set(false);
 }
 
 export async function createAlbumEffect({ sortKey, timestamp, title }) {
@@ -89,8 +97,10 @@ export async function deleteAlbumEffect(albumId) {
   isDeletingAlbumCat.set(false);
 }
 
-fetchAlbumsEffect();
-eventEmitter.on(eventEmitterEvents.loggedIn, () => fetchAlbumsEffect());
+fetchLocalAlbums();
+eventEmitter.on(eventEmitterEvents.loggedIn, () => {
+  fetchAlbumsEffect();
+});
 
 export function updateAlbumsState(newAlbum, type, isServer) {
   const albumsInState = albumsCat.get() || [];

@@ -1,10 +1,12 @@
 import { localStorageKeys } from '../../lib/constants';
 import { formatDate, isNewer } from '../../shared/js/date';
-import { LocalStorage } from '../../shared/react/LocalStorage';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
 import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import { welcomeNotes } from '../welcome';
+import { workerActionTypes } from '../workerHelpers';
+import { myWorker } from '../workerListener';
 import {
   isAddingImagesCat,
   isCreatingNoteCat,
@@ -61,14 +63,14 @@ export async function forceFetchHomeNotesEffect(startKey) {
   const { data } = await fetchNotes(startKey);
 
   if (data) {
-    notesCat.set({
-      items: startKey ? [...notesCat.get().items, ...data.items] : data.items,
-      startKey: data.startKey,
+    myWorker.postMessage({
+      type: workerActionTypes.DECRYPT_NOTES,
+      notes: data.items,
+      privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
+      startKey,
       hasMore: data.hasMore,
     });
   }
-
-  isLoadingNotesCat.set(false);
 }
 
 export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {

@@ -12,11 +12,8 @@ import { idbStorage } from '../../shared/react/indexDB';
 import { appName } from '../../shared/react/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
 import { objectToQueryString } from '../../shared/react/routeHelpers';
-import {
-  decryptNote,
-  decryptPassword,
-  encryptMessageWithEncryptedPassword,
-} from '../album/albumNetwork';
+import { decryptPassword, encryptMessageWithEncryptedPassword } from '../album/albumNetwork';
+import { decryptNote } from '../workerHelpers';
 
 export async function fetchNotes(startKey, startTime, endTime) {
   try {
@@ -24,16 +21,11 @@ export async function fetchNotes(startKey, startTime, endTime) {
     const url = query ? `/v1/notes?${query}` : '/v1/notes';
     const { items, startKey: newStartKey, limit } = await HTTP.get(appName, url);
 
-    const decrypted = await Promise.all(items.map(note => decryptNote(note)));
-
     const data = {
-      items: decrypted,
+      items,
       startKey: newStartKey,
       hasMore: items.length >= limit,
     };
-    if (!startKey && !startTime && !endTime) {
-      LocalStorage.set(localStorageKeys.notes, data);
-    }
 
     return { data, error: null };
   } catch (error) {
@@ -46,7 +38,7 @@ export async function fetchNote(noteId) {
   try {
     const note = await HTTP.get(appName, `/v1/notes/${noteId}`);
 
-    const decrypted = await decryptNote(note);
+    const decrypted = await decryptNote(note, LocalStorage.get(sharedLocalStorageKeys.privateKey));
 
     LocalStorage.set(`${localStorageKeys.note}-${noteId}`, decrypted);
 
@@ -154,7 +146,7 @@ export async function createNote({ sortKey, timestamp, note, images, albumIds })
       albumIds,
     });
 
-    const decrypted = await decryptNote(data);
+    const decrypted = await decryptNote(data, LocalStorage.get(sharedLocalStorageKeys.privateKey));
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -171,7 +163,7 @@ export async function updateNote(noteId, { encryptedPassword, note, albumIds }) 
       albumIds,
     });
 
-    const decrypted = await decryptNote(data);
+    const decrypted = await decryptNote(data, LocalStorage.get(sharedLocalStorageKeys.privateKey));
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -185,7 +177,7 @@ export async function deleteImage(noteId, imagePath) {
       imagePath,
     });
 
-    const decrypted = await decryptNote(data);
+    const decrypted = await decryptNote(data, LocalStorage.get(sharedLocalStorageKeys.privateKey));
 
     return { data: decrypted, error: null };
   } catch (error) {
@@ -201,7 +193,7 @@ export async function addImages(noteId, { encryptedPassword, images }) {
       images: uploadedImages,
     });
 
-    const decrypted = await decryptNote(data);
+    const decrypted = await decryptNote(data, LocalStorage.get(sharedLocalStorageKeys.privateKey));
 
     return { data: decrypted, error: null };
   } catch (error) {

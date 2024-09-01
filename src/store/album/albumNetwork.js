@@ -11,17 +11,15 @@ import { HTTP } from '../../shared/react/HTTP';
 import { appName } from '../../shared/react/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
 import { objectToQueryString } from '../../shared/react/routeHelpers';
+import { decryptNote } from '../workerHelpers';
 
 export async function fetchAlbums() {
   try {
     const albums = await HTTP.get(appName, `/v1/albums`);
     const sorted = orderByPosition(albums, true);
 
-    const decrypted = await Promise.all(sorted.map(album => decryptAlbum(album)));
-    LocalStorage.set(localStorageKeys.albums, decrypted);
-
     return {
-      data: { items: decrypted },
+      data: sorted,
       error: null,
     };
   } catch (error) {
@@ -35,8 +33,9 @@ export async function fetchAlbumItems(albumId, { startKey }) {
     const url = query ? `/v1/albums/${albumId}/notes?${query}` : `/v1/albums/${albumId}/notes`;
     const { items, startKey: newStartKey, limit } = await HTTP.get(appName, url);
 
+    const privateKey = LocalStorage.get(sharedLocalStorageKeys.privateKey);
     const decrypted = await Promise.all(
-      items.filter(item => !!item).map(note => decryptNote(note))
+      items.filter(item => !!item).map(note => decryptNote(note, privateKey))
     );
 
     if (!startKey) {
@@ -136,25 +135,4 @@ export async function encryptMessageWithEncryptedPassword(encryptedPassword, mes
 
   const password = await decryptPassword(encryptedPassword);
   return await encryptMessageSymmetric(password, message);
-}
-export async function decryptNote(note) {
-  try {
-    if (!note?.encrypted) {
-      return note;
-    }
-
-    const decryptedPassword = await decryptMessageAsymmetric(
-      LocalStorage.get(sharedLocalStorageKeys.privateKey),
-      note.encryptedPassword
-    );
-
-    const decryptedTitle = note.note
-      ? await decryptMessageSymmetric(decryptedPassword, note.note)
-      : note.note;
-
-    return { ...note, note: decryptedTitle };
-  } catch (e) {
-    console.log(e);
-    return note;
-  }
 }
