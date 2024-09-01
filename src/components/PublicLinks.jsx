@@ -1,5 +1,12 @@
 import { Button } from '@radix-ui/themes';
-import { RiCodeLine, RiHeartLine, RiHomeLine, RiMailLine, RiServiceLine } from '@remixicon/react';
+import {
+  RiCodeLine,
+  RiHeartLine,
+  RiHomeLine,
+  RiLockLine,
+  RiMailLine,
+  RiServiceLine,
+} from '@remixicon/react';
 import React, { useCallback } from 'react';
 
 import { copyToClipboard } from '../shared/react/copyToClipboard.js';
@@ -24,6 +31,20 @@ export const PublicLinks = React.memo(() => {
         </Button>
       </a>
 
+      <a href="https://github.com/penghuili/notenotecc" target="_blank" rel="noreferrer">
+        <Button variant="ghost">
+          <RiCodeLine />
+          Source code
+        </Button>
+      </a>
+
+      <a href="https://notenote.cc/encryption/" target="_blank" rel="noreferrer">
+        <Button variant="ghost">
+          <RiLockLine />
+          Encryption
+        </Button>
+      </a>
+
       <a href="https://notenote.cc/privacy" target="_blank" rel="noreferrer">
         <Button variant="ghost">
           <RiHeartLine />
@@ -35,13 +56,6 @@ export const PublicLinks = React.memo(() => {
         <Button variant="ghost">
           <RiServiceLine />
           Terms
-        </Button>
-      </a>
-
-      <a href="https://github.com/penghuili/notenotecc" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiCodeLine />
-          Source code
         </Button>
       </a>
 

@@ -160,7 +160,7 @@ const FeatureItem = React.memo(({ title, price, benifits, color, children }) => 
 
       <Flex direction="column">
         {benifits.map(benifit => (
-          <Flex key={benifit.text} align="center" gap="2">
+          <Flex key={benifit.text} align="start" gap="2">
             <RiCheckLine color={color ? 'var(--accent-contrast)' : successCssColor} />{' '}
             <Text weight={benifit.bold ? 'bold' : 'normal'}>{benifit.text}</Text>
           </Flex>
