@@ -67,8 +67,10 @@ export async function forceFetchHomeNotesEffect(startKey) {
       type: workerActionTypes.DECRYPT_NOTES,
       notes: data.items,
       privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
-      startKey,
-      hasMore: data.hasMore,
+      rest: {
+        startKey,
+        hasMore: data.hasMore,
+      },
     });
   }
 }
@@ -87,6 +89,12 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
 
   const { data } = await fetchNotes(null, startTime, endTime);
   if (data?.items) {
+    myWorker.postMessage({
+      type: workerActionTypes.DECRYPT_NOTES,
+      notes: data.items,
+      privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
+      rest: { date: type },
+    });
     onThisDayNotesCat.set({ ...onThisDayNotes, [type]: data.items.reverse() });
   }
 

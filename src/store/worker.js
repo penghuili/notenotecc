@@ -5,9 +5,9 @@ self.onmessage = async function (event) {
 
   try {
     if (type === workerActionTypes.DECRYPT_NOTES) {
-      const { notes, privateKey, startKey, hasMore } = event.data;
+      const { notes, privateKey, rest } = event.data;
       const decrypted = await decryptNotes(notes, privateKey);
-      self.postMessage({ type, decryptedNotes: decrypted, startKey, hasMore });
+      self.postMessage({ type, decryptedNotes: decrypted, rest });
     } else if (type === workerActionTypes.DECRYPT_ALBUMS) {
       const { albums, privateKey } = event.data;
       const decrypted = await decryptAlbums(albums, privateKey);
