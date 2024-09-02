@@ -48,7 +48,7 @@ export function NewVersionAvailable() {
   return (
     <Banner open right={rightElement}>
       <Text weight="bold" as="p">
-        New version available: {newVersion}
+        New version: {newVersion}
       </Text>
       <Text as="p">{changes || 'Small changes.'}</Text>
     </Banner>
