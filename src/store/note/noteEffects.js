@@ -95,10 +95,7 @@ export async function fetchOnThisDayNotesEffect(type, startTime, endTime) {
       privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
       rest: { date: type },
     });
-    onThisDayNotesCat.set({ ...onThisDayNotes, [type]: data.items.reverse() });
   }
-
-  isLoadingOnThisDayNotesCat.set(false);
 }
 
 async function forceFetchNoteEffect(noteId) {

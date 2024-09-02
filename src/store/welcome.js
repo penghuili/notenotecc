@@ -10,12 +10,12 @@ export const welcomeNotes = [
     isWelcome: true,
     note: `## Welcome to notenote.cc!
 A brief list of what you get with notenote.cc:
-- **Encrypted**: All your notes and images are encrypted before they are sent to server, nobody but you can read them; If you know coding, you can check the [source code](https://github.com/penghuili/notenotecc) yourself to see how it works;
 - **Instagram style**: Photos at the top, words below them, good way to record your everyday;
-- **Unlimited**: ${isTesting() ? 'You can take unlimited notes;' : 'You can take unlimited notes without photos `for free`; With a small subscription ($1.99/Month), you can attach unlimited photos and short videos;'}
-- **Today in history**: See what happened the same day of last week, last month, last year etc.;
-- **Fast**: I have invested a lot of time on making the note taking fast.
-Is notenote.cc for you? Try it!`,
+- **Encrypted**: All photos and notes are encrypted before sent to server, nobody but you can read them;
+- **Unlimited**: ${isTesting() ? 'Take unlimited notes;' : 'Take unlimited text notes ==for free==; Upgrade to Pro to attach unlimited photos and short videos;'}
+- **Today in history**: What happened the same day of last week? Last month? Last year? Relive the memories!
+- **Tags**: Group notes with tags;
+- **Fast**: We have invested a lot of time on making the note taking fast;`,
     images: [],
   },
 
@@ -55,14 +55,14 @@ So I created notenote.cc`,
     isLocal: true,
     isWelcome: true,
     note: `## Encryption looks like this
-"**Take notes like Instagram, and encrypted.**"
+"**Your own Instagram, encrypted.**"
 \`becomes\`
 **wy4ECQMIEBxRNEeIF4bgdM7Y+SQ7tISQ57p1ZjndMSjTgY9TfjHeuM3eV4uJ**
 **ScYG0loBx5NmvvYropaF6BNKyE15YsOZhGUmJLoOKhYvEdagyOXNhzp4Ajd4**
 **j8TARG9Cve1sZgcdVr/2zHE5iq5BX3zG+hSpr3tnlcnx8UVFBi9DsRy7/ivL**
 **lgD0L+g=**
 **=kxgU**
-Same for your photos, and those encrypted-nobody-can-understand things are saved in server. Learn more abount [encryption](https://notenote.cc/encryption).`,
+Same for your photos, and these encrypted-nobody-can-understand things are saved in server. Learn more abount [encryption](https://notenote.cc/encryption).`,
     images: [
       {
         hash: 'dce16c44-b473-4499-a01b-d2e5d78c9244',

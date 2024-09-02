@@ -44,9 +44,7 @@ async function getLibVersion(lib, versionKey) {
 async function getStoredVersions() {
   try {
     const data = await fs.readFile(VERSION_FILE, 'utf8');
-    const json = JSON.parse(data);
-
-    return json;
+    return JSON.parse(data);
   } catch (error) {
     return null;
   }
