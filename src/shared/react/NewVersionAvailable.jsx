@@ -50,7 +50,7 @@ export function NewVersionAvailable() {
       <Text weight="bold" as="p">
         New version available: {newVersion}
       </Text>
-      <Text as="p">{changes || 'Tiny changes.'}</Text>
+      <Text as="p">{changes || 'Small changes.'}</Text>
     </Banner>
   );
 }

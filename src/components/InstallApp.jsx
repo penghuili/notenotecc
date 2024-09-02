@@ -3,12 +3,7 @@ import { RiExternalLinkLine, RiSmartphoneLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 
 import { copyToClipboard } from '../shared/react/copyToClipboard.js';
-import {
-  isAndroidApp,
-  isAndroidBrowser,
-  isInstalledOnHomeScreen,
-  isIOSBrowser,
-} from '../shared/react/device.js';
+import { isAndroidApp, isInstalledOnHomeScreen, isIOSBrowser } from '../shared/react/device.js';
 import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 
 const playStoreLink = 'https://play.google.com/store/apps/details?id=cc.notenote.app.twa';
@@ -30,14 +25,6 @@ export const InstallApp = React.memo(() => {
     );
   }
 
-  if (isAndroidBrowser()) {
-    return (
-      <Link href={playStoreLink} target="_blank" rel="noreferrer">
-        <img src="https://notenote.cc/play-store.svg" alt="Play store" height="50" />
-      </Link>
-    );
-  }
-
   if (isIOSBrowser()) {
     return (
       <Flex direction="column" align="start">
@@ -52,5 +39,9 @@ export const InstallApp = React.memo(() => {
     );
   }
 
-  return null;
+  return (
+    <Link href={playStoreLink} target="_blank" rel="noreferrer">
+      <img src="https://notenote.cc/play-store.svg" alt="Play store" height="50" />
+    </Link>
+  );
 });
