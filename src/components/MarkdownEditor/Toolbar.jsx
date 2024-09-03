@@ -302,18 +302,20 @@ const addInlineTag = (wrapperElement, inlineTag) => {
   const range = selection.getRangeAt(0);
   const selectedText = range.toString();
 
-  if (selectedText.trim() === '') {
-    return;
-  }
-
+  let startPosition = 0;
   const inlineElement = document.createElement(inlineTag);
-  inlineElement.textContent = selectedText;
+  if (selectedText.trim() === '') {
+    inlineElement.innerHTML = zeroWidthSpace;
+    startPosition = 1;
+  } else {
+    inlineElement.textContent = selectedText;
+  }
 
   range.deleteContents();
   range.insertNode(inlineElement);
 
   const newRange = document.createRange();
-  newRange.setStart(inlineElement, 0);
+  newRange.setStart(inlineElement, startPosition);
   newRange.collapse(true);
   selection.removeAllRanges();
   selection.addRange(newRange);
