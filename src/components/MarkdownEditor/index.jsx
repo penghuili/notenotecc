@@ -95,6 +95,44 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
     handleChange();
   }, [handleChange]);
 
+  const handlePaste = useCallback(
+    event => {
+      event.preventDefault();
+
+      const text =
+        event.clipboardData?.getData('text/html') || event.clipboardData?.getData('text/plain');
+      if (!text) {
+        return;
+      }
+
+      const markdown = convertToMarkdown(text).trim();
+      const pastedHtml = parseMarkdown(markdown);
+      console.log({ text, markdown, pastedHtml });
+
+      // Insert the cleaned HTML at the cursor position
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      const range = selection.getRangeAt(0);
+      range.deleteContents(); // Remove any selected text
+
+      // Create a temporary div to hold the HTML content
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = pastedHtml;
+
+      // Insert each child of the temporary div
+      while (tempDiv.firstChild) {
+        range.insertNode(tempDiv.firstChild);
+        range.collapse(false); // Move to the end of the inserted content
+      }
+
+      // Move the cursor to the end of the inserted content
+      selection.collapseToEnd();
+
+      handleChange();
+    },
+    [handleChange]
+  );
+
   useEffect(() => {
     editorRef.current.innerHTML = defaultText ? parseMarkdown(defaultText) : '<p></p>';
 
@@ -129,6 +167,7 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
         onMouseUp={handleCheckActiveElements}
         onTouchEnd={handleCheckActiveElements}
         onKeyUp={handleCheckActiveElements}
+        onPaste={handlePaste}
         data-placeholder="Start typing here..."
         isEmpty={isEmpty}
       />
