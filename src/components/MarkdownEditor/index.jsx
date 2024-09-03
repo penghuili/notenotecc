@@ -8,6 +8,7 @@ import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
 import { Editor, Markdown } from './Markdown.jsx';
 import { convertToMarkdown, getCursorPosition, parseMarkdown } from './markdownHelpers.js';
 import {
+  addEmptyTextNodeAfter,
   convertToBlockquote,
   convertToHeader,
   convertToList,
@@ -44,7 +45,11 @@ export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) 
 
   const handleChange = useCallback(
     isUndoRedo => {
-      const innerHTML = editorRef.current.innerHTML;
+      let innerHTML = editorRef.current.innerHTML;
+      if (innerHTML.trim() === '') {
+        innerHTML = '<p></p>';
+        editorRef.current.innerHTML = innerHTML;
+      }
       const markdown = convertToMarkdown(innerHTML);
       onChange(markdown);
 
@@ -279,7 +284,7 @@ const escapeBlockquote = wrapperElement => {
   if (innerHTML.endsWith('<p><br></p><p><br></p>')) {
     currentElement.innerHTML = innerHTML.replace(/<p><br><\/p><p><br><\/p>/, '');
 
-    const div = addEmptyDivAfter(currentElement);
+    const div = addEmptyPAfter(currentElement);
     setCursorPosition(div.firstChild, 1);
   }
 };
@@ -322,9 +327,8 @@ const convertInlineTags = () => {
         const afterNode = document.createTextNode(afterText);
         rangeContainer.parentNode.insertBefore(afterNode, inlineElement.nextSibling);
 
-        const span = addEmptySpanAfter(inlineElement);
-
-        setCursorPosition(span.firstChild, 1);
+        const empty = addEmptyTextNodeAfter(inlineElement);
+        setCursorPosition(empty, 1);
       }
     });
   }
@@ -336,25 +340,17 @@ const escapeInlineTags = inlineElement => {
   if (has2TrailingSpaces(textContent)) {
     inlineElement.textContent = textContent.replace(/(\s|&nbsp;){2,}$/, '');
 
-    const span = addEmptySpanAfter(inlineElement);
-    setCursorPosition(span.firstChild, 1);
+    const empty = addEmptyTextNodeAfter(inlineElement);
+    setCursorPosition(empty, 1);
   }
 };
 
-const addEmptySpanAfter = element => {
-  const span = document.createElement('span');
-  span.innerHTML = '&nbsp;';
-  element.parentNode.insertBefore(span, element.nextSibling);
+const addEmptyPAfter = element => {
+  const p = document.createElement('p');
+  p.innerHTML = zeroWidthSpace;
+  element.parentNode.insertBefore(p, element.nextSibling);
 
-  return span;
-};
-
-const addEmptyDivAfter = element => {
-  const div = document.createElement('div');
-  div.innerHTML = zeroWidthSpace;
-  element.parentNode.insertBefore(div, element.nextSibling);
-
-  return div;
+  return p;
 };
 
 const Wrapper = styled.div`

@@ -247,7 +247,6 @@ export function updateNoteStates(newNote, type, isServer = false) {
   if (type === 'update' || type === 'create') {
     const mergedNote = { ...noteCat.get(), ...newNote, isLocal: !isServer };
     noteCat.set(mergedNote);
-    console.log('note', mergedNote);
     LocalStorage.set(`${localStorageKeys.note}-${newNote.sortKey}`, mergedNote);
   } else if (type === 'delete') {
     LocalStorage.remove(`${localStorageKeys.note}-${newNote.sortKey}`);

@@ -67,54 +67,34 @@ export const Toolbar = React.memo(
     }, [editorRef, onChange, redoHistoryRef, undoHistoryRef]);
 
     const handleToggleBold = useCallback(() => {
-      if (activeElements.STRONG || activeElements.B) {
-        removeInlineTag(editorRef.current, ['strong', 'b']);
-      } else {
-        addInlineTag(editorRef.current, 'strong');
-      }
+      toggleInlineTag(editorRef.current, ['strong', 'b']);
 
       onChange();
-    }, [activeElements.B, activeElements.STRONG, editorRef, onChange]);
+    }, [editorRef, onChange]);
 
     const handleToggleItalic = useCallback(() => {
-      if (activeElements.EM || activeElements.I) {
-        removeInlineTag(editorRef.current, ['em', 'i']);
-      } else {
-        addInlineTag(editorRef.current, 'em');
-      }
+      toggleInlineTag(editorRef.current, ['em', 'i']);
 
       onChange();
-    }, [activeElements.EM, activeElements.I, editorRef, onChange]);
+    }, [editorRef, onChange]);
 
     const handleToggleStrikethrough = useCallback(() => {
-      if (activeElements.DEL) {
-        removeInlineTag(editorRef.current, ['del']);
-      } else {
-        addInlineTag(editorRef.current, 'del');
-      }
+      toggleInlineTag(editorRef.current, ['del']);
 
       onChange();
-    }, [activeElements.DEL, editorRef, onChange]);
+    }, [editorRef, onChange]);
 
     const handleToggleCode = useCallback(() => {
-      if (activeElements.CODE) {
-        removeInlineTag(editorRef.current, ['code']);
-      } else {
-        addInlineTag(editorRef.current, 'code');
-      }
+      toggleInlineTag(editorRef.current, ['code']);
 
       onChange();
-    }, [activeElements.CODE, editorRef, onChange]);
+    }, [editorRef, onChange]);
 
     const handleToggleMark = useCallback(() => {
-      if (activeElements.MARK) {
-        removeInlineTag(editorRef.current, ['mark']);
-      } else {
-        addInlineTag(editorRef.current, 'mark');
-      }
+      toggleInlineTag(editorRef.current, ['mark']);
 
       onChange();
-    }, [activeElements.MARK, editorRef, onChange]);
+    }, [editorRef, onChange]);
 
     const handleToggleH1 = useCallback(() => {
       if (activeElements.H1) {
@@ -293,73 +273,68 @@ export const Toolbar = React.memo(
   }
 );
 
-const addInlineTag = (wrapperElement, inlineTag) => {
+function toggleInlineTag(wrapperElement, tagNames) {
   const selection = window.getSelection();
-  if (!selection.rangeCount) {
-    return;
-  }
+  if (!selection.rangeCount) return;
 
   const range = selection.getRangeAt(0);
-  const selectedText = range.toString();
 
-  let startPosition = 0;
-  const inlineElement = document.createElement(inlineTag);
-  if (selectedText.trim() === '') {
-    inlineElement.innerHTML = zeroWidthSpace;
-    startPosition = 1;
+  // Function to check if a node is or is within the specified tag
+  const isOrWithinTag = node => {
+    while (node && node !== wrapperElement) {
+      if (tagNames.includes(node.nodeName.toLowerCase())) return node;
+      node = node.parentNode;
+    }
+    return null;
+  };
+
+  // Check if the selection is already within the specified tag
+  const existingTag = isOrWithinTag(range.startContainer);
+
+  // If there's no selection, create or move cursor into/out of the tag
+  if (range.collapsed) {
+    if (existingTag) {
+      const emptyNode = addEmptyTextNodeAfter(existingTag);
+      setCursorPosition(emptyNode, 1);
+    } else {
+      // Create a new tag and place cursor inside
+      const newElement = document.createElement(tagNames[0]);
+      newElement.appendChild(document.createTextNode('\u200B')); // Zero-width space
+      range.insertNode(newElement);
+      range.selectNodeContents(newElement);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   } else {
-    inlineElement.textContent = selectedText;
+    // Split start and end containers if they're text nodes
+    if (range.startContainer.nodeType === Node.TEXT_NODE) {
+      range.startContainer.splitText(range.startOffset);
+      range.setStart(range.startContainer.nextSibling, 0);
+    }
+    if (range.endContainer.nodeType === Node.TEXT_NODE) {
+      range.endContainer.splitText(range.endOffset);
+    }
+
+    // Extract the contents of the range
+    const fragment = range.extractContents();
+
+    // Create a new element with the desired tag and set its text content
+    const wrapper = document.createElement(tagNames[0]);
+    wrapper.textContent = fragment.textContent;
+
+    // Insert the wrapper
+    range.insertNode(wrapper);
+
+    // Clear the selection
+    selection.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.setStartAfter(wrapper);
+    newRange.setEndAfter(wrapper);
+    selection.addRange(newRange);
   }
-
-  range.deleteContents();
-  range.insertNode(inlineElement);
-
-  const newRange = document.createRange();
-  newRange.setStart(inlineElement, startPosition);
-  newRange.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(newRange);
 
   wrapperElement.focus();
-};
-
-const removeInlineTag = (wrapperElement, inlineTags) => {
-  const selection = window.getSelection();
-  if (!selection.rangeCount) {
-    return;
-  }
-
-  const range = selection.getRangeAt(0);
-
-  const startContainer = range.startContainer;
-  const position = range.startOffset;
-
-  let element = startContainer;
-  if (!element) {
-    return;
-  }
-
-  while (element !== wrapperElement && !includeElement(inlineTags, element)) {
-    element = element.parentNode;
-  }
-
-  if (!includeElement(inlineTags, element)) {
-    return;
-  }
-
-  element.replaceWith(...element.childNodes);
-
-  const newRange = document.createRange();
-  newRange.setStart(startContainer, position);
-  newRange.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(newRange);
-  wrapperElement.focus();
-};
-
-const includeElement = (tags, element) => {
-  return tags.includes(element.tagName?.toLowerCase());
-};
+}
 
 export const convertToHeader = (wrapperElement, headerType) => {
   const elements = getElementsForBlock(wrapperElement);
@@ -472,6 +447,13 @@ export const getElementsForBlock = wrapperElement => {
     parent,
     content: (element.innerHTML || element.textContent).replace('&nbsp;', ' '),
   };
+};
+
+export const addEmptyTextNodeAfter = element => {
+  const span = document.createTextNode('\u00A0');
+  element.parentNode.insertBefore(span, element.nextSibling);
+
+  return span;
 };
 
 export const setCursorPosition = (targetNode, targetOffset) => {
