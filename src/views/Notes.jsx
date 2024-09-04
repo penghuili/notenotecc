@@ -10,6 +10,7 @@ import {
 } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { BabyLink, navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
@@ -36,7 +37,7 @@ async function load() {
   dispatchAction({ type: actionTypes.FETCH_NOTES });
 }
 
-export const Notes = React.memo(() => {
+export const Notes = fastMemo(() => {
   return (
     <PrepareData load={load} source="Notes">
       <Header />
@@ -52,7 +53,7 @@ export const Notes = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isLoading = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingNoteCat);
@@ -82,7 +83,7 @@ const Header = React.memo(() => {
   );
 });
 
-const HeaderMenu = React.memo(() => {
+const HeaderMenu = fastMemo(() => {
   const isAdmin = useIsAdmin();
   const isLoggedIn = useCat(isLoggedInCat);
 
@@ -168,7 +169,7 @@ const HeaderMenu = React.memo(() => {
   );
 });
 
-const NoteItems = React.memo(() => {
+const NoteItems = fastMemo(() => {
   const { items: notes } = useCat(notesCat);
   const isLoading = useCat(isLoadingNotesCat);
 
@@ -187,7 +188,7 @@ const NoteItems = React.memo(() => {
   return null;
 });
 
-export const NotesList = React.memo(({ notes }) => {
+export const NotesList = fastMemo(({ notes }) => {
   const getNoteAlbums = useGetNoteAlbums();
 
   if (!notes?.length) {
@@ -199,7 +200,7 @@ export const NotesList = React.memo(({ notes }) => {
   ));
 });
 
-const LoadMore = React.memo(() => {
+const LoadMore = fastMemo(() => {
   const isLoading = useCat(isLoadingNotesCat);
   const { startKey, hasMore } = useCat(notesCat);
 

@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 const Wrapper = styled.span`
@@ -18,7 +19,7 @@ const Input = styled.input`
   cursor: pointer;
 `;
 
-export const FilePicker = React.memo(
+export const FilePicker = fastMemo(
   ({ accept, takePhoto, height, children, disabled, multiple, onSelect }) => {
     const handleChange = useCallback(
       e => {

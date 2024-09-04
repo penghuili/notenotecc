@@ -1,6 +1,7 @@
 import { Button, Flex, Link, Text } from '@radix-ui/themes';
 import { RiExternalLinkLine, RiSmartphoneLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
+import fastMemo from 'react-fast-memo';
 
 import { copyToClipboard } from '../shared/react/copyToClipboard.js';
 import { isAndroidApp, isInstalledOnHomeScreen, isIOSBrowser } from '../shared/react/device.js';
@@ -8,7 +9,7 @@ import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 
 const playStoreLink = 'https://play.google.com/store/apps/details?id=cc.notenote.app.twa';
 
-export const InstallApp = React.memo(() => {
+export const InstallApp = fastMemo(() => {
   const handleCopyUserId = useCallback(async () => {
     await copyToClipboard('https://app.notenote.cc');
     setToastEffect('Link copied!');

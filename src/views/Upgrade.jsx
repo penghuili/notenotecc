@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from '@radix-ui/themes';
 import { RiCheckLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -13,7 +14,7 @@ import { useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCa
 import { isFreeTryingCat } from '../store/pay/payCats.js';
 import { freeTrialEffect } from '../store/pay/payEffects.js';
 
-export const Upgrade = React.memo(() => {
+export const Upgrade = fastMemo(() => {
   return (
     <PrepareData>
       <Header />
@@ -23,13 +24,13 @@ export const Upgrade = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isTrying = useCat(isFreeTryingCat);
 
   return <PageHeader title="Upgrade to Pro" isLoading={isTrying} hasBack />;
 });
 
-const Prices = React.memo(() => {
+const Prices = fastMemo(() => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
   const isTrying = useCat(isFreeTryingCat);
@@ -132,7 +133,7 @@ const Prices = React.memo(() => {
   );
 });
 
-const FeatureItem = React.memo(({ title, price, benifits, color, children }) => {
+const FeatureItem = fastMemo(({ title, price, benifits, color, children }) => {
   return (
     <Flex
       direction="column"

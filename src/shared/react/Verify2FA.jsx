@@ -1,5 +1,6 @@
 import { Flex, Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
@@ -11,7 +12,7 @@ import { RouteLink } from './RouteLink.jsx';
 import { authErrorCat, isVerifying2FACat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, verify2FAEffect } from './store/sharedEffects';
 
-export const Verify2FA = React.memo(() => {
+export const Verify2FA = fastMemo(() => {
   const errorMessage = useCat(authErrorCat);
   const isVerifying = useCat(isVerifying2FACat);
 

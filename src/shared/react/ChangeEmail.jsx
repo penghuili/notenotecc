@@ -1,5 +1,6 @@
 import { Button, Flex, Text } from '@radix-ui/themes';
 import React, { useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
@@ -11,7 +12,7 @@ import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
 import { changeEmailTrigger } from './store/sharedNetwork';
 import { toastTypes } from './Toast.jsx';
 
-export const ChangeEmail = React.memo(() => {
+export const ChangeEmail = fastMemo(() => {
   const user = useCat(userCat);
   const isChanging = useCat(isChangingEmailCat);
 

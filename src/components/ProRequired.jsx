@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
@@ -8,7 +9,7 @@ import { Confirm } from '../shared/react/Confirm.jsx';
 import { isTesting } from '../shared/react/isTesting.js';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
 
-export const ProRequired = React.memo(({ children }) => {
+export const ProRequired = fastMemo(({ children }) => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
   const isLoggedIn = useCat(isLoggedInCat);

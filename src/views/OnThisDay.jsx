@@ -13,6 +13,7 @@ import {
 } from 'date-fns';
 import React, { useCallback, useMemo } from 'react';
 import { replaceTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
@@ -31,7 +32,7 @@ const tabsCat = createCat([]);
 const activeTabCat = createCat(null);
 const randomDateCat = createCat(null);
 
-export const OnThisDay = React.memo(({ queryParams: { tab } }) => {
+export const OnThisDay = fastMemo(({ queryParams: { tab } }) => {
   const userCreatedAt = useUserCreatedAt();
 
   const load = useCallback(async () => {
@@ -60,13 +61,13 @@ export const OnThisDay = React.memo(({ queryParams: { tab } }) => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
   return <PageHeader title="On this day" isLoading={isLoading} hasBack />;
 });
 
-const HistoryTabs = React.memo(() => {
+const HistoryTabs = fastMemo(() => {
   const notes = useCat(onThisDayNotesCat);
 
   const tabs = useCat(tabsCat);
@@ -91,7 +92,7 @@ const HistoryTabs = React.memo(() => {
   );
 });
 
-const DatePickerForRandomDate = React.memo(() => {
+const DatePickerForRandomDate = fastMemo(() => {
   const createdAt = useUserCreatedAt();
 
   const activeTab = useCat(activeTabCat);
@@ -122,7 +123,7 @@ const DatePickerForRandomDate = React.memo(() => {
   );
 });
 
-const Notes = React.memo(() => {
+const Notes = fastMemo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
   const notes = useCat(onThisDayNotesCat);
 

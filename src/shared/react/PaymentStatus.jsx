@@ -2,6 +2,7 @@ import { Button, Text } from '@radix-ui/themes';
 import { differenceInCalendarDays } from 'date-fns';
 import React, { useCallback } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { formatDate } from '../js/date';
@@ -9,7 +10,7 @@ import { errorColor, warningColor } from './AppWrapper.jsx';
 import { isTesting } from './isTesting.js';
 import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
-export const PaymentStatus = React.memo(() => {
+export const PaymentStatus = fastMemo(() => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
 
@@ -59,7 +60,7 @@ export const PaymentStatus = React.memo(() => {
   );
 });
 
-export const UpgradeButton = React.memo(() => {
+export const UpgradeButton = fastMemo(() => {
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
   const isLoggedIn = useCat(isLoggedInCat);

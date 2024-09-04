@@ -1,6 +1,7 @@
 import { DropdownMenu, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiDownloadLine, RiMore2Line, RiShareLine } from '@remixicon/react';
 import React, { useCallback, useImperativeHandle, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
@@ -8,7 +9,7 @@ import { errorColor } from '../shared/react/AppWrapper.jsx';
 import { Confirm } from '../shared/react/Confirm.jsx';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 
-export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
+export const ImageActions = fastMemo(({ noteId, image, onDelete }) => {
   const isDeleting = useCat(isDeletingImageCat);
 
   const deleteRef = useRef(null);
@@ -67,7 +68,7 @@ export const ImageActions = React.memo(({ noteId, image, onDelete }) => {
   );
 });
 
-const ConfirmDelete = React.memo(({ ref, onDelete, isDeleting }) => {
+const ConfirmDelete = fastMemo(({ ref, onDelete, isDeleting }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleShow = useCallback(() => {

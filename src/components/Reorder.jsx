@@ -1,11 +1,12 @@
 import { RiDraggable } from '@remixicon/react';
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 import { arrayMove, List } from 'react-movable';
 import styled from 'styled-components';
 
 import { calculateItemPosition } from '../shared/js/position';
 
-export const Reorder = React.memo(({ items, onReorder, reverse }) => {
+export const Reorder = fastMemo(({ items, onReorder, reverse }) => {
   return (
     <List
       values={items}

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { goBack, navigateTo, replaceTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { Camera } from '../components/Camera.jsx';
@@ -13,7 +14,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat, noteCat, useNote } from '../store/note/noteCats.js';
 import { fetchNoteEffect } from '../store/note/noteEffects';
 
-export const AddImagess = React.memo(({ queryParams: { noteId, cameraType, preview } }) => {
+export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType, preview } }) => {
   const prepareData = useCallback(async () => {
     if (noteId) {
       await fetchNoteEffect(noteId);
@@ -36,7 +37,7 @@ export const AddImagess = React.memo(({ queryParams: { noteId, cameraType, previ
   );
 });
 
-export const AddImages = React.memo(({ noteId, cameraType, preview }) => {
+export const AddImages = fastMemo(({ noteId, cameraType, preview }) => {
   const noteItem = useNote(noteId);
   const isAddingImages = useCat(isAddingImagesCat);
 

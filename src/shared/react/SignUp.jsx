@@ -1,5 +1,6 @@
 import { Box, Flex, Link, Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
@@ -13,7 +14,7 @@ import { RouteLink } from './RouteLink.jsx';
 import { authErrorCat, isSigningUpCat } from './store/sharedCats.js';
 import { clearAuthErrorEffect, signUpEffect } from './store/sharedEffects';
 
-export const SignUp = React.memo(() => {
+export const SignUp = fastMemo(() => {
   const errorMessage = useCat(authErrorCat);
   const isSigningUp = useCat(isSigningUpCat);
 

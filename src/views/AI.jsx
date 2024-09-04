@@ -1,6 +1,7 @@
 import { Button, Flex, IconButton, RadioGroup, Text } from '@radix-ui/themes';
 import { RiCameraLine, RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
@@ -18,7 +19,7 @@ import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 import { toastTypes } from '../shared/react/Toast.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';
 
-export const AI = React.memo(() => {
+export const AI = fastMemo(() => {
   useScrollToTop();
 
   return (
@@ -30,7 +31,7 @@ export const AI = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   return <PageHeader title="AI" hasBack />;
 });
 
@@ -47,7 +48,7 @@ const templates = {
 
 const imageCat = createCat(null);
 
-const Form = React.memo(() => {
+const Form = fastMemo(() => {
   const [template, setTemplate] = useState(templateKeys.chinese);
   const [prefix, setPrefix] = useState(templates[templateKeys.chinese]);
   const [propmt, setPrompt] = useState('');
@@ -183,7 +184,7 @@ const Image = styled.img`
   width: 300px;
 `;
 
-const Camera = React.memo(({ onClose }) => {
+const Camera = fastMemo(({ onClose }) => {
   const handleAddImage = useCallback(
     image => {
       imageCat.set(image);

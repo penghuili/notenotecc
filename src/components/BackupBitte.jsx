@@ -1,5 +1,6 @@
 import { Text } from '@radix-ui/themes';
 import React, { useMemo } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { Banner } from '../shared/react/Banner.jsx';
@@ -7,7 +8,7 @@ import { RouteLink } from '../shared/react/RouteLink.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats';
 import { notesCat } from '../store/note/noteCats.js';
 
-export const BackupBitte = React.memo(() => {
+export const BackupBitte = fastMemo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const notes = useCat(notesCat);
   const hasOwnNote = useMemo(() => {

@@ -1,5 +1,5 @@
 {
   "babel-plugin-react-compiler": "0.0.0-experimental-4e0eccf-20240830",
-  "react": "19.0.0-rc-e56f4ae3-20240830",
+  "react": "19.0.0-rc-4f604941-20240830",
   "eslint-plugin-react-compiler": "0.0.0-experimental-b8a7b48-20240830"
 }

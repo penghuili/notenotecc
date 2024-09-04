@@ -1,6 +1,7 @@
 import { Flex, Text } from '@radix-ui/themes';
 import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { compareObjects } from '../../shared/js/object.js';
@@ -23,7 +24,7 @@ import {
 
 const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
-export const MarkdownEditor = React.memo(({ defaultText, onChange, autoFocus }) => {
+export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
   const [activeElements, setActiveElements] = useState({});
   const prevActiveElements = useRef({});
@@ -415,7 +416,7 @@ Start with > you get a blockquote;
 Start with - you get an unordered list;
 Start with 1. you get an ordered list.`;
 
-export const HelperText = React.memo(() => {
+export const HelperText = fastMemo(() => {
   const [open, setOpen] = useState(false);
 
   const handleToggle = useCallback(() => {

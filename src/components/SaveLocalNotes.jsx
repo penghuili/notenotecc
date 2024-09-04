@@ -1,5 +1,6 @@
 import { Spinner, Text } from '@radix-ui/themes';
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 import { createCat } from 'usecat';
 
 import { localStorageKeys } from '../lib/constants.js';
@@ -56,7 +57,7 @@ eventEmitter.on(eventEmitterEvents.loggedIn, async () => {
   hasLocalNotesCat.set(false);
 });
 
-export const SaveLocalNotes = React.memo(() => {
+export const SaveLocalNotes = fastMemo(() => {
   return (
     <PageEmpty>
       <Spinner size="3" />

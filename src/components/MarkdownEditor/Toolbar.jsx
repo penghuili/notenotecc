@@ -14,6 +14,7 @@ import {
   RiStrikethrough,
 } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
@@ -23,7 +24,7 @@ export const zeroWidthSpace = '&ZeroWidthSpace;';
 export const hasUndoHistoryCat = createCat(false);
 export const hasRedoHistoryCat = createCat(false);
 
-export const Toolbar = React.memo(
+export const Toolbar = fastMemo(
   ({ editorRef, undoHistoryRef, redoHistoryRef, activeElements, onChange }) => {
     const hasUndoHistory = useCat(hasUndoHistoryCat);
     const hasRedoHistory = useCat(hasRedoHistoryCat);

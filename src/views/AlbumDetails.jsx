@@ -2,6 +2,7 @@ import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -18,7 +19,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat } from '../store/note/noteCats.js';
 import { NotesList } from './Notes.jsx';
 
-export const AlbumDetails = React.memo(({ queryParams: { albumId } }) => {
+export const AlbumDetails = fastMemo(({ queryParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumItemsEffect(albumId, { startKey: null });
   }, [albumId]);
@@ -36,7 +37,7 @@ export const AlbumDetails = React.memo(({ queryParams: { albumId } }) => {
   );
 });
 
-const Header = React.memo(({ albumId }) => {
+const Header = fastMemo(({ albumId }) => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingAlbumCat);
@@ -108,7 +109,7 @@ const Header = React.memo(({ albumId }) => {
   );
 });
 
-const Notes = React.memo(({ albumId }) => {
+const Notes = fastMemo(({ albumId }) => {
   const { items: notes } = useAlbumNotes(albumId);
 
   if (notes?.length) {
@@ -122,7 +123,7 @@ const Notes = React.memo(({ albumId }) => {
   );
 });
 
-const LoadMore = React.memo(({ albumId }) => {
+const LoadMore = fastMemo(({ albumId }) => {
   const isLoading = useCat(isLoadingAlbumItemsCat);
   const { startKey, hasMore } = useAlbumNotes(albumId);
 

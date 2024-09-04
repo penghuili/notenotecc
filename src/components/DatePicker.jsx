@@ -1,6 +1,7 @@
 import { Button } from '@radix-ui/themes';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
@@ -9,7 +10,7 @@ const startOfMonth = (year, month) => {
   return start === 0 ? 6 : start - 1; // Adjust to make Monday 0 and Sunday 6
 };
 
-export const DatePicker = React.memo(({ value, onChange }) => {
+export const DatePicker = fastMemo(({ value, onChange }) => {
   const [selectedDate, setSelectedDate] = useState(value || new Date());
   const [viewDate, setViewDate] = useState(value || new Date());
   const [viewMode, setViewMode] = useState('days'); // 'days', 'months', 'years'

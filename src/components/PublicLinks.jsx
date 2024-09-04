@@ -8,13 +8,14 @@ import {
   RiServiceLine,
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
+import fastMemo from 'react-fast-memo';
 
 import { copyToClipboard } from '../shared/react/copyToClipboard.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 import { InstallApp } from './InstallApp.jsx';
 
-export const PublicLinks = React.memo(() => {
+export const PublicLinks = fastMemo(() => {
   const handleCopyEmail = useCallback(async () => {
     await copyToClipboard('peng@tuta.com');
     setToastEffect('Contact email is copied!');

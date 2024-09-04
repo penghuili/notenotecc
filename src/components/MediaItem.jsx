@@ -1,5 +1,6 @@
 import { Box } from '@radix-ui/themes';
 import React, { useCallback, useMemo, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { fileTypes } from '../lib/constants.js';
@@ -12,7 +13,7 @@ import { fullScreenImageUrlCat } from './FullScreenImage.jsx';
 import { ImageActions } from './ImageActions.jsx';
 import { VideoPlayer } from './VideoPlayer.jsx';
 
-export const MediaItem = React.memo(
+export const MediaItem = fastMemo(
   ({ noteId, encryptedPassword, url, path, hash, size, encryptedSize, type, onDelete }) => {
     const [showImage, setShowImage] = useState(false);
 
@@ -83,7 +84,7 @@ const ImageElement = styled.img`
   object-fit: contain;
 `;
 
-const InnerImage = React.memo(
+const InnerImage = fastMemo(
   ({ noteId, encryptedPassword, url, path, hash, size, encryptedSize, type, onDelete }) => {
     const { url: remoteUrl, isLoading: isLoadingRemote } = useImageRemoteUrl(
       encryptedPassword,

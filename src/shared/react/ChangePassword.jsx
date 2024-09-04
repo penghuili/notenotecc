@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
@@ -8,7 +9,7 @@ import { PasswordInput } from './PasswordInput.jsx';
 import { isChangingPasswordCat } from './store/sharedCats.js';
 import { changePasswordEffect } from './store/sharedEffects';
 
-export const ChangePassword = React.memo(() => {
+export const ChangePassword = fastMemo(() => {
   const isChanging = useCat(isChangingPasswordCat);
 
   const [currentPassword, setCurrentPassword] = useState('');

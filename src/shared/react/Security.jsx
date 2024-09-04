@@ -2,6 +2,7 @@ import { Button } from '@radix-ui/themes';
 import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@remixicon/react';
 import React from 'react';
 import { BabyLink } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
@@ -11,7 +12,7 @@ import { PageHeader } from './PageHeader.jsx';
 import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
 import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 
-export const Security = React.memo(() => {
+export const Security = fastMemo(() => {
   const isLoggingOutFromAllDevices = useCat(isLoggingOutFromAllDevicesCat);
   const isDeletingAccount = useCat(isDeletingAccountCat);
 

@@ -1,11 +1,12 @@
 import { IconButton, Slider } from '@radix-ui/themes';
 import { RiPlayLargeFill, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { getVideoDuration, getVideoPreviewImage } from '../lib/video';
 
-export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidden }) => {
+export const VideoPlayer = fastMemo(({ src, type, onLoaded, muted = true, hidden }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
@@ -86,7 +87,7 @@ export const VideoPlayer = React.memo(({ src, type, onLoaded, muted = true, hidd
   );
 });
 
-const PlayerActions = React.memo(({ videoRef, src, onLoaded, muted }) => {
+const PlayerActions = fastMemo(({ videoRef, src, onLoaded, muted }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(1);
   const [isMuted, setIsMuted] = useState(muted);

@@ -2,6 +2,7 @@ import { Box, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiMore2Line, RiSortDesc } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
@@ -19,7 +20,7 @@ async function load() {
   await fetchAlbumsEffect();
 }
 
-export const Albums = React.memo(() => {
+export const Albums = fastMemo(() => {
   useScrollToTop();
 
   return (
@@ -37,7 +38,7 @@ export const Albums = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);
   const isDeleting = useCat(isDeletingAlbumCat);
 
@@ -76,7 +77,7 @@ const Header = React.memo(() => {
   );
 });
 
-const AlbumItems = React.memo(() => {
+const AlbumItems = fastMemo(() => {
   const albums = useCat(albumsCat);
 
   if (albums?.length) {
@@ -100,7 +101,7 @@ const AlbumItems = React.memo(() => {
   return null;
 });
 
-const NotesWithoutTags = React.memo(() => {
+const NotesWithoutTags = fastMemo(() => {
   const account = useCat(userCat);
 
   if (!account?.id) {

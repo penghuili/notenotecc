@@ -1,9 +1,10 @@
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { parseMarkdown } from './markdownHelpers';
 
-export const Markdown = React.memo(({ markdown, onClick }) => {
+export const Markdown = fastMemo(({ markdown, onClick }) => {
   const html = parseMarkdown(markdown);
   return <Editor dangerouslySetInnerHTML={{ __html: html }} onClick={onClick} />;
 });

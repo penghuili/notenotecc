@@ -1,6 +1,7 @@
 import { Box, Text } from '@radix-ui/themes';
 import { QRCodeSVG } from 'qrcode.react';
 import React, { useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { errorColor } from './AppWrapper.jsx';
@@ -16,7 +17,7 @@ import {
 } from './store/sharedCats.js';
 import { disable2FAEffect, enable2FAEffect, generate2FASecretEffect } from './store/sharedEffects';
 
-export const Setup2FA = React.memo(() => {
+export const Setup2FA = fastMemo(() => {
   const user = useCat(userCat);
   const isGenerating = useCat(isGenerating2FACat);
   const isEnabling = useCat(isEnabling2FACat);

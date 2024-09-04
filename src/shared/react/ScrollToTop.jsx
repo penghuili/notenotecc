@@ -1,8 +1,9 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine } from '@remixicon/react';
 import React, { useEffect, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 
-export const ScrollToTop = React.memo(() => {
+export const ScrollToTop = fastMemo(() => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {

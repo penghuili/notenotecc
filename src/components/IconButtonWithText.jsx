@@ -1,8 +1,9 @@
 import { IconButton } from '@radix-ui/themes';
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
-export const IconButtonWithText = React.memo(
+export const IconButtonWithText = fastMemo(
   ({ onClick, children, text, disabled, variant, radius }) => {
     return (
       <ButtonWrapper

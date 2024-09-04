@@ -1,12 +1,13 @@
 import './ImageCarousel.css';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 
 import { fileTypes } from '../lib/constants';
 import { isMobileBrowser } from '../shared/react/device';
 import { MediaItem } from './MediaItem.jsx';
 
-export const ImageCarousel = React.memo(({ noteId, encryptedPassword, images, onDelete }) => {
+export const ImageCarousel = fastMemo(({ noteId, encryptedPassword, images, onDelete }) => {
   const isSwipable = images.length > 1;
   const [currentIndex, setCurrentIndex] = useState(isSwipable ? 1 : 0); // Start at the first actual image
   const [touchStart, setTouchStart] = useState(0);

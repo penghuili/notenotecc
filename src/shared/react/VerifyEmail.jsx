@@ -1,5 +1,6 @@
 import { Avatar, Button, Heading, Text } from '@radix-ui/themes';
 import React, { useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { FormButton } from './FormButton.jsx';
@@ -12,7 +13,7 @@ import { RouteLink } from './RouteLink.jsx';
 import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
 import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 
-export const VerifyEmail = React.memo(() => {
+export const VerifyEmail = fastMemo(() => {
   const isVerifying = useCat(isVerifyingEmailCat);
   const isResending = useCat(isResendingVerificationCodeCat);
 

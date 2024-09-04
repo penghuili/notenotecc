@@ -1,8 +1,9 @@
 import { Link } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 
-export const RouteLink = React.memo(({ to, children, mr, mb }) => {
+export const RouteLink = fastMemo(({ to, children, mr, mb }) => {
   const handleClick = useCallback(
     e => {
       e.preventDefault();

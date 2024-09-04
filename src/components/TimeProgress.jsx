@@ -1,7 +1,8 @@
 import { Progress } from '@radix-ui/themes';
 import React, { useCallback, useImperativeHandle, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 
-export const TimeProgress = React.memo(({ ref, totalTime }) => {
+export const TimeProgress = fastMemo(({ ref, totalTime }) => {
   const [progress, setProgress] = useState(0);
 
   const timerIdRef = useRef(null);

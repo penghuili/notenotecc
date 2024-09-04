@@ -1,5 +1,6 @@
 import { Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageLoading } from '../shared/react/PageLoading.jsx';
@@ -10,7 +11,7 @@ const PrepareDataStatus = {
   ready: 'ready',
 };
 
-export const PrepareData = React.memo(({ load, children }) => {
+export const PrepareData = fastMemo(({ load, children }) => {
   const [status, setStatus] = useState(PrepareDataStatus.pending);
 
   useEffect(() => {

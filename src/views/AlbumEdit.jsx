@@ -1,5 +1,6 @@
 import { Button } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
+import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -12,7 +13,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 
 const titleCat = createCat('');
 
-export const AlbumEdit = React.memo(({ queryParams: { albumId } }) => {
+export const AlbumEdit = fastMemo(({ queryParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumsEffect();
     const album = findAlbum(albumsCat.get(), albumId);
@@ -32,7 +33,7 @@ export const AlbumEdit = React.memo(({ queryParams: { albumId } }) => {
   );
 });
 
-const Header = React.memo(({ albumId }) => {
+const Header = fastMemo(({ albumId }) => {
   const isUpdating = useCat(isUpdatingAlbumCat);
   const title = useCat(titleCat);
   const album = useAlbum(albumId);
@@ -55,7 +56,7 @@ const Header = React.memo(({ albumId }) => {
   return <PageHeader title="Edit tag" isLoading={isUpdating} hasBack right={rightElement} />;
 });
 
-const Form = React.memo(() => {
+const Form = fastMemo(() => {
   const title = useCat(titleCat);
 
   const handleChange = useCallback(title => {

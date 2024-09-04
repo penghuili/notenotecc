@@ -1,5 +1,6 @@
 import { Button, CheckboxGroup, Flex, Heading, Text } from '@radix-ui/themes';
 import React, { useCallback } from 'react';
+import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { generateAlbumSortKey } from '../lib/generateSortKey.js';
@@ -16,7 +17,7 @@ const checkboxRootStyle = {
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
-export const AlbumsSelector = React.memo(({ onChange, mt }) => {
+export const AlbumsSelector = fastMemo(({ onChange, mt }) => {
   return (
     <>
       <Flex direction="column" gap="2" mt={mt}>
@@ -32,7 +33,7 @@ export const AlbumsSelector = React.memo(({ onChange, mt }) => {
   );
 });
 
-export const AddNewAlbum = React.memo(({ onChange }) => {
+export const AddNewAlbum = fastMemo(({ onChange }) => {
   const description = useCat(albumDescriptionCat);
   const isCreating = useCat(isCreatingAlbumCat);
 
@@ -64,7 +65,7 @@ export const AddNewAlbum = React.memo(({ onChange }) => {
   );
 });
 
-const AlbumItems = React.memo(({ onChange }) => {
+const AlbumItems = fastMemo(({ onChange }) => {
   const albums = useCat(albumsCat);
   const selectedKeys = useCat(albumSelectedKeysCat);
 

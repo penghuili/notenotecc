@@ -1,6 +1,7 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import { RiCameraLensLine, RiRefreshLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
@@ -24,7 +25,7 @@ const Video = styled.video`
   height: ${props => `${props.size}px`};
 `;
 
-export const TakePhoto = React.memo(({ onSelect }) => {
+export const TakePhoto = fastMemo(({ onSelect }) => {
   const videoStream = useCat(videoStreamCat);
   const videoStreamError = useCat(videoStreamErrorCat);
 

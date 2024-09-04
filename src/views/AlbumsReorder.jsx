@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -13,7 +14,7 @@ async function load() {
   await fetchAlbumsEffect();
 }
 
-export const AlbumsReorder = React.memo(() => {
+export const AlbumsReorder = fastMemo(() => {
   useScrollToTop();
 
   return (
@@ -25,13 +26,13 @@ export const AlbumsReorder = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isLoading = useCat(isLoadingAlbumsCat);
 
   return <PageHeader title="Reorder tags" isLoading={isLoading} hasBack />;
 });
 
-const ReorderAlbums = React.memo(() => {
+const ReorderAlbums = fastMemo(() => {
   const albums = useCat(albumsCat);
 
   const handleReorder = useCallback(({ newItems, item }) => {

@@ -7,6 +7,7 @@ import {
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { BabyLink } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -28,7 +29,7 @@ async function load() {
   await fetchSettingsEffect();
 }
 
-export const Account = React.memo(() => {
+export const Account = fastMemo(() => {
   return (
     <PrepareData load={load}>
       <Header />
@@ -68,13 +69,13 @@ export const Account = React.memo(() => {
   );
 });
 
-const Header = React.memo(() => {
+const Header = fastMemo(() => {
   const isLoadingAccount = useCat(isLoadingAccountCat);
 
   return <PageHeader title="Account" isLoading={isLoadingAccount} hasBack />;
 });
 
-const AccountInfo = React.memo(() => {
+const AccountInfo = fastMemo(() => {
   const account = useCat(userCat);
   const settings = useCat(settingsCat);
   const isAdmin = useIsAdmin();

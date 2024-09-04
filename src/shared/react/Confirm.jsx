@@ -1,7 +1,8 @@
 import { AlertDialog, Button, Flex, VisuallyHidden } from '@radix-ui/themes';
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 
-export const Confirm = React.memo(
+export const Confirm = fastMemo(
   ({
     open,
     onOpenChange,

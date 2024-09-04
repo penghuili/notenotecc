@@ -2,6 +2,7 @@ import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
 import { RiDeleteBinLine, RiImageAddLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
@@ -12,7 +13,7 @@ import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { ProRequired } from './ProRequired.jsx';
 
-export const NoteActions = React.memo(({ note }) => {
+export const NoteActions = fastMemo(({ note }) => {
   const isDetailsPage = window.location.pathname === '/notes/details';
   const isDeleting = useCat(isDeletingNoteCat);
 

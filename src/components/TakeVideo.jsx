@@ -1,6 +1,7 @@
 import { Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiRecordCircleLine, RiRefreshLine, RiStopCircleLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
@@ -81,7 +82,7 @@ const Video = styled.video`
 
 export const RECORDING_DURATION = 15600;
 
-export const TakeVideo = React.memo(({ onSelect }) => {
+export const TakeVideo = fastMemo(({ onSelect }) => {
   const videoStream = useCat(videoStreamCat);
   const videoStreamError = useCat(videoStreamErrorCat);
 

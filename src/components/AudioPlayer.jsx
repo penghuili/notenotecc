@@ -1,4 +1,5 @@
 import React from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -10,7 +11,7 @@ const Wrapper = styled.div`
   padding: 0.5rem;
 `;
 
-export const AudioPlayer = React.memo(({ src, hidden, onLoaded }) => {
+export const AudioPlayer = fastMemo(({ src, hidden, onLoaded }) => {
   return (
     <Wrapper hidden={hidden}>
       <audio controls preload="metadata" onLoadedData={onLoaded}>

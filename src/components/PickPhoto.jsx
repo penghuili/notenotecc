@@ -1,6 +1,7 @@
 import { Flex, Text } from '@radix-ui/themes';
 import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
@@ -28,7 +29,7 @@ const HelperTextWrapper = styled.div`
 
 export const pickedPhotosCat = createCat([]);
 
-export const PickPhoto = React.memo(({ onSelect }) => {
+export const PickPhoto = fastMemo(({ onSelect }) => {
   const pickedPhotos = useCat(pickedPhotosCat);
   const [error, setError] = useState(null);
 

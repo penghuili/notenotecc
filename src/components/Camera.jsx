@@ -2,6 +2,7 @@ import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { goBack } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
@@ -16,7 +17,7 @@ import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
-export const Camera = React.memo(
+export const Camera = fastMemo(
   ({ type, disabled, showPreviewCarousel, onShowPreviewCaruosel, onSelect, onClose }) => {
     const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
     const [images, setImages] = useState([]);
@@ -140,7 +141,7 @@ const CarouselTop = styled.div`
   padding: 0.5rem;
 `;
 
-const ImagesPreview = React.memo(
+const ImagesPreview = fastMemo(
   ({ images, showPreviewCaruosel, onShowPreviewCaruosel, onDelete }) => {
     const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
 
@@ -186,7 +187,7 @@ const ImagesPreview = React.memo(
   }
 );
 
-const PreviewItem = React.memo(({ image, onClick }) => {
+const PreviewItem = fastMemo(({ image, onClick }) => {
   const { url } = useImageLocalUrl(image.hash);
   if (!url) {
     return null;

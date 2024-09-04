@@ -1,6 +1,7 @@
 import { Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
 import { replaceTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelector.jsx';
@@ -28,7 +29,7 @@ import { fetchNoteEffect } from '../store/note/noteEffects';
 const descriptionCat = createCat('');
 let deletedNoteKey;
 
-export const NoteEdit = React.memo(({ queryParams: { noteId, add } }) => {
+export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
   const prepareData = useCallback(async () => {
     if (noteId) {
       await fetchNoteEffect(noteId);
@@ -75,7 +76,7 @@ export const NoteEdit = React.memo(({ queryParams: { noteId, add } }) => {
   );
 });
 
-const Header = React.memo(({ noteId }) => {
+const Header = fastMemo(({ noteId }) => {
   const isLoading = useCat(isLoadingNoteCat);
   const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
@@ -99,7 +100,7 @@ const Header = React.memo(({ noteId }) => {
   );
 });
 
-const NoteView = React.memo(({ noteId, isAddingNote }) => {
+const NoteView = fastMemo(({ noteId, isAddingNote }) => {
   const noteItem = useNote(noteId);
 
   const handleDeleteImage = useCallback(
@@ -150,7 +151,7 @@ const saveDescription = async newNote => {
 };
 const debouncedSaveDescription = debounceAndQueue(saveDescription, 500);
 
-const Editor = React.memo(({ noteId, autoFocus }) => {
+const Editor = fastMemo(({ noteId, autoFocus }) => {
   const noteItem = useNote(noteId);
   const description = useCat(descriptionCat);
 
@@ -169,7 +170,7 @@ const Editor = React.memo(({ noteId, autoFocus }) => {
   return <MarkdownEditor autoFocus={autoFocus} defaultText={description} onChange={handleChange} />;
 });
 
-const AddAlbums = React.memo(({ noteId }) => {
+const AddAlbums = fastMemo(({ noteId }) => {
   const noteItem = useNote(noteId);
 
   const handleChange = useCallback(

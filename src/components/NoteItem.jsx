@@ -1,6 +1,7 @@
 import { Box, Flex, Text } from '@radix-ui/themes';
 import React, { useCallback, useMemo } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
@@ -11,7 +12,7 @@ import { Markdown } from './MarkdownEditor/Markdown.jsx';
 import { NoteActions } from './NoteActions.jsx';
 import { TextTruncate } from './TextTruncate.jsx';
 
-export const NoteItem = React.memo(({ note, albums }) => {
+export const NoteItem = fastMemo(({ note, albums }) => {
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
   }, [note?.createdAt]);

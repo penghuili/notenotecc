@@ -1,5 +1,6 @@
 import React from 'react';
 import { BabyRoutes } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from './components/PrepareData.jsx';
@@ -83,7 +84,7 @@ const publicRoutes = {
   '/': Notes,
 };
 
-const AllRoutes = React.memo(() => {
+const AllRoutes = fastMemo(() => {
   const isLoggedIn = useCat(isLoggedInCat);
   const isVerified = useIsEmailVerified();
   const hasLocalNotes = useCat(hasLocalNotesCat);

@@ -1,6 +1,7 @@
 import { Flex, IconButton } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
@@ -48,7 +49,7 @@ const TopPlaceholder = styled.div`
   height: calc(var(--space-8) + var(--space-2));
 `;
 
-export const FullscreenPopup = React.memo(({ disabled, onBack, onConfirm, onClose, children }) => {
+export const FullscreenPopup = fastMemo(({ disabled, onBack, onConfirm, onClose, children }) => {
   useEffect(() => {
     disableBodyScroll();
 

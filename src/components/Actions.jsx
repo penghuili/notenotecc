@@ -6,6 +6,7 @@ import {
 } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import { navigateTo } from 'react-baby-router';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
@@ -24,7 +25,7 @@ const Wrapper = styled.div`
   gap: 0.5rem;
 `;
 
-export const Actions = React.memo(() => {
+export const Actions = fastMemo(() => {
   const handleTakePhoto = useCallback(() => {
     navigateTo(`/notes/add?cameraType=${cameraTypes.takePhoto}`);
   }, []);

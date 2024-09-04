@@ -2,6 +2,7 @@ import './FontSize.css';
 
 import { Box, RadioGroup, Text } from '@radix-ui/themes';
 import React, { useCallback, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 
@@ -19,7 +20,7 @@ export function updateFontSize(fontSize) {
   document.body.classList = newClasses;
 }
 
-export const FontSize = React.memo(() => {
+export const FontSize = fastMemo(() => {
   const [scaling, setScaling] = useState(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
 
   const handleChange = useCallback(value => {

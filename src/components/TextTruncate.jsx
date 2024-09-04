@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
-export const TextTruncate = React.memo(({ children, maxLines = 6, showFullText, onClick }) => {
+export const TextTruncate = fastMemo(({ children, maxLines = 6, showFullText, onClick }) => {
   const textRef = useRef(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
