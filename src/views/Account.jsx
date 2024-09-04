@@ -9,7 +9,6 @@ import React, { useCallback } from 'react';
 import { BabyLink } from 'react-baby-router';
 import { useCat } from 'usecat';
 
-import { AppsumoCode } from '../components/AppSumoCode.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { PublicLinks } from '../components/PublicLinks.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
@@ -35,8 +34,6 @@ export const Account = React.memo(() => {
       <Header />
 
       <AccountInfo />
-
-      <AppsumoCode />
 
       <ItemsWrapper align="start">
         {!isTesting() && (
