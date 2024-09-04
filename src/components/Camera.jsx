@@ -128,6 +128,10 @@ const CarouselWrapper = styled.div`
   justify-content: center;
   background-color: black;
 `;
+const CarouselContent = styled.div`
+  width: 100%;
+  padding: 0 0.5rem;
+`;
 const CarouselTop = styled.div`
   position: absolute;
   top: 0;
@@ -172,9 +176,9 @@ const ImagesPreview = React.memo(
                 <RiArrowLeftLine />
               </IconButton>
             </CarouselTop>
-            <div onClick={stopPropagation}>
+            <CarouselContent onClick={stopPropagation}>
               <ImageCarousel images={reversedImages} onDelete={handleDelete} />
-            </div>
+            </CarouselContent>
           </CarouselWrapper>
         )}
       </>
