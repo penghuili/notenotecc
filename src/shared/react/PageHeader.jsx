@@ -15,8 +15,9 @@ const Wrapper = styled(Flex)`
   width: ${props => props.width}px;
   height: var(--space-8);
   padding: 0.5rem 0;
+  margin-left: -0.5rem;
 
-  position: fixed;
+  position: sticky;
   left: 0;
   top: env(safe-area-inset-top);
   z-index: 2000;
@@ -28,9 +29,6 @@ const Content = styled(Flex)`
   max-width: 600px;
   z-index: 1;
   padding: 0 0.5rem;
-`;
-const Placeholder = styled.div`
-  height: calc(var(--space-8) + var(--space-2));
 `;
 
 export function PageHeader({ title, right, isLoading, hasBack }) {
@@ -69,8 +67,6 @@ export function PageHeader({ title, right, isLoading, hasBack }) {
           </Flex>
         </Content>
       </Wrapper>
-
-      <Placeholder />
 
       {showNewVersion && <NewVersionAvailable />}
 

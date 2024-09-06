@@ -47,7 +47,7 @@ export const Actions = fastMemo(() => {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper ref={parent}>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
         <RiStickyNoteAddLine />
       </IconButtonWithText>
