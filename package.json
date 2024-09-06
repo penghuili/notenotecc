@@ -38,13 +38,7 @@
     "eslint-plugin-sonarjs": "1.0.4",
     "prettier": "3.3.3",
     "rollup-plugin-visualizer": "5.12.0",
-    "vite": "5.4.2"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "vite": "5.4.3"
   },
   "browserslist": {
     "production": [
@@ -64,7 +58,8 @@
     "cs": "rm -rf src/shared && mkdir src/shared && cp -a ../private-sharedjs/lib/js src/shared/js && cp -a ../private-sharedjs/lib/react src/shared/react && rm -f scripts/upload.js && cp -a ../private-sharedjs/scripts/upload.js scripts/upload.js",
     "start": "npm run cs && vite",
     "build": "vite build",
-    "dd": "npm run cs && node ./scripts/upload.js",
+    "dt": "npm run cs && node ./scripts/update-build-env.js dev && node ./scripts/upload.js",
+    "dp": "npm run cs && node ./scripts/update-build-env.js prod && node ./scripts/upload.js",
     "lint": "eslint .",
     "ana": "vite --profile",
     "rr": "node scripts/react-versions.js"

@@ -486,7 +486,7 @@ const Wrapper = styled(Flex)`
   overflow-x: auto;
   scrollbar-width: none;
   position: sticky;
-  bottom: 0;
+  top: var(--space-8);
 `;
 const Placeholder = styled.div`
   width: ${props => props.width};

@@ -16,3 +16,20 @@ export function useVisualViewportHeight() {
 
   return height;
 }
+
+export function useKeyboardHeight() {
+  const [height, setHeight] = useState(window.innerHeight - window.visualViewport.height);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const keyboardHeight = window.innerHeight - window.visualViewport.height;
+      setHeight(keyboardHeight);
+    };
+
+    window.visualViewport.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return height;
+}

@@ -161,6 +161,13 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
 
   return (
     <Wrapper>
+      <Toolbar
+        editorRef={editorRef}
+        undoHistoryRef={undoHistoryRef}
+        redoHistoryRef={redoHistoryRef}
+        activeElements={activeElements}
+        onChange={handleChange}
+      />
       <Editor
         ref={editorRef}
         contentEditable
@@ -172,13 +179,7 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
         data-placeholder="Start typing here..."
         isEmpty={isEmpty}
       />
-      <Toolbar
-        editorRef={editorRef}
-        undoHistoryRef={undoHistoryRef}
-        redoHistoryRef={redoHistoryRef}
-        activeElements={activeElements}
-        onChange={handleChange}
-      />
+
       <HelperText />
     </Wrapper>
   );

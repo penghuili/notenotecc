@@ -20,6 +20,10 @@ export const warningCssColor = 'var(--amber-9)';
 export const errorCssColor = 'var(--red-9)';
 export const textCssColor = 'var(--gray-12)';
 
+if ('virtualKeyboard' in navigator) {
+  navigator.virtualKeyboard.overlaysContent = true;
+}
+
 export function AppWrapper({ children }) {
   const windowWidth = useWidthWithoutScrollbar();
 
@@ -34,7 +38,7 @@ export function AppWrapper({ children }) {
   return (
     <Theme accentColor={themeColor} appearance="light" style={widthStyle}>
       <PageWrapper>{children}</PageWrapper>
-      {/* <KeyboardHandler /> */}
+      <div style={{ height: 'env(keyboard-inset-height, 0px)' }} />
     </Theme>
   );
 }

@@ -15,7 +15,7 @@ export const Editor = styled.div`
 
   &[contenteditable='true'] {
     overflow-y: auto;
-    padding: var(--space-3) 0;
+    padding: var(--space-3) 0 0;
 
     &::before {
       content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
