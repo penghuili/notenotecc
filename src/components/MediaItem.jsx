@@ -1,5 +1,5 @@
 import { Box } from '@radix-ui/themes';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
@@ -93,6 +93,7 @@ const InnerImage = fastMemo(
     );
     const { url: localUrl, isLoading: isLoadingLocal } = useImageLocalUrl(hash);
     const [isLoadingContent, setIsLoadingContent] = useState(true);
+    const [showLoading, setShowLoading] = useState(false);
 
     const isLoadingTotal = isLoadingRemote || isLoadingLocal || isLoadingContent;
     const innerUrl = url || remoteUrl || localUrl;
@@ -120,9 +121,19 @@ const InnerImage = fastMemo(
       fullScreenImageUrlCat.set(innerUrl);
     }, [innerUrl]);
 
+    useEffect(() => {
+      let timerId = setTimeout(() => {
+        setShowLoading(true);
+      }, 300);
+
+      return () => {
+        clearTimeout(timerId);
+      };
+    }, []);
+
     return (
       <>
-        {isLoadingTotal && <LoadingSkeleton width="100%" height="100%" />}
+        {isLoadingTotal && showLoading && <LoadingSkeleton width="100%" height="100%" />}
 
         {!!innerUrl && (
           <>
