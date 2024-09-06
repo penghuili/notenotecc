@@ -4,14 +4,14 @@ import { decryptBlob } from '../store/note/noteNetwork';
 import { fetchFileWithUrl } from './fetchFileWithUrl';
 import { imagePathToUrl } from './imagePathToUrl';
 
-const cachedUrls = {};
+export const cachedImageUrls = {};
 
 export function useImageRemoteUrl(encryptedPassword, path, type) {
-  const [url, setUrl] = useState(cachedUrls[path]);
+  const [url, setUrl] = useState(cachedImageUrls[path]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (!path || !encryptedPassword || cachedUrls[path]) {
+    if (!path || !encryptedPassword || cachedImageUrls[path]) {
       return;
     }
 
@@ -21,7 +21,7 @@ export function useImageRemoteUrl(encryptedPassword, path, type) {
       .then(blob => {
         const blobUrl = URL.createObjectURL(blob);
         setUrl(blobUrl);
-        cachedUrls[path] = blobUrl;
+        cachedImageUrls[path] = blobUrl;
       })
       .catch(e => {
         console.log(e);

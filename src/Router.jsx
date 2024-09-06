@@ -7,6 +7,7 @@ import { PrepareData } from './components/PrepareData.jsx';
 import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.jsx';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
+import { isMobileWidth } from './shared/react/device.js';
 import { PageLoading } from './shared/react/PageLoading.jsx';
 import { ResetPassword } from './shared/react/ResetPassword.jsx';
 import { Security } from './shared/react/Security.jsx';
@@ -95,7 +96,7 @@ const AllRoutes = fastMemo(() => {
     }
 
     if (!isVerified) {
-      return <BabyRoutes routes={verifyEmailRoutes} />;
+      return <BabyRoutes routes={verifyEmailRoutes} enableAnimation={isMobileWidth()} />;
     }
 
     if (hasLocalNotes === undefined) {
@@ -105,8 +106,8 @@ const AllRoutes = fastMemo(() => {
       return <SaveLocalNotes />;
     }
 
-    return <BabyRoutes routes={loggedInRoutes} />;
+    return <BabyRoutes routes={loggedInRoutes} enableAnimation={isMobileWidth()} />;
   }
 
-  return <BabyRoutes routes={publicRoutes} />;
+  return <BabyRoutes routes={publicRoutes} enableAnimation={isMobileWidth()} />;
 });

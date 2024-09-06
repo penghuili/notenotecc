@@ -19,7 +19,6 @@ import {
   isCreatingNoteCat,
   isDeletingImageCat,
   isDeletingNoteCat,
-  isLoadingNoteCat,
   isUpdatingNoteCat,
   noteCat,
   useNote,
@@ -77,7 +76,6 @@ export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
 });
 
 const Header = fastMemo(({ noteId }) => {
-  const isLoading = useCat(isLoadingNoteCat);
   const isCreating = useCat(isCreatingNoteCat);
   const isUpdating = useCat(isUpdatingNoteCat);
   const isDeleting = useCat(isDeletingNoteCat);
@@ -90,9 +88,7 @@ const Header = fastMemo(({ noteId }) => {
   return (
     <PageHeader
       title="Note"
-      isLoading={
-        isLoading || isAddingImages || isUpdating || isDeleting || isDeletingImage || isCreating
-      }
+      isLoading={isAddingImages || isUpdating || isDeleting || isDeletingImage || isCreating}
       fixed
       hasBack
       right={rightElement}

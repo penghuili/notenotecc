@@ -1,11 +1,11 @@
 import { Box } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { fileTypes } from '../lib/constants.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
-import { useImageRemoteUrl } from '../lib/useImageRemoteUrl.js';
+import { cachedImageUrls, useImageRemoteUrl } from '../lib/useImageRemoteUrl.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
 import { AudioPlayer } from './AudioPlayer.jsx';
@@ -15,7 +15,7 @@ import { VideoPlayer } from './VideoPlayer.jsx';
 
 export const MediaItem = fastMemo(
   ({ noteId, encryptedPassword, url, path, hash, size, encryptedSize, type, onDelete }) => {
-    const [showImage, setShowImage] = useState(false);
+    const [showImage, setShowImage] = useState(!!cachedImageUrls[path]);
 
     const ref = useInView(
       () => {
@@ -93,10 +93,9 @@ const InnerImage = fastMemo(
     );
     const { url: localUrl, isLoading: isLoadingLocal } = useImageLocalUrl(hash);
     const [isLoadingContent, setIsLoadingContent] = useState(true);
-    const [showLoading, setShowLoading] = useState(false);
 
-    const isLoadingTotal = isLoadingRemote || isLoadingLocal || isLoadingContent;
     const innerUrl = url || remoteUrl || localUrl;
+    const isLoadingTotal = !innerUrl && (isLoadingRemote || isLoadingLocal || isLoadingContent);
 
     const imageForAction = useMemo(() => {
       return {
@@ -121,19 +120,9 @@ const InnerImage = fastMemo(
       fullScreenImageUrlCat.set(innerUrl);
     }, [innerUrl]);
 
-    useEffect(() => {
-      let timerId = setTimeout(() => {
-        setShowLoading(true);
-      }, 300);
-
-      return () => {
-        clearTimeout(timerId);
-      };
-    }, []);
-
     return (
       <>
-        {isLoadingTotal && showLoading && <LoadingSkeleton width="100%" height="100%" />}
+        {isLoadingTotal && <LoadingSkeleton width="100%" height="100%" />}
 
         {!!innerUrl && (
           <>

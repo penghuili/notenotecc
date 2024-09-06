@@ -54,7 +54,6 @@ export const Notes = fastMemo(() => {
 });
 
 const Header = fastMemo(() => {
-  const isLoading = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingNoteCat);
   const isDeletingImage = useCat(isDeletingImageCat);
@@ -68,7 +67,7 @@ const Header = fastMemo(() => {
 
   return (
     <PageHeader
-      isLoading={isLoading || isAddingImages || isDeleting || isDeletingImage}
+      isLoading={isAddingImages || isDeleting || isDeletingImage}
       fixed
       showNewVersion
       title={
