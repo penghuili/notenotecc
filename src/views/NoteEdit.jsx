@@ -40,9 +40,8 @@ export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
 
         return;
       }
+      replaceTo('/');
     }
-
-    replaceTo('/notes');
   }, [noteId]);
 
   useScrollToTop();

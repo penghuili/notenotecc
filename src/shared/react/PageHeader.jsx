@@ -13,6 +13,7 @@ import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`
   width: ${props => props.width}px;
+  max-width: 600px;
   height: var(--space-8);
   padding: 0.5rem 0;
   margin-left: -0.5rem;

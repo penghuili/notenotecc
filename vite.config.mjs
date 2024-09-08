@@ -31,11 +31,8 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: false,
     },
-    optimizeDeps: {
-      exclude: ['@ffmpeg/ffmpeg'],
-    },
     build: {
-      chunkSizeWarningLimit: 800,
+      chunkSizeWarningLimit: 1300,
       rollupOptions: {
         plugins: [
           visualizer({
@@ -43,13 +40,6 @@ export default defineConfig(({ mode }) => {
             filename: 'bundle-stats.html',
           }),
         ],
-        output: {
-          manualChunks: id => {
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-          },
-        },
       },
     },
   };
