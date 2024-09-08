@@ -17,13 +17,14 @@ const Wrapper = styled(Flex)`
   height: var(--space-8);
   padding: 0.5rem 0;
   margin-left: -0.5rem;
+  margin-bottom: 1rem;
 
   position: sticky;
   left: 0;
   top: env(safe-area-inset-top);
   z-index: 2000;
 
-  background-color: white;
+  background-color: var(--color-background);
 `;
 const Content = styled(Flex)`
   width: 100%;

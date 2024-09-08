@@ -41,6 +41,6 @@ const FadeOut = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 1) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, var(--color-background) 100%);
   cursor: pointer;
 `;

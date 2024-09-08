@@ -188,7 +188,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
 
 const Wrapper = styled.div`
   width: 330px;
-  background-color: white;
+  background-color: var(--color-background);
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;

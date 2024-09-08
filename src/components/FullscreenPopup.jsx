@@ -18,7 +18,7 @@ const Wrapper = styled.div`
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
 
-  background-color: white;
+  background-color: var(--color-background);
 `;
 const Content = styled.div`
   position: relative;

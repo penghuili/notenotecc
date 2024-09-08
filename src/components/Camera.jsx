@@ -91,14 +91,13 @@ const ImagesWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: var(--color-background);
 `;
 
 const PreviewImage = styled.img`
   position: relative;
   width: 80px;
   height: 80px;
-  border: 1px solid #ddd;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 
