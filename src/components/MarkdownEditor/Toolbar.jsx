@@ -23,6 +23,7 @@ import { getCursorPosition, restoreCursorPosition } from './markdownHelpers';
 export const zeroWidthSpace = '&ZeroWidthSpace;';
 export const hasUndoHistoryCat = createCat(false);
 export const hasRedoHistoryCat = createCat(false);
+export const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
 export const Toolbar = fastMemo(
   ({ editorRef, undoHistoryRef, redoHistoryRef, activeElements, onChange }) => {
@@ -295,8 +296,14 @@ function toggleInlineTag(wrapperElement, tagNames) {
   // If there's no selection, create or move cursor into/out of the tag
   if (range.collapsed) {
     if (existingTag) {
-      const emptyNode = addEmptyTextNodeAfter(existingTag);
-      setCursorPosition(emptyNode, 1);
+      if (existingTag.textContent) {
+        const emptyNode = addEmptyTextNodeAfter(existingTag);
+        setCursorPosition(emptyNode, 1);
+      } else {
+        const emptyText = document.createTextNode('\u200B');
+        existingTag.parentNode.replaceChild(emptyText, existingTag);
+        setCursorPosition(emptyText, 1);
+      }
     } else {
       // Create a new tag and place cursor inside
       const newElement = document.createElement(tagNames[0]);
@@ -316,24 +323,60 @@ function toggleInlineTag(wrapperElement, tagNames) {
       range.endContainer.splitText(range.endOffset);
     }
 
+    let parentElement = range.commonAncestorContainer;
+    if (parentElement.nodeType === Node.TEXT_NODE) {
+      parentElement = parentElement.parentElement;
+    }
+
     // Extract the contents of the range
     const fragment = range.extractContents();
 
-    // Create a new element with the desired tag and set its text content
-    const wrapper = document.createElement(tagNames[0]);
-    wrapper.textContent = fragment.textContent;
+    if (supportedInlineTags.includes(parentElement.nodeName)) {
+      // Create a new text node with the extracted text content
+      const newTextNode = document.createTextNode(fragment.textContent);
 
-    // Insert the wrapper
-    range.insertNode(wrapper);
+      const before = parentElement.cloneNode(false);
+      const after = parentElement.cloneNode(false);
 
-    // Clear the selection
-    selection.removeAllRanges();
-    const newRange = document.createRange();
-    newRange.setStartAfter(wrapper);
-    newRange.setEndAfter(wrapper);
-    selection.addRange(newRange);
+      // Move content before the selection to 'before'
+      while (parentElement.firstChild && parentElement.firstChild !== range.startContainer) {
+        before.appendChild(parentElement.firstChild);
+      }
+
+      // Move content after the selection to 'after'
+      while (parentElement.lastChild && parentElement.lastChild !== range.endContainer) {
+        after.insertBefore(parentElement.lastChild, after.firstChild);
+      }
+
+      // Insert the parts
+      parentElement.parentNode.insertBefore(before, parentElement);
+      parentElement.parentNode.insertBefore(newTextNode, parentElement);
+      parentElement.parentNode.insertBefore(after, parentElement);
+
+      // Remove the original parent if it's now empty
+      if (!parentElement.hasChildNodes()) {
+        parentElement.parentNode.removeChild(parentElement);
+      }
+
+      range.selectNode(newTextNode);
+    } else {
+      // Create a new element with the desired tag and set its text content
+      const wrapper = document.createElement(tagNames[0]);
+      wrapper.textContent = fragment.textContent;
+
+      // Insert the wrapper
+      range.insertNode(wrapper);
+
+      // Clear the selection
+      selection.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.setStartAfter(wrapper);
+      newRange.setEndAfter(wrapper);
+      selection.addRange(newRange);
+    }
   }
 
+  range.collapse(false);
   wrapperElement.focus();
 }
 
@@ -451,10 +494,10 @@ export const getElementsForBlock = wrapperElement => {
 };
 
 export const addEmptyTextNodeAfter = element => {
-  const span = document.createTextNode('\u00A0');
-  element.parentNode.insertBefore(span, element.nextSibling);
+  const emptyText = document.createTextNode('\u00A0');
+  element.parentNode.insertBefore(emptyText, element.nextSibling);
 
-  return span;
+  return emptyText;
 };
 
 export const setCursorPosition = (targetNode, targetOffset) => {

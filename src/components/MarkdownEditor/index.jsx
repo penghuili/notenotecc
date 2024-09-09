@@ -18,11 +18,10 @@ import {
   hasRedoHistoryCat,
   hasUndoHistoryCat,
   setCursorPosition,
+  supportedInlineTags,
   Toolbar,
   zeroWidthSpace,
 } from './Toolbar.jsx';
-
-const supportedInlineTags = ['EM', 'I', 'STRONG', 'B', 'DEL', 'CODE', 'MARK'];
 
 export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) => {
   const editorRef = useRef(null);
@@ -108,7 +107,6 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
 
       const markdown = convertToMarkdown(text).trim();
       const pastedHtml = parseMarkdown(markdown);
-      console.log({ text, markdown, pastedHtml });
 
       // Insert the cleaned HTML at the cursor position
       const selection = window.getSelection();
@@ -192,6 +190,9 @@ const getActiveElements = wrapperElement => {
   }
 
   const elements = {};
+  if (container?.nodeType === Node.ELEMENT_NODE) {
+    elements[container.tagName] = true;
+  }
   while (container !== wrapperElement) {
     container = container?.parentNode;
     if (container?.nodeType === Node.ELEMENT_NODE) {
