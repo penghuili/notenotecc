@@ -14,7 +14,7 @@ export const apps = {
     color: '#FF7737',
     api: 'lifereminder',
   },
-  simplestcam: {
+  ['notenote.cc']: {
     name: 'notenote.cc',
     color: '#5474EC',
     api: 'simplestcam',

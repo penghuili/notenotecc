@@ -3,9 +3,8 @@ import './style.css';
 
 import { Theme } from '@radix-ui/themes';
 import React, { useEffect, useMemo } from 'react';
-import { useCat } from 'usecat';
 
-import { themeModeCat } from './DarkMode.jsx';
+import { useThemeMode } from './DarkMode.jsx';
 import { updateFontSize } from './FontSize.jsx';
 import { useWidthWithoutScrollbar } from './getScrollbarWidth.js';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
@@ -28,7 +27,7 @@ if ('virtualKeyboard' in navigator) {
 
 export function AppWrapper({ children }) {
   const windowWidth = useWidthWithoutScrollbar();
-  const themeMode = useCat(themeModeCat);
+  const themeMode = useThemeMode();
 
   const widthStyle = useMemo(() => {
     return { width: windowWidth };

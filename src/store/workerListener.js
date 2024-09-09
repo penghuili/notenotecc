@@ -18,7 +18,7 @@ myWorker.onmessage = event => {
   if (type === workerActionTypes.DECRYPT_NOTES) {
     const {
       decryptedNotes,
-      rest: { startKey, hasMore, date },
+      rest: { startKey, newStartKey, hasMore, date },
     } = event.data;
     if (date) {
       onThisDayNotesCat.set({ ...onThisDayNotesCat.get(), [date]: decryptedNotes.reverse() });
@@ -26,7 +26,7 @@ myWorker.onmessage = event => {
     } else {
       const data = {
         items: startKey ? [...notesCat.get().items, ...decryptedNotes] : decryptedNotes,
-        startKey: startKey,
+        startKey: newStartKey,
         hasMore: hasMore,
       };
       notesCat.set(data);

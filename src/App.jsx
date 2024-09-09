@@ -13,7 +13,7 @@ import { Toast } from './shared/react/Toast.jsx';
 
 initShared({
   logo: '/icons2/t/icon-192.png',
-  app: apps.simplestcam.name,
+  app: apps['notenote.cc'].name,
   privacyUrl: 'https://notenote.cc/privacy/',
   termsUrl: 'https://notenote.cc/terms/',
   showNewVersion: true,

@@ -69,6 +69,7 @@ export async function forceFetchHomeNotesEffect(startKey) {
       privateKey: LocalStorage.get(sharedLocalStorageKeys.privateKey),
       rest: {
         startKey,
+        newStartKey: data.startKey,
         hasMore: data.hasMore,
       },
     });

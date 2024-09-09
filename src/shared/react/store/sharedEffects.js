@@ -227,6 +227,7 @@ export async function logOutEffect() {
   isLoggingOutCat.set(true);
   await idbStorage.clear();
   LocalStorage.clear('settings-');
+
   location.reload();
 }
 

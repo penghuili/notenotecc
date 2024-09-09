@@ -9,7 +9,7 @@ const serverToUrl = {
   [apps['100rejections'].name]: import.meta.env.VITE_100REJECTIONS_API_URL,
   [apps.Puppeteer.name]: import.meta.env.VITE_PUPPETEER_API_URL,
   [apps['remiind.cc'].name]: import.meta.env.VITE_REMIINDCC_API_URL,
-  [apps.simplestcam.name]: import.meta.env.VITE_SIMPLESTCAM_API_URL,
+  [apps['notenote.cc'].name]: import.meta.env.VITE_SIMPLESTCAM_API_URL,
 };
 
 function getFullUrl(server, path) {
