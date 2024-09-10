@@ -23,9 +23,8 @@ export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType, preview
       if (note) {
         return;
       }
+      replaceTo('/');
     }
-
-    replaceTo('/notes');
   }, [noteId]);
 
   useScrollToTop();
@@ -88,6 +87,7 @@ export const AddImages = fastMemo(({ noteId, cameraType, preview }) => {
 
   return (
     <Camera
+      noteId={noteId}
       type={cameraType}
       disabled={isAddingImages}
       showPreviewCarousel={!!preview}

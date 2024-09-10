@@ -1,7 +1,7 @@
 import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { goBack } from 'react-baby-router';
+import { goBack, replaceTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
@@ -11,6 +11,7 @@ import { stopPropagation } from '../lib/stopPropagation.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
 import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
+import { objectToQueryString } from '../shared/react/routeHelpers.js';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
@@ -18,8 +19,7 @@ import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
 export const Camera = fastMemo(
-  ({ type, disabled, showPreviewCarousel, onShowPreviewCaruosel, onSelect, onClose }) => {
-    const [activeTab, setActiveTab] = useState(type || cameraTypes.takePhoto);
+  ({ noteId, type, disabled, showPreviewCarousel, onShowPreviewCaruosel, onSelect, onClose }) => {
     const [images, setImages] = useState([]);
     const imagesRef = useRef([]);
 
@@ -50,6 +50,18 @@ export const Camera = fastMemo(
       [images]
     );
 
+    const handleTabChange = useCallback(
+      newTab => {
+        const query = objectToQueryString({
+          cameraType: newTab,
+          noteId,
+          preview: showPreviewCarousel ? 1 : undefined,
+        });
+        replaceTo(`/add-images?${query}`);
+      },
+      [noteId, showPreviewCarousel]
+    );
+
     useEffect(() => {
       return () => {
         onSelect(imagesRef.current);
@@ -58,13 +70,13 @@ export const Camera = fastMemo(
 
     return (
       <FullscreenPopup onBack={onClose} disabled={disabled}>
-        {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
+        {type === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-        {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
+        {type === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
+        {type === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
-        <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
+        <SegmentedControl.Root value={type} onValueChange={handleTabChange} size="1" mt="9">
           <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
           <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
           <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>

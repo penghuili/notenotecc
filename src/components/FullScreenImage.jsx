@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
+import { SquareImage } from './MediaItem.jsx';
 
 const FullScreenWrapper = styled.div`
   position: fixed;
@@ -17,19 +18,17 @@ const FullScreenWrapper = styled.div`
   align-items: center;
 `;
 
-const Img = styled.img`
-  width: ${props => `${props.size}px`};
-  height: ${props => `${props.size}px`};
+const ImageWrapper = styled.div`
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 900px;
 `;
 
 export const fullScreenImageUrlCat = createCat(null);
 
 export function FullScreenImage() {
   const url = useCat(fullScreenImageUrlCat);
-
-  const size = useMemo(() => {
-    return Math.min(window.innerWidth, window.innerHeight, 900);
-  }, []);
 
   const handleClose = useCallback(() => {
     fullScreenImageUrlCat.set(null);
@@ -62,7 +61,9 @@ export function FullScreenImage() {
 
   return (
     <FullScreenWrapper onClick={handleClose}>
-      <Img src={url} size={size} onClick={handleClickImage} />
+      <ImageWrapper>
+        <SquareImage url={url} onClick={handleClickImage} />
+      </ImageWrapper>
     </FullScreenWrapper>
   );
 }

@@ -140,16 +140,12 @@ const InnerImage = fastMemo(
             )}
 
             {(type === fileTypes.webp || type === fileTypes.jpeg) && (
-              <ImageWrapper
+              <SquareImage
+                url={innerUrl}
                 hidden={isLoadingTotal}
-                imageUrl={innerUrl}
                 onLoad={handleContentLoaded}
                 onDoubleClick={handleOpenFullScreen}
-              >
-                <ImageBGCover>
-                  <ImageElement src={innerUrl} />
-                </ImageBGCover>
-              </ImageWrapper>
+              />
             )}
 
             <Box position="absolute" top="2" right="2">
@@ -161,3 +157,19 @@ const InnerImage = fastMemo(
     );
   }
 );
+
+export const SquareImage = fastMemo(({ url, hidden, onLoad, onClick, onDoubleClick }) => {
+  return (
+    <ImageWrapper
+      hidden={hidden}
+      imageUrl={url}
+      onLoad={onLoad}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+    >
+      <ImageBGCover>
+        <ImageElement src={url} />
+      </ImageBGCover>
+    </ImageWrapper>
+  );
+});
