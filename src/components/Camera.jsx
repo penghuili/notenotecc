@@ -1,4 +1,4 @@
-import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
+import { Flex, IconButton, SegmentedControl, Theme } from '@radix-ui/themes';
 import { RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -48,23 +48,25 @@ export const Camera = fastMemo(({ type, disabled, onShowPreviewCaruosel, onSelec
   }, [onSelect]);
 
   return (
-    <FullscreenPopup onBack={onClose} disabled={disabled}>
-      {type === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
+    <Theme appearance="dark">
+      <FullscreenPopup onBack={onClose} disabled={disabled}>
+        {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-      {type === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
+        {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-      {type === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
+        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
-      <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
-        <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
-        <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
-        <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
-      </SegmentedControl.Root>
+        <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
+          <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
+          <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
+          <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
+        </SegmentedControl.Root>
 
-      {!!images?.length && (
-        <ImagesPreview images={images} onShowPreviewCaruosel={onShowPreviewCaruosel} />
-      )}
-    </FullscreenPopup>
+        {!!images?.length && (
+          <ImagesPreview images={images} onShowPreviewCaruosel={onShowPreviewCaruosel} />
+        )}
+      </FullscreenPopup>
+    </Theme>
   );
 });
 
