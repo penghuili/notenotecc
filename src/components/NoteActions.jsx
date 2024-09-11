@@ -11,6 +11,7 @@ import { Confirm } from '../shared/react/Confirm.jsx';
 import { isMobileWidth } from '../shared/react/device.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
+import { imagesCat } from './Camera.jsx';
 import { ProRequired } from './ProRequired.jsx';
 
 export const NoteActions = fastMemo(({ note }) => {
@@ -22,7 +23,10 @@ export const NoteActions = fastMemo(({ note }) => {
   const handleShowCamera = useCallback(
     e => {
       e.stopPropagation();
-      navigateTo(`/add-images?noteId=${note.sortKey}&cameraType=${cameraTypes.takePhoto}`);
+      imagesCat.reset();
+      requestAnimationFrame(() => {
+        navigateTo(`/add-images?noteId=${note.sortKey}&cameraType=${cameraTypes.takePhoto}`);
+      });
     },
     [note.sortKey]
   );

@@ -1,37 +1,51 @@
 import { IconButton } from '@radix-ui/themes';
 import { RiArrowUpSLine } from '@remixicon/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
 export const ScrollToTop = fastMemo(() => {
   const [show, setShow] = useState(false);
+  const ref = useRef();
+  const pageWrapperRef = useRef();
+
+  const handleScrollToTop = useCallback(() => {
+    if (!pageWrapperRef.current) {
+      return;
+    }
+
+    pageWrapperRef.current.scrollTop = 0;
+  }, []);
 
   useEffect(() => {
+    pageWrapperRef.current = getPageWrapper(ref.current);
+    if (!pageWrapperRef.current) {
+      return;
+    }
+
     const handleToggle = () => {
-      setShow(window.scrollY > 1500);
+      setShow(pageWrapperRef.current.scrollTop > 1500);
     };
-    window.addEventListener('scroll', handleToggle);
+    pageWrapperRef.current.addEventListener('scroll', handleToggle);
 
     return () => {
-      window.removeEventListener('scroll', handleToggle);
+      pageWrapperRef.current.removeEventListener('scroll', handleToggle);
     };
   }, []);
 
   return (
-    show && (
-      <IconButton onClick={scrollToTop} mr="2" variant="ghost">
+    <div style={{ display: show ? 'block' : 'none' }} ref={ref}>
+      <IconButton onClick={handleScrollToTop} mr="2" variant="ghost">
         <RiArrowUpSLine />
       </IconButton>
-    )
+    </div>
   );
 });
 
-export function scrollToTop() {
-  window.scrollTo(0, 0);
-}
+function getPageWrapper(element) {
+  let wrapper = element;
+  while (wrapper && wrapper.tagName !== 'BODY' && !wrapper.classList.contains('page-content')) {
+    wrapper = wrapper.parentElement;
+  }
 
-export function useScrollToTop() {
-  useEffect(() => {
-    scrollToTop();
-  }, []);
+  return wrapper?.classList?.contains('page-content') ? wrapper : null;
 }

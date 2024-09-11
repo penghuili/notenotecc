@@ -12,8 +12,7 @@ import { goBackEffect } from './store/sharedEffects';
 import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`
-  width: ${props => props.width}px;
-  max-width: 600px;
+  width: calc(100% + 1rem);
   height: var(--space-8);
   padding: 0.5rem 0;
   margin-left: -0.5rem;

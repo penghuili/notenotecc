@@ -12,7 +12,6 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,
@@ -43,8 +42,6 @@ export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
       replaceTo('/');
     }
   }, [noteId]);
-
-  useScrollToTop();
 
   // useEffect(() => {
   //   deletedNoteKey = null;

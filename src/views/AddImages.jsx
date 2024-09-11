@@ -8,13 +8,12 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOSBrowser } from '../shared/react/device.js';
 import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { topBannerCat } from '../shared/react/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat, noteCat, useNote } from '../store/note/noteCats.js';
 import { fetchNoteEffect } from '../store/note/noteEffects';
 
-export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType, preview } }) => {
+export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType } }) => {
   const prepareData = useCallback(async () => {
     if (noteId) {
       await fetchNoteEffect(noteId);
@@ -27,16 +26,14 @@ export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType, preview
     }
   }, [noteId]);
 
-  useScrollToTop();
-
   return (
     <PrepareData load={prepareData}>
-      <AddImages noteId={noteId} cameraType={cameraType} preview={preview} />
+      <AddImages noteId={noteId} cameraType={cameraType} />
     </PrepareData>
   );
 });
 
-export const AddImages = fastMemo(({ noteId, cameraType, preview }) => {
+const AddImages = fastMemo(({ noteId, cameraType }) => {
   const noteItem = useNote(noteId);
   const isAddingImages = useCat(isAddingImagesCat);
 
@@ -50,8 +47,8 @@ export const AddImages = fastMemo(({ noteId, cameraType, preview }) => {
   }, []);
 
   const handleShowPreview = useCallback(() => {
-    navigateTo(`/add-images?noteId=${noteId}&cameraType=${cameraType}&preview=1`);
-  }, [cameraType, noteId]);
+    navigateTo(`/preview-images`);
+  }, []);
 
   useEffect(() => {
     if (!isIOSBrowser()) {
@@ -90,7 +87,6 @@ export const AddImages = fastMemo(({ noteId, cameraType, preview }) => {
       noteId={noteId}
       type={cameraType}
       disabled={isAddingImages}
-      showPreviewCarousel={!!preview}
       onShowPreviewCaruosel={handleShowPreview}
       onSelect={handleAddImages}
       onClose={goBack}

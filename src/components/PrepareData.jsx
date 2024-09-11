@@ -33,6 +33,7 @@ export const PrepareData = fastMemo(({ load, children }) => {
   }
 
   if (status === PrepareDataStatus.error) {
+    console.log('error');
     return (
       <PageEmpty>
         <Text>Something went wrong.</Text>

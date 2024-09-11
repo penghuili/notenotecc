@@ -2,11 +2,10 @@ import '@radix-ui/themes/styles.css';
 import './style.css';
 
 import { Theme } from '@radix-ui/themes';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 
 import { useThemeMode } from './DarkMode.jsx';
 import { updateFontSize } from './FontSize.jsx';
-import { useWidthWithoutScrollbar } from './getScrollbarWidth.js';
 import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
@@ -26,19 +25,14 @@ if ('virtualKeyboard' in navigator) {
 }
 
 export function AppWrapper({ children }) {
-  const windowWidth = useWidthWithoutScrollbar();
   const themeMode = useThemeMode();
-
-  const widthStyle = useMemo(() => {
-    return { width: windowWidth };
-  }, [windowWidth]);
 
   useEffect(() => {
     updateFontSize(LocalStorage.get(sharedLocalStorageKeys.fontScaling) || 1);
   }, []);
 
   return (
-    <Theme accentColor={themeColor} appearance={themeMode} style={widthStyle}>
+    <Theme accentColor={themeColor} appearance={themeMode}>
       <PageWrapper>{children}</PageWrapper>
       <div style={{ height: 'env(keyboard-inset-height, 0px)' }} />
     </Theme>

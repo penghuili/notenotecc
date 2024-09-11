@@ -11,7 +11,6 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { RouteLink } from '../shared/react/RouteLink.jsx';
-import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { userCat } from '../shared/react/store/sharedCats.js';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
@@ -21,8 +20,6 @@ async function load() {
 }
 
 export const Albums = fastMemo(() => {
-  useScrollToTop();
-
   return (
     <PrepareData load={load}>
       <Header />

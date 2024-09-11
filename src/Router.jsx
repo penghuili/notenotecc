@@ -25,10 +25,10 @@ import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
 import { Albums } from './views/Albums.jsx';
 import { AlbumsReorder } from './views/AlbumsReorder.jsx';
-import { NoteAdd } from './views/NoteAdd.jsx';
 import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
+import { PreviewImages } from './views/PreviewImages.jsx';
 import { Settings } from './views/Settings.jsx';
 import { Upgrade } from './views/Upgrade.jsx';
 
@@ -49,9 +49,9 @@ const verifyEmailRoutes = {
   '/': VerifyEmail,
 };
 const commonRoutes = {
-  '/add-images': AddImagess,
-  '/notes/add': NoteAdd,
   '/notes/details': NoteEdit,
+  '/add-images': AddImagess,
+  '/preview-images': PreviewImages,
 
   '/albums/reorder': AlbumsReorder,
   '/albums/edit': AlbumEdit,

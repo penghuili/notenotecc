@@ -14,14 +14,11 @@ import { AreaField } from '../shared/react/AreaField.jsx';
 import { inputFileToBase64 } from '../shared/react/file.js';
 import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 import { toastTypes } from '../shared/react/Toast.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';
 
 export const AI = fastMemo(() => {
-  useScrollToTop();
-
   return (
     <PrepareData>
       <Header />

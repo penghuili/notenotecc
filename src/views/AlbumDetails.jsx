@@ -11,7 +11,6 @@ import { Confirm } from '../shared/react/Confirm.jsx';
 import { useInView } from '../shared/react/hooks/useInView.js';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { useScrollToTop } from '../shared/react/ScrollToTop.jsx';
 import { isDeletingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
@@ -23,8 +22,6 @@ export const AlbumDetails = fastMemo(({ queryParams: { albumId } }) => {
   const load = useCallback(async () => {
     await fetchAlbumItemsEffect(albumId, { startKey: null });
   }, [albumId]);
-
-  useScrollToTop();
 
   return (
     <PrepareData load={load}>

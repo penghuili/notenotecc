@@ -1,99 +1,72 @@
 import { Flex, IconButton, SegmentedControl } from '@radix-ui/themes';
-import { RiArrowLeftLine, RiPlayLine } from '@remixicon/react';
+import { RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { goBack, replaceTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
-import { stopPropagation } from '../lib/stopPropagation.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
-import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
-import { objectToQueryString } from '../shared/react/routeHelpers.js';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
-import { ImageCarousel } from './ImageCarousel.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
 import { getCameraSize, TakeVideo } from './TakeVideo.jsx';
 
-export const Camera = fastMemo(
-  ({ noteId, type, disabled, showPreviewCarousel, onShowPreviewCaruosel, onSelect, onClose }) => {
-    const [images, setImages] = useState([]);
-    const imagesRef = useRef([]);
+export const imagesCat = createCat([]);
 
-    const handleAddNewImage = useCallback(
-      async newImage => {
-        const updated = [...images, newImage];
-        setImages(updated);
-        imagesRef.current = updated;
-      },
-      [images]
-    );
+export const Camera = fastMemo(({ type, disabled, onShowPreviewCaruosel, onSelect, onClose }) => {
+  const images = useCat(imagesCat);
+  const imagesRef = useRef(images);
+  const [activeTab, setActiveTab] = useState(type);
 
-    const handleAddNewImages = useCallback(
-      async newImages => {
-        const updated = [...images, ...newImages];
-        setImages(updated);
-        imagesRef.current = updated;
-      },
-      [images]
-    );
+  const handleAddNewImage = useCallback(
+    async newImage => {
+      const updated = [...images, newImage];
+      imagesCat.set(updated);
+    },
+    [images]
+  );
 
-    const handleDeleteImage = useCallback(
-      hash => {
-        const updated = images.filter(image => image.hash !== hash);
-        setImages(updated);
-        imagesRef.current = updated;
-      },
-      [images]
-    );
+  const handleAddNewImages = useCallback(
+    async newImages => {
+      const updated = [...images, ...newImages];
+      imagesCat.set(updated);
+    },
+    [images]
+  );
 
-    const handleTabChange = useCallback(
-      newTab => {
-        const query = objectToQueryString({
-          cameraType: newTab,
-          noteId,
-          preview: showPreviewCarousel ? 1 : undefined,
-        });
-        replaceTo(`/add-images?${query}`);
-      },
-      [noteId, showPreviewCarousel]
-    );
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
 
-    useEffect(() => {
-      return () => {
-        onSelect(imagesRef.current);
-      };
-    }, [onSelect]);
+  useEffect(() => {
+    return () => {
+      onSelect(imagesRef.current);
+    };
+  }, [onSelect]);
 
-    return (
-      <FullscreenPopup onBack={onClose} disabled={disabled}>
-        {type === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
+  return (
+    <FullscreenPopup onBack={onClose} disabled={disabled}>
+      {type === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-        {type === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
+      {type === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-        {type === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
+      {type === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
-        <SegmentedControl.Root value={type} onValueChange={handleTabChange} size="1" mt="9">
-          <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
-          <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
-          <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
-        </SegmentedControl.Root>
+      <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
+        <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
+        <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
+        <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
+      </SegmentedControl.Root>
 
-        {!!images?.length && (
-          <ImagesPreview
-            images={images}
-            showPreviewCaruosel={showPreviewCarousel}
-            onShowPreviewCaruosel={onShowPreviewCaruosel}
-            onDelete={handleDeleteImage}
-          />
-        )}
-      </FullscreenPopup>
-    );
-  }
-);
+      {!!images?.length && (
+        <ImagesPreview images={images} onShowPreviewCaruosel={onShowPreviewCaruosel} />
+      )}
+    </FullscreenPopup>
+  );
+});
 
 const ImagesWrapper = styled.div`
   position: absolute;
@@ -128,75 +101,25 @@ const PreviewVideo = styled.video`
   border-radius: 8px;
   overflow: hidden;
 `;
-const CarouselWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: ${widthWithoutScrollbar}px;
-  max-width: 600px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: black;
-`;
-const CarouselContent = styled.div`
-  width: 100%;
-  padding: 0 0.5rem;
-`;
-const CarouselTop = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 0.5rem;
-`;
 
-const ImagesPreview = fastMemo(
-  ({ images, showPreviewCaruosel, onShowPreviewCaruosel, onDelete }) => {
-    const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
+const ImagesPreview = fastMemo(({ images, onShowPreviewCaruosel }) => {
+  const reversedImages = useMemo(() => [...(images || [])].reverse(), [images]);
 
-    const handleDelete = useCallback(
-      hash => {
-        onDelete(hash);
-      },
-      [onDelete]
-    );
-
-    const handleGoBack = useCallback(e => {
-      e.stopPropagation();
-      goBack();
-    }, []);
-
-    if (!reversedImages.length) {
-      return null;
-    }
-
-    const cameraSize = getCameraSize();
-
-    return (
-      <>
-        <ImagesWrapper cameraSize={cameraSize}>
-          <PreviewItem image={reversedImages[0]} onClick={onShowPreviewCaruosel} />
-          {reversedImages.length}
-        </ImagesWrapper>
-
-        {showPreviewCaruosel && (
-          <CarouselWrapper onClick={handleGoBack}>
-            <CarouselTop>
-              <IconButton onClick={handleGoBack}>
-                <RiArrowLeftLine />
-              </IconButton>
-            </CarouselTop>
-            <CarouselContent onClick={stopPropagation}>
-              <ImageCarousel images={reversedImages} onDelete={handleDelete} />
-            </CarouselContent>
-          </CarouselWrapper>
-        )}
-      </>
-    );
+  if (!reversedImages.length) {
+    return null;
   }
-);
+
+  const cameraSize = getCameraSize();
+
+  return (
+    <>
+      <ImagesWrapper cameraSize={cameraSize}>
+        <PreviewItem image={reversedImages[0]} onClick={onShowPreviewCaruosel} />
+        {reversedImages.length}
+      </ImagesWrapper>
+    </>
+  );
+});
 
 const PreviewItem = fastMemo(({ image, onClick }) => {
   const { url } = useImageLocalUrl(image.hash);
