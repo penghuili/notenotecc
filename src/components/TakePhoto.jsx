@@ -1,9 +1,9 @@
-import { Flex, IconButton } from '@radix-ui/themes';
+import { Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiCameraLensLine, RiRefreshLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
-import { useCat } from 'usecat';
+import { createCat, useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
 import {
@@ -17,6 +17,7 @@ import {
 } from '../lib/videoStream.js';
 import { randomHash } from '../shared/js/randomHash.js';
 import { canvasToBlob } from '../shared/react/canvasToBlob';
+import { isIOSBrowser } from '../shared/react/device.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakeVideo.jsx';
 
@@ -25,9 +26,12 @@ const Video = styled.video`
   height: ${props => `${props.size}px`};
 `;
 
+const tapTwiceCat = createCat(true);
+
 export const TakePhoto = fastMemo(({ onSelect }) => {
   const videoStream = useCat(videoStreamCat);
   const videoStreamError = useCat(videoStreamErrorCat);
+  const tapTwice = useCat(tapTwiceCat);
 
   const videoRef = useRef(null);
   const [isTaking, setIsTaking] = useState(false);
@@ -49,6 +53,7 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
       await idbStorage.setItem(hash, blob);
       onSelect({ hash, size: blob.size, type: imageType });
       setIsTaking(false);
+      tapTwiceCat.set(false);
     });
   }, [onSelect]);
 
@@ -94,6 +99,20 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
         >
           <RiCameraLensLine style={{ '--font-size': '40px' }} />
         </IconButton>
+        {isIOSBrowser() && tapTwice && (
+          <Text
+            align="center"
+            size="2"
+            style={{
+              position: 'absolute',
+              top: size + 60,
+              right: '50%',
+              transform: 'translateX(50%)',
+            }}
+          >
+            Tap twice to take the first photo
+          </Text>
+        )}
 
         <IconButton
           size="4"

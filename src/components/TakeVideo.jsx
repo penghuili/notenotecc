@@ -3,7 +3,7 @@ import { RiRecordCircleLine, RiRefreshLine, RiStopCircleLine } from '@remixicon/
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
-import { useCat } from 'usecat';
+import { createCat, useCat } from 'usecat';
 
 import { videoType } from '../lib/constants.js';
 import {
@@ -82,9 +82,12 @@ const Video = styled.video`
 
 export const RECORDING_DURATION = 15600;
 
+const tapTwiceCat = createCat(true);
+
 export const TakeVideo = fastMemo(({ onSelect }) => {
   const videoStream = useCat(videoStreamCat);
   const videoStreamError = useCat(videoStreamErrorCat);
+  const tapTwice = useCat(tapTwiceCat);
 
   const [isRecording, setIsRecording] = useState(false);
 
@@ -171,6 +174,8 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     progressElementRef.current.start();
 
     handleSetupTimer();
+
+    tapTwiceCat.set(false);
   }, [createMediaRecorder, handleSetupTimer]);
 
   useEffect(() => {
@@ -239,6 +244,21 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
             >
               <RiRecordCircleLine style={{ '--font-size': '40px' }} />
             </IconButton>
+
+            {isIOSBrowser() && tapTwice && (
+              <Text
+                align="center"
+                size="2"
+                style={{
+                  position: 'absolute',
+                  top: size + 60,
+                  right: '50%',
+                  transform: 'translateX(50%)',
+                }}
+              >
+                Tap twice to take the first video
+              </Text>
+            )}
 
             {isMobileBrowser() && (
               <IconButton
