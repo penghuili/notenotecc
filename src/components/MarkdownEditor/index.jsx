@@ -53,6 +53,7 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
       }
       const markdown = convertToMarkdown(innerHTML);
       onChange(markdown);
+      console.log({ markdown });
 
       handleCheckActiveElements();
 

@@ -504,24 +504,25 @@ function outdent(wrapperElement) {
     const parentList = listItem.parentElement;
     const grandParentListItem = parentList.parentElement;
 
-    if (grandParentListItem && grandParentListItem.tagName === 'LI') {
-      const greatGrandParentList = grandParentListItem.parentElement;
+    if (grandParentListItem) {
+      if (grandParentListItem.tagName !== 'LI') {
+        const p = document.createElement('p');
+        p.innerHTML = listItem.innerHTML;
+        listItem.replaceWith(p);
+        listItem = p;
 
-      // Move the current list item after its grandparent list item
-      greatGrandParentList.insertBefore(listItem, grandParentListItem.nextElementSibling);
+        // Move the current list item after its grandparent list item
+        grandParentListItem.insertBefore(listItem, parentList.nextElementSibling);
+      } else {
+        const greatGrandParentList = grandParentListItem.parentElement;
+
+        // Move the current list item after its grandparent list item
+        greatGrandParentList.insertBefore(listItem, grandParentListItem.nextElementSibling);
+      }
 
       // If the parent list becomes empty, remove it
       if (parentList.children.length === 0) {
         parentList.remove();
-      }
-
-      // If the current list item was the last in its list, move any remaining items to the parent level
-      if (listItem.nextElementSibling) {
-        const fragment = document.createDocumentFragment();
-        while (listItem.nextElementSibling) {
-          fragment.appendChild(listItem.nextElementSibling);
-        }
-        listItem.appendChild(fragment);
       }
     }
 
