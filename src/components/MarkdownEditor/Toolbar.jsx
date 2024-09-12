@@ -7,6 +7,8 @@ import {
   RiDoubleQuotesL,
   RiH1,
   RiH2,
+  RiIndentDecrease,
+  RiIndentIncrease,
   RiItalic,
   RiListOrdered,
   RiListUnordered,
@@ -68,86 +70,6 @@ export const Toolbar = fastMemo(
       hasRedoHistoryCat.set(redoHistoryRef.current.length > 0);
     }, [editorRef, onChange, redoHistoryRef, undoHistoryRef]);
 
-    const handleToggleBold = useCallback(() => {
-      toggleInlineTag(editorRef.current, ['strong', 'b']);
-
-      onChange();
-    }, [editorRef, onChange]);
-
-    const handleToggleItalic = useCallback(() => {
-      toggleInlineTag(editorRef.current, ['em', 'i']);
-
-      onChange();
-    }, [editorRef, onChange]);
-
-    const handleToggleStrikethrough = useCallback(() => {
-      toggleInlineTag(editorRef.current, ['del']);
-
-      onChange();
-    }, [editorRef, onChange]);
-
-    const handleToggleCode = useCallback(() => {
-      toggleInlineTag(editorRef.current, ['code']);
-
-      onChange();
-    }, [editorRef, onChange]);
-
-    const handleToggleMark = useCallback(() => {
-      toggleInlineTag(editorRef.current, ['mark']);
-
-      onChange();
-    }, [editorRef, onChange]);
-
-    const handleToggleH1 = useCallback(() => {
-      if (activeElements.H1) {
-        removeBlockElement(editorRef.current);
-      } else {
-        convertToHeader(editorRef.current, 'h1');
-      }
-
-      onChange();
-    }, [activeElements.H1, editorRef, onChange]);
-
-    const handleToggleH2 = useCallback(() => {
-      if (activeElements.H2) {
-        removeBlockElement(editorRef.current);
-      } else {
-        convertToHeader(editorRef.current, 'h2');
-      }
-
-      onChange();
-    }, [activeElements.H2, editorRef, onChange]);
-
-    const handleToggleUL = useCallback(() => {
-      if (activeElements.UL) {
-        removeListElement(editorRef.current);
-      } else {
-        convertToList(editorRef.current, 'ul');
-      }
-
-      onChange();
-    }, [activeElements.UL, editorRef, onChange]);
-
-    const handleToggleOL = useCallback(() => {
-      if (activeElements.OL) {
-        removeListElement(editorRef.current);
-      } else {
-        convertToList(editorRef.current, 'ol');
-      }
-
-      onChange();
-    }, [activeElements.OL, editorRef, onChange]);
-
-    const handleToggleBlockquote = useCallback(() => {
-      if (activeElements.BLOCKQUOTE) {
-        removeBlockquoteElement(editorRef.current);
-      } else {
-        convertToBlockquote(editorRef.current);
-      }
-
-      onChange();
-    }, [activeElements.BLOCKQUOTE, editorRef, onChange]);
-
     return (
       <Wrapper className="toolbar">
         <IconButton
@@ -169,7 +91,10 @@ export const Toolbar = fastMemo(
 
         <IconButton
           variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
-          onClick={handleToggleBold}
+          onClick={() => {
+            toggleInlineTag(editorRef.current, ['strong', 'b']);
+            onChange();
+          }}
           radius="none"
           disabled={!isActive}
         >
@@ -177,7 +102,10 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.EM || activeElements.I ? 'solid' : 'soft'}
-          onClick={handleToggleItalic}
+          onClick={() => {
+            toggleInlineTag(editorRef.current, ['em', 'i']);
+            onChange();
+          }}
           radius="none"
           disabled={!isActive}
         >
@@ -185,7 +113,10 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.DEL ? 'solid' : 'soft'}
-          onClick={handleToggleStrikethrough}
+          onClick={() => {
+            toggleInlineTag(editorRef.current, ['del']);
+            onChange();
+          }}
           radius="none"
           disabled={!isActive}
         >
@@ -193,7 +124,10 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.CODE ? 'solid' : 'soft'}
-          onClick={handleToggleCode}
+          onClick={() => {
+            toggleInlineTag(editorRef.current, ['code']);
+            onChange();
+          }}
           radius="none"
           disabled={!isActive}
         >
@@ -201,7 +135,10 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.MARK ? 'solid' : 'soft'}
-          onClick={handleToggleMark}
+          onClick={() => {
+            toggleInlineTag(editorRef.current, ['mark']);
+            onChange();
+          }}
           radius="none"
           disabled={!isActive}
         >
@@ -210,7 +147,15 @@ export const Toolbar = fastMemo(
 
         <IconButton
           variant={activeElements.H1 ? 'solid' : 'soft'}
-          onClick={handleToggleH1}
+          onClick={() => {
+            if (activeElements.H1) {
+              removeBlockElement(editorRef.current);
+            } else {
+              convertToHeader(editorRef.current, 'h1');
+            }
+
+            onChange();
+          }}
           radius="none"
           disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
         >
@@ -218,7 +163,15 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.H2 ? 'solid' : 'soft'}
-          onClick={handleToggleH2}
+          onClick={() => {
+            if (activeElements.H2) {
+              removeBlockElement(editorRef.current);
+            } else {
+              convertToHeader(editorRef.current, 'h2');
+            }
+
+            onChange();
+          }}
           radius="none"
           disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
         >
@@ -226,7 +179,15 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.UL ? 'solid' : 'soft'}
-          onClick={handleToggleUL}
+          onClick={() => {
+            if (activeElements.UL) {
+              removeListElement(editorRef.current);
+            } else {
+              convertToList(editorRef.current, 'ul');
+            }
+
+            onChange();
+          }}
           radius="none"
           disabled={
             !isActive ||
@@ -240,7 +201,15 @@ export const Toolbar = fastMemo(
         </IconButton>
         <IconButton
           variant={activeElements.OL ? 'solid' : 'soft'}
-          onClick={handleToggleOL}
+          onClick={() => {
+            if (activeElements.OL) {
+              removeListElement(editorRef.current);
+            } else {
+              convertToList(editorRef.current, 'ol');
+            }
+
+            onChange();
+          }}
           radius="none"
           disabled={
             !isActive ||
@@ -252,10 +221,42 @@ export const Toolbar = fastMemo(
         >
           <RiListOrdered />
         </IconButton>
+        <IconButton
+          variant="soft"
+          onClick={() => {
+            indent(editorRef.current);
+
+            onChange();
+          }}
+          radius="none"
+          disabled={!isActive || !activeElements.LI}
+        >
+          <RiIndentIncrease />
+        </IconButton>
+        <IconButton
+          variant="soft"
+          onClick={() => {
+            outdent(editorRef.current);
+
+            onChange();
+          }}
+          radius="none"
+          disabled={!isActive || !activeElements.LI}
+        >
+          <RiIndentDecrease />
+        </IconButton>
 
         <IconButton
           variant={activeElements.BLOCKQUOTE ? 'solid' : 'soft'}
-          onClick={handleToggleBlockquote}
+          onClick={() => {
+            if (activeElements.BLOCKQUOTE) {
+              removeBlockquoteElement(editorRef.current);
+            } else {
+              convertToBlockquote(editorRef.current);
+            }
+
+            onChange();
+          }}
           radius="none"
           disabled={
             !isActive ||
@@ -472,6 +473,104 @@ const removeBlockquoteElement = wrapperElement => {
 
   setCursorPosition(ps[0], 1);
 };
+
+export function moveListItem(wrapperElement, shiftKey) {
+  if (shiftKey) {
+    outdent(wrapperElement);
+  } else {
+    indent(wrapperElement);
+  }
+}
+
+function outdent(wrapperElement) {
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  let node = range.commonAncestorContainer;
+  let listItem = null;
+
+  while (node && node !== wrapperElement && !listItem) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      listItem = node.closest('li');
+    }
+    node = node.parentNode;
+  }
+
+  if (listItem) {
+    // Save the current cursor position
+    const textNode = range.startContainer;
+    const offset = range.startOffset;
+
+    // Outdent
+    const parentList = listItem.parentElement;
+    const grandParentListItem = parentList.parentElement;
+
+    if (grandParentListItem && grandParentListItem.tagName === 'LI') {
+      const greatGrandParentList = grandParentListItem.parentElement;
+
+      // Move the current list item after its grandparent list item
+      greatGrandParentList.insertBefore(listItem, grandParentListItem.nextElementSibling);
+
+      // If the parent list becomes empty, remove it
+      if (parentList.children.length === 0) {
+        parentList.remove();
+      }
+
+      // If the current list item was the last in its list, move any remaining items to the parent level
+      if (listItem.nextElementSibling) {
+        const fragment = document.createDocumentFragment();
+        while (listItem.nextElementSibling) {
+          fragment.appendChild(listItem.nextElementSibling);
+        }
+        listItem.appendChild(fragment);
+      }
+    }
+
+    // Restore the cursor position
+    const newRange = document.createRange();
+    newRange.setStart(textNode, offset);
+    newRange.setEnd(textNode, offset);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+}
+
+function indent(wrapperElement) {
+  const selection = window.getSelection();
+  const range = selection.getRangeAt(0);
+  let node = range.commonAncestorContainer;
+  let listItem = null;
+
+  while (node && node !== wrapperElement && !listItem) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      listItem = node.closest('li');
+    }
+    node = node.parentNode;
+  }
+
+  if (listItem) {
+    // Save the current cursor position
+    const textNode = range.startContainer;
+    const offset = range.startOffset;
+
+    // Indent
+    const previousListItem = listItem.previousElementSibling;
+    if (previousListItem) {
+      let subList = previousListItem.querySelector('ul, ol');
+      if (!subList) {
+        subList = document.createElement(listItem.parentElement.tagName);
+        previousListItem.appendChild(subList);
+      }
+      subList.appendChild(listItem);
+    }
+
+    // Restore the cursor position
+    const newRange = document.createRange();
+    newRange.setStart(textNode, offset);
+    newRange.setEnd(textNode, offset);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+}
 
 export const getElementsForBlock = wrapperElement => {
   let container = getRangeContainer();

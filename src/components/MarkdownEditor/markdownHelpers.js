@@ -1,4 +1,53 @@
 export const convertToMarkdown = html => {
+  // Helper function to convert lists recursively
+  const convertList = (listElement, indent = '') => {
+    let markdown = '';
+    const listItems = listElement.querySelectorAll(':scope > li');
+
+    listItems.forEach((item, index) => {
+      const isOrdered = listElement.tagName.toLowerCase() === 'ol';
+      const bullet = isOrdered ? `${index + 1}.` : '-';
+
+      // Process the content of the list item
+      let content = '';
+      for (const node of item.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          content += node.textContent.trim();
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.tagName.toLowerCase() === 'ul' || node.tagName.toLowerCase() === 'ol') {
+            // Handle nested list
+            content += '\n' + convertList(node, indent + '  ');
+          } else {
+            // Process other HTML elements
+            content += node.outerHTML;
+          }
+        }
+      }
+
+      markdown += `${indent}${bullet} ${content.trim()}\n`;
+    });
+
+    return markdown;
+  };
+
+  // Create a temporary element to parse HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+
+  // Convert lists
+  tempDiv.querySelectorAll('ul, ol').forEach(list => {
+    if (!list.closest('li')) {
+      // Only process top-level lists
+      const markdown = convertList(list);
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = markdown;
+      list.parentNode.replaceChild(wrapper, list);
+    }
+  });
+
+  // Get the modified HTML
+  html = tempDiv.innerHTML;
+
   return (
     html
       // Convert headers
@@ -8,17 +57,6 @@ export const convertToMarkdown = html => {
       .replace(/<h4>(.*?)<\/h4>/gi, '#### $1\n')
       .replace(/<h5>(.*?)<\/h5>/gi, '##### $1\n')
       .replace(/<h6>(.*?)<\/h6>/gi, '###### $1\n')
-      // Convert unordered lists
-      .replace(/<ul>\s*((<li>.*?<\/li>\s*)+)<\/ul>/gi, (match, items) => {
-        return items.replace(/<li>(.*?)<\/li>/gi, '- $1\n').replace(/<br\s*\/?>/gi, '');
-      })
-      // Convert ordered lists
-      .replace(/<ol>\s*((<li>.*?<\/li>\s*)+)<\/ol>/gi, (match, items) => {
-        let index = 1;
-        return items.replace(/<li>(.*?)<\/li>/gi, (itemMatch, itemContent) => {
-          return `${index++}. ${itemContent.replace(/<br\s*\/?>/gi, '')}\n`;
-        });
-      })
       // Convert blockquotes
       .replace(/<blockquote>(.*?)<\/blockquote>/gis, (match, content) => {
         return content.replace(/<p>(.*?)<\/p>/gi, '> $1\n').replace(/<br\s*\/?>/gi, '');
@@ -52,10 +90,10 @@ export const convertToMarkdown = html => {
       // Remove zero width spaces
       // eslint-disable-next-line no-misleading-character-class
       .replace(/[\u200B\u200C\u200D\uFEFF]/g, '')
-      // replace starting and ending newlines
-      .replace(/^\n+|\n+$/g, '')
       // Remove any remaining HTML tags
       .replace(/<[^>]+>/g, '')
+      // replace starting and ending newlines
+      .replace(/^\n+|\n+$/g, '')
   );
 };
 
@@ -64,6 +102,11 @@ export function parseMarkdown(markdown) {
   const lines = markdown.split('\n');
   let html = '';
   let lineType = null;
+  let listStack = [];
+
+  function getIndentLevel(line) {
+    return line.search(/\S|$/);
+  }
 
   const closeTag = () => {
     if (['ul', 'ol', 'blockquote'].includes(lineType)) {
@@ -72,60 +115,78 @@ export function parseMarkdown(markdown) {
     }
   };
 
-  lines.forEach(line => {
-    // Remove leading and trailing whitespace
-    line = parseInlineMarkdown(line);
-
-    // Handle headers
-    if (/^#{1,6} /.test(line)) {
-      if (lineType !== 'header') {
-        closeTag();
-        lineType = 'header';
-      }
-      const headerLevel = line.match(/^#+/)[0].length;
-      const headerText = line.slice(headerLevel + 1).trim();
-      html += `<h${headerLevel}>${headerText}</h${headerLevel}>`;
+  function closeList(toLevel) {
+    while (listStack.length > toLevel) {
+      html += `</li></${listStack.pop()}>`;
     }
-    // Handle unordered lists
-    else if (/^- /.test(line) || /^\* /.test(line)) {
-      if (lineType !== 'ul') {
-        closeTag();
+  }
+
+  lines.forEach((line, index) => {
+    line = parseInlineMarkdown(line);
+    const trimmedLine = line.trim();
+
+    if (/^- /.test(trimmedLine) || /^\* /.test(trimmedLine)) {
+      const indentLevel = getIndentLevel(line);
+
+      const listItem = trimmedLine.slice(2);
+      if (listStack.length === 0 || indentLevel > getIndentLevel(lines[index - 1])) {
         html += '<ul>';
-        lineType = 'ul';
+        listStack.push('ul');
+      } else if (indentLevel < getIndentLevel(lines[index - 1])) {
+        closeList(getIndentLevel(lines[index - 1]) / 2);
+      } else {
+        html += '</li>';
       }
-      const listItem = line.slice(2).trim();
-      html += `<li>${listItem}</li>`;
+      html += `<li>${listItem}`;
     }
     // Handle ordered lists
-    else if (/^\d+\. /.test(line)) {
-      if (lineType !== 'ol') {
-        closeTag();
+    else if (/^\d+\. /.test(trimmedLine)) {
+      const indentLevel = getIndentLevel(line);
+      const listItem = trimmedLine.replace(/^\d+\.\s*/, '');
+      if (listStack.length === 0 || indentLevel > getIndentLevel(lines[index - 1])) {
         html += '<ol>';
-        lineType = 'ol';
+        listStack.push('ol');
+      } else if (indentLevel < getIndentLevel(lines[index - 1])) {
+        closeList(getIndentLevel(lines[index - 1]) / 2);
+      } else {
+        html += '</li>';
       }
-      const listItem = line.replace(/^\d+\.\s*/, '').trim();
-      html += `<li>${listItem}</li>`;
-    }
-    // Handle blockquotes
-    else if (/^> /.test(line)) {
-      if (lineType !== 'blockquote') {
-        closeTag();
-        html += '<blockquote>';
-        lineType = 'blockquote';
+      html += `<li>${listItem}`;
+    } else {
+      closeList(0);
+
+      // Handle headers
+      if (/^#{1,6} /.test(line)) {
+        if (lineType !== 'header') {
+          closeTag();
+          lineType = 'header';
+        }
+        const headerLevel = line.match(/^#+/)[0].length;
+        const headerText = line.slice(headerLevel + 1).trim();
+        html += `<h${headerLevel}>${headerText}</h${headerLevel}>`;
       }
-      const blockquoteText = line.slice(2).trim();
-      html += `<p>${blockquoteText}</p>`;
-    }
-    // Handle paragraphs
-    else {
-      if (lineType !== 'p') {
-        closeTag();
+      // Handle blockquotes
+      else if (/^> /.test(line)) {
+        if (lineType !== 'blockquote') {
+          closeTag();
+          html += '<blockquote>';
+          lineType = 'blockquote';
+        }
+        const blockquoteText = line.slice(2).trim();
+        html += `<p>${blockquoteText}</p>`;
       }
-      lineType = 'p';
-      html += `<p>${line || '<br>'}</p>`;
+      // Handle paragraphs
+      else {
+        if (lineType !== 'p') {
+          closeTag();
+        }
+        lineType = 'p';
+        html += `<p>${line || '<br>'}</p>`;
+      }
     }
   });
 
+  closeList(0);
   closeTag();
 
   return html;

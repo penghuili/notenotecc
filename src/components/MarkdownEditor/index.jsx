@@ -17,6 +17,7 @@ import {
   getRangeContainer,
   hasRedoHistoryCat,
   hasUndoHistoryCat,
+  moveListItem,
   setCursorPosition,
   supportedInlineTags,
   Toolbar,
@@ -95,6 +96,20 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
     handleChange();
   }, [handleChange]);
 
+  const handleKeyDown = useCallback(
+    event => {
+      // check if it's tab
+      if (event.key === 'Tab') {
+        event.preventDefault();
+
+        moveListItem(editorRef.current, event.shiftKey);
+
+        handleChange();
+      }
+    },
+    [handleChange]
+  );
+
   const handlePaste = useCallback(
     event => {
       event.preventDefault();
@@ -172,6 +187,7 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
         onInput={handleInput}
         onMouseUp={handleCheckActiveElements}
         onTouchEnd={handleCheckActiveElements}
+        onKeyDown={handleKeyDown}
         onKeyUp={handleCheckActiveElements}
         onPaste={handlePaste}
         data-placeholder="Start typing here..."
