@@ -6,7 +6,6 @@ import { parseMarkdown } from './markdownHelpers';
 
 export const Markdown = fastMemo(({ markdown, onClick }) => {
   const html = parseMarkdown(markdown);
-  console.log({ markdown, html });
   return <Editor dangerouslySetInnerHTML={{ __html: html }} onClick={onClick} />;
 });
 
@@ -60,7 +59,7 @@ export const Editor = styled.div`
   ul,
   ol {
     margin: 0.5rem 0;
-    padding: 0 0 0 1rem;
+    padding: 0 0 0 1.25rem;
     font-size: var(--font-size-3);
   }
   h1,

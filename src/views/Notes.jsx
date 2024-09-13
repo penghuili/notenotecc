@@ -8,7 +8,7 @@ import {
   RiRefreshLine,
   RiSettings3Line,
 } from '@remixicon/react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { BabyLink, navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
@@ -59,15 +59,19 @@ const Header = fastMemo(() => {
   const isDeletingImage = useCat(isDeletingImageCat);
   const isLoggedIn = useCat(isLoggedInCat);
 
+  const [isForceLoading, setIsForceLoading] = useState(false);
+
   const handleFetch = useCallback(async () => {
+    setIsForceLoading(true);
     await forceFetchHomeNotesEffect();
+    setIsForceLoading(false);
   }, []);
 
   const rightElement = useMemo(() => <HeaderMenu />, []);
 
   return (
     <PageHeader
-      isLoading={isAddingImages || isDeleting || isDeletingImage}
+      isLoading={isForceLoading || isAddingImages || isDeleting || isDeletingImage}
       fixed
       showNewVersion
       title={

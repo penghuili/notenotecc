@@ -515,7 +515,6 @@ function outdent(wrapperElement) {
         grandParentListItem.insertBefore(listItem, parentList.nextElementSibling);
       } else {
         const greatGrandParentList = grandParentListItem.parentElement;
-
         // Move the current list item after its grandparent list item
         greatGrandParentList.insertBefore(listItem, grandParentListItem.nextElementSibling);
       }
