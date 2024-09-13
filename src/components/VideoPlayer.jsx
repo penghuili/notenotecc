@@ -3,12 +3,16 @@ import { RiPlayLargeFill, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/re
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
+import { createCat, useCat } from 'usecat';
 
 import { getVideoDuration, getVideoPreviewImage } from '../lib/video';
 
-export const VideoPlayer = fastMemo(({ src, type, onLoaded, muted = true, hidden }) => {
+const mutedCat = createCat(true);
+
+export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
+  const muted = useCat(mutedCat);
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
 
   const togglePlayPause = useCallback(() => {
@@ -71,6 +75,8 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, muted = true, hidden
         onClick={togglePlayPause}
         onDoubleClick={toggleFullScreen}
         muted={muted}
+        autoPlay
+        loop={false}
         playsInline
         preload="auto"
         poster={previewImageUrl}
@@ -82,15 +88,16 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, muted = true, hidden
           <RiPlayLargeFill style={{ '--font-size': '50px' }} color="white" onClick={handlePlay} />
         </PauseWrapper>
       )}
-      <PlayerActions videoRef={videoRef} src={src} onLoaded={onLoaded} muted={muted} />
+      <PlayerActions videoRef={videoRef} src={src} onLoaded={onLoaded} />
     </Wrapper>
   );
 });
 
-const PlayerActions = fastMemo(({ videoRef, src, onLoaded, muted }) => {
+const PlayerActions = fastMemo(({ videoRef, src, onLoaded }) => {
+  const muted = useCat(mutedCat);
+
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(1);
-  const [isMuted, setIsMuted] = useState(muted);
 
   const handleProgressChange = useCallback(
     value => {
@@ -105,10 +112,10 @@ const PlayerActions = fastMemo(({ videoRef, src, onLoaded, muted }) => {
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (video) {
-      video.muted = !isMuted;
-      setIsMuted(!isMuted);
+      video.muted = !muted;
+      mutedCat.set(!muted);
     }
-  }, [videoRef, isMuted]);
+  }, [videoRef, muted]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -151,7 +158,7 @@ const PlayerActions = fastMemo(({ videoRef, src, onLoaded, muted }) => {
         style={{ width: '100%' }}
       />
       <IconButton onClick={toggleMute} variant="ghost" ml="2">
-        {isMuted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
+        {muted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
       </IconButton>
     </Actions>
   );
