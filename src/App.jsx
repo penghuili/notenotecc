@@ -1,4 +1,5 @@
 import './theme.css';
+import 'inobounce';
 
 import React from 'react';
 
@@ -7,6 +8,7 @@ import { FullScreenImage } from './components/FullScreenImage.jsx';
 import { Router } from './Router.jsx';
 import { apps } from './shared/js/apps';
 import { AppWrapper } from './shared/react/AppWrapper.jsx';
+import { disablePullToRefresh } from './shared/react/bodySccroll.js';
 import { initShared } from './shared/react/initShared';
 import { registerSW } from './shared/react/registerSW.js';
 import { Toast } from './shared/react/Toast.jsx';
@@ -20,6 +22,8 @@ initShared({
 });
 
 registerSW();
+
+disablePullToRefresh();
 
 function App() {
   return (

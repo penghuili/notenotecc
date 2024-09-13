@@ -8,6 +8,7 @@
     "date-fns": "3.6.0",
     "file-saver": "2.0.5",
     "idb-keyval": "6.2.1",
+    "inobounce": "0.2.1",
     "jwt-decode": "4.0.0",
     "lodash.uniqby": "4.7.0",
     "openpgp": "5.11.2",

@@ -17,7 +17,7 @@ export function updateFontSize(fontSize) {
   const newClasses = classes.filter(c => !c.startsWith('peng-scaling-'));
   const newValue = mapper[fontSize] || mapper[1];
   newClasses.push(newValue);
-  document.body.classList = newClasses;
+  document.body.classList = newClasses.join(' ');
 }
 
 export const FontSize = fastMemo(() => {

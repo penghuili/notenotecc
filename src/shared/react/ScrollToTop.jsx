@@ -3,6 +3,8 @@ import { RiArrowUpSLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
+import { PageContentRef } from './PageContentRef.jsx';
+
 export const ScrollToTop = fastMemo(() => {
   const [show, setShow] = useState(false);
   const ref = useRef();
@@ -17,17 +19,13 @@ export const ScrollToTop = fastMemo(() => {
   }, []);
 
   useEffect(() => {
-    pageWrapperRef.current = getPageWrapper(ref.current);
-    if (!pageWrapperRef.current) {
-      return;
-    }
-
     const handleToggle = () => {
       setShow(pageWrapperRef.current.scrollTop > 1500);
     };
     pageWrapperRef.current.addEventListener('scroll', handleToggle);
 
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       pageWrapperRef.current.removeEventListener('scroll', handleToggle);
     };
   }, []);
@@ -37,15 +35,8 @@ export const ScrollToTop = fastMemo(() => {
       <IconButton onClick={handleScrollToTop} mr="2" variant="ghost">
         <RiArrowUpSLine />
       </IconButton>
+
+      <PageContentRef ref={pageWrapperRef} />
     </div>
   );
 });
-
-function getPageWrapper(element) {
-  let wrapper = element;
-  while (wrapper && wrapper.tagName !== 'BODY' && !wrapper.classList.contains('page-content')) {
-    wrapper = wrapper.parentElement;
-  }
-
-  return wrapper?.classList?.contains('page-content') ? wrapper : null;
-}

@@ -4,8 +4,7 @@
 }
 @media screen and (max-width: 768px) {
   .carousel-container {
-    width: calc(100% + 1rem);
-    margin-left: -0.5rem;
+    width: 100%;
   }
 }
 

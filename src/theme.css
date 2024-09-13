@@ -152,6 +152,7 @@ body * {
   box-sizing: border-box;
 }
 
+/* Scrollbar */
 /* Firefox */
 * {
   scrollbar-width: thin;
@@ -166,6 +167,15 @@ body * {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--accent-a11);
+}
+
+/* iOS no bouncing */
+body,
+.page-container,
+.page,
+.page-content {
+  max-height: 100vh;
+  -webkit-overflow-scrolling: touch;
 }
 
 .remixicon {

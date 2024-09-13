@@ -1,4 +1,4 @@
-import { Flex, IconButton, Spinner, Tabs, Text } from '@radix-ui/themes';
+import { Flex, Heading, IconButton, Text } from '@radix-ui/themes';
 import { RiRefreshLine } from '@remixicon/react';
 import {
   addDays,
@@ -11,22 +11,24 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import React, { useCallback, useMemo } from 'react';
-import { replaceTo } from 'react-baby-router';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { DatePicker } from '../components/DatePicker.jsx';
+import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { TikTokCards } from '../components/TikTokCards/TikTokCards.jsx';
+import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { asyncForEach } from '../shared/js/asyncForEach';
-import { formatDate } from '../shared/js/date.js';
+import { formatDate, formatDateWeek } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber';
 import { randomBetween } from '../shared/js/utils.js';
+import { PageContentRef } from '../shared/react/PageContentRef.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
-import { NotesList } from './Notes.jsx';
 
 const tabsCat = createCat([]);
 const activeTabCat = createCat(null);
@@ -34,6 +36,7 @@ const randomDateCat = createCat(null);
 
 export const OnThisDay = fastMemo(({ queryParams: { tab } }) => {
   const userCreatedAt = useUserCreatedAt();
+  const pageContentRef = useRef(null);
 
   const load = useCallback(async () => {
     const tabs = getTabs(userCreatedAt);
@@ -48,16 +51,28 @@ export const OnThisDay = fastMemo(({ queryParams: { tab } }) => {
     });
   }, [tab, userCreatedAt]);
 
+  useEffect(() => {
+    pageContentRef.current.style.paddingBottom = '0';
+
+    return () => {
+      if (pageContentRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        pageContentRef.current.style.paddingBottom = '5rem';
+      }
+    };
+  }, []);
+
   return (
-    <PrepareData load={load}>
-      <Header />
+    <>
+      <PrepareData load={load}>
+        <Header />
 
-      <HistoryTabs />
+        <DatePickerForRandomDate />
 
-      <DatePickerForRandomDate />
-
-      <Notes />
-    </PrepareData>
+        <Notes />
+      </PrepareData>
+      <PageContentRef ref={pageContentRef} />
+    </>
   );
 });
 
@@ -65,31 +80,6 @@ const Header = fastMemo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
 
   return <PageHeader title="On this day" isLoading={isLoading} hasBack />;
-});
-
-const HistoryTabs = fastMemo(() => {
-  const notes = useCat(onThisDayNotesCat);
-
-  const tabs = useCat(tabsCat);
-  const activeTab = useCat(activeTabCat);
-  const randomDate = useCat(randomDateCat);
-
-  const handleChangeTab = useCallback(tab => {
-    activeTabCat.set(tab);
-    replaceTo(`/on-this-day?tab=${tab}`);
-  }, []);
-
-  return (
-    <Tabs.Root defaultValue="account" value={activeTab} onValueChange={handleChangeTab} mb="4">
-      <Tabs.List>
-        {tabs.map(tab => (
-          <Tabs.Trigger key={tab.label} value={tab.value}>
-            {tab.label} ({getTabNotes(notes, tab.value, randomDate).length})
-          </Tabs.Trigger>
-        ))}
-      </Tabs.List>
-    </Tabs.Root>
-  );
 });
 
 const DatePickerForRandomDate = fastMemo(() => {
@@ -126,24 +116,67 @@ const DatePickerForRandomDate = fastMemo(() => {
 const Notes = fastMemo(() => {
   const isLoading = useCat(isLoadingOnThisDayNotesCat);
   const notes = useCat(onThisDayNotesCat);
+  const tabs = useCat(tabsCat);
 
-  const activeTab = useCat(activeTabCat);
   const randomDate = useCat(randomDateCat);
 
-  const currentTabNotes = useMemo(
-    () => getTabNotes(notes, activeTab, randomDate),
-    [notes, activeTab, randomDate]
+  const allNotes = useMemo(() => {
+    const tabNotes = tabs.map(tab => ({ tab, notes: getTabNotes(notes, tab.value, randomDate) }));
+    return tabNotes.reduce(
+      (acc, curr) => [
+        ...acc,
+        ...(curr?.notes?.length
+          ? [
+              <Flex key={curr.tab.label} direction="column" align="center">
+                <Heading>{curr.tab.label}</Heading>
+                <Text>{formatDateWeek(new Date(curr.tab.date))}</Text>
+                <Text>You wrote {curr.notes.length} notes</Text>
+                <Text>(Scroll to view them)</Text>
+              </Flex>,
+              ...curr.notes,
+            ]
+          : []),
+      ],
+      []
+    );
+  }, [notes, randomDate, tabs]);
+
+  if (allNotes?.length) {
+    return <NotesSwiper notes={allNotes} />;
+  }
+
+  if (!isLoading) {
+    return <Text my="2">No notes on this day.</Text>;
+  }
+
+  return null;
+});
+
+const NotesSwiper = fastMemo(({ notes }) => {
+  const getNoteAlbums = useGetNoteAlbums();
+
+  if (!notes?.length) {
+    return null;
+  }
+
+  return (
+    <TikTokCards
+      cards={notes.map(note =>
+        React.isValidElement(note) ? (
+          note
+        ) : (
+          <NoteItem
+            key={note.sortKey}
+            note={note}
+            albums={getNoteAlbums(note)}
+            textLines={2}
+            hasMarginBottom={false}
+          />
+        )
+      )}
+      height="calc(100vh - var(--space-8) - 1.5rem)"
+    />
   );
-
-  if (currentTabNotes?.length) {
-    return <NotesList notes={currentTabNotes} />;
-  }
-
-  if (isLoading) {
-    return <Spinner />;
-  }
-
-  return <Text my="2">No notes on this day.</Text>;
 });
 
 function parseStartTime(startTime) {
@@ -213,7 +246,7 @@ function getTabs(createdAt) {
   }
 
   tabs.push({
-    label: 'Random',
+    label: 'A random day',
     value: 'random',
     date: randomDate,
   });

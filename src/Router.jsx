@@ -25,6 +25,7 @@ import { AlbumDetails } from './views/AlbumDetails.jsx';
 import { AlbumEdit } from './views/AlbumEdit.jsx';
 import { Albums } from './views/Albums.jsx';
 import { AlbumsReorder } from './views/AlbumsReorder.jsx';
+import { Demo } from './views/Demo.jsx';
 import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
@@ -63,6 +64,8 @@ const commonRoutes = {
 };
 const loggedInRoutes = {
   ...commonRoutes,
+
+  '/demo': Demo,
 
   '/account': Account,
   '/on-this-day': OnThisDay,

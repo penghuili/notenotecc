@@ -12,7 +12,7 @@ import { Markdown } from './MarkdownEditor/Markdown.jsx';
 import { NoteActions } from './NoteActions.jsx';
 import { TextTruncate } from './TextTruncate.jsx';
 
-export const NoteItem = fastMemo(({ note, albums }) => {
+export const NoteItem = fastMemo(({ note, albums, textLines, hasMarginBottom = true }) => {
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
   }, [note?.createdAt]);
@@ -62,7 +62,7 @@ export const NoteItem = fastMemo(({ note, albums }) => {
   }, [ago]);
 
   return (
-    <Box mb="8">
+    <Box mb={hasMarginBottom ? '8' : '0'} width="100%">
       <Flex justify="between" align="center" mb="2">
         <Text size="2" as="p" style={{ userSelect: 'none' }}>
           {dateTime}
@@ -79,7 +79,11 @@ export const NoteItem = fastMemo(({ note, albums }) => {
         />
       )}
       {!!note.note && (
-        <TextTruncate showFullText={false} onClick={handleNavigate}>
+        <TextTruncate
+          showFullText={false}
+          maxLines={note.images?.length ? textLines : 8}
+          onClick={handleNavigate}
+        >
           <Markdown markdown={note.note} />
         </TextTruncate>
       )}

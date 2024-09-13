@@ -76,7 +76,7 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
         onDoubleClick={toggleFullScreen}
         muted={muted}
         autoPlay
-        loop={false}
+        loop
         playsInline
         preload="auto"
         poster={previewImageUrl}
@@ -125,18 +125,11 @@ const PlayerActions = fastMemo(({ videoRef, src, onLoaded }) => {
         setCurrentTime(video.currentTime);
       }
     };
-    const handleVideoEnd = () => {
-      if (video) {
-        setCurrentTime(0);
-      }
-    };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('ended', handleVideoEnd);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('ended', handleVideoEnd);
     };
   }, [videoRef]);
 
