@@ -68,6 +68,29 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
       .catch(e => console.log(e));
   }, [src]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0]) {
+          if (entries[0].isIntersecting) {
+            video.play();
+            setIsPlaying(true);
+          } else {
+            video.pause();
+            setIsPlaying(false);
+          }
+        }
+      },
+      {
+        threshold: 0.5,
+      }
+    );
+
+    observer.observe(video);
+  }, []);
+
   return (
     <Wrapper hidden={hidden}>
       <Video
