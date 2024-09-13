@@ -152,32 +152,6 @@ body * {
   box-sizing: border-box;
 }
 
-/* Scrollbar */
-/* Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-a11) var(--accent-a3);
-}
-/* WebKit */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--accent-a3);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--accent-a11);
-}
-
-/* iOS no bouncing */
-body,
-.page-container,
-.page,
-.page-content {
-  max-height: 100vh;
-  -webkit-overflow-scrolling: touch;
-}
-
 .remixicon {
   width: calc(var(--font-size, 20px) * var(--scaling));
   height: calc(var(--font-size, 20px) * var(--scaling));

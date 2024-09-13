@@ -55,6 +55,8 @@ const Wrapper = styled.div`
   aspect-ratio: 1 / 1;
   width: 100%;
   max-width: 600px;
+  border-radius: 8px;
+  overflow: hidden;
 `;
 
 const ImageWrapper = styled.div`
