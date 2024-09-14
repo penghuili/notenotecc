@@ -79,7 +79,10 @@ const Header = fastMemo(({ noteId }) => {
   const isDeletingImage = useCat(isDeletingImageCat);
   const noteItem = useNote(noteId);
 
-  const rightElement = useMemo(() => !!noteItem && <NoteActions note={noteItem} />, [noteItem]);
+  const rightElement = useMemo(
+    () => !!noteItem && <NoteActions note={noteItem} isDetailsPage />,
+    [noteItem]
+  );
 
   return (
     <PageHeader

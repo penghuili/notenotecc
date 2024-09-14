@@ -155,7 +155,7 @@ export const Draw = fastMemo(({ onSelect }) => {
           size="2"
           style={{
             position: 'absolute',
-            top: size + 60,
+            top: size + 70,
             right: '50%',
             transform: 'translateX(50%)',
           }}

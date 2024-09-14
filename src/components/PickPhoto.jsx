@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Flex, IconButton, Text } from '@radix-ui/themes';
 import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -10,7 +10,6 @@ import { resizeImage } from '../lib/resizeImage.js';
 import { randomHash } from '../shared/js/randomHash.js';
 import { idbStorage } from '../shared/react/indexDB.js';
 import { FilePicker } from './FilePicker.jsx';
-import { IconButtonWithText } from './IconButtonWithText.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 
 const CropperWrapper = styled.div`
@@ -103,7 +102,7 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
         {errorElement}
       </CropperWrapper>
 
-      <Flex justify="center" align="center" py="2" gap="2">
+      <Flex justify="center" align="center" pt="12px" gap="2">
         {(!pickedPhotos?.length || !error) && (
           <FilePicker
             accept="image/*"
@@ -112,9 +111,9 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
             onSelect={handlePickPhotos}
             height="auto"
           >
-            <IconButtonWithText text="Pick">
+            <IconButton size="4" radius="full">
               <RiImageAddLine />
-            </IconButtonWithText>
+            </IconButton>
           </FilePicker>
         )}
       </Flex>

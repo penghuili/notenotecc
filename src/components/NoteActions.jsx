@@ -14,8 +14,7 @@ import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { imagesCat } from './Camera.jsx';
 import { ProRequired } from './ProRequired.jsx';
 
-export const NoteActions = fastMemo(({ note }) => {
-  const isDetailsPage = window.location.pathname === '/notes/details';
+export const NoteActions = fastMemo(({ note, isDetailsPage }) => {
   const isDeleting = useCat(isDeletingNoteCat);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);

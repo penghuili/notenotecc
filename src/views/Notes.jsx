@@ -75,7 +75,8 @@ const Header = fastMemo(() => {
       fixed
       showNewVersion
       title={
-        isLoggedIn && (
+        isLoggedIn &&
+        !isForceLoading && (
           <IconButton onClick={handleFetch} mr="2" variant="soft">
             <RiRefreshLine />
           </IconButton>
