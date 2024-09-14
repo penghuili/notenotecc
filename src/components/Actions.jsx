@@ -1,6 +1,7 @@
 import {
   RiCameraLine,
   RiImageAddLine,
+  RiPaletteLine,
   RiStickyNoteAddLine,
   RiVideoAddLine,
 } from '@remixicon/react';
@@ -72,6 +73,10 @@ export const Actions = fastMemo(() => {
     handleAdd();
   }, []);
 
+  const handleDraw = useCallback(() => {
+    handleAdd(cameraTypes.draw);
+  }, []);
+
   return (
     <Wrapper>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
@@ -99,6 +104,11 @@ export const Actions = fastMemo(() => {
             <RiImageAddLine />
           </IconButtonWithText>
         </FilePicker>
+      </ProRequired>
+      <ProRequired>
+        <IconButtonWithText onClick={handleDraw} text="Draw">
+          <RiPaletteLine />
+        </IconButtonWithText>
       </ProRequired>
     </Wrapper>
   );

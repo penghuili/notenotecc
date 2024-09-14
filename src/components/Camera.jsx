@@ -9,6 +9,7 @@ import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/react/device';
+import { Draw } from './Draw.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
 import { TakePhoto } from './TakePhoto.jsx';
@@ -56,10 +57,13 @@ export const Camera = fastMemo(({ type, disabled, onShowPreviewCaruosel, onSelec
 
         {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
+        {activeTab === cameraTypes.draw && <Draw onSelect={handleAddNewImage} />}
+
         <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
           <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
           <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
           <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
+          <SegmentedControl.Item value={cameraTypes.draw}>DRAW</SegmentedControl.Item>
         </SegmentedControl.Root>
 
         {!!images?.length && (
