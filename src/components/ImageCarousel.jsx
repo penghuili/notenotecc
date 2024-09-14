@@ -204,8 +204,8 @@ export const ImageCarousel = fastMemo(({ noteId, encryptedPassword, images, onDe
       <div
         className="carousel-track"
         style={{
-          transform: `translateX(-${innerCurrentIndex * 100}%)`,
-          transition: isTransitioning ? 'transform 0.2s ease-in-out' : 'none',
+          left: `-${innerCurrentIndex * 100}%`,
+          transition: isTransitioning ? 'left 0.2s ease-in-out' : 'none',
         }}
         onTransitionEnd={() => setIsTransitioning(false)}
       >
