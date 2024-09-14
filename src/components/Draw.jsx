@@ -45,7 +45,12 @@ const colors = [
   ),
 ];
 
+const INTERNAL_SIZE = 900;
+const displaySize = getCameraSize();
+
 const DrawingCanvas = styled.canvas`
+  width: ${displaySize}px;
+  height: ${displaySize}px;
   touch-action: none;
   background-color: white;
 `;
@@ -67,18 +72,20 @@ export const Draw = fastMemo(({ onSelect }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    canvas.width = INTERNAL_SIZE;
+    canvas.height = INTERNAL_SIZE;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, INTERNAL_SIZE, INTERNAL_SIZE);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 2 * (INTERNAL_SIZE / displaySize);
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = color; // Set the stroke color
+    ctx.strokeStyle = color;
 
     const draw = (x, y) => {
       if (!isDrawing) return;
@@ -105,17 +112,15 @@ export const Draw = fastMemo(({ onSelect }) => {
       draw(pos.x, pos.y);
     };
 
+    const scaleCoord = coord => (coord * INTERNAL_SIZE) / displaySize;
+
     const getEventPosition = e => {
       const rect = canvas.getBoundingClientRect();
-      if (e.touches && e.touches[0]) {
-        return {
-          x: e.touches[0].clientX - rect.left,
-          y: e.touches[0].clientY - rect.top,
-        };
-      }
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
       return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
+        x: scaleCoord(clientX - rect.left),
+        y: scaleCoord(clientY - rect.top),
       };
     };
 
@@ -139,11 +144,9 @@ export const Draw = fastMemo(({ onSelect }) => {
     };
   }, [isDrawing, lastPos, color]);
 
-  const size = getCameraSize();
-
   return (
     <VideoWrapper>
-      <DrawingCanvas width={size} height={size} ref={canvasRef} />
+      <DrawingCanvas width={INTERNAL_SIZE} height={INTERNAL_SIZE} ref={canvasRef} />
 
       <Flex justify="center" align="center" pt="12px" gap="2">
         <IconButton size="4" onClick={handleDone} radius="full">
@@ -155,7 +158,7 @@ export const Draw = fastMemo(({ onSelect }) => {
           size="2"
           style={{
             position: 'absolute',
-            top: size + 70,
+            top: displaySize + 70,
             right: '50%',
             transform: 'translateX(50%)',
           }}
@@ -163,7 +166,7 @@ export const Draw = fastMemo(({ onSelect }) => {
           Touch to draw anything.
         </Text>
 
-        <Box style={{ position: 'absolute', top: size + 12, right: 12 }}>
+        <Box style={{ position: 'absolute', top: displaySize + 12, right: 12 }}>
           <ColorPicker color={color} onChange={setColor} />
         </Box>
       </Flex>
