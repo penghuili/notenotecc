@@ -4,6 +4,7 @@
   aspect-ratio: 1 / 1;
   border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 0.25rem;
 }
 
 .carousel-track {

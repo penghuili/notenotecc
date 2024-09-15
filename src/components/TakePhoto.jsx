@@ -35,6 +35,8 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
 
   const videoRef = useRef(null);
   const [isTaking, setIsTaking] = useState(false);
+  const [zoomCapability, setZoomCapability] = useState(null);
+  const [zoomValue, setZoomValue] = useState(1);
 
   const handleCapture = useCallback(async () => {
     setIsTaking(true);
@@ -72,6 +74,12 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
     if (videoRef.current) {
       if (videoStream) {
         videoRef.current.srcObject = videoStream;
+
+        const videoTrack = videoStream.getVideoTracks()[0];
+        if (videoTrack) {
+          const capabilities = videoTrack.getCapabilities();
+          setZoomCapability(capabilities?.zoom);
+        }
       } else {
         videoRef.current.srcObject = null;
         videoRef.current.load();
@@ -82,12 +90,45 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
 
   const size = getCameraSize();
 
+  const zoomSteps = useMemo(() => {
+    if (!zoomCapability) {
+      return null;
+    }
+
+    return (
+      <ZoomSlider
+        type="range"
+        min={zoomCapability.min || 1}
+        max={zoomCapability.max || 1}
+        step={zoomCapability.step || 0.1}
+        value={zoomValue}
+        onChange={async e => {
+          setZoomValue(e.target.value);
+
+          try {
+            const videoTrack = videoStream.getVideoTracks()[0];
+            await videoTrack.applyConstraints({ advanced: [{ zoom: Number(e.target.value) }] });
+          } catch (error) {
+            console.error('Error applying zoom constraints:', error);
+          }
+        }}
+        style={{
+          position: 'absolute',
+          top: size - 40,
+          right: '50%',
+          transform: 'translateX(50%)',
+        }}
+      />
+    );
+  }, [zoomCapability, zoomValue, size, videoStream]);
+
   const errorElement = useMemo(() => renderError(videoStreamError, size), [size, videoStreamError]);
 
   return (
     <VideoWrapper>
       <Video ref={videoRef} autoPlay muted playsInline size={size} />
 
+      {zoomSteps}
       {errorElement}
 
       <Flex justify="center" align="center" pt="12px" gap="2">
@@ -127,3 +168,17 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
     </VideoWrapper>
   );
 });
+
+const ZoomSlider = styled.input`
+  position: absolute;
+  border-radius: 2rem;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+  }
+`;
