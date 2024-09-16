@@ -171,7 +171,9 @@ const PlayerActions = fastMemo(({ videoRef, src, onLoaded }) => {
         value={[(currentTime / duration) * 100]}
         onValueChange={handleProgressChange}
         size="1"
-        style={{ width: '100%' }}
+        style={{ width: '100%', color: 'white' }}
+        variant="soft"
+        color="gray"
       />
       <IconButton onClick={toggleMute} variant="ghost" ml="2">
         {muted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
