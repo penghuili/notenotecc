@@ -55,8 +55,6 @@ const Wrapper = styled.div`
   aspect-ratio: 1 / 1;
   width: 100%;
   max-width: 600px;
-  border-radius: 8px;
-  overflow: hidden;
 `;
 
 const ImageWrapper = styled.div`
@@ -79,6 +77,9 @@ const ImageBGCover = styled.div`
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+
+  border-radius: 8px;
+  overflow: hidden;
 `;
 const ImageElement = styled.img`
   max-width: 100%;

@@ -4,6 +4,8 @@
   overflow: hidden;
   position: relative;
   cursor: grab;
+  box-shadow: rgb(235, 237, 240) 0px 4px 12px;
+  border-radius: 8px;
 }
 
 .tiktok-cards-container:active {
@@ -11,6 +13,7 @@
 }
 
 .tiktok-card {
+  padding: 8px;
   width: 100%;
   height: 100%;
   position: absolute;
