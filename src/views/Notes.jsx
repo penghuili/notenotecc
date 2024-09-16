@@ -17,6 +17,7 @@ import { Actions } from '../components/Actions.jsx';
 import { BackupBitte } from '../components/BackupBitte.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { WhatHappened } from '../components/WhatHappened.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
@@ -43,6 +44,8 @@ export const Notes = fastMemo(() => {
       <Header />
 
       <Actions />
+
+      <WhatHappened />
 
       <BackupBitte />
 
