@@ -11,9 +11,11 @@ import {
   loadHistoryNotes,
   randomDateCat,
   tabsCat,
-} from '../components/WhatHappened.jsx';
+} from '../components/useHasHistory.jsx';
+import { localStorageKeys } from '../lib/constants.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
-import { formatDateWeek } from '../shared/js/date.js';
+import { formatDate, formatDateWeek } from '../shared/js/date.js';
+import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { PageContentRef } from '../shared/react/PageContentRef.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
@@ -28,6 +30,8 @@ export const OnThisDay = fastMemo(() => {
   }, [userCreatedAt]);
 
   useEffect(() => {
+    LocalStorage.set(localStorageKeys.historyReviewDate, formatDate(new Date()));
+
     pageContentRef.current.style.paddingBottom = '0';
 
     return () => {

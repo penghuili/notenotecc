@@ -9,6 +9,7 @@ export const localStorageKeys = {
   album: 'notenote-album',
   showIOSCameraBanner: 'settings-notenote-show-ios-camera-banner',
   actions: 'notenote-actions',
+  historyReviewDate: 'notenote-historyReviewDate',
 };
 
 export const fileTypes = {

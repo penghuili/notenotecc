@@ -1,4 +1,3 @@
-import { Flex } from '@radix-ui/themes';
 import {
   addDays,
   differenceInCalendarDays,
@@ -10,33 +9,30 @@ import {
   subMonths,
   subYears,
 } from 'date-fns';
-import React, { useEffect, useMemo } from 'react';
-import fastMemo from 'react-fast-memo';
+import { useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { asyncForEach } from '../shared/js/asyncForEach';
+import { localStorageKeys } from '../lib/constants.js';
+import { asyncForEach } from '../shared/js/asyncForEach.js';
 import { formatDate } from '../shared/js/date.js';
-import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber';
+import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber.js';
 import { randomBetween } from '../shared/js/utils.js';
-import { RouteLink } from '../shared/react/RouteLink.jsx';
+import { LocalStorage } from '../shared/react/LocalStorage.js';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { onThisDayNotesCat } from '../store/note/noteCats.js';
-import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects';
+import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects.js';
 
 export const tabsCat = createCat([]);
 export const randomDateCat = createCat(null);
 
-export const WhatHappened = fastMemo(() => {
+export function useHasHistory() {
   const userCreatedAt = useUserCreatedAt();
+  const reviewDate = LocalStorage.get(localStorageKeys.historyReviewDate);
 
   useEffect(() => {
     loadHistoryNotes(userCreatedAt);
   }, [userCreatedAt]);
 
-  return <WhatHappenedText />;
-});
-
-const WhatHappenedText = fastMemo(() => {
   const notes = useCat(onThisDayNotesCat);
   const tabs = useCat(tabsCat);
 
@@ -44,18 +40,8 @@ const WhatHappenedText = fastMemo(() => {
     return tabs.find(tab => tab.value !== 'random' && getTabNotes(notes, tab.value)?.length);
   }, [notes, tabs]);
 
-  if (!firstBlock) {
-    return null;
-  }
-
-  return (
-    <Flex mb="5" justify="center">
-      <RouteLink to="/on-this-day">
-        What happened the same day {firstBlock.label.toLowerCase()}?{' '}
-      </RouteLink>
-    </Flex>
-  );
-});
+  return (!reviewDate || reviewDate < formatDate(new Date())) && !!firstBlock;
+}
 
 function parseStartTime(startTime) {
   return startTime ? getUTCTimeNumber(startOfDay(new Date(startTime))) : null;

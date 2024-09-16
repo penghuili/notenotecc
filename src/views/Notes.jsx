@@ -11,13 +11,14 @@ import {
 import React, { useCallback, useMemo } from 'react';
 import { BabyLink, navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
+import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
 import { BackupBitte } from '../components/BackupBitte.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { WhatHappened } from '../components/WhatHappened.jsx';
+import { useHasHistory } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/react/hooks/useInView.js';
@@ -45,8 +46,6 @@ export const Notes = fastMemo(() => {
       <Header />
 
       <Actions />
-
-      <WhatHappened />
 
       <BackupBitte />
 
@@ -92,6 +91,7 @@ const Header = fastMemo(() => {
 const HeaderMenu = fastMemo(() => {
   const isAdmin = useIsAdmin();
   const isLoggedIn = useCat(isLoggedInCat);
+  const hasHistory = useHasHistory();
 
   const handleNavigateToAccount = useCallback(() => {
     navigateTo('/account');
@@ -131,8 +131,10 @@ const HeaderMenu = fastMemo(() => {
       )}
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <IconButton variant="ghost" mr="2">
+          <IconButton variant="ghost" mr="2" style={{ position: 'relative' }}>
             <RiMenuLine />
+
+            {hasHistory && <RedDot />}
           </IconButton>
         </DropdownMenu.Trigger>
 
@@ -146,9 +148,10 @@ const HeaderMenu = fastMemo(() => {
 
               <DropdownMenu.Separator />
 
-              <DropdownMenu.Item onClick={handleNavigateToHistory}>
+              <DropdownMenu.Item onClick={handleNavigateToHistory} style={{ position: 'relative' }}>
                 <RiHistoryLine />
                 Today in history
+                {hasHistory && <RedDot />}
               </DropdownMenu.Item>
             </>
           )}
@@ -234,3 +237,15 @@ const LoadMore = fastMemo(() => {
     </Button>
   );
 });
+
+const RedDot = styled.span`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+
+  position: absolute;
+  top: 0;
+  right: -2px;
+`;
