@@ -23,11 +23,14 @@ import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
   position: sticky;
-  bottom: 3rem;
+  top: calc(100% - 3rem);
+  z-index: 1;
 
   display: flex;
   justify-content: center;
   gap: 0.5rem;
+  height: 0;
+  overflow: visible;
 `;
 
 const handleAdd = cameraType => {

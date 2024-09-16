@@ -7,6 +7,7 @@ import {
   notesCat,
   onThisDayNotesCat,
 } from './note/noteCats';
+import { noteTimestamps } from './note/noteEffects';
 import { workerActionTypes } from './workerHelpers';
 
 export const myWorker = new Worker(new URL('./worker.js', import.meta.url), {
@@ -24,6 +25,11 @@ myWorker.onmessage = event => {
       onThisDayNotesCat.set({ ...onThisDayNotesCat.get(), [date]: decryptedNotes.reverse() });
       isLoadingOnThisDayNotesCat.set(false);
     } else {
+      if (noteTimestamps.updateNotes && noteTimestamps.fetchNotes < noteTimestamps.updateNotes) {
+        isLoadingNotesCat.set(false);
+        return;
+      }
+
       const data = {
         items: startKey ? [...notesCat.get().items, ...decryptedNotes] : decryptedNotes,
         startKey: newStartKey,

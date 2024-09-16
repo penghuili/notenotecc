@@ -2,7 +2,6 @@ import { goBack } from 'react-baby-router';
 
 import { albumDescriptionCat, albumSelectedKeysCat } from '../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../lib/constants';
-import { eventEmitter, eventEmitterEvents } from '../shared/react/eventEmitter.js';
 import { LocalStorage } from '../shared/react/LocalStorage';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
 import {
@@ -18,11 +17,14 @@ import {
   deleteNoteEffect,
   fetchHomeNotesEffect,
   forceFetchHomeNotesEffect,
+  noteTimestamps,
+  saveLocalNotesAndAlbumsEffect,
   updateNoteEffect,
   updateNoteStates,
 } from './note/noteEffects';
 
 export const actionTypes = {
+  SAVE_LOCAL_NOTES_AND_ALBUMS: 'SAVE_LOCAL_NOTES_AND_ALBUMS',
   CREATE_NOTE: 'CREATE_NOTE',
   UPDATE_NOTE: 'UPDATE_NOTE',
   ADD_IMAGES: 'ADD_IMAGES',
@@ -37,8 +39,16 @@ export const actionTypes = {
 const actionsQueue = [];
 
 const actionHandlers = {
+  [actionTypes.SAVE_LOCAL_NOTES_AND_ALBUMS]: {
+    sync: () => {},
+    async: async () => {
+      await saveLocalNotesAndAlbumsEffect();
+    },
+  },
+
   [actionTypes.CREATE_NOTE]: {
     sync: ({ sortKey, timestamp, note, images, albumIds }) => {
+      noteTimestamps.updateNotes = Date.now();
       const newNote = {
         sortKey,
         createdAt: timestamp,
@@ -47,6 +57,7 @@ const actionHandlers = {
         images,
         albumIds,
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'create');
     },
@@ -60,8 +71,11 @@ const actionHandlers = {
         ...payload,
         updatedAt: Date.now(),
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
+
+      noteTimestamps.updateNotes = Date.now();
     },
     async: async ({ sortKey, encryptedPassword, note, albumIds }) => {
       await updateNoteEffect(sortKey, { encryptedPassword, note, albumIds });
@@ -74,8 +88,11 @@ const actionHandlers = {
         images: [...(images || []), ...(newImages || [])],
         updatedAt: Date.now(),
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
+
+      noteTimestamps.updateNotes = Date.now();
     },
     async: async ({ sortKey, encryptedPassword, newImages }) => {
       await addImagesEffect(sortKey, { encryptedPassword, images: newImages });
@@ -88,8 +105,11 @@ const actionHandlers = {
         images: (images || []).filter(image => !(image.path || image.hash).includes(imagePath)),
         updatedAt: Date.now(),
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
+
+      noteTimestamps.updateNotes = Date.now();
     },
     async: async ({ sortKey, imagePath }) => {
       await deleteImageEffect(sortKey, { imagePath });
@@ -98,6 +118,9 @@ const actionHandlers = {
   [actionTypes.DELETE_NOTE]: {
     sync: payload => {
       updateNoteStates(payload, 'delete');
+
+      noteTimestamps.updateNotes = Date.now();
+
       if (payload.goBack) {
         goBack();
       }
@@ -109,6 +132,8 @@ const actionHandlers = {
   [actionTypes.FETCH_NOTES]: {
     sync: () => {
       fetchHomeNotesEffect();
+
+      noteTimestamps.fetchNotes = Date.now();
     },
     async: async () => {
       await forceFetchHomeNotesEffect();
@@ -122,6 +147,7 @@ const actionHandlers = {
         updatedAt: timestamp,
         title,
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateAlbumsState(newAlbum, 'create');
       albumSelectedKeysCat.set([sortKey, ...albumSelectedKeysCat.get()]);
@@ -137,6 +163,7 @@ const actionHandlers = {
         ...payload,
         updatedAt: Date.now(),
         isLocal: true,
+        beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateAlbumsState(newNote, 'update');
       if (payload.goBack) {
@@ -187,8 +214,6 @@ async function processQueue() {
   isProcessing = false;
 }
 
-eventEmitter.on(eventEmitterEvents.loggedIn, loadFromLocalStorage);
-
 async function processOneAction({ type, payload }) {
   if (
     !actionsQueue.find(
@@ -200,7 +225,7 @@ async function processOneAction({ type, payload }) {
   LocalStorage.set(localStorageKeys.actions, actionsQueue);
 }
 
-function loadFromLocalStorage() {
+export function loadActionsFromLocalStorage() {
   if (!isLoggedInCat.get()) {
     return;
   }

@@ -1,13 +1,16 @@
 import { localStorageKeys } from '../../lib/constants';
+import { asyncForEach } from '../../shared/js/asyncForEach';
 import { formatDate, isNewer } from '../../shared/js/date';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
 import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
+import { createAlbumEffect } from '../album/albumEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import { welcomeNotes } from '../welcome';
 import { workerActionTypes } from '../workerHelpers';
 import { myWorker } from '../workerListener';
 import {
+  hasLocalNotesCat,
   isAddingImagesCat,
   isCreatingNoteCat,
   isDeletingImageCat,
@@ -29,6 +32,11 @@ import {
   fetchNotes,
   updateNote,
 } from './noteNetwork';
+
+export const noteTimestamps = {
+  fetchNotes: undefined,
+  updateNotes: undefined,
+};
 
 if (!isLoggedInCat.get()) {
   const cachedNotes = LocalStorage.get(localStorageKeys.notes);
@@ -147,7 +155,8 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
-    updateNoteStates(data, 'update', true);
+    const action = notesCat.get()?.items?.find(n => n.sortKey === sortKey) ? 'update' : 'create';
+    updateNoteStates(data, action, true);
     fetchSettingsEffect();
   }
 
@@ -226,6 +235,47 @@ export async function deleteNoteEffect(noteId) {
   }
 
   isDeletingNoteCat.set(false);
+}
+
+export async function saveLocalNotesAndAlbumsEffect() {
+  const localNotes =
+    LocalStorage.get(localStorageKeys.notes)?.items?.filter(
+      note => note.beforeLoggedIn && !note.isWelcome
+    ) || [];
+  const localAlbums =
+    LocalStorage.get(localStorageKeys.albums)?.filter(
+      album => album.beforeLoggedIn && !album.isWelcome
+    ) || [];
+
+  const hasLocal = !!localNotes.length || !!localAlbums.length;
+
+  if (hasLocal) {
+    notesCat.set({ items: [], startKey: null, hasMore: false });
+
+    hasLocalNotesCat.set(hasLocal);
+    await asyncForEach(localAlbums, async album => {
+      await createAlbumEffect({
+        sortKey: album.sortKey,
+        timestamp: album.createdAt,
+        title: album.title,
+      });
+    });
+
+    await asyncForEach(localNotes, async note => {
+      await createNoteEffect({
+        sortKey: note.sortKey,
+        timestamp: note.createdAt,
+        note: note.note,
+        images: note.images,
+        albumIds: note.albumIds,
+      });
+    });
+
+    LocalStorage.remove(localStorageKeys.notes);
+    LocalStorage.remove(localStorageKeys.albums);
+  }
+
+  hasLocalNotesCat.set(false);
 }
 
 export function updateNoteStates(newNote, type, isServer = false) {

@@ -11,6 +11,7 @@ export const isAddingImagesCat = createCat(false);
 export const isDeletingNoteCat = createCat(false);
 export const onThisDayNotesCat = createCat({});
 export const isLoadingOnThisDayNotesCat = createCat(false);
+export const hasLocalNotesCat = createCat(undefined);
 
 export function useNote(noteId) {
   const note = useCat(noteCat);

@@ -4,7 +4,7 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from './components/PrepareData.jsx';
-import { hasLocalNotesCat, SaveLocalNotes } from './components/SaveLocalNotes.jsx';
+import { SaveLocalNotes } from './components/SaveLocalNotes.jsx';
 import { ChangeEmail } from './shared/react/ChangeEmail.jsx';
 import { ChangePassword } from './shared/react/ChangePassword.jsx';
 import { isMobileWidth } from './shared/react/device.js';
@@ -18,6 +18,7 @@ import { isLoggedInCat, useIsEmailVerified } from './shared/react/store/sharedCa
 import { initEffect } from './shared/react/store/sharedEffects.js';
 import { Verify2FA } from './shared/react/Verify2FA.jsx';
 import { VerifyEmail } from './shared/react/VerifyEmail.jsx';
+import { hasLocalNotesCat } from './store/note/noteCats.js';
 import { Account } from './views/Account.jsx';
 import { AddImagess } from './views/AddImages.jsx';
 import { AI } from './views/AI.jsx';

@@ -8,7 +8,7 @@ import {
   RiRefreshLine,
   RiSettings3Line,
 } from '@remixicon/react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { BabyLink, navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
@@ -42,41 +42,38 @@ export const Notes = fastMemo(() => {
     <PrepareData load={load} source="Notes">
       <Header />
 
+      <Actions />
+
       <BackupBitte />
 
       <NoteItems />
 
       <LoadMore />
-
-      <Actions />
     </PrepareData>
   );
 });
 
 const Header = fastMemo(() => {
+  const isLoadingNotes = useCat(isLoadingNotesCat);
   const isAddingImages = useCat(isAddingImagesCat);
   const isDeleting = useCat(isDeletingNoteCat);
   const isDeletingImage = useCat(isDeletingImageCat);
   const isLoggedIn = useCat(isLoggedInCat);
 
-  const [isForceLoading, setIsForceLoading] = useState(false);
-
   const handleFetch = useCallback(async () => {
-    setIsForceLoading(true);
-    await forceFetchHomeNotesEffect();
-    setIsForceLoading(false);
+    dispatchAction({ type: actionTypes.FETCH_NOTES });
   }, []);
 
   const rightElement = useMemo(() => <HeaderMenu />, []);
 
   return (
     <PageHeader
-      isLoading={isForceLoading || isAddingImages || isDeleting || isDeletingImage}
+      isLoading={isLoadingNotes || isAddingImages || isDeleting || isDeletingImage}
       fixed
       showNewVersion
       title={
         isLoggedIn &&
-        !isForceLoading && (
+        !isLoadingNotes && (
           <IconButton onClick={handleFetch} mr="2" variant="soft">
             <RiRefreshLine />
           </IconButton>
