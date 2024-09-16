@@ -29,7 +29,7 @@ function fetchLocalAlbums() {
   }
 }
 
-async function forceFetchAlbumsEffect() {
+export async function forceFetchAlbumsEffect() {
   if (!isLoggedInCat.get()) {
     return;
   }

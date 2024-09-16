@@ -24,6 +24,7 @@ import { useInView } from '../shared/react/hooks/useInView.js';
 import { PageEmpty } from '../shared/react/PageEmpty.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
+import { forceFetchAlbumsEffect } from '../store/album/albumEffects.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,
@@ -65,6 +66,7 @@ const Header = fastMemo(() => {
 
   const handleFetch = useCallback(async () => {
     dispatchAction({ type: actionTypes.FETCH_NOTES });
+    forceFetchAlbumsEffect();
   }, []);
 
   const rightElement = useMemo(() => <HeaderMenu />, []);
