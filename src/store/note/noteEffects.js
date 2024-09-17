@@ -6,7 +6,6 @@ import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { createAlbumEffect } from '../album/albumEffects';
 import { albumItemsCat } from '../album/albumItemCats';
-import { welcomeNotes } from '../welcome';
 import { workerActionTypes } from '../workerHelpers';
 import { myWorker } from '../workerListener';
 import {
@@ -37,20 +36,6 @@ export const noteTimestamps = {
   fetchNotes: undefined,
   updateNotes: undefined,
 };
-
-if (!isLoggedInCat.get()) {
-  const cachedNotes = LocalStorage.get(localStorageKeys.notes);
-  if (!cachedNotes?.items) {
-    LocalStorage.set(localStorageKeys.notes, {
-      items: welcomeNotes,
-      startKey: null,
-      hasMore: false,
-    });
-    welcomeNotes.forEach(note => {
-      LocalStorage.set(`${localStorageKeys.note}-${note.sortKey}`, note);
-    });
-  }
-}
 
 export function fetchHomeNotesEffect() {
   if (!notesCat.get()?.items?.length) {

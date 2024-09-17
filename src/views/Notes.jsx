@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
+import { Button, DropdownMenu, IconButton, Link, Text } from '@radix-ui/themes';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -188,9 +188,18 @@ const NoteItems = fastMemo(() => {
   if (!isLoading) {
     return (
       <PageEmpty>
-        <Text align="center">
-          You have no notes yet, tap the actions below to create your first note!
-        </Text>
+        <img
+          src="https://i.giphy.com/media/3oriff4xQ7Oq2TIgTu/giphy.gif"
+          alt="No notes"
+          style={{ width: '100%', maxWidth: '250px', marginBottom: '1.5rem' }}
+        />
+
+        <Text align="center">You have no notes yet.</Text>
+        <Text align="center">Tap the actions below to create your first note!</Text>
+
+        <Link href="https://notenote.cc" target="_blank">
+          Learn more &gt;&gt;
+        </Link>
       </PageEmpty>
     );
   }

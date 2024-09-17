@@ -13,6 +13,7 @@ import { NoteActions } from './NoteActions.jsx';
 import { TextTruncate } from './TextTruncate.jsx';
 
 export const NoteItem = fastMemo(({ note, albums, textLines, hasMarginBottom = true }) => {
+  console.log(note);
   const dateTime = useMemo(() => {
     return formatDateWeekTime(note.createdAt);
   }, [note?.createdAt]);
