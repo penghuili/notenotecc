@@ -4,11 +4,12 @@
   overflow: hidden;
   position: relative;
   cursor: grab;
-  box-shadow: rgb(235, 237, 240) 0px 4px 12px;
+  box-shadow: rgb(235, 237, 240) 0px 6px 15px;
   border-radius: 8px;
+  border: 1px solid var(--gray-4);
 }
 .dark .tiktok-cards-container {
-  box-shadow: rgba(255, 255, 255, 0.4) 0px 4px 12px;
+  box-shadow: rgba(255, 255, 255, 0.4) 0px 6px 15px;
 }
 
 .tiktok-cards-container:active {
