@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import { useCat } from 'usecat';
 
 import { Actions } from '../components/Actions.jsx';
+import { AndroidApp } from '../components/AndroidApp.jsx';
 import { BackupBitte } from '../components/BackupBitte.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
@@ -45,7 +46,7 @@ export const Notes = fastMemo(() => {
     <PrepareData load={load} source="Notes">
       <Header />
 
-      {/* <AndroidApp /> */}
+      <AndroidApp />
 
       <Actions />
 

@@ -9,11 +9,14 @@ import { Router } from './Router.jsx';
 import { apps } from './shared/js/apps';
 import { AppWrapper } from './shared/react/AppWrapper.jsx';
 import { disablePullToRefresh } from './shared/react/bodySccroll.js';
+import { saveTWA } from './shared/react/device.js';
 import { initShared } from './shared/react/initShared';
 import { IOSNoBouncing } from './shared/react/IOSNoBouncing.jsx';
 import { registerSW } from './shared/react/registerSW.js';
 import { Scrollbar } from './shared/react/Scrollbar.jsx';
 import { Toast } from './shared/react/Toast.jsx';
+
+saveTWA();
 
 initShared({
   logo: '/icons2/t/icon-192.png',

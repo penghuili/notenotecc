@@ -10,6 +10,7 @@ export const sharedLocalStorageKeys = {
 
   themeMode: 'settings-themeMode',
   fontScaling: 'settings-fontScaling',
+  isTWA: 'settings-twa',
 };
 
 export const LocalStorage = {

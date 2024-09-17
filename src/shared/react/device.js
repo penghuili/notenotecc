@@ -1,5 +1,13 @@
+import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage';
+
+export function saveTWA() {
+  if (document.referrer?.includes?.('android-app://')) {
+    LocalStorage.set(sharedLocalStorageKeys.isTWA, true);
+  }
+}
+
 export function isAndroidApp() {
-  return !!document.referrer?.includes?.('android-app://');
+  return !!LocalStorage.get(sharedLocalStorageKeys.isTWA);
 }
 
 export function isAndroidBrowser() {
