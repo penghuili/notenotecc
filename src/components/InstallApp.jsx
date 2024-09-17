@@ -3,14 +3,13 @@ import { RiExternalLinkLine, RiSmartphoneLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import fastMemo from 'react-fast-memo';
 
+import { playStoreLink } from '../lib/constants.js';
 import { copyToClipboard } from '../shared/react/copyToClipboard.js';
 import { isAndroidApp, isInstalledOnHomeScreen, isIOSBrowser } from '../shared/react/device.js';
 import { setToastEffect } from '../shared/react/store/sharedEffects.js';
 
-const playStoreLink = 'https://play.google.com/store/apps/details?id=cc.notenote.app.twa';
-
 export const InstallApp = fastMemo(() => {
-  const handleCopyUserId = useCallback(async () => {
+  const handleCopy = useCallback(async () => {
     await copyToClipboard('https://app.notenote.cc');
     setToastEffect('Link copied!');
   }, []);
@@ -18,7 +17,7 @@ export const InstallApp = fastMemo(() => {
   if (isAndroidApp() || isInstalledOnHomeScreen()) {
     return (
       <Flex direction="column" align="start">
-        <Button variant="ghost" onClick={handleCopyUserId}>
+        <Button variant="ghost" onClick={handleCopy}>
           <RiExternalLinkLine /> app.notenote.cc
         </Button>
         <Text size="1">Use the web app on your laptop.</Text>

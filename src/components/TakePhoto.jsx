@@ -76,7 +76,7 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
         videoRef.current.srcObject = videoStream;
 
         const videoTrack = videoStream.getVideoTracks()[0];
-        if (videoTrack) {
+        if (videoTrack?.getCapabilities) {
           const capabilities = videoTrack.getCapabilities();
           setZoomCapability(capabilities?.zoom);
         }
