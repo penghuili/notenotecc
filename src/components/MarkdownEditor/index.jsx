@@ -7,7 +7,12 @@ import styled from 'styled-components';
 import { compareObjects } from '../../shared/js/object.js';
 import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
 import { Editor, Markdown } from './Markdown.jsx';
-import { convertToMarkdown, getCursorPosition, parseMarkdown } from './markdownHelpers.js';
+import {
+  convertToMarkdown,
+  getCursorPosition,
+  isValidUrl,
+  parseMarkdown,
+} from './markdownHelpers.js';
 import {
   addEmptyTextNodeAfter,
   convertToBlockquote,
@@ -121,14 +126,17 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
       }
 
       const markdown = convertToMarkdown(text).trim();
-      const pastedHtml = parseMarkdown(markdown);
+      const isUrl = isValidUrl(markdown);
+      const pastedHtml = isUrl
+        ? `<a href=${markdown} target="_blank" rel="noreferrer">${markdown}</a>`
+        : parseMarkdown(markdown);
 
       // Insert the cleaned HTML at the cursor position
       const selection = window.getSelection();
       if (!selection.rangeCount) return;
       const range = selection.getRangeAt(0);
-      range.deleteContents(); // Remove any selected text
 
+      range.deleteContents(); // Remove any selected text
       // Create a temporary div to hold the HTML content
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = pastedHtml;
@@ -141,7 +149,6 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
 
       // Move the cursor to the end of the inserted content
       selection.collapseToEnd();
-
       handleChange();
     },
     [handleChange]
@@ -359,11 +366,15 @@ const convertInlineTags = () => {
       { regex: /__(.*?)__/, tag: 'em' },
       { regex: /~~(.*?)~~/, tag: 'del' },
       { regex: /==(.*?)==/, tag: 'mark' },
-      { regex: /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/, tag: 'a' },
+      { regex: /\[([^\]]+)\]\(((?:https?:\/\/)?(?:[^()\s]+|\([^)]*\))+)\)/, tag: 'a' },
     ];
 
     patterns.forEach(({ regex, tag }) => {
       let match = regex.exec(text);
+
+      if (tag === 'a') {
+        console.log(match, text);
+      }
 
       if (match !== null) {
         let inlineElement;

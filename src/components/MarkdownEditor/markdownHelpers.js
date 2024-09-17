@@ -264,3 +264,21 @@ export const restoreCursorPosition = (element, position) => {
     selection.addRange(range);
   }
 };
+
+export function isValidUrl(string) {
+  const trimed = string?.trim() || '';
+  if (!trimed || hasSpaces(trimed)) {
+    return false;
+  }
+
+  try {
+    const url = new URL(trimed);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
+}
+
+function hasSpaces(string) {
+  return /\s/.test(string);
+}
