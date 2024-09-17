@@ -1,5 +1,5 @@
 export function isAndroidApp() {
-  return navigator.userAgent.includes('TWA');
+  return !!document.referrer?.includes?.('android-app://');
 }
 
 export function isAndroidBrowser() {

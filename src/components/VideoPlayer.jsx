@@ -1,15 +1,15 @@
-import { IconButton, Slider } from '@radix-ui/themes';
+import { IconButton } from '@radix-ui/themes';
 import { RiPlayLargeFill, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
-import { getVideoDuration, getVideoPreviewImage } from '../lib/video';
+import { getVideoPreviewImage } from '../lib/video';
 
 const mutedCat = createCat(true);
 
-export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
+export const VideoPlayer = fastMemo(({ src, type, hidden }) => {
   const muted = useCat(mutedCat);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -34,6 +34,14 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
       setIsPlaying(true);
     }
   }, [videoRef]);
+
+  const toggleMute = useCallback(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.muted = !muted;
+      mutedCat.set(!muted);
+    }
+  }, [videoRef, muted]);
 
   const toggleFullScreen = useCallback(() => {
     const video = videoRef.current;
@@ -111,74 +119,20 @@ export const VideoPlayer = fastMemo(({ src, type, onLoaded, hidden }) => {
           <RiPlayLargeFill style={{ '--font-size': '50px' }} color="white" onClick={handlePlay} />
         </PauseWrapper>
       )}
-      <PlayerActions videoRef={videoRef} src={src} onLoaded={onLoaded} />
-    </Wrapper>
-  );
-});
 
-const PlayerActions = fastMemo(({ videoRef, src, onLoaded }) => {
-  const muted = useCat(mutedCat);
-
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(1);
-
-  const handleProgressChange = useCallback(
-    value => {
-      const newTime = (+value[0] / 100) * duration;
-      // eslint-disable-next-line react-compiler/react-compiler
-      videoRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-    },
-    [videoRef, duration]
-  );
-
-  const toggleMute = useCallback(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !muted;
-      mutedCat.set(!muted);
-    }
-  }, [videoRef, muted]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-
-    const handleTimeUpdate = () => {
-      if (video) {
-        setCurrentTime(video.currentTime);
-      }
-    };
-
-    video.addEventListener('timeupdate', handleTimeUpdate);
-
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-    };
-  }, [videoRef]);
-
-  useEffect(() => {
-    getVideoDuration(src)
-      .catch(() => undefined)
-      .then(duration => {
-        setDuration(duration || 1);
-        onLoaded();
-      });
-  }, [onLoaded, src]);
-
-  return (
-    <Actions>
-      <Slider
-        value={[(currentTime / duration) * 100]}
-        onValueChange={handleProgressChange}
-        size="1"
-        style={{ width: '100%', color: 'white' }}
-        variant="soft"
-        color="gray"
-      />
-      <IconButton onClick={toggleMute} variant="ghost" ml="2">
+      <IconButton
+        onClick={toggleMute}
+        radius="full"
+        style={{
+          position: 'absolute',
+          bottom: '0.75rem',
+          right: '0.5rem',
+          margin: 0,
+        }}
+      >
         {muted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
       </IconButton>
-    </Actions>
+    </Wrapper>
   );
 });
 
@@ -191,15 +145,6 @@ const Wrapper = styled.div`
 const Video = styled.video`
   width: 100%;
   cursor: pointer;
-`;
-const Actions = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 12px 4px;
 `;
 const PauseWrapper = styled.div`
   position: absolute;
