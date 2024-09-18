@@ -5,7 +5,7 @@ import {
   RiStickyNoteAddLine,
   RiVideoAddLine,
 } from '@remixicon/react';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
@@ -18,7 +18,7 @@ import { noteCat } from '../store/note/noteCats.js';
 import { imagesCat } from './Camera.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { IconButtonWithText } from './IconButtonWithText.jsx';
-import { pickedPhotosCat } from './PickPhoto.jsx';
+import { processPickedPhotos } from './PickPhoto.jsx';
 import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
@@ -33,19 +33,20 @@ const Wrapper = styled.div`
   overflow: visible;
 `;
 
-const handleAdd = cameraType => {
+const handleAdd = (cameraType, pickedPhotos) => {
   const timestamp = Date.now();
   const sortKey = generateNoteSortKey(timestamp);
+  const newNote = { sortKey, timestamp, note: '', images: pickedPhotos };
   dispatchAction({
     type: actionTypes.CREATE_NOTE,
-    payload: { sortKey, timestamp, note: '' },
+    payload: newNote,
   });
 
   const note = noteCat.get();
   if (note) {
-    const query = objectToQueryString({ noteId: note.sortKey });
-    navigateTo(`/notes/details?${query}`);
-    if (cameraType) {
+    navigateTo(`/notes/details?noteId=${note.sortKey}`);
+
+    if (cameraType && cameraType !== cameraTypes.pickPhoto) {
       requestAnimationFrame(() => {
         imagesCat.reset();
         const query = objectToQueryString({ noteId: note.sortKey, cameraType });
@@ -56,6 +57,8 @@ const handleAdd = cameraType => {
 };
 
 export const Actions = fastMemo(() => {
+  const [isPicking, setIsPicking] = useState(false);
+
   const handleTakePhoto = useCallback(() => {
     handleAdd(cameraTypes.takePhoto);
   }, []);
@@ -64,12 +67,17 @@ export const Actions = fastMemo(() => {
     handleAdd(cameraTypes.takeVideo);
   }, []);
 
-  const handlePickPhotos = useCallback(photos => {
+  const handlePickPhotos = useCallback(async photos => {
     if (!photos?.length) {
       return;
     }
-    pickedPhotosCat.set(Array.from(photos));
-    handleAdd(cameraTypes.pickPhoto);
+
+    setIsPicking(true);
+    const { succeeded } = await processPickedPhotos(Array.from(photos));
+    if (succeeded.length) {
+      handleAdd(cameraTypes.pickPhoto, succeeded);
+    }
+    setIsPicking(false);
   }, []);
 
   const handleTakeNote = useCallback(() => {
@@ -102,6 +110,7 @@ export const Actions = fastMemo(() => {
           multiple
           onSelect={handlePickPhotos}
           height="auto"
+          disabled={isPicking}
         >
           <IconButtonWithText text="Photo">
             <RiImageAddLine />

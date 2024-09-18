@@ -28,6 +28,24 @@ const HelperTextWrapper = styled.div`
 
 export const pickedPhotosCat = createCat([]);
 
+export async function processPickedPhotos(pickedPhotos) {
+  const resizedBlobs = await Promise.all(pickedPhotos.map(photo => resizeImage(photo)));
+  const succeeded = resizedBlobs.filter(b => b.data).map(b => b.data);
+  const photos = succeeded.map(resized => ({
+    hash: randomHash(),
+    size: resized.size,
+    type: imageType,
+  }));
+
+  succeeded.forEach((blob, index) => {
+    idbStorage.setItem(photos[index].hash, blob);
+  });
+
+  const failed = pickedPhotos.filter(b => b.error).map(b => b.error);
+
+  return { succeeded: photos, failed };
+}
+
 export const PickPhoto = fastMemo(({ onSelect }) => {
   const pickedPhotos = useCat(pickedPhotosCat);
   const [error, setError] = useState(null);
@@ -45,22 +63,13 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
     }
 
     setError(null);
-    Promise.all(pickedPhotos.map(photo => resizeImage(photo))).then(blobs => {
-      const succeeded = blobs.filter(b => b.data).map(b => b.data);
-      const photos = succeeded.map(resized => ({
-        hash: randomHash(),
-        size: resized.size,
-        type: imageType,
-      }));
-
-      succeeded.forEach((blob, index) => {
-        idbStorage.setItem(photos[index].hash, blob);
-      });
-
-      onSelect(photos);
-
-      const failed = pickedPhotos.filter(b => b.error).map(b => b.error);
-      setError(failed[0]);
+    processPickedPhotos(pickedPhotos).then(({ succeeded, failed }) => {
+      if (succeeded.length) {
+        onSelect(succeeded);
+      }
+      if (failed.length) {
+        setError(failed[0]);
+      }
 
       pickedPhotosCat.set([]);
     });

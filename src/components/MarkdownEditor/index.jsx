@@ -372,10 +372,6 @@ const convertInlineTags = () => {
     patterns.forEach(({ regex, tag }) => {
       let match = regex.exec(text);
 
-      if (tag === 'a') {
-        console.log(match, text);
-      }
-
       if (match !== null) {
         let inlineElement;
         if (tag === 'a') {

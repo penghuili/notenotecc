@@ -43,25 +43,6 @@ export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
     }
   }, [noteId]);
 
-  // useEffect(() => {
-  //   deletedNoteKey = null;
-
-  //   return () => {
-  //     if (!add) {
-  //       return;
-  //     }
-
-  //     const newNote = noteCat.get();
-  //     if (newNote && !descriptionCat.get() && !newNote.images?.length) {
-  //       dispatchAction({
-  //         type: actionTypes.DELETE_NOTE,
-  //         payload: { ...newNote, goBack: false },
-  //       });
-  //       deletedNoteKey = newNote.sortKey;
-  //     }
-  //   };
-  // }, [add]);
-
   return (
     <PrepareData load={prepareData}>
       <Header noteId={noteId} />
