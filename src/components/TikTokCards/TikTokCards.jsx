@@ -56,41 +56,10 @@ export const TikTokCards = fastMemo(({ cards, height = '100vh' }) => {
 
   const getCardStyle = index => {
     const offset = (index - currentIndex) * 100 + (isDragging ? -dragOffset / 5 : 0);
-    let opacity = 1;
-
-    if (isDragging) {
-      if (dragOffset > 0) {
-        // Dragging up
-        if (index === cards.length - 1) {
-          opacity = 1; // Keep first card fully opaque when scrolling up
-        } else if (index === currentIndex) {
-          opacity = 0.7;
-        } else if (index === currentIndex + 1) {
-          opacity = 1;
-        } else {
-          opacity = 0.5;
-        }
-      } else if (dragOffset < 0) {
-        // Dragging down
-        if (index === 0) {
-          opacity = 1; // Keep last card fully opaque when scrolling down
-        } else if (index === currentIndex) {
-          opacity = 0.7;
-        } else if (index === currentIndex - 1) {
-          opacity = 1;
-        } else {
-          opacity = 0.5;
-        }
-      }
-    } else {
-      // Not dragging
-      opacity = index === currentIndex ? 1 : 0.5;
-    }
 
     return {
-      opacity,
       transform: `translateY(${offset}%)`,
-      transition: isDragging ? 'none' : 'transform 200ms ease-in, opacity 500ms ease-in',
+      transition: isDragging ? 'none' : 'transform 200ms ease-in',
     };
   };
 
