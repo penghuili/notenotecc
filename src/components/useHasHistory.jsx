@@ -127,6 +127,10 @@ function getRandomDate(createdAt) {
 }
 
 export async function loadHistoryNotes(userCreatedAt) {
+  if (!userCreatedAt) {
+    return;
+  }
+
   const tabs = getTabs(userCreatedAt);
 
   tabsCat.set(tabs);

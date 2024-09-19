@@ -192,7 +192,7 @@ const NoteItems = fastMemo(() => {
     return (
       <PageEmpty>
         <img
-          src="https://i.giphy.com/media/3oriff4xQ7Oq2TIgTu/giphy.gif"
+          src="https://app.notenote.cc/assets/no-notes.gif"
           alt="No notes"
           style={{ width: '100%', maxWidth: '250px', marginBottom: '1.5rem' }}
         />
