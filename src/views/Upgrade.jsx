@@ -1,10 +1,12 @@
 import { Box, Button, Flex, Heading, Text } from '@radix-ui/themes';
-import { RiCheckLine } from '@remixicon/react';
+import { RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { Countdown } from '../components/Countdown/index.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { Shine } from '../components/Shine.jsx';
 import { formatDate } from '../shared/js/date.js';
 import { successCssColor } from '../shared/react/AppWrapper.jsx';
 import { isMobileWidth } from '../shared/react/device.js';
@@ -68,10 +70,15 @@ const Prices = fastMemo(() => {
           title="Free"
           price={'$0 / month'}
           benifits={[
-            { text: 'Unlimited notes' },
-            { text: 'All notes are encrypted' },
-            { text: 'Rich text editor' },
-            { text: 'Markdown editor' },
+            { text: 'Unlimited notes', enabled: true },
+            { text: 'All notes are encrypted', enabled: true },
+            { text: 'Rich text editor', enabled: true },
+            { text: 'Markdown editor', enabled: true },
+            // eslint-disable-next-line sonarjs/no-duplicate-string
+            { text: 'Unlimited images', enabled: false },
+            // eslint-disable-next-line sonarjs/no-duplicate-string
+            { text: 'Unlimited short videos', enabled: false },
+            { text: 'Unlimited free drawings', bold: true, enabled: false },
           ]}
         />
 
@@ -79,9 +86,13 @@ const Prices = fastMemo(() => {
           title="Pro"
           price={'$1.99 / month'}
           benifits={[
-            { text: 'Everything in Free' },
-            { text: 'Unlimited images', bold: true },
-            { text: 'Unlimited short videos', bold: true },
+            { text: 'Unlimited notes', enabled: true },
+            { text: 'All notes are encrypted', enabled: true },
+            { text: 'Rich text editor', enabled: true },
+            { text: 'Markdown editor', enabled: true },
+            { text: 'Unlimited images', bold: true, enabled: true },
+            { text: 'Unlimited short videos', bold: true, enabled: true },
+            { text: 'Unlimited free drawings', bold: true, enabled: true },
           ]}
           color="accent"
         >
@@ -96,30 +107,24 @@ const Prices = fastMemo(() => {
           )}
         </FeatureItem>
 
-        <FeatureItem
-          title="Lifetime"
-          price={'$39 once'}
-          benifits={[
-            { text: 'Everything in Free' },
-            { text: 'Unlimited images', bold: true },
-            { text: 'Unlimited short videos', bold: true },
-          ]}
-          color="gold"
-        >
-          {(!expiresAt || expiresAt < formatDate(new Date())) && (
-            <Flex direction="column" align="center" mt="4">
-              <a href={import.meta.env.VITE_LIFETIME_LINK} target="_blank" rel="noreferrer">
-                <Button variant="solid" color="yellow">
-                  Get lifetime deal
-                </Button>
-              </a>
+        {expiresAt !== 'forever' && (
+          <FeatureItem title="Lifetime" price={'Pay $39 once, use forever'} color="gold">
+            {(!expiresAt || expiresAt < formatDate(new Date())) && (
+              <Flex direction="column" align="center" mt="4">
+                <a href={import.meta.env.VITE_LIFETIME_LINK} target="_blank" rel="noreferrer">
+                  <Button variant="solid" color="yellow">
+                    Get lifetime deal
+                  </Button>
+                </a>
+              </Flex>
+            )}
 
-              <Text weight="bold" mt="4" align="center">
-                Only for short time
-              </Text>
-            </Flex>
-          )}
-        </FeatureItem>
+            <Box mt="3">
+              <Countdown targetDate="2024-09-30" />
+            </Box>
+            <Shine />
+          </FeatureItem>
+        )}
       </Flex>
 
       {!expiresAt && !freeTrialUntil && (
@@ -139,6 +144,9 @@ const FeatureItem = fastMemo(({ title, price, benifits, color, children }) => {
       direction="column"
       align="center"
       style={{
+        position: 'relative',
+        overflow: 'hidden',
+        flex: 1,
         border: '1px solid var(--gray-6)',
         borderRadius: '6px',
         padding: 'var(--space-4)',
@@ -159,14 +167,22 @@ const FeatureItem = fastMemo(({ title, price, benifits, color, children }) => {
         {price}
       </Text>
 
-      <Flex direction="column">
-        {benifits.map(benifit => (
-          <Flex key={benifit.text} align="start" gap="2">
-            <RiCheckLine color={color ? 'var(--accent-contrast)' : successCssColor} />{' '}
-            <Text weight={benifit.bold ? 'bold' : 'normal'}>{benifit.text}</Text>
-          </Flex>
-        ))}
-      </Flex>
+      {!!benifits?.length && (
+        <Flex direction="column">
+          {benifits.map(benifit => (
+            <Flex key={benifit.text} align="start" gap="2">
+              {benifit.enabled ? (
+                <RiCheckLine color={color ? 'var(--accent-contrast)' : successCssColor} />
+              ) : (
+                <RiCloseLine />
+              )}{' '}
+              <Text weight={benifit.bold && benifit.enabled ? 'bold' : 'normal'}>
+                {benifit.enabled ? benifit.text : <del>{benifit.text}</del>}
+              </Text>
+            </Flex>
+          ))}
+        </Flex>
+      )}
       {children}
     </Flex>
   );
