@@ -12,13 +12,11 @@ import {
 import { useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
-import { localStorageKeys } from '../lib/constants.js';
 import { asyncForEach } from '../shared/js/asyncForEach.js';
 import { formatDate } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber.js';
 import { randomBetween } from '../shared/js/utils.js';
-import { LocalStorage } from '../shared/react/LocalStorage.js';
-import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
+import { settingsCat, useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { onThisDayNotesCat } from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects.js';
 
@@ -27,7 +25,8 @@ export const randomDateCat = createCat(null);
 
 export function useHasHistory() {
   const userCreatedAt = useUserCreatedAt();
-  const reviewDate = LocalStorage.get(localStorageKeys.historyReviewDate);
+  const settings = useCat(settingsCat);
+  const historyReviewedOn = settings?.historyReviewedOn;
 
   useEffect(() => {
     loadHistoryNotes(userCreatedAt);
@@ -40,7 +39,7 @@ export function useHasHistory() {
     return tabs.find(tab => tab.value !== 'random' && getTabNotes(notes, tab.value)?.length);
   }, [notes, tabs]);
 
-  return (!reviewDate || reviewDate < formatDate(new Date())) && !!firstBlock;
+  return (!historyReviewedOn || historyReviewedOn < formatDate(new Date())) && !!firstBlock;
 }
 
 function parseStartTime(startTime) {

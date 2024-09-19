@@ -12,14 +12,13 @@ import {
   randomDateCat,
   tabsCat,
 } from '../components/useHasHistory.jsx';
-import { localStorageKeys } from '../lib/constants.js';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
-import { formatDate, formatDateWeek } from '../shared/js/date.js';
-import { LocalStorage } from '../shared/react/LocalStorage.js';
+import { formatDateWeek } from '../shared/js/date.js';
 import { PageContentRef } from '../shared/react/PageContentRef.jsx';
 import { PageHeader } from '../shared/react/PageHeader.jsx';
 import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
+import { reviewHistoryEffect } from '../store/settings/settingsEffects.js';
 
 export const OnThisDay = fastMemo(() => {
   const userCreatedAt = useUserCreatedAt();
@@ -30,7 +29,7 @@ export const OnThisDay = fastMemo(() => {
   }, [userCreatedAt]);
 
   useEffect(() => {
-    LocalStorage.set(localStorageKeys.historyReviewDate, formatDate(new Date()));
+    reviewHistoryEffect();
 
     pageContentRef.current.style.paddingBottom = '0';
 
