@@ -12,6 +12,7 @@ import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { PublicLinks } from '../components/PublicLinks.jsx';
+import { ReorderItems } from '../components/ReorderItems.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { formatDateTime } from '../shared/js/date';
 import { AppVersion } from '../shared/react/AppVersion.jsx';
@@ -29,10 +30,19 @@ async function load() {
   await fetchSettingsEffect();
 }
 
+const items = [
+  { id: 1, content: 'First Item' },
+  { id: 2, content: 'Second Item' },
+  { id: 3, content: 'Third Item' },
+  { id: 4, content: 'Fourth Item' },
+];
+
 export const Account = fastMemo(() => {
   return (
     <PrepareData load={load}>
       <Header />
+
+      <ReorderItems items={items} renderItem={({ content }) => content} />
 
       <AccountInfo />
 
