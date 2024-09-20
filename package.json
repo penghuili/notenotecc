@@ -19,7 +19,6 @@
     "react-dom": "19.0.0-rc-a99d8e8d-20240916",
     "react-error-boundary": "4.0.13",
     "react-fast-memo": "2.0.1",
-    "react-movable": "3.3.1",
     "styled-components": "5.3.11",
     "usecat": "1.1.3"
   },
