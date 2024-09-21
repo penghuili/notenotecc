@@ -5,8 +5,8 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { downloadFileWithUrl, shareFileWithUrl, supportShare } from '../lib/shareFile';
-import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { Confirm } from '../shared/react/Confirm.jsx';
+import { errorColor } from '../shared/radix/AppWrapper.jsx';
+import { Confirm } from '../shared/radix/Confirm.jsx';
 import { isDeletingImageCat } from '../store/note/noteCats.js';
 
 export const ImageActions = fastMemo(({ noteId, image, onDelete }) => {

@@ -2,8 +2,8 @@ import { Spinner, Text } from '@radix-ui/themes';
 import React from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { eventEmitter, eventEmitterEvents } from '../shared/react/eventEmitter.js';
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
+import { eventEmitter, eventEmitterEvents } from '../shared/browser/eventEmitter.js';
+import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
 import { actionTypes, dispatchAction, loadActionsFromLocalStorage } from '../store/allActions.js';
 import { hasLocalNotesCat } from '../store/note/noteCats.js';
 

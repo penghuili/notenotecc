@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { isChangingPasswordCat } from '../browser/store/sharedCats.js';
+import { changePasswordEffect } from '../browser/store/sharedEffects';
 import { FormButton } from './FormButton.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
-import { isChangingPasswordCat } from './store/sharedCats.js';
-import { changePasswordEffect } from './store/sharedEffects';
 
 export const ChangePassword = fastMemo(() => {
   const isChanging = useCat(isChangingPasswordCat);

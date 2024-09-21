@@ -1,4 +1,4 @@
-import { idbStorage } from './indexDB';
+import { idbStorage } from '../browser/indexDB';
 
 export function createItemsCache(prefix) {
   const value = {

@@ -3,11 +3,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
-import { fileTypes } from '../lib/constants.js';
-import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
-import { cachedImageUrls, useImageRemoteUrl } from '../lib/useImageRemoteUrl.js';
-import { useInView } from '../shared/react/hooks/useInView.js';
-import { LoadingSkeleton } from '../shared/react/LoadingSkeleton.jsx';
+import { fileTypes } from '../lib/constants';
+import { useImageLocalUrl } from '../lib/useImageLocalUrl';
+import { cachedImageUrls, useImageRemoteUrl } from '../lib/useImageRemoteUrl';
+import { useInView } from '../shared/browser/hooks/useInView';
+import { LoadingSkeleton } from '../shared/radix/LoadingSkeleton.jsx';
 import { AudioPlayer } from './AudioPlayer.jsx';
 import { fullScreenImageUrlCat } from './FullScreenImage.jsx';
 import { ImageActions } from './ImageActions.jsx';

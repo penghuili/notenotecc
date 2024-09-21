@@ -8,10 +8,10 @@ import { useCat } from 'usecat';
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { RouteLink } from '../shared/react/RouteLink.jsx';
-import { userCat } from '../shared/react/store/sharedCats.js';
+import { userCat } from '../shared/browser/store/sharedCats.js';
+import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { RouteLink } from '../shared/radix/RouteLink.jsx';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 

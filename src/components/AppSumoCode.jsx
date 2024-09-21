@@ -3,9 +3,9 @@ import { Button } from '@radix-ui/themes/dist/cjs/index.js';
 import React, { useCallback, useState } from 'react';
 import { useCat } from 'usecat';
 
-import { InputField } from '../shared/react/InputField.jsx';
-import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
-import { isLoadingSettingsCat, useExpiresAt } from '../shared/react/store/sharedCats.js';
+import { isLoadingSettingsCat, useExpiresAt } from '../shared/browser/store/sharedCats.js';
+import { InputField } from '../shared/radix/InputField.jsx';
+import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
 import { isVerifyingAppsumoCat } from '../store/pay/payCats.js';
 import { verifyAppsumoEffect } from '../store/pay/payEffects.js';
 

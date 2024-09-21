@@ -5,12 +5,15 @@ import { BabyLink } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import {
+  isDeletingAccountCat,
+  isLoggingOutFromAllDevicesCat,
+} from '../browser/store/sharedCats.js';
+import { logOutFromAllDevicesEffect } from '../browser/store/sharedEffects';
 import { DeleteAccountLink } from './DeleteAccountLink.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { isDeletingAccountCat, isLoggingOutFromAllDevicesCat } from './store/sharedCats.js';
-import { logOutFromAllDevicesEffect } from './store/sharedEffects';
 
 export const Security = fastMemo(() => {
   const isLoggingOutFromAllDevices = useCat(isLoggingOutFromAllDevicesCat);

@@ -4,7 +4,7 @@ import { Box, RadioGroup, Text } from '@radix-ui/themes';
 import React, { useCallback, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
+import { LocalStorage, sharedLocalStorageKeys } from '../browser/LocalStorage';
 
 const mapper = {
   1: 'peng-scaling-1',

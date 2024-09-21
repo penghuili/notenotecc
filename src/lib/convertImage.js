@@ -1,4 +1,4 @@
-import { canvasToBlob } from '../shared/react/canvasToBlob';
+import { canvasToBlob } from '../shared/browser/canvasToBlob';
 
 export async function convertImageTo(imageBlob, imageType, quality = 0.8) {
   const imageBitmap = await createImageBitmap(imageBlob);

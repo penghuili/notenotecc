@@ -11,7 +11,7 @@ import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { formatDateWeekTime } from '../shared/js/date.js';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,

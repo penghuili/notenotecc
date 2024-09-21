@@ -4,18 +4,22 @@ import React, { useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { errorColor } from './AppWrapper.jsx';
-import { FormButton } from './FormButton.jsx';
-import { InputField } from './InputField.jsx';
-import { ItemsWrapper } from './ItemsWrapper.jsx';
-import { PageHeader } from './PageHeader.jsx';
 import {
   isDisabling2FACat,
   isEnabling2FACat,
   isGenerating2FACat,
   userCat,
-} from './store/sharedCats.js';
-import { disable2FAEffect, enable2FAEffect, generate2FASecretEffect } from './store/sharedEffects';
+} from '../browser/store/sharedCats.js';
+import {
+  disable2FAEffect,
+  enable2FAEffect,
+  generate2FASecretEffect,
+} from '../browser/store/sharedEffects';
+import { errorColor } from './AppWrapper.jsx';
+import { FormButton } from './FormButton.jsx';
+import { InputField } from './InputField.jsx';
+import { ItemsWrapper } from './ItemsWrapper.jsx';
+import { PageHeader } from './PageHeader.jsx';
 
 export const Setup2FA = fastMemo(() => {
   const user = useCat(userCat);

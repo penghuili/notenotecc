@@ -4,7 +4,7 @@ import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { generateAlbumSortKey } from '../lib/generateSortKey.js';
-import { InputField } from '../shared/react/InputField.jsx';
+import { InputField } from '../shared/radix/InputField.jsx';
 import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 

@@ -8,7 +8,7 @@ import { createCat, useCat } from 'usecat';
 import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
-import { isMobileWidth } from '../shared/react/device';
+import { isMobileWidth } from '../shared/browser/device';
 import { Draw } from './Draw.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';

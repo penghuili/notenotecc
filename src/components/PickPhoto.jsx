@@ -7,8 +7,8 @@ import { createCat, useCat } from 'usecat';
 
 import { imageType } from '../lib/constants.js';
 import { resizeImage } from '../lib/resizeImage.js';
+import { idbStorage } from '../shared/browser/indexDB.js';
 import { randomHash } from '../shared/js/randomHash.js';
-import { idbStorage } from '../shared/react/indexDB.js';
 import { FilePicker } from './FilePicker.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 

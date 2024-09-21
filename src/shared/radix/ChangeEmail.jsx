@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { isChangingEmailCat, userCat } from '../browser/store/sharedCats.js';
+import { changeEmailEffect, setToastEffect } from '../browser/store/sharedEffects.js';
+import { changeEmailTrigger } from '../browser/store/sharedNetwork.js';
+import { toastTypes } from '../browser/Toast.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { isChangingEmailCat, userCat } from './store/sharedCats.js';
-import { changeEmailEffect, setToastEffect } from './store/sharedEffects';
-import { changeEmailTrigger } from './store/sharedNetwork';
-import { toastTypes } from './Toast.jsx';
 
 export const ChangeEmail = fastMemo(() => {
   const user = useCat(userCat);

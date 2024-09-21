@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 
+import { setToastEffect } from '../browser/store/sharedEffects';
+import { resetPasswordSave, resetPasswordTrigger } from '../browser/store/sharedNetwork';
+import { toastTypes } from '../browser/Toast.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { setToastEffect } from './store/sharedEffects';
-import { resetPasswordSave, resetPasswordTrigger } from './store/sharedNetwork';
-import { toastTypes } from './Toast.jsx';
 
 export const ResetPassword = fastMemo(() => {
   const [email, setEmail] = useState('');

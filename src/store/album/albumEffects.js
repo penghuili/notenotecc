@@ -1,8 +1,8 @@
 import { localStorageKeys } from '../../lib/constants';
+import { eventEmitter, eventEmitterEvents } from '../../shared/browser/eventEmitter';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
+import { isLoggedInCat } from '../../shared/browser/store/sharedCats';
 import { orderByPosition } from '../../shared/js/position';
-import { eventEmitter, eventEmitterEvents } from '../../shared/react/eventEmitter';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
-import { isLoggedInCat } from '../../shared/react/store/sharedCats';
 import { workerActionTypes } from '../workerHelpers';
 import { myWorker } from '../workerListener';
 import {

@@ -1,6 +1,6 @@
 import { localStorageKeys } from '../../lib/constants';
-import { LocalStorage } from '../../shared/react/LocalStorage';
-import { isLoggedInCat } from '../../shared/react/store/sharedCats';
+import { LocalStorage } from '../../shared/browser/LocalStorage';
+import { isLoggedInCat } from '../../shared/browser/store/sharedCats';
 import { albumItemsCat, isLoadingAlbumItemsCat } from './albumItemCats';
 import { fetchAlbumItems } from './albumNetwork';
 

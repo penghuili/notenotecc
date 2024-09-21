@@ -2,8 +2,8 @@ import { Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
-import { PageLoading } from '../shared/react/PageLoading.jsx';
+import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
+import { PageLoading } from '../shared/radix/PageLoading.jsx';
 
 const PrepareDataStatus = {
   pending: 'pending',

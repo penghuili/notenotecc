@@ -4,9 +4,9 @@ import React, { useEffect } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
-import { isMobileWidth } from '../shared/react/device';
-import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth';
+import { disableBodyScroll, enableBodyScroll } from '../shared/browser/bodySccroll';
+import { isMobileWidth } from '../shared/browser/device';
+import { widthWithoutScrollbar } from '../shared/browser/getScrollbarWidth';
 
 const Wrapper = styled.div`
   position: fixed;

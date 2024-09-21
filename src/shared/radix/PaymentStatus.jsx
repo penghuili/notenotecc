@@ -5,10 +5,10 @@ import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { isTesting } from '../browser/isTesting.js';
+import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../browser/store/sharedCats.js';
 import { formatDate } from '../js/date';
 import { errorColor, warningColor } from './AppWrapper.jsx';
-import { isTesting } from './isTesting.js';
-import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from './store/sharedCats.js';
 
 export const PaymentStatus = fastMemo(() => {
   const expiresAt = useExpiresAt();

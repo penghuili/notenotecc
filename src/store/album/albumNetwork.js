@@ -1,4 +1,8 @@
 import { localStorageKeys } from '../../lib/constants';
+import { HTTP } from '../../shared/browser/HTTP';
+import { appName } from '../../shared/browser/initShared';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
+import { objectToQueryString } from '../../shared/browser/routeHelpers';
 import {
   decryptMessageAsymmetric,
   decryptMessageSymmetric,
@@ -7,10 +11,6 @@ import {
 } from '../../shared/js/encryption';
 import { generatePassword } from '../../shared/js/generatePassword';
 import { orderByPosition } from '../../shared/js/position';
-import { HTTP } from '../../shared/react/HTTP';
-import { appName } from '../../shared/react/initShared';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
-import { objectToQueryString } from '../../shared/react/routeHelpers';
 import { decryptNote } from '../workerHelpers';
 
 export async function fetchAlbums() {

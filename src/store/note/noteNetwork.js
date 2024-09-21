@@ -1,4 +1,10 @@
 import { fileTypes, localStorageKeys } from '../../lib/constants';
+import { blobToUint8Array, uint8ArrayToBlob } from '../../shared/browser/file';
+import { HTTP } from '../../shared/browser/HTTP';
+import { idbStorage } from '../../shared/browser/indexDB';
+import { appName } from '../../shared/browser/initShared';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
+import { objectToQueryString } from '../../shared/browser/routeHelpers';
 import {
   decryptFileSymmetric,
   encryptFileSymmetric,
@@ -6,12 +12,6 @@ import {
   encryptMessageSymmetric,
 } from '../../shared/js/encryption';
 import { generatePassword } from '../../shared/js/generatePassword';
-import { blobToUint8Array, uint8ArrayToBlob } from '../../shared/react/file';
-import { HTTP } from '../../shared/react/HTTP';
-import { idbStorage } from '../../shared/react/indexDB';
-import { appName } from '../../shared/react/initShared';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
-import { objectToQueryString } from '../../shared/react/routeHelpers';
 import { decryptPassword, encryptMessageWithEncryptedPassword } from '../album/albumNetwork';
 import { decryptNote } from '../workerHelpers';
 

@@ -1,4 +1,4 @@
-import { isIOSBrowser } from '../shared/react/device';
+import { isIOSBrowser } from '../shared/browser/device';
 
 export const localStorageKeys = {
   notes: 'notenote-notes-2',

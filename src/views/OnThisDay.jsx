@@ -13,10 +13,10 @@ import {
   tabsCat,
 } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
+import { PageContentRef } from '../shared/browser/PageContentRef.jsx';
+import { useUserCreatedAt } from '../shared/browser/store/sharedCats.js';
 import { formatDateWeek } from '../shared/js/date.js';
-import { PageContentRef } from '../shared/react/PageContentRef.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { useUserCreatedAt } from '../shared/react/store/sharedCats.js';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
 import { reviewHistoryEffect } from '../store/settings/settingsEffects.js';
 

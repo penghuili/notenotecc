@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { idbStorage } from '../shared/react/indexDB';
+import { idbStorage } from '../shared/browser/indexDB';
 
 const cachedUrls = {};
 

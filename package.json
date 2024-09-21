@@ -55,7 +55,7 @@
   "scripts": {
     "time": "sudo ntpdate time.nist.gov",
     "cc": "node scripts/commit.js",
-    "cs": "rm -rf src/shared && mkdir src/shared && cp -a ../private-sharedjs/lib/js src/shared/js && cp -a ../private-sharedjs/lib/react src/shared/react && rm -f scripts/upload.js && cp -a ../private-sharedjs/scripts/upload.js scripts/upload.js",
+    "cs": "cp -a ../private-sharedjs/scripts/copy-shared.js scripts/copy-shared.js && node scripts/copy-shared.js radix",
     "start": "npm run cs && vite",
     "build": "vite build",
     "dt": "npm run cs && node ./scripts/update-build-env.js dev && node ./scripts/upload.js",

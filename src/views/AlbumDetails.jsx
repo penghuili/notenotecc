@@ -6,11 +6,11 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { Confirm } from '../shared/react/Confirm.jsx';
-import { useInView } from '../shared/react/hooks/useInView.js';
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { useInView } from '../shared/browser/hooks/useInView.js';
+import { errorColor } from '../shared/radix/AppWrapper.jsx';
+import { Confirm } from '../shared/radix/Confirm.jsx';
+import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { isDeletingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';

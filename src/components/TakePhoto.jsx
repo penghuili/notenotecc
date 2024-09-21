@@ -15,10 +15,10 @@ import {
   videoStreamCat,
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
+import { canvasToBlob } from '../shared/browser/canvasToBlob';
+import { isIOSBrowser } from '../shared/browser/device.js';
+import { idbStorage } from '../shared/browser/indexDB.js';
 import { randomHash } from '../shared/js/randomHash.js';
-import { canvasToBlob } from '../shared/react/canvasToBlob';
-import { isIOSBrowser } from '../shared/react/device.js';
-import { idbStorage } from '../shared/react/indexDB.js';
 import { getCameraSize, renderError, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`

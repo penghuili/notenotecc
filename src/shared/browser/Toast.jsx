@@ -1,9 +1,13 @@
 import { RiCheckboxCircleLine, RiErrorWarningLine, RiInformationLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
-import { errorCssColor, successCssColor, warningCssColor } from './AppWrapper.jsx';
+import { classNames } from './classNames.js';
+import styles from './Toast.module.css';
+
+const warningCssColor = '#ffc53d';
+const successCssColor = '#30a46c';
+const errorCssColor = '#e5484d';
 
 export const toastTypes = {
   success: 'success',
@@ -63,51 +67,16 @@ export const Toast = () => {
   }, [toast.type]);
 
   return (
-    <ToastContainer
-      className={`${visible ? 'show' : ''} ${toast.position || toastPositions.top}`}
+    <div
+      className={classNames({
+        [styles.toastContainer]: true,
+        [styles.show]: visible,
+        [styles.top]: toast.position === toastPositions.top || !toast.position,
+        [styles.bottom]: toast.position === toastPositions.bottom,
+      })}
       onClick={handleHide}
     >
       {icon} {toast.message}
-    </ToastContainer>
+    </div>
   );
 };
-
-const ToastContainer = styled.div`
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  color: #333;
-  padding: 8px;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.05);
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
-  z-index: 4000;
-
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  &.show {
-    opacity: 1;
-  }
-
-  &.top {
-    top: 20px;
-    transform: translateX(-50%) translateY(-20px);
-  }
-
-  &.bottom {
-    bottom: 20px;
-    transform: translateX(-50%) translateY(20px);
-  }
-
-  &.show.top {
-    transform: translateX(-50%) translateY(0);
-  }
-
-  &.show.bottom {
-    transform: translateX(-50%) translateY(0);
-  }
-`;

@@ -1,9 +1,9 @@
 import { localStorageKeys } from '../../lib/constants';
+import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
+import { isLoggedInCat } from '../../shared/browser/store/sharedCats';
+import { fetchSettingsEffect } from '../../shared/browser/store/sharedEffects';
 import { asyncForEach } from '../../shared/js/asyncForEach';
 import { formatDate, isNewer } from '../../shared/js/date';
-import { LocalStorage, sharedLocalStorageKeys } from '../../shared/react/LocalStorage';
-import { isLoggedInCat } from '../../shared/react/store/sharedCats';
-import { fetchSettingsEffect } from '../../shared/react/store/sharedEffects';
 import { createAlbumEffect } from '../album/albumEffects';
 import { albumItemsCat } from '../album/albumItemCats';
 import { workerActionTypes } from '../workerHelpers';

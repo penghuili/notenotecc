@@ -6,15 +6,15 @@ import React from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { FullScreenImage } from './components/FullScreenImage.jsx';
 import { Router } from './Router.jsx';
+import { disablePullToRefresh } from './shared/browser/bodySccroll.js';
+import { saveTWA } from './shared/browser/device.js';
+import { initShared } from './shared/browser/initShared';
+import { IOSNoBouncing } from './shared/browser/IOSNoBouncing.jsx';
+import { registerSW } from './shared/browser/registerSW.js';
+import { Toast } from './shared/browser/Toast.jsx';
 import { apps } from './shared/js/apps';
-import { AppWrapper } from './shared/react/AppWrapper.jsx';
-import { disablePullToRefresh } from './shared/react/bodySccroll.js';
-import { saveTWA } from './shared/react/device.js';
-import { initShared } from './shared/react/initShared';
-import { IOSNoBouncing } from './shared/react/IOSNoBouncing.jsx';
-import { registerSW } from './shared/react/registerSW.js';
-import { Scrollbar } from './shared/react/Scrollbar.jsx';
-import { Toast } from './shared/react/Toast.jsx';
+import { AppWrapper } from './shared/radix/AppWrapper.jsx';
+import { Scrollbar } from './shared/radix/Scrollbar.jsx';
 
 saveTWA();
 

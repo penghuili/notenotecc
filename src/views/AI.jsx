@@ -10,12 +10,12 @@ import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { TakePhoto } from '../components/TakePhoto.jsx';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
-import { AreaField } from '../shared/react/AreaField.jsx';
-import { inputFileToBase64 } from '../shared/react/file.js';
-import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { setToastEffect } from '../shared/react/store/sharedEffects.js';
-import { toastTypes } from '../shared/react/Toast.jsx';
+import { inputFileToBase64 } from '../shared/browser/file.js';
+import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
+import { toastTypes } from '../shared/browser/Toast.jsx';
+import { AreaField } from '../shared/radix/AreaField.jsx';
+import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';
 
 export const AI = fastMemo(() => {

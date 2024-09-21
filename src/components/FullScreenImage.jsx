@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
-import { disableBodyScroll, enableBodyScroll } from '../shared/react/bodySccroll';
+import { disableBodyScroll, enableBodyScroll } from '../shared/browser/bodySccroll';
 import { SquareImage } from './MediaItem.jsx';
 
 const FullScreenWrapper = styled.div`

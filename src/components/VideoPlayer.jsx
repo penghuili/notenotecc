@@ -125,7 +125,7 @@ export const VideoPlayer = fastMemo(({ src, type, hidden }) => {
         radius="full"
         style={{
           position: 'absolute',
-          bottom: '0.75rem',
+          bottom: '1rem',
           right: '0.5rem',
           margin: 0,
         }}

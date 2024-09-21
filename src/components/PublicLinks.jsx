@@ -10,9 +10,9 @@ import {
 import React, { useCallback } from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { copyToClipboard } from '../shared/react/copyToClipboard.js';
-import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
-import { setToastEffect } from '../shared/react/store/sharedEffects.js';
+import { copyToClipboard } from '../shared/browser/copyToClipboard.js';
+import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
+import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
 import { InstallApp } from './InstallApp.jsx';
 
 export const PublicLinks = fastMemo(() => {

@@ -1,6 +1,6 @@
-import { isLoggedInCat, settingsCat } from '../../shared/react/store/sharedCats';
-import { setToastEffect } from '../../shared/react/store/sharedEffects';
-import { toastTypes } from '../../shared/react/Toast.jsx';
+import { isLoggedInCat, settingsCat } from '../../shared/browser/store/sharedCats';
+import { setToastEffect } from '../../shared/browser/store/sharedEffects';
+import { toastTypes } from '../../shared/browser/Toast.jsx';
 import { isFreeTryingCat, isVerifyingAppsumoCat } from './payCats';
 import { freeTrial, verifyAppsumoCode } from './payNetwork';
 

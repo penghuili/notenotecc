@@ -4,8 +4,8 @@ import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { InputField } from '../shared/react/InputField.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { InputField } from '../shared/radix/InputField.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { albumsCat, findAlbum, isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

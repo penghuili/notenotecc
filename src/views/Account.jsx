@@ -13,17 +13,17 @@ import { useCat } from 'usecat';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { PublicLinks } from '../components/PublicLinks.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
+import { copyToClipboard } from '../shared/browser/copyToClipboard';
+import { getFileSizeString } from '../shared/browser/file';
+import { isTesting } from '../shared/browser/isTesting.js';
+import { isLoadingAccountCat, settingsCat, userCat } from '../shared/browser/store/sharedCats.js';
+import { fetchSettingsEffect, setToastEffect } from '../shared/browser/store/sharedEffects';
 import { formatDateTime } from '../shared/js/date';
-import { AppVersion } from '../shared/react/AppVersion.jsx';
-import { copyToClipboard } from '../shared/react/copyToClipboard';
-import { getFileSizeString } from '../shared/react/file';
-import { isTesting } from '../shared/react/isTesting.js';
-import { ItemsWrapper } from '../shared/react/ItemsWrapper.jsx';
-import { LogoutLink } from '../shared/react/LogoutLink.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { PaymentStatus } from '../shared/react/PaymentStatus.jsx';
-import { isLoadingAccountCat, settingsCat, userCat } from '../shared/react/store/sharedCats.js';
-import { fetchSettingsEffect, setToastEffect } from '../shared/react/store/sharedEffects';
+import { AppVersion } from '../shared/radix/AppVersion.jsx';
+import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
+import { LogoutLink } from '../shared/radix/LogoutLink.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { PaymentStatus } from '../shared/radix/PaymentStatus.jsx';
 
 async function load() {
   await fetchSettingsEffect();

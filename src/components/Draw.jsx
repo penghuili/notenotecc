@@ -5,9 +5,9 @@ import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { imageType } from '../lib/constants';
+import { canvasToBlob } from '../shared/browser/canvasToBlob';
+import { idbStorage } from '../shared/browser/indexDB';
 import { randomHash } from '../shared/js/randomHash';
-import { canvasToBlob } from '../shared/react/canvasToBlob';
-import { idbStorage } from '../shared/react/indexDB';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 
 const colorsVariables = [

@@ -3,15 +3,18 @@ import React, { useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { appName, logo } from '../browser/initShared';
+import {
+  isResendingVerificationCodeCat,
+  isVerifyingEmailCat,
+} from '../browser/store/sharedCats.js';
+import { resendVerificationCodeEffect, verifyEmailEffect } from '../browser/store/sharedEffects';
 import { FormButton } from './FormButton.jsx';
 import { HorizontalCenter } from './HorizontalCenter.jsx';
-import { appName, logo } from './initShared';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { LogoutLink } from './LogoutLink.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { isResendingVerificationCodeCat, isVerifyingEmailCat } from './store/sharedCats.js';
-import { resendVerificationCodeEffect, verifyEmailEffect } from './store/sharedEffects';
 
 export const VerifyEmail = fastMemo(() => {
   const isVerifying = useCat(isVerifyingEmailCat);

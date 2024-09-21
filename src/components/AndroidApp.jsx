@@ -3,7 +3,7 @@ import React from 'react';
 import fastMemo from 'react-fast-memo';
 
 import { playStoreLink } from '../lib/constants';
-import { isAndroidApp, isAndroidBrowser } from '../shared/react/device';
+import { isAndroidApp, isAndroidBrowser } from '../shared/browser/device';
 
 export const AndroidApp = fastMemo(() => {
   if (!isAndroidBrowser() || isAndroidApp()) {

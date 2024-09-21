@@ -15,9 +15,9 @@ import {
   videoStreamCat,
   videoStreamErrorCat,
 } from '../lib/videoStream.js';
+import { isIOSBrowser, isMobileBrowser } from '../shared/browser/device.js';
+import { idbStorage } from '../shared/browser/indexDB.js';
 import { randomHash } from '../shared/js/randomHash.js';
-import { isIOSBrowser, isMobileBrowser } from '../shared/react/device.js';
-import { idbStorage } from '../shared/react/indexDB.js';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`

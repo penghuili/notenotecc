@@ -2,8 +2,8 @@ import { goBack } from 'react-baby-router';
 
 import { albumDescriptionCat, albumSelectedKeysCat } from '../components/AlbumsSelector.jsx';
 import { localStorageKeys } from '../lib/constants';
-import { LocalStorage } from '../shared/react/LocalStorage';
-import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
+import { LocalStorage } from '../shared/browser/LocalStorage';
+import { isLoggedInCat } from '../shared/browser/store/sharedCats.js';
 import {
   createAlbumEffect,
   deleteAlbumEffect,

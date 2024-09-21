@@ -3,10 +3,10 @@ import { RiExternalLinkLine, RiSmartphoneLine } from '@remixicon/react';
 import React, { useCallback } from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { playStoreLink } from '../lib/constants.js';
-import { copyToClipboard } from '../shared/react/copyToClipboard.js';
-import { isAndroidApp, isInstalledOnHomeScreen, isIOSBrowser } from '../shared/react/device.js';
-import { setToastEffect } from '../shared/react/store/sharedEffects.js';
+import { playStoreLink } from '../lib/constants';
+import { copyToClipboard } from '../shared/browser/copyToClipboard';
+import { isAndroidApp, isInstalledOnHomeScreen, isIOSBrowser } from '../shared/browser/device';
+import { setToastEffect } from '../shared/browser/store/sharedEffects';
 
 export const InstallApp = fastMemo(() => {
   const handleCopy = useCallback(async () => {

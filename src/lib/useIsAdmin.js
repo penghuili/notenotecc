@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useCat } from 'usecat';
 
-import { userCat } from '../shared/react/store/sharedCats';
+import { userCat } from '../shared/browser/store/sharedCats';
 
 export function useIsAdmin() {
   const userId = useCat(userCat, account => account?.id);

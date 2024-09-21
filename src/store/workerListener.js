@@ -1,5 +1,5 @@
 import { localStorageKeys } from '../lib/constants';
-import { LocalStorage } from '../shared/react/LocalStorage';
+import { LocalStorage } from '../shared/browser/LocalStorage';
 import { albumsCat, isLoadingAlbumsCat } from './album/albumCats';
 import {
   isLoadingNotesCat,

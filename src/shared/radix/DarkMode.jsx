@@ -5,9 +5,9 @@ import React, { useCallback, useEffect } from 'react';
 import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
+import { appName } from '../browser/initShared.js';
+import { LocalStorage, sharedLocalStorageKeys } from '../browser/LocalStorage.js';
 import { apps } from '../js/apps.js';
-import { appName } from './initShared.js';
-import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 
 export const themeModeCat = createCat(getThemeMode());
 

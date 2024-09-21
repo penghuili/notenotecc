@@ -1,5 +1,5 @@
+import { isLoggedInCat, settingsCat } from '../../shared/browser/store/sharedCats';
 import { formatDate } from '../../shared/js/date';
-import { isLoggedInCat, settingsCat } from '../../shared/react/store/sharedCats';
 import { reviewHistory } from './settingsNetwork';
 
 export async function reviewHistoryEffect() {

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { authErrorCat, isSigningInCat } from '../browser/store/sharedCats.js';
+import { clearAuthErrorEffect, signInEffect } from '../browser/store/sharedEffects';
 import { errorColor } from './AppWrapper.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
@@ -10,8 +12,6 @@ import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { PasswordInput } from './PasswordInput.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { authErrorCat, isSigningInCat } from './store/sharedCats.js';
-import { clearAuthErrorEffect, signInEffect } from './store/sharedEffects';
 
 export const SignIn = fastMemo(() => {
   const errorMessage = useCat(authErrorCat);

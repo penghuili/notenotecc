@@ -3,12 +3,12 @@ import { RiArrowLeftLine } from '@remixicon/react';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 
-import { useWidthWithoutScrollbar } from './getScrollbarWidth.js';
-import { logo, showNewVersion } from './initShared';
+import { useWidthWithoutScrollbar } from '../browser/getScrollbarWidth.js';
+import { logo, showNewVersion } from '../browser/initShared.js';
+import { goBackEffect } from '../browser/store/sharedEffects';
 import { NewVersionAvailable } from './NewVersionAvailable.jsx';
 import { UpgradeButton } from './PaymentStatus.jsx';
 import { ScrollToTop } from './ScrollToTop.jsx';
-import { goBackEffect } from './store/sharedEffects';
 import { TopBanner } from './TopBanner.jsx';
 
 const Wrapper = styled(Flex)`

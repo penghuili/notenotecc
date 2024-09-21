@@ -3,7 +3,7 @@ import { RiArrowUpSLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { PageContentRef } from './PageContentRef.jsx';
+import { PageContentRef } from '../browser/PageContentRef.jsx';
 
 export const ScrollToTop = fastMemo(() => {
   const [show, setShow] = useState(false);

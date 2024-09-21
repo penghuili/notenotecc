@@ -12,11 +12,11 @@ import {
 import { useEffect, useMemo } from 'react';
 import { createCat, useCat } from 'usecat';
 
+import { settingsCat, useUserCreatedAt } from '../shared/browser/store/sharedCats.js';
 import { asyncForEach } from '../shared/js/asyncForEach.js';
 import { formatDate } from '../shared/js/date.js';
 import { getUTCTimeNumber } from '../shared/js/getUTCTimeNumber.js';
 import { randomBetween } from '../shared/js/utils.js';
-import { settingsCat, useUserCreatedAt } from '../shared/react/store/sharedCats.js';
 import { onThisDayNotesCat } from '../store/note/noteCats.js';
 import { fetchOnThisDayNotesEffect } from '../store/note/noteEffects.js';
 

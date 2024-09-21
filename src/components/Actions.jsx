@@ -12,7 +12,7 @@ import styled from 'styled-components';
 
 import { cameraTypes } from '../lib/cameraTypes';
 import { generateNoteSortKey } from '../lib/generateSortKey.js';
-import { objectToQueryString } from '../shared/react/routeHelpers.js';
+import { objectToQueryString } from '../shared/browser/routeHelpers.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { imagesCat } from './Camera.jsx';

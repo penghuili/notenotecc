@@ -4,8 +4,8 @@ import { RiDraggable } from '@remixicon/react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 
+import { isMobileWidth } from '../shared/browser/device';
 import { calculateItemPosition } from '../shared/js/position';
-import { isMobileWidth } from '../shared/react/device';
 
 const ELEMENT_WIDTH = 150; // Fixed width for elements
 const ELEMENT_HEIGHT = 48; // Fixed height for elements

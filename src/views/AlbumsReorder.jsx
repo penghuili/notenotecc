@@ -4,7 +4,7 @@ import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ReorderItems } from '../components/ReorderItems.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 import { actionTypes, dispatchAction } from '../store/allActions.js';

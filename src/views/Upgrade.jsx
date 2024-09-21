@@ -7,12 +7,12 @@ import { useCat } from 'usecat';
 import { Countdown } from '../components/Countdown/index.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { Shine } from '../components/Shine.jsx';
+import { isMobileWidth } from '../shared/browser/device.js';
+import { useExpiresAt, useFreeTrialsUntil } from '../shared/browser/store/sharedCats.js';
 import { formatDate } from '../shared/js/date.js';
-import { successCssColor } from '../shared/react/AppWrapper.jsx';
-import { isMobileWidth } from '../shared/react/device.js';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { PaymentStatus } from '../shared/react/PaymentStatus.jsx';
-import { useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats.js';
+import { successCssColor } from '../shared/radix/AppWrapper.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { PaymentStatus } from '../shared/radix/PaymentStatus.jsx';
 import { isFreeTryingCat } from '../store/pay/payCats.js';
 import { freeTrialEffect } from '../store/pay/payEffects.js';
 

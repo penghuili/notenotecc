@@ -6,9 +6,9 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
-import { errorColor } from '../shared/react/AppWrapper.jsx';
-import { Confirm } from '../shared/react/Confirm.jsx';
-import { isMobileWidth } from '../shared/react/device.js';
+import { isMobileWidth } from '../shared/browser/device.js';
+import { errorColor } from '../shared/radix/AppWrapper.jsx';
+import { Confirm } from '../shared/radix/Confirm.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { imagesCat } from './Camera.jsx';

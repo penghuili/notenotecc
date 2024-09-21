@@ -4,7 +4,7 @@ import fastMemo from 'react-fast-memo';
 
 import { imagesCat } from '../components/Camera.jsx';
 import { generateNoteSortKey } from '../lib/generateSortKey.js';
-import { objectToQueryString } from '../shared/react/routeHelpers.js';
+import { objectToQueryString } from '../shared/browser/routeHelpers.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { noteCat } from '../store/note/noteCats.js';
 

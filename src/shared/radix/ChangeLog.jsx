@@ -1,9 +1,9 @@
 import { Box, Text } from '@radix-ui/themes';
 import React, { useEffect, useState } from 'react';
 
+import { fetchChangeLog } from '../browser/store/sharedNetwork.js';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
-import { fetchChangeLog } from './store/sharedNetwork';
 
 export function ChangeLog() {
   const [isFetching, setIsFetching] = useState(false);

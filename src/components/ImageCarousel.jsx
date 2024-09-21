@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import fastMemo from 'react-fast-memo';
 
 import { fileTypes } from '../lib/constants';
-import { isMobileBrowser } from '../shared/react/device';
+import { isMobileBrowser } from '../shared/browser/device';
 import { MediaItem } from './MediaItem.jsx';
 
 export const ImageCarousel = fastMemo(({ noteId, encryptedPassword, images, onDelete }) => {

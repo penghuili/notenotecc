@@ -3,10 +3,10 @@ import { RiUserUnfollowLine } from '@remixicon/react';
 import React, { useState } from 'react';
 import { useCat } from 'usecat';
 
+import { isDeletingAccountCat } from '../browser/store/sharedCats.js';
+import { deleteAccountEffect } from '../browser/store/sharedEffects';
 import { errorColor } from './AppWrapper.jsx';
 import { Confirm } from './Confirm.jsx';
-import { isDeletingAccountCat } from './store/sharedCats.js';
-import { deleteAccountEffect } from './store/sharedEffects';
 
 export function DeleteAccountLink() {
   const isDeleting = useCat(isDeletingAccountCat);

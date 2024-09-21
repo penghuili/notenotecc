@@ -4,10 +4,14 @@ import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { useCat } from 'usecat';
 
+import { isTesting } from '../shared/browser/isTesting.js';
+import {
+  isLoggedInCat,
+  useExpiresAt,
+  useFreeTrialsUntil,
+} from '../shared/browser/store/sharedCats';
 import { formatDate } from '../shared/js/date';
-import { Confirm } from '../shared/react/Confirm.jsx';
-import { isTesting } from '../shared/react/isTesting.js';
-import { isLoggedInCat, useExpiresAt, useFreeTrialsUntil } from '../shared/react/store/sharedCats';
+import { Confirm } from '../shared/radix/Confirm.jsx';
 
 export const ProRequired = fastMemo(({ children }) => {
   const expiresAt = useExpiresAt();

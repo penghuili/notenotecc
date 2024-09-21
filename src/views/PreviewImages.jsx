@@ -9,7 +9,7 @@ import { useCat } from 'usecat';
 import { imagesCat } from '../components/Camera.jsx';
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { stopPropagation } from '../lib/stopPropagation.js';
-import { widthWithoutScrollbar } from '../shared/react/getScrollbarWidth.js';
+import { widthWithoutScrollbar } from '../shared/browser/getScrollbarWidth.js';
 
 const CarouselWrapper = styled.div`
   position: absolute;

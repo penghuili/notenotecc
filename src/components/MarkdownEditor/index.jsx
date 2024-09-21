@@ -5,7 +5,7 @@ import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { compareObjects } from '../../shared/js/object.js';
-import { AnimatedBox } from '../../shared/react/AnimatedBox.jsx';
+import { AnimatedBox } from '../../shared/radix/AnimatedBox.jsx';
 import { Editor, Markdown } from './Markdown.jsx';
 import {
   convertToMarkdown,

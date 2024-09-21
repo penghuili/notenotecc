@@ -4,9 +4,9 @@ import './style.css';
 import { Theme } from '@radix-ui/themes';
 import React, { useEffect } from 'react';
 
+import { LocalStorage, sharedLocalStorageKeys } from '../browser/LocalStorage.js';
 import { useThemeMode } from './DarkMode.jsx';
 import { updateFontSize } from './FontSize.jsx';
-import { LocalStorage, sharedLocalStorageKeys } from './LocalStorage.js';
 import { PageWrapper } from './PageWrapper.jsx';
 
 export const themeColor = 'tomato';

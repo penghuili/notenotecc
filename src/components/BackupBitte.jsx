@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { Banner } from '../shared/react/Banner.jsx';
-import { RouteLink } from '../shared/react/RouteLink.jsx';
-import { isLoggedInCat } from '../shared/react/store/sharedCats';
+import { isLoggedInCat } from '../shared/browser/store/sharedCats';
+import { Banner } from '../shared/radix/Banner.jsx';
+import { RouteLink } from '../shared/radix/RouteLink.jsx';
 import { notesCat } from '../store/note/noteCats.js';
 
 export const BackupBitte = fastMemo(() => {

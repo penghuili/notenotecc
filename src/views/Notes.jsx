@@ -22,10 +22,10 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { useHasHistory } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
-import { useInView } from '../shared/react/hooks/useInView.js';
-import { PageEmpty } from '../shared/react/PageEmpty.jsx';
-import { PageHeader } from '../shared/react/PageHeader.jsx';
-import { isLoggedInCat } from '../shared/react/store/sharedCats.js';
+import { useInView } from '../shared/browser/hooks/useInView.js';
+import { isLoggedInCat } from '../shared/browser/store/sharedCats.js';
+import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
+import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { forceFetchAlbumsEffect } from '../store/album/albumEffects.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {

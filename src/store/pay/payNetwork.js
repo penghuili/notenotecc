@@ -1,5 +1,5 @@
-import { HTTP } from '../../shared/react/HTTP';
-import { appName } from '../../shared/react/initShared';
+import { HTTP } from '../../shared/browser/HTTP';
+import { appName } from '../../shared/browser/initShared';
 
 export async function freeTrial() {
   try {

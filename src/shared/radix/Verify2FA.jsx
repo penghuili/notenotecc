@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { authErrorCat, isVerifying2FACat } from '../browser/store/sharedCats.js';
+import { clearAuthErrorEffect, verify2FAEffect } from '../browser/store/sharedEffects';
 import { errorColor } from './AppWrapper.jsx';
 import { FormButton } from './FormButton.jsx';
 import { InputField } from './InputField.jsx';
 import { ItemsWrapper } from './ItemsWrapper.jsx';
 import { PageHeader } from './PageHeader.jsx';
 import { RouteLink } from './RouteLink.jsx';
-import { authErrorCat, isVerifying2FACat } from './store/sharedCats.js';
-import { clearAuthErrorEffect, verify2FAEffect } from './store/sharedEffects';
 
 export const Verify2FA = fastMemo(() => {
   const errorMessage = useCat(authErrorCat);
