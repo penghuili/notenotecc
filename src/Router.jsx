@@ -47,7 +47,7 @@ export function Router() {
 }
 
 const verifyEmailRoutes = {
-  '/security/email': VerifyEmail,
+  '/security/email': ChangeEmail,
   '/': VerifyEmail,
 };
 const commonRoutes = {

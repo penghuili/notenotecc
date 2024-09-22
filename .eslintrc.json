@@ -24,5 +24,12 @@
     "react/no-unescaped-entities": 0,
     "react-compiler/react-compiler": "error",
     "react/display-name": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }

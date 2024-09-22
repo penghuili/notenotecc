@@ -27,6 +27,9 @@ export default defineConfig(({ mode }) => {
               },
             }),
           ],
+    resolve: {
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
+    },
     server: {
       port: 3000,
       open: false,

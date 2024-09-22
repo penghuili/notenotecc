@@ -10,6 +10,7 @@ const serverToUrl = {
   [apps.Puppeteer.name]: import.meta.env.VITE_PUPPETEER_API_URL,
   [apps['remiind.cc'].name]: import.meta.env.VITE_REMIINDCC_API_URL,
   [apps['notenote.cc'].name]: import.meta.env.VITE_SIMPLESTCAM_API_URL,
+  [apps['easyy.click'].name]: import.meta.env.VITE_EASYY_API_URL,
 };
 
 function getFullUrl(server, path) {
