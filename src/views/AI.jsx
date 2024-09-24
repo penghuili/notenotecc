@@ -11,6 +11,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { TakePhoto } from '../components/TakePhoto.jsx';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { inputFileToBase64 } from '../shared/browser/file.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
 import { toastTypes } from '../shared/browser/Toast.jsx';
 import { AreaField } from '../shared/radix/AreaField.jsx';
@@ -21,9 +22,11 @@ import { getSuggestion } from '../store/ai/aiNetwork.js';
 export const AI = fastMemo(() => {
   return (
     <PrepareData>
-      <Header />
+      <PageContent>
+        <Header />
 
-      <Form />
+        <Form />
+      </PageContent>
     </PrepareData>
   );
 });

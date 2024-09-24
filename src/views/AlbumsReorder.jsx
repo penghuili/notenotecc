@@ -4,6 +4,7 @@ import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { ReorderItems } from '../components/ReorderItems.jsx';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
@@ -16,9 +17,11 @@ async function load() {
 export const AlbumsReorder = fastMemo(() => {
   return (
     <PrepareData load={load}>
-      <Header />
+      <PageContent>
+        <Header />
 
-      <ReorderAlbums />
+        <ReorderAlbums />
+      </PageContent>
     </PrepareData>
   );
 });

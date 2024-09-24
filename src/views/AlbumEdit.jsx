@@ -4,6 +4,7 @@ import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { InputField } from '../shared/radix/InputField.jsx';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { albumsCat, findAlbum, isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
@@ -23,9 +24,11 @@ export const AlbumEdit = fastMemo(({ queryParams: { albumId } }) => {
 
   return (
     <PrepareData load={load}>
-      <Header albumId={albumId} />
+      <PageContent>
+        <Header albumId={albumId} />
 
-      <Form albumId={albumId} />
+        <Form albumId={albumId} />
+      </PageContent>
     </PrepareData>
   );
 });

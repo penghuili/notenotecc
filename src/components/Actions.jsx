@@ -23,7 +23,7 @@ import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
   position: sticky;
-  top: calc(100% - 3rem);
+  top: calc(100% - var(--space-8) * 2);
   z-index: 1;
 
   display: flex;

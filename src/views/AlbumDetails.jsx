@@ -7,6 +7,7 @@ import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
 import { useInView } from '../shared/browser/hooks/useInView.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { errorColor } from '../shared/radix/AppWrapper.jsx';
 import { Confirm } from '../shared/radix/Confirm.jsx';
 import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
@@ -25,11 +26,13 @@ export const AlbumDetails = fastMemo(({ queryParams: { albumId } }) => {
 
   return (
     <PrepareData load={load}>
-      <Header albumId={albumId} />
+      <PageContent>
+        <Header albumId={albumId} />
 
-      <Notes albumId={albumId} />
+        <Notes albumId={albumId} />
 
-      <LoadMore albumId={albumId} />
+        <LoadMore albumId={albumId} />
+      </PageContent>
     </PrepareData>
   );
 });

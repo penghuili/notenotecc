@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@radix-ui/themes';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
@@ -13,7 +13,7 @@ import {
   tabsCat,
 } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
-import { PageContentRef } from '../shared/browser/PageContentRef.jsx';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { useUserCreatedAt } from '../shared/browser/store/sharedCats.js';
 import { formatDateWeek } from '../shared/js/date.js';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
@@ -22,7 +22,6 @@ import { reviewHistoryEffect } from '../store/settings/settingsEffects.js';
 
 export const OnThisDay = fastMemo(() => {
   const userCreatedAt = useUserCreatedAt();
-  const pageContentRef = useRef(null);
 
   const load = useCallback(async () => {
     loadHistoryNotes(userCreatedAt);
@@ -30,26 +29,16 @@ export const OnThisDay = fastMemo(() => {
 
   useEffect(() => {
     reviewHistoryEffect();
-
-    pageContentRef.current.style.paddingBottom = '0';
-
-    return () => {
-      if (pageContentRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        pageContentRef.current.style.paddingBottom = '5rem';
-      }
-    };
   }, []);
 
   return (
-    <>
-      <PrepareData load={load}>
+    <PrepareData load={load}>
+      <PageContent paddingBottom="0">
         <Header />
 
         <Notes />
-      </PrepareData>
-      <PageContentRef ref={pageContentRef} />
-    </>
+      </PageContent>
+    </PrepareData>
   );
 });
 

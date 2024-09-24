@@ -16,6 +16,7 @@ import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { copyToClipboard } from '../shared/browser/copyToClipboard';
 import { getFileSizeString } from '../shared/browser/file';
 import { isTesting } from '../shared/browser/isTesting.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { isLoadingAccountCat, settingsCat, userCat } from '../shared/browser/store/sharedCats.js';
 import { fetchSettingsEffect, setToastEffect } from '../shared/browser/store/sharedEffects';
 import { formatDateTime } from '../shared/js/date';
@@ -32,39 +33,41 @@ async function load() {
 export const Account = fastMemo(() => {
   return (
     <PrepareData load={load}>
-      <Header />
+      <PageContent>
+        <Header />
 
-      <AccountInfo />
+        <AccountInfo />
 
-      <ItemsWrapper align="start">
-        {!isTesting() && (
-          <BabyLink to="/upgrade">
+        <ItemsWrapper align="start">
+          {!isTesting() && (
+            <BabyLink to="/upgrade">
+              <Button variant="ghost">
+                <RiMoneyDollarCircleLine /> Subscription
+              </Button>
+            </BabyLink>
+          )}
+
+          <BabyLink to="/security">
             <Button variant="ghost">
-              <RiMoneyDollarCircleLine /> Subscription
+              <RiShieldCheckLine /> Security
             </Button>
           </BabyLink>
-        )}
 
-        <BabyLink to="/security">
-          <Button variant="ghost">
-            <RiShieldCheckLine /> Security
-          </Button>
-        </BabyLink>
+          <BabyLink to="/settings">
+            <Button variant="ghost">
+              <RiSettings3Line /> Settings
+            </Button>
+          </BabyLink>
+        </ItemsWrapper>
 
-        <BabyLink to="/settings">
-          <Button variant="ghost">
-            <RiSettings3Line /> Settings
-          </Button>
-        </BabyLink>
-      </ItemsWrapper>
+        <PublicLinks />
 
-      <PublicLinks />
+        <ItemsWrapper align="start">
+          <LogoutLink />
 
-      <ItemsWrapper align="start">
-        <LogoutLink />
-
-        <AppVersion />
-      </ItemsWrapper>
+          <AppVersion />
+        </ItemsWrapper>
+      </PageContent>
     </PrepareData>
   );
 });

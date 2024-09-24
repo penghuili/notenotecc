@@ -23,6 +23,7 @@ import { useHasHistory } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/browser/hooks/useInView.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { isLoggedInCat } from '../shared/browser/store/sharedCats.js';
 import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
@@ -44,17 +45,19 @@ async function load() {
 export const Notes = fastMemo(() => {
   return (
     <PrepareData load={load} source="Notes">
-      <Header />
+      <PageContent>
+        <Header />
 
-      <AndroidApp />
+        <AndroidApp />
 
-      <Actions />
+        <Actions />
 
-      <BackupBitte />
+        <BackupBitte />
 
-      <NoteItems />
+        <NoteItems />
 
-      <LoadMore />
+        <LoadMore />
+      </PageContent>
     </PrepareData>
   );
 });

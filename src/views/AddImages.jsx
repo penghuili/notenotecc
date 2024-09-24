@@ -8,6 +8,7 @@ import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOSBrowser } from '../shared/browser/device.js';
 import { LocalStorage } from '../shared/browser/LocalStorage.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { topBannerCat } from '../shared/radix/TopBanner.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat, noteCat, useNote } from '../store/note/noteCats.js';
@@ -28,7 +29,9 @@ export const AddImagess = fastMemo(({ queryParams: { noteId, cameraType } }) => 
 
   return (
     <PrepareData load={prepareData}>
-      <AddImages noteId={noteId} cameraType={cameraType} />
+      <PageContent>
+        <AddImages noteId={noteId} cameraType={cameraType} />
+      </PageContent>
     </PrepareData>
   );
 });

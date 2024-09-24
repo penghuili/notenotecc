@@ -8,6 +8,7 @@ import { useCat } from 'usecat';
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { userCat } from '../shared/browser/store/sharedCats.js';
 import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
@@ -22,15 +23,17 @@ async function load() {
 export const Albums = fastMemo(() => {
   return (
     <PrepareData load={load}>
-      <Header />
+      <PageContent>
+        <Header />
 
-      <AlbumItems />
+        <AlbumItems />
 
-      <NotesWithoutTags />
+        <NotesWithoutTags />
 
-      <Box mt="6">
-        <AddNewAlbum />
-      </Box>
+        <Box mt="6">
+          <AddNewAlbum />
+        </Box>
+      </PageContent>
     </PrepareData>
   );
 });

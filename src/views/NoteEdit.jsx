@@ -10,6 +10,7 @@ import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteActions } from '../components/NoteActions.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { debounceAndQueue } from '../lib/debounce.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { formatDateWeekTime } from '../shared/js/date.js';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
@@ -45,9 +46,11 @@ export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
 
   return (
     <PrepareData load={prepareData}>
-      <Header noteId={noteId} />
+      <PageContent>
+        <Header noteId={noteId} />
 
-      <NoteView noteId={noteId} isAddingNote={!!add} />
+        <NoteView noteId={noteId} isAddingNote={!!add} />
+      </PageContent>
     </PrepareData>
   );
 });

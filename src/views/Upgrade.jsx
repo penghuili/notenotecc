@@ -8,6 +8,7 @@ import { Countdown } from '../components/Countdown/index.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
 import { Shine } from '../components/Shine.jsx';
 import { isMobileWidth } from '../shared/browser/device.js';
+import { PageContent } from '../shared/browser/PageContent.jsx';
 import { useExpiresAt, useFreeTrialsUntil } from '../shared/browser/store/sharedCats.js';
 import { formatDate } from '../shared/js/date.js';
 import { successCssColor } from '../shared/radix/AppWrapper.jsx';
@@ -19,9 +20,11 @@ import { freeTrialEffect } from '../store/pay/payEffects.js';
 export const Upgrade = fastMemo(() => {
   return (
     <PrepareData>
-      <Header />
+      <PageContent>
+        <Header />
 
-      <Prices />
+        <Prices />
+      </PageContent>
     </PrepareData>
   );
 });
