@@ -3,8 +3,8 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { PrepareData } from '../components/PrepareData.jsx';
-import { ReorderItems } from '../components/ReorderItems.jsx';
 import { PageContent } from '../shared/browser/PageContent.jsx';
+import { ReorderItems } from '../shared/browser/ReorderItems.jsx';
 import { PageHeader } from '../shared/radix/PageHeader.jsx';
 import { albumsCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
@@ -50,6 +50,7 @@ const ReorderAlbums = fastMemo(() => {
       onReorder={handleReorder}
       reverse
       renderItem={item => item.title}
+      bgColor="var(--color-background)"
     />
   );
 });
