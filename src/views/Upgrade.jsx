@@ -4,9 +4,7 @@ import React, { useCallback, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { Countdown } from '../components/Countdown/index.jsx';
 import { PrepareData } from '../components/PrepareData.jsx';
-import { Shine } from '../components/Shine.jsx';
 import { isMobileWidth } from '../shared/browser/device.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { useExpiresAt, useFreeTrialsUntil } from '../shared/browser/store/sharedCats.js';
@@ -110,25 +108,6 @@ const Prices = fastMemo(() => {
           )}
         </FeatureItem>
       </Flex>
-
-      {expiresAt !== 'forever' && (
-        <FeatureItem title="Lifetime" price={'Pay $39 once, use forever'} color="gold">
-          {(!expiresAt || expiresAt < formatDate(new Date())) && (
-            <Flex direction="column" align="center" mt="4">
-              <a href={import.meta.env.VITE_LIFETIME_LINK} target="_blank" rel="noreferrer">
-                <Button variant="solid" color="yellow">
-                  Get lifetime deal
-                </Button>
-              </a>
-            </Flex>
-          )}
-
-          <Box mt="3">
-            <Countdown targetDate="2024-09-30" />
-          </Box>
-          <Shine />
-        </FeatureItem>
-      )}
 
       {!expiresAt && !freeTrialUntil && (
         <Flex justify="center" mt="6">
