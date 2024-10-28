@@ -3,21 +3,22 @@ import { BabyRoutes } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { PrepareData } from './components/PrepareData.jsx';
 import { SaveLocalNotes } from './components/SaveLocalNotes.jsx';
 import { isMobileWidth } from './shared/browser/device.js';
 import { isLoggedInCat, useIsEmailVerified } from './shared/browser/store/sharedCats.js';
 import { initEffect } from './shared/browser/store/sharedEffects.js';
-import { ChangeEmail } from './shared/radix/ChangeEmail.jsx';
-import { ChangePassword } from './shared/radix/ChangePassword.jsx';
-import { PageLoading } from './shared/radix/PageLoading.jsx';
-import { ResetPassword } from './shared/radix/ResetPassword.jsx';
-import { Security } from './shared/radix/Security.jsx';
-import { Setup2FA } from './shared/radix/Setup2FA.jsx';
-import { SignIn } from './shared/radix/SignIn.jsx';
-import { SignUp } from './shared/radix/SignUp.jsx';
-import { Verify2FA } from './shared/radix/Verify2FA.jsx';
-import { VerifyEmail } from './shared/radix/VerifyEmail.jsx';
+import { ChangeEmail } from './shared/semi/ChangeEmail.jsx';
+import { ChangePassword } from './shared/semi/ChangePassword.jsx';
+import { PageLoading } from './shared/semi/PageLoading.jsx';
+import { PrepareData } from './shared/semi/PrepareData.jsx';
+import { ResetPassword } from './shared/semi/ResetPassword.jsx';
+import { Security } from './shared/semi/Security.jsx';
+import { Settings } from './shared/semi/Settings.jsx';
+import { Setup2FA } from './shared/semi/Setup2FA.jsx';
+import { SignIn } from './shared/semi/SignIn.jsx';
+import { SignUp } from './shared/semi/SignUp.jsx';
+import { Verify2FA } from './shared/semi/Verify2FA.jsx';
+import { VerifyEmail } from './shared/semi/VerifyEmail.jsx';
 import { hasLocalNotesCat } from './store/note/noteCats.js';
 import { Account } from './views/Account.jsx';
 import { AddImagess } from './views/AddImages.jsx';
@@ -31,7 +32,6 @@ import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
 import { PreviewImages } from './views/PreviewImages.jsx';
-import { Settings } from './views/Settings.jsx';
 import { Upgrade } from './views/Upgrade.jsx';
 
 async function load() {
@@ -104,7 +104,7 @@ const AllRoutes = fastMemo(() => {
         <BabyRoutes
           routes={verifyEmailRoutes}
           enableAnimation={isMobileWidth()}
-          bgColor="var(--color-background)"
+          bgColor="var(--semi-color-bg-0)"
           maxWidth="600px"
         />
       );
@@ -121,7 +121,7 @@ const AllRoutes = fastMemo(() => {
       <BabyRoutes
         routes={loggedInRoutes}
         enableAnimation={isMobileWidth()}
-        bgColor="var(--color-background)"
+        bgColor="var(--semi-color-bg-0)"
         maxWidth="600px"
       />
     );
@@ -131,7 +131,7 @@ const AllRoutes = fastMemo(() => {
     <BabyRoutes
       routes={publicRoutes}
       enableAnimation={isMobileWidth()}
-      bgColor="var(--color-background)"
+      bgColor="var(--semi-color-bg-0)"
       maxWidth="600px"
     />
   );

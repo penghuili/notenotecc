@@ -1,4 +1,3 @@
-import { IconButton } from '@radix-ui/themes';
 import { RiPlayLargeFill, RiVolumeMuteLine, RiVolumeUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -6,6 +5,7 @@ import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
 import { getVideoPreviewImage } from '../lib/video';
+import { IconButton } from '../shared/semi/IconButton';
 
 const mutedCat = createCat(true);
 
@@ -121,17 +121,17 @@ export const VideoPlayer = fastMemo(({ src, type, hidden }) => {
       )}
 
       <IconButton
+        icon={muted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
+        theme="solid"
+        round
         onClick={toggleMute}
-        radius="full"
         style={{
           position: 'absolute',
           bottom: '1rem',
           right: '0.5rem',
           margin: 0,
         }}
-      >
-        {muted ? <RiVolumeMuteLine color="white" /> : <RiVolumeUpLine color="white" />}
-      </IconButton>
+      />
     </Wrapper>
   );
 });

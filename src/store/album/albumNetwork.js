@@ -3,6 +3,7 @@ import { HTTP } from '../../shared/browser/HTTP';
 import { appName } from '../../shared/browser/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
 import { objectToQueryString } from '../../shared/browser/routeHelpers';
+import { asyncMap } from '../../shared/js/asyncMap';
 import {
   decryptMessageAsymmetric,
   decryptMessageSymmetric,
@@ -34,8 +35,9 @@ export async function fetchAlbumItems(albumId, { startKey }) {
     const { items, startKey: newStartKey, limit } = await HTTP.get(appName, url);
 
     const privateKey = LocalStorage.get(sharedLocalStorageKeys.privateKey);
-    const decrypted = await Promise.all(
-      items.filter(item => !!item).map(note => decryptNote(note, privateKey))
+    const decrypted = await asyncMap(
+      items.filter(item => !!item),
+      note => decryptNote(note, privateKey)
     );
 
     if (!startKey) {

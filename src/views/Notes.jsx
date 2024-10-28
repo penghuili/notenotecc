@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, IconButton, Link, Text } from '@radix-ui/themes';
+import { Button, Dropdown, Typography } from '@douyinfe/semi-ui';
 import {
   RiAccountCircleLine,
   RiHashtag,
@@ -17,15 +17,17 @@ import { useCat } from 'usecat';
 import { Actions } from '../components/Actions.jsx';
 import { BackupBitte } from '../components/BackupBitte.jsx';
 import { NoteItem } from '../components/NoteItem.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { useHasHistory } from '../components/useHasHistory.jsx';
 import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { useInView } from '../shared/browser/hooks/useInView.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { isLoggedInCat } from '../shared/browser/store/sharedCats.js';
-import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
+import { Link } from '../shared/semi/Link.jsx';
+import { PageEmpty } from '../shared/semi/PageEmpty.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { forceFetchAlbumsEffect } from '../store/album/albumEffects.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
@@ -81,9 +83,11 @@ const Header = fastMemo(() => {
       title={
         isLoggedIn &&
         !isLoadingNotes && (
-          <IconButton onClick={handleFetch} mr="2" variant="soft">
-            <RiRefreshLine />
-          </IconButton>
+          <IconButton
+            icon={<RiRefreshLine />}
+            onClick={handleFetch}
+            style={{ marginRight: '0.5rem' }}
+          />
         )
       }
       right={rightElement}
@@ -121,62 +125,69 @@ const HeaderMenu = fastMemo(() => {
       {!isLoggedIn && (
         <>
           <BabyLink to="/sign-up">
-            <Button variant="solid" size="1" mr="2">
+            <Button theme="solid" size="small" style={{ marginRight: '0.5rem' }}>
               Sign up
             </Button>
           </BabyLink>
           <BabyLink to="/sign-in">
-            <Button variant="soft" size="1" mr="2">
+            <Button size="small" style={{ marginRight: '0.5rem' }}>
               Sign in
             </Button>
           </BabyLink>
         </>
       )}
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton variant="ghost" mr="2" style={{ position: 'relative' }}>
-            <RiMenuLine />
 
-            {hasHistory && <RedDot />}
-          </IconButton>
-        </DropdownMenu.Trigger>
+      <Dropdown
+        trigger="click"
+        position="bottomLeft"
+        clickToHide
+        render={
+          <Dropdown.Menu>
+            {isLoggedIn && (
+              <>
+                <Dropdown.Item icon={<RiAccountCircleLine />} onClick={handleNavigateToAccount}>
+                  Account
+                </Dropdown.Item>
 
-        <DropdownMenu.Content variant="soft">
-          {isLoggedIn && (
+                <Dropdown.Divider />
+
+                <Dropdown.Item
+                  icon={<RiHistoryLine />}
+                  onClick={handleNavigateToHistory}
+                  style={{ position: 'relative' }}
+                >
+                  Today in history
+                  {hasHistory && <RedDot />}
+                </Dropdown.Item>
+              </>
+            )}
+
+            <Dropdown.Item icon={<RiHashtag />} onClick={handleNavigateToAlbums}>
+              Tags
+            </Dropdown.Item>
+            <Dropdown.Item icon={<RiSettings3Line />} onClick={handleNavigateToSettings}>
+              Settings
+            </Dropdown.Item>
+
+            {isAdmin && (
+              <Dropdown.Item icon={<RiOpenaiLine />} onClick={handleNavigateToAI}>
+                AI
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        }
+      >
+        <IconButton
+          icon={
             <>
-              <DropdownMenu.Item onClick={handleNavigateToAccount}>
-                <RiAccountCircleLine />
-                Account
-              </DropdownMenu.Item>
-
-              <DropdownMenu.Separator />
-
-              <DropdownMenu.Item onClick={handleNavigateToHistory} style={{ position: 'relative' }}>
-                <RiHistoryLine />
-                Today in history
-                {hasHistory && <RedDot />}
-              </DropdownMenu.Item>
+              <RiMenuLine />
+              {hasHistory && <RedDot />}
             </>
-          )}
-
-          <DropdownMenu.Item onClick={handleNavigateToAlbums}>
-            <RiHashtag />
-            Tags
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Item onClick={handleNavigateToSettings}>
-            <RiSettings3Line />
-            Settings
-          </DropdownMenu.Item>
-
-          {isAdmin && (
-            <DropdownMenu.Item onClick={handleNavigateToAI}>
-              <RiOpenaiLine />
-              AI
-            </DropdownMenu.Item>
-          )}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+          }
+          theme="borderless"
+          style={{ position: 'relative' }}
+        />
+      </Dropdown>
     </>
   );
 });
@@ -197,8 +208,12 @@ const NoteItems = fastMemo(() => {
           style={{ width: '100%', maxWidth: '250px', marginBottom: '1.5rem' }}
         />
 
-        <Text align="center">You have no notes yet.</Text>
-        <Text align="center">Tap the actions below to create your first note!</Text>
+        <Typography.Paragraph style={{ textAlign: 'center' }}>
+          You have no notes yet.
+        </Typography.Paragraph>
+        <Typography.Paragraph style={{ textAlign: 'center' }}>
+          Tap the actions below to create your first note!
+        </Typography.Paragraph>
 
         <Link href="https://notenote.cc" target="_blank">
           Learn more &gt;&gt;
@@ -244,8 +259,8 @@ const LoadMore = fastMemo(() => {
   }
 
   return (
-    <Button ref={ref} onClick={handleFetch} disabled={isLoading}>
-      {isLoading ? 'Loading...' : 'Load more'}
+    <Button onClick={handleFetch} disabled={isLoading}>
+      <span ref={ref}> {isLoading ? 'Loading...' : 'Load more'}</span>
     </Button>
   );
 });

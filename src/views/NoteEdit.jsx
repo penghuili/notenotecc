@@ -1,4 +1,4 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import React, { useCallback, useMemo } from 'react';
 import { replaceTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
@@ -8,11 +8,12 @@ import { albumSelectedKeysCat, AlbumsSelector } from '../components/AlbumsSelect
 import { ImageCarousel } from '../components/ImageCarousel.jsx';
 import { MarkdownEditor } from '../components/MarkdownEditor/index.jsx';
 import { NoteActions } from '../components/NoteActions.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { debounceAndQueue } from '../lib/debounce.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { formatDateWeekTime } from '../shared/js/date.js';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import {
   isAddingImagesCat,
@@ -98,10 +99,10 @@ const NoteView = fastMemo(({ noteId, isAddingNote }) => {
 
   return (
     <>
-      <Flex justify="between" align="center" mb="2">
-        <Text size="2" as="p" style={{ userSelect: 'none' }}>
+      <Flex direction="row" justify="between" align="center" m="0 0 0.5rem">
+        <Typography.Paragraph size="small" style={{ userSelect: 'none' }}>
           {formatDateWeekTime(noteItem.createdAt)}
-        </Text>
+        </Typography.Paragraph>
       </Flex>
       {!!noteItem.images?.length && (
         <ImageCarousel
@@ -165,5 +166,5 @@ const AddAlbums = fastMemo(({ noteId }) => {
     [noteItem]
   );
 
-  return <AlbumsSelector onChange={handleChange} mt="4" />;
+  return <AlbumsSelector onChange={handleChange} />;
 });

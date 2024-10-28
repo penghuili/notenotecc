@@ -327,10 +327,6 @@ export async function fetchSettings() {
   try {
     const settings = await HTTP.get(appName, `/v1/settings`);
 
-    if (settings) {
-      LocalStorage.set(`${appName}-settings`, settings);
-    }
-
     return { data: settings, error: null };
   } catch (error) {
     return { data: null, error };
@@ -342,6 +338,16 @@ export async function fetchChangeLog() {
     const versions = await HTTP.publicGet(appName, `/v1/changelog`);
 
     return { data: versions, error: null };
+  } catch (error) {
+    return { data: null, error };
+  }
+}
+
+export async function usedPasswordManager() {
+  try {
+    const data = await HTTP.put(appName, `/v1/settings/password-manager`, {});
+
+    return { data, error: null };
   } catch (error) {
     return { data: null, error };
   }

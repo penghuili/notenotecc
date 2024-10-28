@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Popover, Text } from '@radix-ui/themes';
+import { Popover, Typography } from '@douyinfe/semi-ui';
 import { RiCheckboxFill, RiCheckLine, RiPaletteFill, RiSquareFill } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -8,41 +8,37 @@ import { imageType } from '../lib/constants';
 import { canvasToBlob } from '../shared/browser/canvasToBlob';
 import { idbStorage } from '../shared/browser/indexDB';
 import { randomHash } from '../shared/js/randomHash';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 
-const colorsVariables = [
-  '--tomato-9',
-  '--yellow-9',
-  '--amber-9',
-  '--orange-9',
-  '--red-9',
-  '--ruby-9',
-  '--crimson-9',
-  '--pink-9',
-  '--plum-9',
-  '--purple-9',
-  '--violet-9',
-  '--iris-9',
-  '--indigo-9',
-  '--blue-9',
-  '--cyan-9',
-  '--teal-9',
-  '--jade-9',
-  '--green-9',
-  '--grass-9',
-  '--lime-9',
-  '--mint-9',
-  '--sky-9',
-  '--brown-9',
-  '--bronze-9',
-  '--gold-9',
-  '--gray-9',
-];
 const colors = [
   'black',
-  ...colorsVariables.map(color =>
-    getComputedStyle(document.documentElement).getPropertyValue(color)
-  ),
+  '#e54d2e',
+  '#ffe629',
+  '#ffc53d',
+  '#f76b15',
+  '#e5484d',
+  '#e54666',
+  '#e93d82',
+  '#d6409f',
+  '#ab4aba',
+  '#8e4ec6',
+  '#6e56cf',
+  '#5b5bd6',
+  '#3e63dd',
+  '#0090ff',
+  '#00a2c7',
+  '#12a594',
+  '#29a383',
+  '#30a46c',
+  '#46a758',
+  '#bdee63',
+  '#86ead4',
+  '#7ce2fe',
+  '#ad7f58',
+  '#a18072',
+  '#978365',
 ];
 
 const INTERNAL_SIZE = 900;
@@ -148,15 +144,19 @@ export const Draw = fastMemo(({ onSelect }) => {
     <VideoWrapper>
       <DrawingCanvas width={INTERNAL_SIZE} height={INTERNAL_SIZE} ref={canvasRef} />
 
-      <Flex justify="center" align="center" pt="12px" gap="2">
-        <IconButton size="4" onClick={handleDone} radius="full">
-          <RiCheckLine style={{ '--font-size': '40px' }} />
-        </IconButton>
+      <Flex justify="center" align="center" gap="0.5rem" style={{ paddingTop: '12px' }}>
+        <IconButton
+          theme="solid"
+          size={50}
+          onClick={handleDone}
+          icon={<RiCheckLine size={40} />}
+          round
+        />
 
-        <Text
-          align="center"
-          size="2"
+        <Typography.Text
+          size="small"
           style={{
+            textAlign: 'center',
             position: 'absolute',
             top: displaySize + 70,
             right: '50%',
@@ -164,11 +164,11 @@ export const Draw = fastMemo(({ onSelect }) => {
           }}
         >
           Touch to draw anything.
-        </Text>
+        </Typography.Text>
 
-        <Box style={{ position: 'absolute', top: displaySize + 12, right: 12 }}>
+        <div style={{ position: 'absolute', top: displaySize + 12, right: 12 }}>
           <ColorPicker color={color} onChange={setColor} />
-        </Box>
+        </div>
       </Flex>
     </VideoWrapper>
   );
@@ -176,25 +176,24 @@ export const Draw = fastMemo(({ onSelect }) => {
 
 const ColorPicker = fastMemo(({ color, onChange }) => {
   return (
-    <Popover.Root>
-      <Popover.Trigger>
-        <IconButton variant="soft" size="4" radius="full">
-          <RiPaletteFill color={color} />
-        </IconButton>
-      </Popover.Trigger>
-      <Popover.Content width="360px">
-        <Flex gap="3" wrap="wrap">
+    <Popover
+      content={
+        <Flex direction="row" gap="0.75rem" wrap="wrap" p="0.5rem" style={{ width: 220 }}>
           {colors.map(c => (
-            <Popover.Close key={c}>
+            <div key={c}>
               {c === color ? (
                 <RiCheckboxFill color={c} onClick={() => onChange(null)} />
               ) : (
                 <RiSquareFill color={c} onClick={() => onChange(c)} />
               )}
-            </Popover.Close>
+            </div>
           ))}
         </Flex>
-      </Popover.Content>
-    </Popover.Root>
+      }
+      trigger="click"
+      clickToHide
+    >
+      <IconButton size={50} round icon={<RiPaletteFill color={color} />} />
+    </Popover>
   );
 });

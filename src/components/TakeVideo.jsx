@@ -1,4 +1,4 @@
-import { Flex, IconButton, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import { RiRecordCircleLine, RiRefreshLine, RiStopCircleLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -18,6 +18,8 @@ import {
 import { isIOSBrowser, isMobileBrowser } from '../shared/browser/device.js';
 import { idbStorage } from '../shared/browser/indexDB.js';
 import { randomHash } from '../shared/js/randomHash.js';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { TimeProgress } from './TimeProgress.jsx';
 
 export const VideoWrapper = styled.div`
@@ -59,9 +61,9 @@ export function renderError(mediaError, size) {
 
   return (
     <ErrorWrapper size={size}>
-      <Text as="p">
+      <Typography.Paragraph>
         {mediaError.name} {errorMessage}
-      </Text>
+      </Typography.Paragraph>
     </ErrorWrapper>
   );
 }
@@ -217,7 +219,6 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
         progressElementRef.current.stop();
       }
     }
-    // eslint-disable-next-line react-compiler/react-compiler
   }, [clearTimers, stopMediaRecorder, videoStream]);
 
   const size = getCameraSize();
@@ -233,56 +234,65 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
 
       {errorElement}
 
-      <Flex justify="center" align="center" pt="12px" gap="2">
+      <Flex
+        direction="row"
+        justify="center"
+        align="center"
+        gap="0.5rem"
+        style={{
+          paddingTop: '12px',
+        }}
+      >
         {!isRecording && (
           <>
             <IconButton
-              size="4"
-              radius="full"
+              icon={<RiRecordCircleLine size={40} />}
+              theme="solid"
+              size={50}
+              round
               onClick={handleStartRecording}
               disabled={!!videoStreamError || !videoStream}
-            >
-              <RiRecordCircleLine style={{ '--font-size': '40px' }} />
-            </IconButton>
+            />
 
             {isIOSBrowser() && tapTwice && (
-              <Text
-                align="center"
-                size="2"
+              <Typography.Paragraph
+                size="small"
                 style={{
                   position: 'absolute',
                   top: size + 60,
                   right: '50%',
                   transform: 'translateX(50%)',
+                  textAlign: 'center',
                 }}
               >
                 Tap twice to take the first video
-              </Text>
+              </Typography.Paragraph>
             )}
 
             {isMobileBrowser() && (
               <IconButton
-                size="4"
-                radius="full"
+                icon={<RiRefreshLine />}
+                size={50}
+                round
                 onClick={rotateCamera}
-                variant="soft"
-                style={{ position: 'absolute', top: size + 12, right: 12 }}
-              >
-                <RiRefreshLine />
-              </IconButton>
+                style={{
+                  position: 'absolute',
+                  top: size + 12,
+                  right: 12,
+                }}
+              />
             )}
           </>
         )}
 
         {isRecording && (
           <IconButton
-            size="4"
-            radius="full"
+            icon={<RiStopCircleLine />}
+            size={50}
+            round
             onClick={handleStopRecording}
             disabled={!!videoStreamError}
-          >
-            <RiStopCircleLine style={{ '--font-size': '40px' }} />
-          </IconButton>
+          />
         )}
       </Flex>
     </VideoWrapper>

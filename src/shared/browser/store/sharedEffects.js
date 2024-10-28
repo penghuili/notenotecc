@@ -1,8 +1,10 @@
 import { goBack, navigateTo } from 'react-baby-router';
 
+import { contactEmail } from '../../js/constants.js';
 import { isNewer } from '../../js/date';
 import { httpErrorCodes } from '../../js/httpErrorCodes';
 import { isValidEmail } from '../../js/regex';
+import { copyToClipboard } from '../copyToClipboard.js';
 import { eventEmitter, eventEmitterEvents } from '../eventEmitter';
 import { HTTP } from '../HTTP';
 import { idbStorage } from '../indexDB';
@@ -26,6 +28,7 @@ import {
   isSigningInCat,
   isSigningUpCat,
   isSkipping2FACat,
+  isUsingPasswordManagerCat,
   isVerifying2FACat,
   isVerifyingEmailCat,
   settingsCat,
@@ -46,6 +49,7 @@ import {
   signIn,
   signUp,
   skip2FA,
+  usedPasswordManager,
   verify2FA,
   verifyEmail,
 } from './sharedNetwork';
@@ -284,6 +288,11 @@ export async function fetchAccountEffect() {
   }
 }
 
+export function setSettingsEffect(settings) {
+  settingsCat.set(settings);
+  LocalStorage.set(`${appName}-settings`, settings);
+}
+
 async function forceFetchSettingsEffect() {
   if (isLoadingSettingsCat.get()) {
     return;
@@ -294,9 +303,7 @@ async function forceFetchSettingsEffect() {
   const { data } = await fetchSettings();
 
   if (data) {
-    if (isNewer(data.updatedAt, settingsCat.get()?.updatedAt)) {
-      settingsCat.set(data);
-    }
+    setSettingsEffect(data);
     eventEmitter.emit(eventEmitterEvents.settingsFetched, data);
   }
 
@@ -374,4 +381,20 @@ export async function changePasswordEffect(currentPassword, newPassword) {
   }
 
   isChangingPasswordCat.set(false);
+}
+
+export async function copyContactEmailEffect() {
+  await copyToClipboard(contactEmail);
+  setToastEffect('Copied!');
+}
+
+export async function usedPasswordManagerEffect() {
+  isUsingPasswordManagerCat.set(true);
+
+  const { data } = await usedPasswordManager();
+  if (data) {
+    setSettingsEffect(data);
+  }
+
+  isUsingPasswordManagerCat.set(false);
 }

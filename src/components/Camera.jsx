@@ -1,4 +1,4 @@
-import { Flex, IconButton, SegmentedControl, Theme } from '@radix-ui/themes';
+import { Radio, RadioGroup } from '@douyinfe/semi-ui';
 import { RiPlayLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -9,6 +9,8 @@ import { cameraTypes } from '../lib/cameraTypes.js';
 import { fileTypes } from '../lib/constants.js';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { isMobileWidth } from '../shared/browser/device';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { Draw } from './Draw.jsx';
 import { FullscreenPopup } from './FullscreenPopup.jsx';
 import { PickPhoto } from './PickPhoto.jsx';
@@ -49,40 +51,46 @@ export const Camera = fastMemo(({ type, disabled, onShowPreviewCaruosel, onSelec
   }, [onSelect]);
 
   return (
-    <Theme appearance="dark">
-      <FullscreenPopup onBack={onClose} disabled={disabled}>
-        {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
+    <FullscreenPopup alwaysDark onBack={onClose} disabled={disabled}>
+      {activeTab === cameraTypes.takePhoto && <TakePhoto onSelect={handleAddNewImage} />}
 
-        {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
+      {activeTab === cameraTypes.takeVideo && <TakeVideo onSelect={handleAddNewImage} />}
 
-        {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
+      {activeTab === cameraTypes.pickPhoto && <PickPhoto onSelect={handleAddNewImages} />}
 
-        {activeTab === cameraTypes.draw && <Draw onSelect={handleAddNewImage} />}
+      {activeTab === cameraTypes.draw && <Draw onSelect={handleAddNewImage} />}
 
-        <SegmentedControl.Root value={activeTab} onValueChange={setActiveTab} size="1" mt="9">
-          <SegmentedControl.Item value={cameraTypes.takePhoto}>PHOTO</SegmentedControl.Item>
-          <SegmentedControl.Item value={cameraTypes.takeVideo}>VIDEO</SegmentedControl.Item>
-          <SegmentedControl.Item value={cameraTypes.pickPhoto}>PICK</SegmentedControl.Item>
-          <SegmentedControl.Item value={cameraTypes.draw}>DRAW</SegmentedControl.Item>
-        </SegmentedControl.Root>
+      <RadioGroup
+        type="button"
+        buttonSize="small"
+        value={activeTab}
+        onChange={e => {
+          setActiveTab(e.target.value);
+        }}
+        style={{ marginTop: '4rem' }}
+      >
+        <Radio value={cameraTypes.takePhoto}>PHOTO</Radio>
+        <Radio value={cameraTypes.takeVideo}>VIDEO</Radio>
+        <Radio value={cameraTypes.pickPhoto}>PICK</Radio>
+        <Radio value={cameraTypes.draw}>DRAW</Radio>
+      </RadioGroup>
 
-        {!!images?.length && (
-          <ImagesPreview images={images} onShowPreviewCaruosel={onShowPreviewCaruosel} />
-        )}
-      </FullscreenPopup>
-    </Theme>
+      {!!images?.length && (
+        <ImagesPreview images={images} onShowPreviewCaruosel={onShowPreviewCaruosel} />
+      )}
+    </FullscreenPopup>
   );
 });
 
 const ImagesWrapper = styled.div`
   position: absolute;
-  top: ${props => `calc(${props.cameraSize}px + var(--space-8) + var(--space-2) + 12px)`};
+  top: ${props => `calc(${props.cameraSize}px + 3.5rem + 12px)`};
   left: ${props => `calc(50% - ${props.cameraSize / 2}px + ${isMobileWidth() ? '12px' : '0px'})`};
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-background);
+  background-color: var(--semi-color-bg-0);
 `;
 
 const PreviewImage = styled.img`
@@ -142,10 +150,15 @@ const PreviewItem = fastMemo(({ image, onClick }) => {
       {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
         <>
           <PreviewVideo src={url} controls={false} />
-          <Flex justify="center" width="100%" position="absolute" top="30px">
-            <IconButton size="1" variant="soft">
-              <RiPlayLine />
-            </IconButton>
+          <Flex
+            justify="center"
+            style={{
+              width: '100%',
+              position: 'absolute',
+              top: '30px',
+            }}
+          >
+            <IconButton size={24} icon={<RiPlayLine size={16} />} />
           </Flex>
         </>
       )}

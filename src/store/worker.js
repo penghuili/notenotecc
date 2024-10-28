@@ -1,3 +1,4 @@
+import { asyncMap } from '../shared/js/asyncMap';
 import { decryptAlbum, decryptNote, workerActionTypes } from './workerHelpers';
 
 self.onmessage = async function (event) {
@@ -19,9 +20,9 @@ self.onmessage = async function (event) {
 };
 
 async function decryptNotes(notes, privateKey) {
-  return await Promise.all(notes.map(note => decryptNote(note, privateKey)));
+  return await asyncMap(notes, note => decryptNote(note, privateKey));
 }
 
 async function decryptAlbums(albums, privateKey) {
-  return await Promise.all(albums.map(note => decryptAlbum(note, privateKey)));
+  return await asyncMap(albums, note => decryptAlbum(note, privateKey));
 }

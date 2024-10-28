@@ -1,4 +1,4 @@
-import { Flex, IconButton, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import { RiCameraLensLine, RiRefreshLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -19,6 +19,8 @@ import { canvasToBlob } from '../shared/browser/canvasToBlob';
 import { isIOSBrowser } from '../shared/browser/device.js';
 import { idbStorage } from '../shared/browser/indexDB.js';
 import { randomHash } from '../shared/js/randomHash.js';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { getCameraSize, renderError, VideoWrapper } from './TakeVideo.jsx';
 
 const Video = styled.video`
@@ -85,7 +87,6 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
         videoRef.current.load();
       }
     }
-    // eslint-disable-next-line react-compiler/react-compiler
   }, [videoStream]);
 
   const size = getCameraSize();
@@ -131,39 +132,47 @@ export const TakePhoto = fastMemo(({ onSelect }) => {
       {zoomSteps}
       {errorElement}
 
-      <Flex justify="center" align="center" pt="12px" gap="2">
+      <Flex
+        direction="row"
+        justify="center"
+        align="center"
+        gap="0.5rem"
+        style={{ paddingTop: '12px' }}
+      >
         <IconButton
-          size="4"
+          icon={<RiCameraLensLine size={40} />}
+          theme="solid"
+          size={50}
+          round
           onClick={handleCapture}
           disabled={!!videoStreamError || !videoStream || isTaking}
-          radius="full"
-        >
-          <RiCameraLensLine style={{ '--font-size': '40px' }} />
-        </IconButton>
+        />
         {isIOSBrowser() && tapTwice && (
-          <Text
-            align="center"
-            size="2"
+          <Typography.Text
+            size="small"
             style={{
               position: 'absolute',
               top: size + 60,
               right: '50%',
               transform: 'translateX(50%)',
+              textAlign: 'center',
             }}
           >
             Tap twice to take the first photo
-          </Text>
+          </Typography.Text>
         )}
 
         <IconButton
-          size="4"
+          icon={<RiRefreshLine />}
+          size={50}
+          round
           onClick={rotateCamera}
-          variant="soft"
-          radius="full"
-          style={{ position: 'absolute', top: size + 12, right: 12 }}
-        >
-          <RiRefreshLine />
-        </IconButton>
+          style={{
+            position: 'absolute',
+            top: size + 12,
+            right: 12,
+          }}
+        />
       </Flex>
     </VideoWrapper>
   );

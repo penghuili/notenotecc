@@ -1,11 +1,10 @@
-import { Text } from '@radix-ui/themes';
+import { Banner, Typography } from '@douyinfe/semi-ui';
 import React, { useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { isLoggedInCat } from '../shared/browser/store/sharedCats';
-import { Banner } from '../shared/radix/Banner.jsx';
-import { RouteLink } from '../shared/radix/RouteLink.jsx';
+import { RouteLink } from '../shared/semi/RouteLink.jsx';
 import { notesCat } from '../store/note/noteCats.js';
 
 export const BackupBitte = fastMemo(() => {
@@ -20,10 +19,18 @@ export const BackupBitte = fastMemo(() => {
   }
 
   return (
-    <Banner open>
-      <Text>
-        <RouteLink to="/sign-up">Create an account</RouteLink> to backup your notes.
-      </Text>
-    </Banner>
+    <Banner
+      fullMode={false}
+      type="warning"
+      bordered
+      icon={null}
+      closeIcon={null}
+      description={
+        <Typography.Text>
+          <RouteLink to="/sign-up">Create an account</RouteLink> to backup your notes.
+        </Typography.Text>
+      }
+      style={{ margin: '1rem 0' }}
+    />
   );
 });

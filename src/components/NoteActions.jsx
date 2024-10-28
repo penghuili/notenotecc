@@ -1,14 +1,14 @@
-import { DropdownMenu, Flex, IconButton } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiImageAddLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
+import { Dropdown } from '@douyinfe/semi-ui';
+import { RiDeleteBinLine, RiEdit2Line, RiImageAddLine, RiMore2Line } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { cameraTypes } from '../lib/cameraTypes.js';
-import { isMobileWidth } from '../shared/browser/device.js';
-import { errorColor } from '../shared/radix/AppWrapper.jsx';
-import { Confirm } from '../shared/radix/Confirm.jsx';
+import { Confirm } from '../shared/semi/Confirm.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isDeletingNoteCat } from '../store/note/noteCats.js';
 import { imagesCat } from './Camera.jsx';
@@ -50,33 +50,36 @@ export const NoteActions = fastMemo(({ note, isDetailsPage }) => {
   }
 
   return (
-    <Flex align="center" gap="2">
+    <Flex direction="row" align="center" gap="0.5rem">
       <ProRequired>
-        <IconButton variant="soft" onClick={handleShowCamera} mr="2">
-          <RiImageAddLine />
-        </IconButton>
+        <IconButton
+          icon={<RiImageAddLine />}
+          onClick={handleShowCamera}
+          style={{ marginRight: '0.5rem' }}
+        />
       </ProRequired>
 
       {!isDetailsPage && (
-        <IconButton variant="soft" onClick={handleNavigateToDetails} mr="2">
-          <RiPencilLine />
-        </IconButton>
+        <IconButton
+          icon={<RiEdit2Line />}
+          onClick={handleNavigateToDetails}
+          style={{ marginRight: '0.5rem' }}
+        />
       )}
 
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton variant="ghost" mr={isMobileWidth() ? '2' : '4'}>
-            <RiMore2Line />
-          </IconButton>
-        </DropdownMenu.Trigger>
-
-        <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleShowConfirm} color={errorColor}>
-            <RiDeleteBinLine />
-            Delete
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+      <Dropdown
+        trigger="click"
+        clickToHide
+        render={
+          <Dropdown.Menu>
+            <Dropdown.Item type="danger" icon={<RiDeleteBinLine />} onClick={handleShowConfirm}>
+              Delete
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        }
+      >
+        <IconButton theme="borderless" icon={<RiMore2Line />} style={{ marginRight: '0.5rem' }} />
+      </Dropdown>
 
       <Confirm
         open={showDeleteConfirm}

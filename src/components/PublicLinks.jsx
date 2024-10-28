@@ -1,4 +1,4 @@
-import { Button } from '@radix-ui/themes';
+import { Button } from '@douyinfe/semi-ui';
 import {
   RiCodeLine,
   RiHeartLine,
@@ -7,63 +7,52 @@ import {
   RiMailLine,
   RiServiceLine,
 } from '@remixicon/react';
-import React, { useCallback } from 'react';
+import React from 'react';
 import fastMemo from 'react-fast-memo';
 
-import { copyToClipboard } from '../shared/browser/copyToClipboard.js';
-import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
-import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
+import { copyContactEmailEffect } from '../shared/browser/store/sharedEffects.js';
+import { contactEmail } from '../shared/js/constants.js';
+import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { InstallApp } from './InstallApp.jsx';
 
 export const PublicLinks = fastMemo(() => {
-  const handleCopyEmail = useCallback(async () => {
-    await copyToClipboard('peng@tuta.com');
-    setToastEffect('Contact email is copied!');
-  }, []);
-
   return (
     <ItemsWrapper align="start">
-      <InstallApp />
-
       <a href="https://notenote.cc" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiHomeLine />
+        <Button theme="outline" icon={<RiHomeLine />}>
           Learn more
         </Button>
       </a>
 
       <a href="https://github.com/penghuili/notenotecc" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiCodeLine />
+        <Button theme="outline" icon={<RiCodeLine />}>
           Source code
         </Button>
       </a>
 
       <a href="https://notenote.cc/encryption/" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiLockLine />
+        <Button theme="outline" icon={<RiLockLine />}>
           Encryption
         </Button>
       </a>
 
       <a href="https://notenote.cc/privacy" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiHeartLine />
+        <Button theme="outline" icon={<RiHeartLine />}>
           Privacy
         </Button>
       </a>
 
       <a href="https://notenote.cc/terms" target="_blank" rel="noreferrer">
-        <Button variant="ghost">
-          <RiServiceLine />
+        <Button theme="outline" icon={<RiServiceLine />}>
           Terms
         </Button>
       </a>
 
-      <Button variant="ghost" onClick={handleCopyEmail}>
-        <RiMailLine />
-        Contact: peng@tuta.com
+      <Button theme="outline" icon={<RiMailLine />} onClick={copyContactEmailEffect}>
+        Contact: {contactEmail}
       </Button>
+
+      <InstallApp />
     </ItemsWrapper>
   );
 });

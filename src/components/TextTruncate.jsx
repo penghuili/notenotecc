@@ -31,9 +31,8 @@ const Content = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: var(--line-height-3);
-  max-height: ${props =>
-    props.showFullText ? 'none' : `calc(var(--line-height-3) * var(--max-lines))`};
+  line-height: 1.5;
+  max-height: ${props => (props.showFullText ? 'none' : `calc(1.5rem * var(--max-lines))`)};
 `;
 const FadeOut = styled.div`
   position: absolute;
@@ -41,6 +40,6 @@ const FadeOut = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, var(--color-background) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 30%, var(--semi-color-bg-0) 100%);
   cursor: pointer;
 `;

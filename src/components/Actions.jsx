@@ -23,7 +23,7 @@ import { ProRequired } from './ProRequired.jsx';
 
 const Wrapper = styled.div`
   position: sticky;
-  top: calc(100% - var(--space-8) * 2);
+  top: calc(100% - 6rem);
   z-index: 1;
 
   display: flex;
@@ -91,16 +91,16 @@ export const Actions = fastMemo(() => {
   return (
     <Wrapper>
       <IconButtonWithText onClick={handleTakeNote} text="Text">
-        <RiStickyNoteAddLine />
+        <RiStickyNoteAddLine size={22} />
       </IconButtonWithText>
       <ProRequired>
         <IconButtonWithText onClick={handleTakePhoto} text="Camera">
-          <RiCameraLine />
+          <RiCameraLine size={22} />
         </IconButtonWithText>
       </ProRequired>
       <ProRequired>
         <IconButtonWithText onClick={handleTakeVideo} text="Video">
-          <RiVideoAddLine />
+          <RiVideoAddLine size={22} />
         </IconButtonWithText>
       </ProRequired>
       <ProRequired>
@@ -113,13 +113,13 @@ export const Actions = fastMemo(() => {
           disabled={isPicking}
         >
           <IconButtonWithText text="Photo">
-            <RiImageAddLine />
+            <RiImageAddLine size={22} />
           </IconButtonWithText>
         </FilePicker>
       </ProRequired>
       <ProRequired>
         <IconButtonWithText onClick={handleDraw} text="Draw">
-          <RiPaletteLine />
+          <RiPaletteLine size={22} />
         </IconButtonWithText>
       </ProRequired>
     </Wrapper>

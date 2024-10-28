@@ -1,29 +1,26 @@
-import { Box, Button, Flex, Heading, Text } from '@radix-ui/themes';
+import { Button, Typography } from '@douyinfe/semi-ui';
 import { RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { PrepareData } from '../components/PrepareData.jsx';
 import { isMobileWidth } from '../shared/browser/device.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { useExpiresAt, useFreeTrialsUntil } from '../shared/browser/store/sharedCats.js';
 import { formatDate } from '../shared/js/date.js';
-import { successCssColor } from '../shared/radix/AppWrapper.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
-import { PaymentStatus } from '../shared/radix/PaymentStatus.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PaymentStatus } from '../shared/semi/PaymentStatus.jsx';
 import { isFreeTryingCat } from '../store/pay/payCats.js';
 import { freeTrialEffect } from '../store/pay/payEffects.js';
 
 export const Upgrade = fastMemo(() => {
   return (
-    <PrepareData>
-      <PageContent>
-        <Header />
+    <PageContent>
+      <Header />
 
-        <Prices />
-      </PageContent>
-    </PrepareData>
+      <Prices />
+    </PageContent>
   );
 });
 
@@ -45,9 +42,9 @@ const Prices = fastMemo(() => {
   const manageElement = useMemo(() => {
     if (expiresAt && expiresAt >= formatDate(new Date())) {
       return (
-        <Flex mt="4">
+        <Flex direction="row" m="1rem 0 0">
           <a href={import.meta.env.VITE_MANAGE_SUBSCRIPTION} target="_blank" rel="noreferrer">
-            <Button variant="solid">Manage your subscription</Button>
+            <Button theme="solid">Manage your subscription</Button>
           </a>
         </Flex>
       );
@@ -58,15 +55,13 @@ const Prices = fastMemo(() => {
 
   return (
     <>
-      <Heading as="h2" size="4">
-        Your account status:
-      </Heading>
+      <Typography.Title heading={3}>Your account status:</Typography.Title>
 
       <PaymentStatus />
 
       {manageElement}
 
-      <Flex mt="6" mb="6" gap="2" direction={isMobileWidth() ? 'column' : 'row'}>
+      <Flex gap="0.5rem" direction={isMobileWidth() ? 'column' : 'row'} m="2rem 0">
         <FeatureItem
           title="Free"
           price={'$0 / month'}
@@ -98,20 +93,20 @@ const Prices = fastMemo(() => {
           color="accent"
         >
           {(!expiresAt || expiresAt < formatDate(new Date())) && (
-            <Box mt="4">
+            <div style={{ marginBottom: '1rem' }}>
               <a href={import.meta.env.VITE_MONTHLY_LINK} target="_blank" rel="noreferrer">
-                <Button variant="solid" color="yellow">
+                <Button theme="solid" type="warning">
                   Upgrade to Pro
                 </Button>
               </a>
-            </Box>
+            </div>
           )}
         </FeatureItem>
       </Flex>
 
       {!expiresAt && !freeTrialUntil && (
-        <Flex justify="center" mt="6">
-          <Button variant="solid" color="green" onClick={handleTry} disabled={isTrying}>
+        <Flex direction="row" justify="center" m="2rem 0 0">
+          <Button theme="solid" onClick={handleTry} disabled={isTrying}>
             Try Pro 14 days for free
           </Button>
         </Flex>
@@ -129,38 +124,47 @@ const FeatureItem = fastMemo(({ title, price, benifits, color, children }) => {
         position: 'relative',
         overflow: 'hidden',
         flex: 1,
-        border: '1px solid var(--gray-6)',
+        border: '1px solid var(--semi-color-border)',
         borderRadius: '6px',
-        padding: 'var(--space-4)',
+        padding: '1rem',
         ...(color === 'accent' && {
-          backgroundColor: 'var(--accent-9)',
-          color: 'var(--accent-contrast)',
-        }),
-        ...(color === 'gold' && {
-          backgroundColor: 'var(--gold-9)',
-          color: 'var(--gold-contrast)',
+          backgroundColor: 'var(--semi-color-primary)',
+          color: 'white',
         }),
       }}
     >
-      <Heading as="h3" size="3">
+      <Typography.Title
+        heading={4}
+        style={{
+          color: color ? 'white' : undefined,
+        }}
+      >
         {title}
-      </Heading>
-      <Text mb="4" mt="2" size="4" weight="bold">
+      </Typography.Title>
+      <Typography.Title
+        heading={3}
+        style={{ margin: '0.5rem 0 1rem', color: color ? 'white' : undefined }}
+      >
         {price}
-      </Text>
+      </Typography.Title>
 
       {!!benifits?.length && (
         <Flex direction="column">
           {benifits.map(benifit => (
-            <Flex key={benifit.text} align="start" gap="2">
+            <Flex key={benifit.text} direction="row" align="start" gap="0.5rem">
               {benifit.enabled ? (
-                <RiCheckLine color={color ? 'var(--accent-contrast)' : successCssColor} />
+                <RiCheckLine color={'var(--semi-color-success)'} />
               ) : (
                 <RiCloseLine />
               )}{' '}
-              <Text weight={benifit.bold && benifit.enabled ? 'bold' : 'normal'}>
+              <Typography.Text
+                strong={benifit.bold && benifit.enabled}
+                style={{
+                  color: color ? 'white' : undefined,
+                }}
+              >
                 {benifit.enabled ? benifit.text : <del>{benifit.text}</del>}
-              </Text>
+              </Typography.Text>
             </Flex>
           ))}
         </Flex>

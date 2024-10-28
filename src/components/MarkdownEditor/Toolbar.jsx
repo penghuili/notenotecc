@@ -1,4 +1,3 @@
-import { Flex, IconButton } from '@radix-ui/themes';
 import {
   RiArrowGoBackLine,
   RiArrowGoForwardLine,
@@ -20,6 +19,8 @@ import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
 
+import { Flex } from '../../shared/semi/Flex';
+import { IconButton } from '../../shared/semi/IconButton';
 import { getCursorPosition, restoreCursorPosition } from './markdownHelpers';
 
 export const zeroWidthSpace = '&ZeroWidthSpace;';
@@ -36,11 +37,9 @@ export const Toolbar = fastMemo(
     const handleUndo = useCallback(() => {
       const position = getCursorPosition(editorRef.current);
       redoHistoryRef.current.push({ innerHTML: editorRef.current.innerHTML, position });
-      // eslint-disable-next-line react-compiler/react-compiler
       redoHistoryRef.current = redoHistoryRef.current.slice(-30);
 
       const lastItem = undoHistoryRef.current.pop();
-      // eslint-disable-next-line react-compiler/react-compiler
       editorRef.current.innerHTML = lastItem.innerHTML;
 
       restoreCursorPosition(editorRef.current, lastItem.position);
@@ -58,7 +57,6 @@ export const Toolbar = fastMemo(
       undoHistoryRef.current = undoHistoryRef.current.slice(-30);
 
       const lastItem = redoHistoryRef.current.pop();
-      // eslint-disable-next-line react-compiler/react-compiler
       editorRef.current.innerHTML = lastItem.innerHTML;
 
       restoreCursorPosition(editorRef.current, lastItem.position);
@@ -71,82 +69,90 @@ export const Toolbar = fastMemo(
     }, [editorRef, onChange, redoHistoryRef, undoHistoryRef]);
 
     return (
-      <Wrapper className="toolbar">
+      <Flex
+        direction="row"
+        className="toolbar"
+        style={{
+          width: '100%',
+          backgroundColor: 'var(--semi-color-bg-0)',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          position: 'sticky',
+          top: '3rem',
+        }}
+      >
         <IconButton
-          variant="soft"
+          icon={<RiArrowGoBackLine />}
           onClick={handleUndo}
-          radius="none"
           disabled={!isActive || !hasUndoHistory}
-        >
-          <RiArrowGoBackLine />
-        </IconButton>
-        <IconButton
-          variant="soft"
-          onClick={handleRedo}
-          radius="none"
-          disabled={!isActive || !hasRedoHistory}
-        >
-          <RiArrowGoForwardLine />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
 
         <IconButton
-          variant={activeElements.STRONG || activeElements.B ? 'solid' : 'soft'}
+          icon={<RiArrowGoForwardLine />}
+          onClick={handleRedo}
+          disabled={!isActive || !hasRedoHistory}
+          style={{ borderRadius: '0' }}
+        />
+
+        <IconButton
+          theme={activeElements.STRONG || activeElements.B ? 'solid' : 'light'}
+          icon={<RiBold />}
           onClick={() => {
             toggleInlineTag(editorRef.current, ['strong', 'b']);
             onChange();
           }}
-          radius="none"
           disabled={!isActive}
-        >
-          <RiBold />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.EM || activeElements.I ? 'solid' : 'soft'}
+          theme={activeElements.EM || activeElements.I ? 'solid' : 'light'}
+          icon={<RiItalic />}
           onClick={() => {
             toggleInlineTag(editorRef.current, ['em', 'i']);
             onChange();
           }}
-          radius="none"
           disabled={!isActive}
-        >
-          <RiItalic />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.DEL ? 'solid' : 'soft'}
+          theme={activeElements.DEL ? 'solid' : 'light'}
+          icon={<RiStrikethrough />}
           onClick={() => {
             toggleInlineTag(editorRef.current, ['del']);
             onChange();
           }}
-          radius="none"
           disabled={!isActive}
-        >
-          <RiStrikethrough />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.CODE ? 'solid' : 'soft'}
+          theme={activeElements.CODE ? 'solid' : 'light'}
+          icon={<RiCodeLine />}
           onClick={() => {
             toggleInlineTag(editorRef.current, ['code']);
             onChange();
           }}
-          radius="none"
           disabled={!isActive}
-        >
-          <RiCodeLine />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.MARK ? 'solid' : 'soft'}
+          theme={activeElements.MARK ? 'solid' : 'light'}
+          icon={<RiMarkPenLine />}
           onClick={() => {
             toggleInlineTag(editorRef.current, ['mark']);
             onChange();
           }}
-          radius="none"
           disabled={!isActive}
-        >
-          <RiMarkPenLine />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
 
         <IconButton
-          variant={activeElements.H1 ? 'solid' : 'soft'}
+          theme={activeElements.H1 ? 'solid' : 'light'}
+          icon={<RiH1 />}
           onClick={() => {
             if (activeElements.H1) {
               removeBlockElement(editorRef.current);
@@ -156,13 +162,13 @@ export const Toolbar = fastMemo(
 
             onChange();
           }}
-          radius="none"
           disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
-        >
-          <RiH1 />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.H2 ? 'solid' : 'soft'}
+          theme={activeElements.H2 ? 'solid' : 'light'}
+          icon={<RiH2 />}
           onClick={() => {
             if (activeElements.H2) {
               removeBlockElement(editorRef.current);
@@ -172,13 +178,13 @@ export const Toolbar = fastMemo(
 
             onChange();
           }}
-          radius="none"
           disabled={!isActive || activeElements.LI || activeElements.BLOCKQUOTE}
-        >
-          <RiH2 />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.UL ? 'solid' : 'soft'}
+          theme={activeElements.UL ? 'solid' : 'light'}
+          icon={<RiListUnordered />}
           onClick={() => {
             if (activeElements.UL) {
               removeListElement(editorRef.current);
@@ -188,7 +194,6 @@ export const Toolbar = fastMemo(
 
             onChange();
           }}
-          radius="none"
           disabled={
             !isActive ||
             activeElements.H1 ||
@@ -196,11 +201,12 @@ export const Toolbar = fastMemo(
             activeElements.OL ||
             activeElements.BLOCKQUOTE
           }
-        >
-          <RiListUnordered />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant={activeElements.OL ? 'solid' : 'soft'}
+          theme={activeElements.OL ? 'solid' : 'light'}
+          icon={<RiListOrdered />}
           onClick={() => {
             if (activeElements.OL) {
               removeListElement(editorRef.current);
@@ -210,7 +216,6 @@ export const Toolbar = fastMemo(
 
             onChange();
           }}
-          radius="none"
           disabled={
             !isActive ||
             activeElements.H1 ||
@@ -218,36 +223,34 @@ export const Toolbar = fastMemo(
             activeElements.UL ||
             activeElements.BLOCKQUOTE
           }
-        >
-          <RiListOrdered />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant="soft"
+          icon={<RiIndentIncrease />}
           onClick={() => {
             indent(editorRef.current);
 
             onChange();
           }}
-          radius="none"
           disabled={!isActive || !activeElements.LI}
-        >
-          <RiIndentIncrease />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
+
         <IconButton
-          variant="soft"
+          icon={<RiIndentDecrease />}
           onClick={() => {
             outdent(editorRef.current);
 
             onChange();
           }}
-          radius="none"
           disabled={!isActive || !activeElements.LI}
-        >
-          <RiIndentDecrease />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
 
         <IconButton
-          variant={activeElements.BLOCKQUOTE ? 'solid' : 'soft'}
+          theme={activeElements.BLOCKQUOTE ? 'solid' : 'light'}
+          icon={<RiDoubleQuotesL />}
           onClick={() => {
             if (activeElements.BLOCKQUOTE) {
               removeBlockquoteElement(editorRef.current);
@@ -257,7 +260,6 @@ export const Toolbar = fastMemo(
 
             onChange();
           }}
-          radius="none"
           disabled={
             !isActive ||
             activeElements.H1 ||
@@ -266,12 +268,11 @@ export const Toolbar = fastMemo(
             activeElements.UL ||
             activeElements.OL
           }
-        >
-          <RiDoubleQuotesL />
-        </IconButton>
+          style={{ borderRadius: '0' }}
+        />
 
         <Placeholder width={`calc(100% - ${5 * 32}px)`} />
-      </Wrapper>
+      </Flex>
     );
   }
 );
@@ -622,17 +623,9 @@ export const getRange = () => {
   return selection.getRangeAt(0);
 };
 
-const Wrapper = styled(Flex)`
-  width: 100%;
-  background-color: var(--color-background);
-  overflow-x: auto;
-  scrollbar-width: none;
-  position: sticky;
-  top: var(--space-8);
-`;
 const Placeholder = styled.div`
   width: ${props => props.width};
   min-width: 0;
-  height: var(--space-6);
-  background-color: var(--accent-a3);
+  height: 2rem;
+  background-color: var(--semi-brand-3);
 `;

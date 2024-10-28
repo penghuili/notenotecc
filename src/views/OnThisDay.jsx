@@ -1,10 +1,9 @@
-import { Flex, Heading, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { NoteItem } from '../components/NoteItem.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { TikTokCards } from '../components/TikTokCards/TikTokCards.jsx';
 import {
   getTabNotes,
@@ -16,7 +15,9 @@ import { useGetNoteAlbums } from '../lib/useGetNoteAlbums.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { useUserCreatedAt } from '../shared/browser/store/sharedCats.js';
 import { formatDateWeek } from '../shared/js/date.js';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { isLoadingOnThisDayNotesCat, onThisDayNotesCat } from '../store/note/noteCats.js';
 import { reviewHistoryEffect } from '../store/settings/settingsEffects.js';
 
@@ -63,10 +64,10 @@ const Notes = fastMemo(() => {
         ...(curr?.notes?.length
           ? [
               <Flex key={curr.tab.label} direction="column" align="center">
-                <Heading>{curr.tab.label}</Heading>
-                <Text>{formatDateWeek(new Date(curr.tab.date))}</Text>
-                <Text>You wrote {curr.notes.length} notes</Text>
-                <Text>(Scroll to view them)</Text>
+                <Typography.Title heading={4}>{curr.tab.label}</Typography.Title>
+                <Typography.Text>{formatDateWeek(new Date(curr.tab.date))}</Typography.Text>
+                <Typography.Text>You wrote {curr.notes.length} notes</Typography.Text>
+                <Typography.Text>(Scroll to view them)</Typography.Text>
               </Flex>,
               ...curr.notes,
             ]
@@ -81,7 +82,7 @@ const Notes = fastMemo(() => {
   }
 
   if (!isLoading) {
-    return <Text my="2">No notes on this day.</Text>;
+    return <Typography.Text style={{ margin: '0.5rem 0' }}>No notes on this day.</Typography.Text>;
   }
 
   return null;
@@ -109,7 +110,7 @@ const NotesSwiper = fastMemo(({ notes }) => {
           />
         )
       )}
-      height="calc(100vh - var(--space-8) - 1.5rem)"
+      height="calc(100vh - 4.5rem)"
     />
   );
 });

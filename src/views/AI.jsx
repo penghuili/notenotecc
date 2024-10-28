@@ -1,4 +1,4 @@
-import { Button, Flex, IconButton, RadioGroup, Text } from '@radix-ui/themes';
+import { Button, Radio, RadioGroup, TextArea, Typography } from '@douyinfe/semi-ui';
 import { RiCameraLine, RiCloseLine } from '@remixicon/react';
 import React, { useCallback, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -7,27 +7,25 @@ import { createCat, useCat } from 'usecat';
 
 import { FullscreenPopup } from '../components/FullscreenPopup.jsx';
 import { Markdown } from '../components/MarkdownEditor/Markdown.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { TakePhoto } from '../components/TakePhoto.jsx';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl.js';
 import { inputFileToBase64 } from '../shared/browser/file.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
 import { toastTypes } from '../shared/browser/Toast.jsx';
-import { AreaField } from '../shared/radix/AreaField.jsx';
-import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
+import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
 import { getSuggestion } from '../store/ai/aiNetwork.js';
 
 export const AI = fastMemo(() => {
   return (
-    <PrepareData>
-      <PageContent>
-        <Header />
+    <PageContent>
+      <Header />
 
-        <Form />
-      </PageContent>
-    </PrepareData>
+      <Form />
+    </PageContent>
   );
 });
 
@@ -120,39 +118,37 @@ const Form = fastMemo(() => {
 
   return (
     <ItemsWrapper>
-      <RadioGroup.Root value={template} onValueChange={handleTemplateChange} name="template">
-        <RadioGroup.Item value={templateKeys.chinese}>Translate to Chinese</RadioGroup.Item>
-        <RadioGroup.Item value={templateKeys.extractTextAndTranslate}>
+      <RadioGroup
+        value={template}
+        onChange={e => handleTemplateChange(e.target.value)}
+        mode="advanced"
+      >
+        <Radio value={templateKeys.chinese}>Translate to Chinese</Radio>
+        <Radio value={templateKeys.extractTextAndTranslate}>
           Extract Text and Translate to Chinese
-        </RadioGroup.Item>
-        <RadioGroup.Item value={templateKeys.empty}>Custom</RadioGroup.Item>
-      </RadioGroup.Root>
+        </Radio>
+        <Radio value={templateKeys.empty}>Custom</Radio>
+      </RadioGroup>
 
       <InputWrapper>
-        <AreaField label="Prompt prefix" value={prefix} onChange={setPrefix} />
+        <TextArea label="Prompt prefix" value={prefix} onChange={v => setPrefix(v)} />
         <IconWrapper>
-          <IconButton onClick={handleClearPrefix} variant="ghost">
-            <RiCloseLine />
-          </IconButton>
+          <IconButton onClick={handleClearPrefix} icon={<RiCloseLine />} />
         </IconWrapper>
       </InputWrapper>
 
       {showPrompt && (
         <InputWrapper>
-          <AreaField label="What's your prompt?" value={propmt} onChange={setPrompt} />
+          <TextArea label="What's your prompt?" value={propmt} onChange={v => setPrompt(v)} />
           <IconWrapper>
-            <IconButton onClick={handleClearPrompt} variant="ghost">
-              <RiCloseLine />
-            </IconButton>
+            <IconButton onClick={handleClearPrompt} icon={<RiCloseLine />} />
           </IconWrapper>
         </InputWrapper>
       )}
 
       {showImage && (
-        <Flex align="start" my="4" direction="column" gap="2">
-          <IconButton onClick={handleShowCamera}>
-            <RiCameraLine />
-          </IconButton>
+        <Flex align="start" direction="column" gap="0.5rem" m="2rem 0">
+          <IconButton onClick={handleShowCamera} icon={<RiCameraLine />} />
 
           {!!imageUrl && <Image src={imageUrl} alt="image" />}
         </Flex>
@@ -164,7 +160,7 @@ const Form = fastMemo(() => {
 
       {!!answer && <Markdown markdown={answer} />}
 
-      {!!tokens && <Text as="p">{tokens}</Text>}
+      {!!tokens && <Typography.Paragraph>{tokens}</Typography.Paragraph>}
 
       {!!showCamera && <Camera onClose={handleCloseCamera} />}
     </ItemsWrapper>

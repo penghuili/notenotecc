@@ -1,17 +1,17 @@
-import { Button, DropdownMenu, IconButton, Text } from '@radix-ui/themes';
-import { RiDeleteBinLine, RiMore2Line, RiPencilLine } from '@remixicon/react';
+import { Button, Dropdown, Typography } from '@douyinfe/semi-ui';
+import { RiDeleteBinLine, RiEdit2Line, RiMore2Line } from '@remixicon/react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { PrepareData } from '../components/PrepareData.jsx';
 import { useInView } from '../shared/browser/hooks/useInView.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
-import { errorColor } from '../shared/radix/AppWrapper.jsx';
-import { Confirm } from '../shared/radix/Confirm.jsx';
-import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { Confirm } from '../shared/semi/Confirm.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
+import { PageEmpty } from '../shared/semi/PageEmpty.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { isDeletingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { isLoadingAlbumItemsCat, useAlbumNotes } from '../store/album/albumItemCats.js';
 import { fetchAlbumItemsEffect } from '../store/album/albumItemEffects';
@@ -65,25 +65,38 @@ const Header = fastMemo(({ albumId }) => {
   const rightElement = useMemo(() => {
     return (
       !isNoAlbum && (
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton mr="2" ml="2" variant="ghost">
-              <RiMore2Line />
-            </IconButton>
-          </DropdownMenu.Trigger>
+        <Dropdown
+          trigger="click"
+          clickToHide
+          render={
+            <Dropdown.Menu>
+              <Dropdown.Item icon={<RiEdit2Line />} onClick={handleEdit}>
+                Edit
+              </Dropdown.Item>
 
-          <DropdownMenu.Content variant="soft">
-            <DropdownMenu.Item onClick={handleEdit}>
-              <RiPencilLine />
-              Edit
-            </DropdownMenu.Item>
+              <Dropdown.Divider />
 
-            <DropdownMenu.Item onClick={handleShowDelete} color={errorColor} disabled={isDeleting}>
-              <RiDeleteBinLine />
-              Delete
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
+              <Dropdown.Item
+                type="danger"
+                icon={<RiDeleteBinLine />}
+                disabled={isDeleting}
+                onClick={handleShowDelete}
+              >
+                Delete
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          }
+        >
+          <IconButton
+            theme="borderless"
+            icon={<RiMore2Line />}
+            style={{
+              position: 'absolute',
+              top: '0.5rem',
+              right: '0.5rem',
+            }}
+          />
+        </Dropdown>
       )
     );
   }, [handleEdit, handleShowDelete, isDeleting, isNoAlbum]);
@@ -118,7 +131,7 @@ const Notes = fastMemo(({ albumId }) => {
 
   return (
     <PageEmpty>
-      <Text align="center">No notes in this tag.</Text>
+      <Typography.Paragraph>No notes in this tag.</Typography.Paragraph>
     </PageEmpty>
   );
 });
@@ -146,8 +159,8 @@ const LoadMore = fastMemo(({ albumId }) => {
   }
 
   return (
-    <Button ref={ref} onClick={handleFetch} disabled={isLoading}>
-      {isLoading ? 'Loading...' : 'Load more'}
+    <Button theme="solid" onClick={handleFetch} disabled={isLoading}>
+      <span ref={ref}>{isLoading ? 'Loading...' : 'Load more'}</span>
     </Button>
   );
 });

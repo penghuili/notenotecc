@@ -1,4 +1,3 @@
-import { Flex, IconButton } from '@radix-ui/themes';
 import { RiArrowLeftLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -7,6 +6,8 @@ import styled from 'styled-components';
 import { disableBodyScroll, enableBodyScroll } from '../shared/browser/bodySccroll';
 import { isMobileWidth } from '../shared/browser/device';
 import { widthWithoutScrollbar } from '../shared/browser/getScrollbarWidth';
+import { Flex } from '../shared/semi/Flex';
+import { IconButton } from '../shared/semi/IconButton';
 
 const Wrapper = styled.div`
   position: fixed;
@@ -18,7 +19,7 @@ const Wrapper = styled.div`
   height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   overflow: hidden;
 
-  background-color: var(--color-background);
+  background-color: var(--semi-color-bg-0);
 `;
 const Content = styled.div`
   position: relative;
@@ -34,54 +35,63 @@ const Content = styled.div`
   padding: 0 0.5rem;
   box-sizing: border-box;
 `;
-const Top = styled(Flex)`
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: ${isMobileWidth() ? 'translateX(-50%)' : 'translateX(calc(-50% - 0.5rem))'};
-  width: calc(100% - 1rem);
-  max-width: calc(600px - 1rem);
-  height: var(--space-8);
-  padding: 0.5rem 0;
-`;
 const TopPlaceholder = styled.div`
   width: 100%;
-  height: calc(var(--space-8) + var(--space-2));
+  height: 3.5rem;
 `;
 
-export const FullscreenPopup = fastMemo(({ disabled, onBack, onConfirm, onClose, children }) => {
-  useEffect(() => {
-    disableBodyScroll();
+export const FullscreenPopup = fastMemo(
+  ({ alwaysDark, disabled, onBack, onConfirm, onClose, children }) => {
+    useEffect(() => {
+      disableBodyScroll();
 
-    return () => {
-      enableBodyScroll();
-    };
-  }, []);
+      return () => {
+        enableBodyScroll();
+      };
+    }, []);
 
-  return (
-    <Wrapper>
-      <Content>
-        <Top justify="between" width="100%">
-          {onBack ? (
-            <IconButton variant="soft" onClick={onBack} disabled={disabled}>
-              <RiArrowLeftLine />
-            </IconButton>
-          ) : (
-            <>
-              <IconButton variant="soft" onClick={onClose}>
-                <RiCloseLine />
-              </IconButton>
+    return (
+      <Wrapper className={alwaysDark ? 'semi-always-dark' : ''}>
+        <Content>
+          <Flex
+            direction="row"
+            justify="between"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: '50%',
+              transform: `${isMobileWidth() ? 'translateX(-50%)' : 'translateX(calc(-50% - 0.5rem))'}`,
+              width: 'calc(100% - 1rem)',
+              maxWidth: 'calc(600px - 1rem)',
+              height: '3rem',
+              padding: '0.5rem 0',
+            }}
+          >
+            {onBack ? (
+              <IconButton
+                theme="borderless"
+                onClick={onBack}
+                disabled={disabled}
+                icon={<RiArrowLeftLine />}
+              />
+            ) : (
+              <>
+                <IconButton onClick={onClose} disabled={disabled} icon={<RiCloseLine />} />
 
-              <IconButton onClick={onConfirm} disabled={disabled}>
-                <RiCheckLine />
-              </IconButton>
-            </>
-          )}
-        </Top>
-        <TopPlaceholder />
+                <IconButton
+                  theme="solid"
+                  onClick={onConfirm}
+                  disabled={disabled}
+                  icon={<RiCheckLine />}
+                />
+              </>
+            )}
+          </Flex>
+          <TopPlaceholder />
 
-        {children}
-      </Content>
-    </Wrapper>
-  );
-});
+          {children}
+        </Content>
+      </Wrapper>
+    );
+  }
+);

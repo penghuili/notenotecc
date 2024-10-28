@@ -4,12 +4,13 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { Camera } from '../components/Camera.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { localStorageKeys } from '../lib/constants.js';
 import { isIOSBrowser } from '../shared/browser/device.js';
 import { LocalStorage } from '../shared/browser/LocalStorage.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
-import { topBannerCat } from '../shared/radix/TopBanner.jsx';
+import { setToastEffect } from '../shared/browser/store/sharedEffects.js';
+import { toastTypes } from '../shared/browser/Toast.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { isAddingImagesCat, noteCat, useNote } from '../store/note/noteCats.js';
 import { fetchNoteEffect } from '../store/note/noteEffects';
@@ -65,11 +66,10 @@ const AddImages = fastMemo(({ noteId, cameraType }) => {
         prevTimestamp.timestamp <
           Date.now() - Math.min(prevTimestamp.times * 2, 90) * 24 * 60 * 60 * 1000
       ) {
-        topBannerCat.set({
-          message:
-            'Your iPhone may shows that notenote.cc is still recording, but it isn’t. iOS browsers have limitations.',
-          buttonText: 'Close',
-        });
+        setToastEffect(
+          'Your iPhone may shows that notenote.cc is still recording, but it isn’t. iOS browsers have limitations.',
+          toastTypes.info
+        );
 
         LocalStorage.set(localStorageKeys.showIOSCameraBanner, {
           timestamp: Date.now(),

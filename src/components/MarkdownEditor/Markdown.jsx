@@ -10,16 +10,16 @@ export const Markdown = fastMemo(({ markdown, onClick }) => {
 });
 
 export const Editor = styled.div`
-  line-height: var(--line-height, var(--default-line-height));
-  letter-spacing: var(--letter-spacing, inherit);
+  line-height: 1.4;
+  letter-spacing: normal;
 
   &[contenteditable='true'] {
     overflow-y: auto;
-    padding: var(--space-3) 0 0;
+    padding: 0.75rem 0 0;
 
     &::before {
       content: ${props => (props.isEmpty ? 'attr(data-placeholder)' : '""')};
-      color: var(--gray-7);
+      color: var(--semi-color-text-3);
       position: absolute;
       left: 2px;
     }
@@ -30,37 +30,31 @@ export const Editor = styled.div`
   }
 
   code {
-    background-color: var(--accent-a3);
-    color: var(--accent-a11);
+    background-color: var(--semi-brand-3);
+    color: var(--semi-color-primary);
 
-    --code-variant-font-size-adjust: calc(var(--code-font-size-adjust) * 0.95);
-    font-family: var(--code-font-family);
-    font-style: var(--code-font-style);
-    font-weight: var(--code-font-weight);
-    letter-spacing: calc(
-      var(--code-letter-spacing) + var(--letter-spacing, var(--default-letter-spacing))
-    );
-    border-radius: calc((0.5px + 0.2em) * var(--radius-factor));
+    font-family: 'Söhne Mono', 'Menlo', monospace, 'Apple Color Emoji', 'Segoe UI Emoji';
+    font-style: normal;
+    font-weight: inherit;
+    letter-spacing: -0.088445px;
+    border-radius: 3.027px;
     box-sizing: border-box;
-    padding: var(--code-padding-top) var(--code-padding-right) var(--code-padding-bottom)
-      var(--code-padding-left);
+    padding: 0px 3.15875px 0.947625px 3.15875px;
   }
   em,
   i {
     box-sizing: border-box;
-    font-family: var(--em-font-family);
-    font-style: var(--em-font-style);
-    font-weight: var(--em-font-weight);
-    letter-spacing: calc(
-      var(--em-letter-spacing) + var(--letter-spacing, var(--default-letter-spacing))
-    );
+    font-family: 'Times New Roman', 'Times', serif;
+    font-style: italic;
+    font-weight: inherit;
+    letter-spacing: -0.472px;
     color: inherit;
   }
   ul,
   ol {
     margin: 0.5rem 0;
     padding: 0 0 0 1.25rem;
-    font-size: var(--font-size-3);
+    font-size: 1rem;
   }
   h1,
   h2,
@@ -73,17 +67,17 @@ export const Editor = styled.div`
   p,
   div {
     margin: 0 0 0.25em;
-    min-height: var(--line-height-3);
-    font-size: var(--font-size-3);
+    min-height: 1.5rem;
+    font-size: 1rem;
   }
   blockquote {
     box-sizing: border-box;
-    border-left: 0.25rem solid var(--accent-a6);
+    border-left: 0.25rem solid var(--semi-brand-3);
     margin: 0.5rem 0 0.5rem 1rem;
     padding: 0 0 0 0.75rem;
     p {
       margin: 0;
-      font-size: var(--font-size-3);
+      font-size: 1rem;
     }
   }
 `;

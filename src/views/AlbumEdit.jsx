@@ -1,12 +1,11 @@
-import { Button } from '@radix-ui/themes';
+import { Button, Input } from '@douyinfe/semi-ui';
 import React, { useCallback, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
-import { PrepareData } from '../components/PrepareData.jsx';
 import { PageContent } from '../shared/browser/PageContent.jsx';
-import { InputField } from '../shared/radix/InputField.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 import { albumsCat, findAlbum, isUpdatingAlbumCat, useAlbum } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
@@ -46,7 +45,12 @@ const Header = fastMemo(({ albumId }) => {
 
   const rightElement = useMemo(
     () => (
-      <Button disabled={isUpdating || !hasTitle} onClick={handleSend} mr="2">
+      <Button
+        theme="solid"
+        disabled={isUpdating || !hasTitle}
+        onClick={handleSend}
+        style={{ marginRight: '0.5rem' }}
+      >
         Send
       </Button>
     ),
@@ -63,5 +67,5 @@ const Form = fastMemo(() => {
     titleCat.set(title);
   }, []);
 
-  return <InputField value={title} onChange={handleChange} />;
+  return <Input value={title} onChange={handleChange} />;
 });

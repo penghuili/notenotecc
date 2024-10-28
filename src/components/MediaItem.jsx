@@ -1,4 +1,3 @@
-import { Box } from '@radix-ui/themes';
 import React, { useCallback, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
@@ -7,7 +6,7 @@ import { fileTypes } from '../lib/constants';
 import { useImageLocalUrl } from '../lib/useImageLocalUrl';
 import { cachedImageUrls, useImageRemoteUrl } from '../lib/useImageRemoteUrl';
 import { useInView } from '../shared/browser/hooks/useInView';
-import { LoadingSkeleton } from '../shared/radix/LoadingSkeleton.jsx';
+import { LoadingSkeleton } from '../shared/semi/LoadingSkeleton.jsx';
 import { AudioPlayer } from './AudioPlayer.jsx';
 import { fullScreenImageUrlCat } from './FullScreenImage.jsx';
 import { ImageActions } from './ImageActions.jsx';
@@ -28,7 +27,7 @@ export const MediaItem = fastMemo(
 
     function renderContent() {
       if (!showImage) {
-        return <LoadingSkeleton width="100%" height="100%" />;
+        return <LoadingSkeleton />;
       }
 
       return (
@@ -125,7 +124,7 @@ const InnerImage = fastMemo(
 
     return (
       <>
-        {isLoadingTotal && <LoadingSkeleton width="100%" height="100%" />}
+        {isLoadingTotal && <LoadingSkeleton />}
 
         {!!innerUrl && (
           <>
@@ -151,9 +150,15 @@ const InnerImage = fastMemo(
               />
             )}
 
-            <Box position="absolute" top="2" right="2">
+            <div
+              style={{
+                position: 'absolute',
+                top: '0.5rem',
+                right: '0.5rem',
+              }}
+            >
               <ImageActions noteId={noteId} image={imageForAction} onDelete={handleDelete} />
-            </Box>
+            </div>
           </>
         )}
       </>

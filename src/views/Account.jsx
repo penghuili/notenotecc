@@ -1,30 +1,23 @@
-import { Button, DataList, Flex, IconButton, Text } from '@radix-ui/themes';
-import {
-  RiFileCopyLine,
-  RiMoneyDollarCircleLine,
-  RiSettings3Line,
-  RiShieldCheckLine,
-} from '@remixicon/react';
-import React, { useCallback } from 'react';
+import { Button, Descriptions, Typography } from '@douyinfe/semi-ui';
+import { RiMoneyDollarCircleLine, RiSettings3Line, RiShieldCheckLine } from '@remixicon/react';
+import React, { useMemo } from 'react';
 import { BabyLink } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
-import { PrepareData } from '../components/PrepareData.jsx';
 import { PublicLinks } from '../components/PublicLinks.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
-import { copyToClipboard } from '../shared/browser/copyToClipboard';
 import { getFileSizeString } from '../shared/browser/file';
-import { isTesting } from '../shared/browser/isTesting.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { isLoadingAccountCat, settingsCat, userCat } from '../shared/browser/store/sharedCats.js';
-import { fetchSettingsEffect, setToastEffect } from '../shared/browser/store/sharedEffects';
+import { fetchSettingsEffect } from '../shared/browser/store/sharedEffects';
 import { formatDateTime } from '../shared/js/date';
-import { AppVersion } from '../shared/radix/AppVersion.jsx';
-import { ItemsWrapper } from '../shared/radix/ItemsWrapper.jsx';
-import { LogoutLink } from '../shared/radix/LogoutLink.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
-import { PaymentStatus } from '../shared/radix/PaymentStatus.jsx';
+import { AppVersion } from '../shared/semi/AppVersion.jsx';
+import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
+import { LogoutLink } from '../shared/semi/LogoutLink.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PaymentStatus } from '../shared/semi/PaymentStatus.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
 
 async function load() {
   await fetchSettingsEffect();
@@ -39,23 +32,21 @@ export const Account = fastMemo(() => {
         <AccountInfo />
 
         <ItemsWrapper align="start">
-          {!isTesting() && (
-            <BabyLink to="/upgrade">
-              <Button variant="ghost">
-                <RiMoneyDollarCircleLine /> Subscription
-              </Button>
-            </BabyLink>
-          )}
+          <BabyLink to="/upgrade">
+            <Button theme="outline" icon={<RiMoneyDollarCircleLine />}>
+              Subscription
+            </Button>
+          </BabyLink>
 
           <BabyLink to="/security">
-            <Button variant="ghost">
-              <RiShieldCheckLine /> Security
+            <Button theme="outline" icon={<RiShieldCheckLine />}>
+              Security
             </Button>
           </BabyLink>
 
           <BabyLink to="/settings">
-            <Button variant="ghost">
-              <RiSettings3Line /> Settings
+            <Button theme="outline" icon={<RiSettings3Line />}>
+              Settings
             </Button>
           </BabyLink>
         </ItemsWrapper>
@@ -83,78 +74,34 @@ const AccountInfo = fastMemo(() => {
   const settings = useCat(settingsCat);
   const isAdmin = useIsAdmin();
 
-  const handleCopyUserId = useCallback(async () => {
-    await copyToClipboard(account.id);
-    setToastEffect('Copied!');
-  }, [account.id]);
+  const data = useMemo(() => {
+    if (!account || !settings) {
+      return [];
+    }
+    return [
+      { key: 'Email', value: account.email },
+      { key: 'User Id', value: <Typography.Text copyable>{account.id}</Typography.Text> },
+      { key: 'Created at', value: formatDateTime(account.createdAt) },
+      {
+        key: 'Payment',
+        value: <PaymentStatus />,
+      },
+      { key: 'Notes count', value: settings?.notesCount || 0 },
+      ...(isAdmin
+        ? [
+            { key: 'Files size', value: getFileSizeString(settings?.filesSize || 0) },
+            {
+              key: 'Encrypted files size',
+              value: getFileSizeString(settings?.encryptedFilesSize || 0),
+            },
+          ]
+        : []),
+    ];
+  }, [account, isAdmin, settings]);
 
   if (!account?.id) {
     return null;
   }
 
-  return (
-    <ItemsWrapper align="start">
-      <DataList.Root>
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Email</DataList.Label>
-          <DataList.Value>
-            <Text size="3">{account.email}</Text>
-          </DataList.Value>
-        </DataList.Item>
-
-        <DataList.Item>
-          <DataList.Label minWidth="88px">User Id</DataList.Label>
-          <DataList.Value>
-            <Flex align="center" gap="2">
-              <Text size="3">{account.id}</Text>
-              <IconButton color="gray" variant="ghost" onClick={handleCopyUserId}>
-                <RiFileCopyLine />
-              </IconButton>
-            </Flex>
-          </DataList.Value>
-        </DataList.Item>
-
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Created at</DataList.Label>
-          <DataList.Value>
-            <Text size="3">{formatDateTime(account.createdAt)}</Text>
-          </DataList.Value>
-        </DataList.Item>
-
-        {!isTesting() && (
-          <DataList.Item>
-            <DataList.Label minWidth="88px">Valid until</DataList.Label>
-            <DataList.Value>
-              <PaymentStatus />
-            </DataList.Value>
-          </DataList.Item>
-        )}
-
-        <DataList.Item>
-          <DataList.Label minWidth="88px">Notes count</DataList.Label>
-          <DataList.Value>
-            <Text size="3">{settings?.notesCount || 0}</Text>
-          </DataList.Value>
-        </DataList.Item>
-
-        {isAdmin && (
-          <>
-            <DataList.Item>
-              <DataList.Label minWidth="88px">Files size</DataList.Label>
-              <DataList.Value>
-                <Text size="3">{getFileSizeString(settings?.filesSize || 0)}</Text>
-              </DataList.Value>
-            </DataList.Item>
-
-            <DataList.Item>
-              <DataList.Label minWidth="88px">Encrypted files size</DataList.Label>
-              <DataList.Value>
-                <Text size="3">{getFileSizeString(settings?.encryptedFilesSize || 0)}</Text>
-              </DataList.Value>
-            </DataList.Item>
-          </>
-        )}
-      </DataList.Root>
-    </ItemsWrapper>
-  );
+  return <Descriptions data={data} style={{ marginBottom: '1rem' }} />;
 });

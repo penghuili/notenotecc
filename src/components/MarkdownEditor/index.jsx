@@ -1,11 +1,12 @@
-import { Flex, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import { RiArrowDropDownLine, RiArrowDropUpLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
 import { compareObjects } from '../../shared/js/object.js';
-import { AnimatedBox } from '../../shared/radix/AnimatedBox.jsx';
+import { AnimatedBox } from '../../shared/semi/AnimatedBox.jsx';
+import { Flex } from '../../shared/semi/Flex.jsx';
 import { Editor, Markdown } from './Markdown.jsx';
 import {
   convertToMarkdown,
@@ -167,7 +168,6 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
       }
     };
 
-    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -176,7 +176,6 @@ export const MarkdownEditor = fastMemo(({ defaultText, onChange, autoFocus }) =>
       editorRef.current.focus();
       handleCheckActiveElements();
     }
-    // eslint-disable-next-line react-compiler/react-compiler
   }, [autoFocus, handleCheckActiveElements]);
 
   return (
@@ -450,23 +449,26 @@ export const HelperText = fastMemo(() => {
 
   return (
     <>
-      <HelperTitleWrapper align="center" mt="1">
-        <Text size="1" onClick={handleToggle}>
+      <Flex
+        direction="row"
+        align="center"
+        style={{
+          marginTop: '0.5rem',
+          userSelect: 'none',
+        }}
+      >
+        <Typography.Text size="small" onClick={handleToggle}>
           Supports markdown, click to learn more{' '}
-        </Text>
+        </Typography.Text>
         {open ? (
           <RiArrowDropUpLine onClick={handleToggle} />
         ) : (
           <RiArrowDropDownLine onClick={handleToggle} />
         )}
-      </HelperTitleWrapper>
+      </Flex>
       <AnimatedBox visible={open}>
         <Markdown markdown={helperText} />
       </AnimatedBox>
     </>
   );
 });
-
-const HelperTitleWrapper = styled(Flex)`
-  user-select: none;
-`;

@@ -1,4 +1,4 @@
-import { Flex, IconButton, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -8,7 +8,10 @@ import { createCat, useCat } from 'usecat';
 import { imageType } from '../lib/constants.js';
 import { resizeImage } from '../lib/resizeImage.js';
 import { idbStorage } from '../shared/browser/indexDB.js';
+import { asyncMap } from '../shared/js/asyncMap.js';
 import { randomHash } from '../shared/js/randomHash.js';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
 import { FilePicker } from './FilePicker.jsx';
 import { getCameraSize, VideoWrapper } from './TakeVideo.jsx';
 
@@ -29,7 +32,7 @@ const HelperTextWrapper = styled.div`
 export const pickedPhotosCat = createCat([]);
 
 export async function processPickedPhotos(pickedPhotos) {
-  const resizedBlobs = await Promise.all(pickedPhotos.map(photo => resizeImage(photo)));
+  const resizedBlobs = await asyncMap(pickedPhotos, photo => resizeImage(photo));
   const succeeded = resizedBlobs.filter(b => b.data).map(b => b.data);
   const photos = succeeded.map(resized => ({
     hash: randomHash(),
@@ -89,11 +92,11 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
     }
     return (
       <HelperTextWrapper>
-        <Flex direction="column" gap="2">
-          <Text align="center">
+        <Flex direction="column" gap="0.5rem">
+          <Typography.Paragraph style={{ textAlign: 'center' }}>
             notenote.cc can't process this photo, you can take a screenshot of it, and choose the
             screenshot.
-          </Text>
+          </Typography.Paragraph>
         </Flex>
       </HelperTextWrapper>
     );
@@ -104,14 +107,20 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
       <CropperWrapper size={size}>
         {!pickedPhotos[0] && !error && (
           <HelperTextWrapper>
-            <Text>Pick photos from your device.</Text>
+            <Typography.Paragraph>Pick photos from your device.</Typography.Paragraph>
           </HelperTextWrapper>
         )}
 
         {errorElement}
       </CropperWrapper>
 
-      <Flex justify="center" align="center" pt="12px" gap="2">
+      <Flex
+        direction="row"
+        justify="center"
+        align="center"
+        gap="0.5rem"
+        style={{ paddingTop: '12px' }}
+      >
         {(!pickedPhotos?.length || !error) && (
           <FilePicker
             accept="image/*"
@@ -120,9 +129,7 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
             onSelect={handlePickPhotos}
             height="auto"
           >
-            <IconButton size="4" radius="full">
-              <RiImageAddLine />
-            </IconButton>
+            <IconButton theme="solid" icon={<RiImageAddLine />} round size={50} />
           </FilePicker>
         )}
       </Flex>

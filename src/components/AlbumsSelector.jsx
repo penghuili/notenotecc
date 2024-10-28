@@ -1,29 +1,21 @@
-import { Button, CheckboxGroup, Flex, Heading, Text } from '@radix-ui/themes';
-import React, { useCallback } from 'react';
+import { Button, CheckboxGroup, Input, Typography } from '@douyinfe/semi-ui';
+import React, { useCallback, useMemo } from 'react';
 import fastMemo from 'react-fast-memo';
 import { createCat, useCat } from 'usecat';
 
 import { generateAlbumSortKey } from '../lib/generateSortKey.js';
-import { InputField } from '../shared/radix/InputField.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
 import { albumsCat, isCreatingAlbumCat } from '../store/album/albumCats.js';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
-
-const checkboxRootStyle = {
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  gap: '0.75rem',
-};
 
 export const albumDescriptionCat = createCat('');
 export const albumSelectedKeysCat = createCat([]);
 
-export const AlbumsSelector = fastMemo(({ onChange, mt }) => {
+export const AlbumsSelector = fastMemo(({ onChange }) => {
   return (
     <>
-      <Flex direction="column" gap="2" mt={mt}>
-        <Heading as="h3" size="3">
-          Tags
-        </Heading>
+      <Flex direction="column" gap="0.5rem" m="1rem 0 0">
+        <Typography.Title heading={5}>Tags</Typography.Title>
 
         <AlbumItems onChange={onChange} />
 
@@ -52,13 +44,9 @@ export const AddNewAlbum = fastMemo(({ onChange }) => {
   }, [description, onChange]);
 
   return (
-    <Flex gap="2" direction="column" align="start">
-      <InputField
-        placeholder="New tag name"
-        value={description}
-        onChange={albumDescriptionCat.set}
-      />
-      <Button onClick={handleCreate} variant="soft" disabled={!description || isCreating}>
+    <Flex gap="0.5rem" direction="column" align="start">
+      <Input placeholder="New tag name" value={description} onChange={albumDescriptionCat.set} />
+      <Button onClick={handleCreate} disabled={!description || isCreating}>
         Add new tag
       </Button>
     </Flex>
@@ -68,6 +56,15 @@ export const AddNewAlbum = fastMemo(({ onChange }) => {
 const AlbumItems = fastMemo(({ onChange }) => {
   const albums = useCat(albumsCat);
   const selectedKeys = useCat(albumSelectedKeysCat);
+
+  const options = useMemo(() => {
+    return albums.map(album => {
+      return {
+        label: album.title,
+        value: album.sortKey,
+      };
+    });
+  }, [albums]);
 
   const handleSelectedKeysChange = useCallback(
     value => {
@@ -82,17 +79,11 @@ const AlbumItems = fastMemo(({ onChange }) => {
   }
 
   return (
-    <CheckboxGroup.Root
-      name="album"
+    <CheckboxGroup
       value={selectedKeys}
-      onValueChange={handleSelectedKeysChange}
-      style={checkboxRootStyle}
-    >
-      {albums.map(album => (
-        <CheckboxGroup.Item key={album.sortKey} value={album.sortKey}>
-          <Text>{album.title}</Text>
-        </CheckboxGroup.Item>
-      ))}
-    </CheckboxGroup.Root>
+      onChange={handleSelectedKeysChange}
+      options={options}
+      direction="horizontal"
+    />
   );
 });

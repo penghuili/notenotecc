@@ -11,7 +11,7 @@ import {
   useFreeTrialsUntil,
 } from '../shared/browser/store/sharedCats';
 import { formatDate } from '../shared/js/date';
-import { Confirm } from '../shared/radix/Confirm.jsx';
+import { Confirm } from '../shared/semi/Confirm.jsx';
 
 export const ProRequired = fastMemo(({ children }) => {
   const expiresAt = useExpiresAt();

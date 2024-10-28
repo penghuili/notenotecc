@@ -1,4 +1,3 @@
-import './theme.css';
 import 'inobounce';
 
 import React from 'react';
@@ -14,7 +13,7 @@ import { registerSW } from './shared/browser/registerSW.js';
 import { Scrollbar } from './shared/browser/Scrollbar.jsx';
 import { Toast } from './shared/browser/Toast.jsx';
 import { apps } from './shared/js/apps';
-import { AppWrapper } from './shared/radix/AppWrapper.jsx';
+import { AppWrapper } from './shared/semi/AppWrapper.jsx';
 
 saveTWA();
 

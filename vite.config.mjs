@@ -1,10 +1,9 @@
 import react from '@vitejs/plugin-react';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
+import SemiPlugin from 'vite-plugin-semi-theme';
 
 import { timestampPlugin } from './vite/viteTimestampPlugin';
-
-const ReactCompilerConfig = {};
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -13,18 +12,16 @@ export default defineConfig(({ mode }) => {
     plugins:
       mode === 'production'
         ? [
-            react({
-              babel: {
-                plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
-              },
+            react(),
+            SemiPlugin({
+              theme: '@semi-bot/semi-theme-notenotecc',
             }),
             timestampPlugin(env),
           ]
         : [
-            react({
-              babel: {
-                plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
-              },
+            react(),
+            SemiPlugin({
+              theme: '@semi-bot/semi-theme-notenotecc',
             }),
           ],
     resolve: {

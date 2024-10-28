@@ -1,9 +1,10 @@
-import { Box, Flex, Text } from '@radix-ui/themes';
+import { Typography } from '@douyinfe/semi-ui';
 import React, { useCallback, useMemo } from 'react';
 import { navigateTo } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 
 import { formatDateWeekTime, getAgo } from '../shared/js/date';
+import { Flex } from '../shared/semi/Flex.jsx';
 import { actionTypes, dispatchAction } from '../store/allActions.js';
 import { noteCat } from '../store/note/noteCats.js';
 import { AlbumItem } from './AlbumItem.jsx';
@@ -41,7 +42,7 @@ export const NoteItem = fastMemo(({ note, albums, textLines, hasMarginBottom = t
     }
 
     return (
-      <Flex wrap="wrap">
+      <Flex direction="row" wrap="wrap">
         {albums?.map(album => (
           <AlbumItem
             key={album.sortKey}
@@ -55,18 +56,23 @@ export const NoteItem = fastMemo(({ note, albums, textLines, hasMarginBottom = t
 
   const agoElement = useMemo(() => {
     return (
-      <Text size="1" as="p" color="gray" style={{ userSelect: 'none' }}>
+      <Typography.Paragraph size="small" type="secondary" style={{ userSelect: 'none' }}>
         {ago}
-      </Text>
+      </Typography.Paragraph>
     );
   }, [ago]);
 
   return (
-    <Box mb={hasMarginBottom ? '8' : '0'} width="100%">
-      <Flex justify="between" align="center" mb="2">
-        <Text size="2" as="p" style={{ userSelect: 'none' }}>
+    <div
+      style={{
+        marginBottom: hasMarginBottom ? '3rem' : '0',
+        width: '100%',
+      }}
+    >
+      <Flex direction="row" justify="between" align="center" m="0 0 0.5rem">
+        <Typography.Paragraph size="small" style={{ userSelect: 'none' }}>
           {dateTime}
-        </Text>
+        </Typography.Paragraph>
 
         <NoteActions note={note} />
       </Flex>
@@ -91,6 +97,6 @@ export const NoteItem = fastMemo(({ note, albums, textLines, hasMarginBottom = t
       {albumsElement}
 
       {agoElement}
-    </Box>
+    </div>
   );
 });

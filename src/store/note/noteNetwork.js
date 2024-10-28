@@ -5,6 +5,7 @@ import { idbStorage } from '../../shared/browser/indexDB';
 import { appName } from '../../shared/browser/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
 import { objectToQueryString } from '../../shared/browser/routeHelpers';
+import { asyncMap } from '../../shared/js/asyncMap';
 import {
   decryptFileSymmetric,
   encryptFileSymmetric,
@@ -71,27 +72,25 @@ async function uploadImages(password, images) {
     return `pic-${hash}.nncc`;
   }
   const octetType = 'application/octet-stream';
-  const encrypted = await Promise.all(
-    images.map(async item => {
-      const blob = await idbStorage.getItem(item.hash);
-      if (!blob) {
-        return null;
-      }
+  const encrypted = await asyncMap(images, async item => {
+    const blob = await idbStorage.getItem(item.hash);
+    if (!blob) {
+      return null;
+    }
 
-      const name = getName(item.type, item.hash);
-      const uint8 = await blobToUint8Array(blob);
-      const encrypted = await encryptFileSymmetric(password, uint8);
-      const encryptedBlob = uint8ArrayToBlob(encrypted, octetType);
+    const name = getName(item.type, item.hash);
+    const uint8 = await blobToUint8Array(blob);
+    const encrypted = await encryptFileSymmetric(password, uint8);
+    const encryptedBlob = uint8ArrayToBlob(encrypted, octetType);
 
-      return {
-        name,
-        type: item.type,
-        size: item.size,
-        blob: encryptedBlob,
-        encryptedSize: encryptedBlob.size,
-      };
-    })
-  );
+    return {
+      name,
+      type: item.type,
+      size: item.size,
+      blob: encryptedBlob,
+      encryptedSize: encryptedBlob.size,
+    };
+  });
   const filteredEncrypted = encrypted.filter(Boolean);
   const uploadUrls = await HTTP.post(appName, `/v1/upload-urls`, {
     images: filteredEncrypted.filter(Boolean).map(e => ({
@@ -99,24 +98,20 @@ async function uploadImages(password, images) {
       type: octetType,
     })),
   });
-  await Promise.all(
-    filteredEncrypted.map(async (item, i) => {
-      await fetch(uploadUrls[i].url, {
-        method: 'PUT',
-        body: item.blob,
-        headers: {
-          'Content-Type': octetType,
-          'Cache-Control': 'max-age=31536000,public',
-        },
-      });
-    })
-  );
+  await asyncMap(filteredEncrypted, async (item, i) => {
+    await fetch(uploadUrls[i].url, {
+      method: 'PUT',
+      body: item.blob,
+      headers: {
+        'Content-Type': octetType,
+        'Cache-Control': 'max-age=31536000,public',
+      },
+    });
+  });
 
-  await Promise.all(
-    images.map(async item => {
-      await idbStorage.removeItem(item.hash);
-    })
-  );
+  await asyncMap(images, async item => {
+    await idbStorage.removeItem(item.hash);
+  });
 
   return uploadUrls.map((u, i) => ({
     path: u.path,

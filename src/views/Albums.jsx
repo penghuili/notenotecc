@@ -1,4 +1,4 @@
-import { Box, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes';
+import { Dropdown, Typography } from '@douyinfe/semi-ui';
 import { RiMore2Line, RiSortDesc } from '@remixicon/react';
 import React, { useCallback, useMemo } from 'react';
 import { navigateTo } from 'react-baby-router';
@@ -7,12 +7,14 @@ import { useCat } from 'usecat';
 
 import { AlbumItem } from '../components/AlbumItem.jsx';
 import { AddNewAlbum } from '../components/AlbumsSelector.jsx';
-import { PrepareData } from '../components/PrepareData.jsx';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { userCat } from '../shared/browser/store/sharedCats.js';
-import { PageEmpty } from '../shared/radix/PageEmpty.jsx';
-import { PageHeader } from '../shared/radix/PageHeader.jsx';
-import { RouteLink } from '../shared/radix/RouteLink.jsx';
+import { Flex } from '../shared/semi/Flex.jsx';
+import { IconButton } from '../shared/semi/IconButton.jsx';
+import { PageEmpty } from '../shared/semi/PageEmpty.jsx';
+import { PageHeader } from '../shared/semi/PageHeader.jsx';
+import { PrepareData } from '../shared/semi/PrepareData.jsx';
+import { RouteLink } from '../shared/semi/RouteLink.jsx';
 import { albumsCat, isDeletingAlbumCat, isLoadingAlbumsCat } from '../store/album/albumCats.js';
 import { fetchAlbumsEffect } from '../store/album/albumEffects';
 
@@ -30,9 +32,9 @@ export const Albums = fastMemo(() => {
 
         <NotesWithoutTags />
 
-        <Box mt="6">
+        <div style={{ marginTop: '2rem' }}>
           <AddNewAlbum />
-        </Box>
+        </div>
       </PageContent>
     </PrepareData>
   );
@@ -48,20 +50,27 @@ const Header = fastMemo(() => {
 
   const rightElement = useMemo(
     () => (
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <IconButton variant="ghost" mr="2">
-            <RiMore2Line />
-          </IconButton>
-        </DropdownMenu.Trigger>
-
-        <DropdownMenu.Content variant="soft">
-          <DropdownMenu.Item onClick={handleNavigateToReorder}>
-            <RiSortDesc />
-            Reorder tags
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+      <Dropdown
+        trigger="click"
+        clickToHide
+        render={
+          <Dropdown.Menu>
+            <Dropdown.Item icon={<RiSortDesc />} onClick={handleNavigateToReorder}>
+              Reorder tags
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        }
+      >
+        <IconButton
+          theme="borderless"
+          icon={<RiMore2Line />}
+          style={{
+            position: 'absolute',
+            top: '0.5rem',
+            right: '0.5rem',
+          }}
+        />
+      </Dropdown>
     ),
     [handleNavigateToReorder]
   );
@@ -82,7 +91,7 @@ const AlbumItems = fastMemo(() => {
 
   if (albums?.length) {
     return (
-      <Flex wrap="wrap">
+      <Flex direction="row" wrap="wrap">
         {albums?.map(album => (
           <AlbumItem key={album.sortKey} album={album} />
         ))}
@@ -93,7 +102,7 @@ const AlbumItems = fastMemo(() => {
   if (!albums?.length) {
     return (
       <PageEmpty>
-        <Text>No tags yet.</Text>
+        <Typography.Paragraph>No tags yet.</Typography.Paragraph>
       </PageEmpty>
     );
   }

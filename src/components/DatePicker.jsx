@@ -1,4 +1,4 @@
-import { Button } from '@radix-ui/themes';
+import { Button } from '@douyinfe/semi-ui';
 import { RiArrowLeftSLine, RiArrowRightSLine, RiCalendarLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import fastMemo from 'react-fast-memo';
@@ -78,7 +78,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
     const startDay = startOfMonth(viewDate.getFullYear(), viewDate.getMonth());
 
     for (let i = 0; i < startDay; i++) {
-      days.push(<Button key={`empty-${i}`} variant="ghost" style={{ width: '36px' }}></Button>);
+      days.push(<Button key={`empty-${i}`} theme="borderless" style={{ width: '36px' }}></Button>);
     }
 
     for (let i = 1; i <= daysCount; i++) {
@@ -89,7 +89,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
       days.push(
         <Button
           key={i}
-          variant={isSelected ? 'solid' : 'soft'}
+          theme={isSelected ? 'solid' : 'light'}
           onClick={() => handleDateClick(i)}
           style={{ width: '36px' }}
         >
@@ -119,7 +119,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
     return months.map((month, index) => (
       <Button
         key={month}
-        variant="soft"
+        theme="borderless"
         onClick={() => handleMonthClick(index)}
         style={{ width: '36px' }}
       >
@@ -133,7 +133,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
     const years = [];
     for (let i = currentYear - 5; i <= currentYear + 6; i++) {
       years.push(
-        <Button key={i} variant="soft" onClick={() => handleYearClick(i)} style={{ width: '36px' }}>
+        <Button key={i} onClick={() => handleYearClick(i)} style={{ width: '36px' }}>
           {i}
         </Button>
       );
@@ -188,7 +188,7 @@ export const DatePicker = fastMemo(({ value, onChange }) => {
 
 const Wrapper = styled.div`
   width: 330px;
-  background-color: var(--color-background);
+  background-color: var(--semi-color-bg-0);
   border-radius: 6px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
