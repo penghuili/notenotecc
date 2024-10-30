@@ -19,7 +19,7 @@ export const InstallApp = fastMemo(() => {
   if (isAndroidApp() || isInstalledOnHomeScreen()) {
     return (
       <Flex direction="column" align="start">
-        <Button theme="borderless" icon={<RiExternalLinkLine />} onClick={handleCopy}>
+        <Button theme="outline" icon={<RiExternalLinkLine />} onClick={handleCopy}>
           app.notenote.cc
         </Button>
         <Typography.Text size="1">Use the web app on your laptop.</Typography.Text>
@@ -30,7 +30,7 @@ export const InstallApp = fastMemo(() => {
   if (isIOSBrowser()) {
     return (
       <Flex direction="column" align="start">
-        <Button theme="borderless" icon={<RiSmartphoneLine />}>
+        <Button theme="outline" icon={<RiSmartphoneLine />}>
           Add to Home Screen
         </Button>
         <Typography.Text size="1">

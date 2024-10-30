@@ -118,9 +118,7 @@ export const ResetPassword = fastMemo(() => {
           </Button>
 
           <Flex m="1rem 0 0">
-            <Button theme="borderless" onClick={handleTrigger}>
-              Resend code
-            </Button>
+            <Button onClick={handleTrigger}>Resend code</Button>
           </Flex>
         </Form>
       </>

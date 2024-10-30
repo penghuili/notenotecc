@@ -13,7 +13,6 @@ import fastMemo from 'react-fast-memo';
 import { copyContactEmailEffect } from '../shared/browser/store/sharedEffects.js';
 import { contactEmail } from '../shared/js/constants.js';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
-import { InstallApp } from './InstallApp.jsx';
 
 export const PublicLinks = fastMemo(() => {
   return (
@@ -51,8 +50,6 @@ export const PublicLinks = fastMemo(() => {
       <Button theme="outline" icon={<RiMailLine />} onClick={copyContactEmailEffect}>
         Contact: {contactEmail}
       </Button>
-
-      <InstallApp />
     </ItemsWrapper>
   );
 });

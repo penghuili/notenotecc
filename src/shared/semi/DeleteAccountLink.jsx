@@ -14,7 +14,7 @@ export function DeleteAccountLink() {
   return (
     <>
       <Button
-        theme="borderless"
+        theme="outline"
         onClick={() => setShowConfirm(true)}
         type="danger"
         disabled={isDeleting}

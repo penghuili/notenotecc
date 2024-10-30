@@ -10,7 +10,7 @@ export function LogoutLink() {
   const isLoggingOut = useCat(isLoggingOutCat);
   return (
     <Button
-      theme="borderless"
+      theme="outline"
       icon={<RiLogoutBoxLine />}
       onClick={logOutEffect}
       disabled={isLoggingOut}

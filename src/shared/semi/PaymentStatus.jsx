@@ -20,7 +20,7 @@ export const PaymentStatus = fastMemo(() => {
   }
 
   if (expiresAt === 'forever') {
-    return <Typography.Text strong>Life time access</Typography.Text>;
+    return <Typography.Text>Life time access</Typography.Text>;
   }
 
   const isFreeTrial = !expiresAt && !!freeTrialUntil;

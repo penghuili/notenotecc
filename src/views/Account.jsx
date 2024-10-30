@@ -5,6 +5,7 @@ import { BabyLink } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { InstallApp } from '../components/InstallApp.jsx';
 import { PublicLinks } from '../components/PublicLinks.jsx';
 import { useIsAdmin } from '../lib/useIsAdmin.js';
 import { getFileSizeString } from '../shared/browser/file';
@@ -12,6 +13,7 @@ import { PageContent } from '../shared/browser/PageContent.jsx';
 import { isLoadingAccountCat, settingsCat, userCat } from '../shared/browser/store/sharedCats.js';
 import { fetchSettingsEffect } from '../shared/browser/store/sharedEffects';
 import { formatDateTime } from '../shared/js/date';
+import { AlsoBuilt } from '../shared/semi/AlsoBuilt.jsx';
 import { AppVersion } from '../shared/semi/AppVersion.jsx';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { LogoutLink } from '../shared/semi/LogoutLink.jsx';
@@ -55,9 +57,14 @@ export const Account = fastMemo(() => {
 
         <ItemsWrapper align="start">
           <LogoutLink />
+        </ItemsWrapper>
 
+        <ItemsWrapper align="start">
+          <InstallApp />
           <AppVersion />
         </ItemsWrapper>
+
+        <AlsoBuilt />
       </PageContent>
     </PrepareData>
   );

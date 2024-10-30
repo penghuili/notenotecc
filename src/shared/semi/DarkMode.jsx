@@ -8,10 +8,20 @@ const semiThemeModeClass = 'theme-mode';
 
 export function changeDarkMode(enabled) {
   const body = document.body;
+  const msTileColor = document.querySelector('meta[name="msapplication-TileColor"]');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+
   if (enabled) {
     body.setAttribute(semiThemeModeClass, 'dark');
+
+    const darkBG = getComputedStyle(body).getPropertyValue('--semi-color-bg-0');
+    msTileColor.content = darkBG;
+    themeColor.content = darkBG;
   } else {
     body.removeAttribute(semiThemeModeClass);
+    const primaryColor = getComputedStyle(body).getPropertyValue('--semi-color-primary');
+    msTileColor.content = primaryColor;
+    themeColor.content = primaryColor;
   }
 }
 

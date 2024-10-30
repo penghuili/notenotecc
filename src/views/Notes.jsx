@@ -274,5 +274,5 @@ const RedDot = styled.span`
 
   position: absolute;
   top: 0;
-  right: -2px;
+  right: 2px;
 `;

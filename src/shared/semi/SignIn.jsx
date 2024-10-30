@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
+import { resetPassword } from '../browser/initShared.js';
 import { PageContent } from '../browser/PageContent.jsx';
 import { authErrorCat, isSigningInCat } from '../browser/store/sharedCats';
 import { clearAuthErrorEffect, signInEffect } from '../browser/store/sharedEffects';
@@ -67,9 +68,11 @@ export const SignIn = fastMemo(() => {
             No account? Sign up
           </RouteLink>
 
-          <RouteLink to="/reset-password" m="1rem 0 0">
-            Forget password? Reset
-          </RouteLink>
+          {resetPassword && (
+            <RouteLink to="/reset-password" m="1rem 0 0">
+              Forget password? Reset
+            </RouteLink>
+          )}
         </Flex>
       </Form>
     </PageContent>

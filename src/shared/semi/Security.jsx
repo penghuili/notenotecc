@@ -1,5 +1,5 @@
 import { Button } from '@douyinfe/semi-ui';
-import { RiDeviceLine, RiLockPasswordLine, RiMailLine } from '@remixicon/react';
+import { RiDeviceLine, RiLockPasswordLine, RiLockStarLine, RiMailLine } from '@remixicon/react';
 import React from 'react';
 import { BabyLink } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
@@ -27,20 +27,26 @@ export const Security = fastMemo(() => {
 
       <ItemsWrapper align="start">
         <BabyLink to="/security/email">
-          <Button theme="borderless" icon={<RiMailLine />}>
+          <Button theme="outline" icon={<RiMailLine />}>
             Change email
           </Button>
         </BabyLink>
 
         <BabyLink to="/security/password">
-          <Button theme="borderless" icon={<RiLockPasswordLine />}>
+          <Button theme="outline" icon={<RiLockPasswordLine />}>
             Change password
+          </Button>
+        </BabyLink>
+
+        <BabyLink to="/security/2fa">
+          <Button theme="outline" icon={<RiLockStarLine />}>
+            2-Factor Authentication
           </Button>
         </BabyLink>
 
         <LogoutLink />
 
-        <Button theme="borderless" onClick={logOutFromAllDevicesEffect} icon={<RiDeviceLine />}>
+        <Button theme="outline" onClick={logOutFromAllDevicesEffect} icon={<RiDeviceLine />}>
           Log out from all devices
         </Button>
 
