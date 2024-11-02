@@ -10,13 +10,6 @@ export const TimeProgress = fastMemo(
     const startTimestampRef = useRef(null);
     const elapsedTimeRef = useRef(0);
 
-    useImperativeHandle(ref, () => ({
-      start: handleStart,
-      pause: handlePause,
-      resume: handleResume,
-      stop: handleStop,
-    }));
-
     const handleUpdateProgress = useCallback(() => {
       clearTimer();
 
@@ -61,10 +54,17 @@ export const TimeProgress = fastMemo(
       }
     };
 
+    useImperativeHandle(ref, () => ({
+      start: handleStart,
+      pause: handlePause,
+      resume: handleResume,
+      stop: handleStop,
+    }));
+
     if (!progress) {
       return null;
     }
 
-    return <Progress percent={progress} stroke="var(--semi-brand-2)" />;
+    return <Progress percent={Math.floor(progress)} />;
   })
 );

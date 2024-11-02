@@ -20,8 +20,11 @@ export const ProRequired = fastMemo(({ children }) => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const isPro = useMemo(() => {
+    if (expiresAt === 'forever') {
+      return true;
+    }
     const date = expiresAt || freeTrialUntil;
-    return !!date && date > formatDate(new Date());
+    return !!date && date >= formatDate(new Date());
   }, [expiresAt, freeTrialUntil]);
 
   const handleShowConfirm = useCallback(() => {
