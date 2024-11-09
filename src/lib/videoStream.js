@@ -25,9 +25,9 @@ export async function requestVideoStream() {
         }
       : {
           video: {
-            facingMode: { ideal: facing },
             width: { ideal: 900 },
             height: { ideal: 900 },
+            facingMode: { ideal: facing },
           },
         };
 

@@ -5,6 +5,7 @@ import { idbStorage } from '../../shared/browser/indexDB';
 import { appName } from '../../shared/browser/initShared';
 import { LocalStorage, sharedLocalStorageKeys } from '../../shared/browser/LocalStorage';
 import { objectToQueryString } from '../../shared/browser/routeHelpers';
+import { asyncForEach } from '../../shared/js/asyncForEach';
 import { asyncMap } from '../../shared/js/asyncMap';
 import {
   decryptFileSymmetric,
@@ -98,18 +99,20 @@ async function uploadImages(password, images) {
       type: octetType,
     })),
   });
-  await asyncMap(filteredEncrypted, async (item, i) => {
-    await fetch(uploadUrls[i].url, {
-      method: 'PUT',
-      body: item.blob,
-      headers: {
-        'Content-Type': octetType,
-        'Cache-Control': 'max-age=31536000,public',
-      },
-    });
-  });
+  await Promise.all(
+    filteredEncrypted.map(async (item, i) => {
+      await fetch(uploadUrls[i].url, {
+        method: 'PUT',
+        body: item.blob,
+        headers: {
+          'Content-Type': octetType,
+          'Cache-Control': 'max-age=31536000,public',
+        },
+      });
+    })
+  );
 
-  await asyncMap(images, async item => {
+  await asyncForEach(images, async item => {
     await idbStorage.removeItem(item.hash);
   });
 
