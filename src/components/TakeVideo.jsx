@@ -123,10 +123,9 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     progressElementRef.current.stop();
 
     const blob = new Blob(recordedChunksRef.current, { type: videoType });
-    const url = URL.createObjectURL(blob);
     const hash = randomHash();
     idbStorage.setItem(hash, blob);
-    onSelect({ hash, size: blob.size, url, type: videoType });
+    onSelect({ hash, size: blob.size, type: videoType });
 
     recordedChunksRef.current = [];
   };
