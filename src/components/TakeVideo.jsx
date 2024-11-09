@@ -1,6 +1,6 @@
 import { Typography } from '@douyinfe/semi-ui';
 import { RiRecordCircleLine, RiRefreshLine, RiStopCircleLine } from '@remixicon/react';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
@@ -99,23 +99,23 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
   const timerIdRef = useRef(null);
   const progressElementRef = useRef(null);
 
-  const clearTimers = useCallback(() => {
+  const clearTimers = () => {
     if (timerIdRef.current) {
       clearTimeout(timerIdRef.current);
       timerIdRef.current = null;
     }
-  }, []);
+  };
 
-  const stopMediaRecorder = useCallback(() => {
+  const stopMediaRecorder = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.ondataavailable = null;
       mediaRecorderRef.current.onstop = null;
       mediaRecorderRef.current = null;
     }
-  }, []);
+  };
 
-  const handleStopRecording = useCallback(async () => {
+  const handleStopRecording = async () => {
     const handleStop = async () => {
       stopMediaRecorder();
       setIsRecording(false);
@@ -137,18 +137,18 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     } else {
       handleStop();
     }
-  }, [clearTimers, onSelect, stopMediaRecorder]);
+  };
 
-  const handleSetupTimer = useCallback(() => {
+  const handleSetupTimer = () => {
     clearTimers();
 
     timerIdRef.current = setTimeout(() => {
       handleStopRecording();
       clearTimers();
     }, RECORDING_DURATION);
-  }, [clearTimers, handleStopRecording]);
+  };
 
-  const createMediaRecorder = useCallback(async () => {
+  const createMediaRecorder = async () => {
     if (mediaRecorderRef.current) {
       stopMediaRecorder();
     }
@@ -165,9 +165,9 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
       }
     };
     mediaRecorder.start(100);
-  }, [stopMediaRecorder, videoStream]);
+  };
 
-  const handleStartRecording = useCallback(async () => {
+  const handleStartRecording = async () => {
     recordedChunksRef.current = [];
     createMediaRecorder();
 
@@ -178,7 +178,7 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     handleSetupTimer();
 
     tapTwiceCat.set(false);
-  }, [createMediaRecorder, handleSetupTimer]);
+  };
 
   useEffect(() => {
     isUsingVideoStreamCat.set(true);
@@ -219,7 +219,7 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
         progressElementRef.current.stop();
       }
     }
-  }, [clearTimers, stopMediaRecorder, videoStream]);
+  }, [videoStream]);
 
   const size = getCameraSize();
 

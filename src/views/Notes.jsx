@@ -86,7 +86,7 @@ const Header = fastMemo(() => {
           <IconButton
             icon={<RiRefreshLine />}
             onClick={handleFetch}
-            style={{ marginRight: '0.5rem' }}
+            style={{ marginRight: '1rem' }}
           />
         )
       }
