@@ -149,7 +149,7 @@ const PreviewItem = fastMemo(({ image, onClick }) => {
 
       {(image.type === fileTypes.webm || image.type === fileTypes.mp4) && (
         <>
-          <PreviewVideo src={url} controls={false} />
+          <PreviewVideo src={image.url} controls={false} />
           <Flex
             justify="center"
             style={{

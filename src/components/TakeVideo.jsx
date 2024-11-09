@@ -115,27 +115,25 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     }
   };
 
+  const handleOnStop = async () => {
+    stopMediaRecorder();
+    setIsRecording(false);
+    clearTimers();
+
+    progressElementRef.current.stop();
+
+    const blob = new Blob(recordedChunksRef.current, { type: videoType });
+    const url = URL.createObjectURL(blob);
+    const hash = randomHash();
+    idbStorage.setItem(hash, blob);
+    onSelect({ hash, size: blob.size, url, type: videoType });
+
+    recordedChunksRef.current = [];
+  };
+
   const handleStopRecording = async () => {
-    const handleStop = async () => {
-      stopMediaRecorder();
-      setIsRecording(false);
-      clearTimers();
-
-      progressElementRef.current.stop();
-
-      const blob = new Blob(recordedChunksRef.current, { type: videoType });
-      const hash = randomHash();
-      idbStorage.setItem(hash, blob);
-      onSelect({ hash, size: blob.size, type: videoType });
-
-      recordedChunksRef.current = [];
-    };
-    mediaRecorderRef.current.onstop = handleStop;
-
-    if (mediaRecorderRef.current.state !== 'inactive') {
+    if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
-    } else {
-      handleStop();
     }
   };
 
@@ -154,7 +152,7 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
     }
 
     const mediaRecorder = new MediaRecorder(videoStream, {
-      mimeType: isIOSBrowser() ? 'video/mp4' : 'video/webm;codecs=vp9',
+      mimeType: isIOSBrowser() ? 'video/mp4' : 'video/webm',
       videoBitsPerSecond: 1000000,
     });
     mediaRecorderRef.current = mediaRecorder;
@@ -164,6 +162,7 @@ export const TakeVideo = fastMemo(({ onSelect }) => {
         recordedChunksRef.current.push(event.data);
       }
     };
+    mediaRecorder.onstop = handleOnStop;
     mediaRecorder.start(100);
   };
 
