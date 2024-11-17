@@ -97,13 +97,17 @@ async function forceFetchNoteEffect(noteId) {
     return;
   }
 
+  noteTimestamps.fetchNotes = Date.now();
+
   isLoadingNoteCat.set(true);
 
   const { data } = await fetchNote(noteId);
   const stateNote = noteCat.get();
   if (
     data &&
-    (stateNote?.sortKey !== noteId || isNewer(data.updatedAt, noteCat.get()?.updatedAt))
+    (stateNote?.sortKey !== noteId ||
+      (isNewer(data.updatedAt, noteCat.get()?.updatedAt) &&
+        noteTimestamps.fetchNotes > noteTimestamps.updateNotes))
   ) {
     updateNoteStates(data, 'update', true);
   }
@@ -113,7 +117,7 @@ async function forceFetchNoteEffect(noteId) {
 
 export async function fetchNoteEffect(noteId) {
   const noteInState = noteCat.get();
-  if (noteInState?.sortKey === noteId && noteInState.isLocal) {
+  if (noteInState?.sortKey === noteId) {
     return;
   }
 
