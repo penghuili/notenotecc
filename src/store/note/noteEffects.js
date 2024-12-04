@@ -117,6 +117,7 @@ async function forceFetchNoteEffect(noteId) {
 
 export async function fetchNoteEffect(noteId) {
   const noteInState = noteCat.get();
+  console.log(noteInState, noteId);
   if (noteInState?.sortKey === noteId) {
     return;
   }
@@ -135,7 +136,14 @@ export async function fetchNoteEffect(noteId) {
   }
 }
 
-export async function createNoteEffect({ sortKey, timestamp, note, images, albumIds }) {
+export async function createNoteEffect({
+  sortKey,
+  timestamp,
+  note,
+  images,
+  albumIds,
+  updateStore = true,
+}) {
   if (!isLoggedInCat.get()) {
     return;
   }
@@ -144,8 +152,10 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
-    const action = notesCat.get()?.items?.find(n => n.sortKey === sortKey) ? 'update' : 'create';
-    updateNoteStates(data, action, true);
+    if (updateStore) {
+      const action = notesCat.get()?.items?.find(n => n.sortKey === sortKey) ? 'update' : 'create';
+      updateNoteStates(data, action, true);
+    }
     fetchSettingsEffect();
   }
 

@@ -62,7 +62,7 @@ const actionHandlers = {
       updateNoteStates(newNote, 'create');
     },
     async: async ({ sortKey, timestamp, note, images, albumIds }) => {
-      await createNoteEffect({ sortKey, timestamp, note, images, albumIds });
+      await createNoteEffect({ sortKey, timestamp, note, images, albumIds, updateStore: false });
     },
   },
   [actionTypes.UPDATE_NOTE]: {
