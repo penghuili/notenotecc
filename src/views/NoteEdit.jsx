@@ -27,7 +27,6 @@ import {
 import { fetchNoteEffect } from '../store/note/noteEffects';
 
 const descriptionCat = createCat('');
-let deletedNoteKey;
 
 export const NoteEdit = fastMemo(({ queryParams: { noteId, add } }) => {
   const prepareData = useCallback(async () => {
@@ -120,10 +119,6 @@ const NoteView = fastMemo(({ noteId, isAddingNote }) => {
 });
 
 const saveDescription = async newNote => {
-  if (deletedNoteKey && newNote?.sortKey === deletedNoteKey) {
-    return;
-  }
-
   dispatchAction({
     type: actionTypes.UPDATE_NOTE,
     payload: newNote,

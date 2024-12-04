@@ -56,13 +56,12 @@ const actionHandlers = {
         note,
         images,
         albumIds,
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'create');
     },
     async: async ({ sortKey, timestamp, note, images, albumIds }) => {
-      await createNoteEffect({ sortKey, timestamp, note, images, albumIds, updateStore: false });
+      await createNoteEffect({ sortKey, timestamp, note, images, albumIds });
     },
   },
   [actionTypes.UPDATE_NOTE]: {
@@ -70,7 +69,6 @@ const actionHandlers = {
       const newNote = {
         ...payload,
         updatedAt: Date.now(),
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
@@ -87,7 +85,6 @@ const actionHandlers = {
         ...rest,
         images: [...(images || []), ...(newImages || [])],
         updatedAt: Date.now(),
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
@@ -104,7 +101,6 @@ const actionHandlers = {
         ...rest,
         images: (images || []).filter(image => !(image.path || image.hash).includes(imagePath)),
         updatedAt: Date.now(),
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateNoteStates(newNote, 'update');
@@ -146,7 +142,6 @@ const actionHandlers = {
         createdAt: timestamp,
         updatedAt: timestamp,
         title,
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateAlbumsState(newAlbum, 'create');
@@ -162,7 +157,6 @@ const actionHandlers = {
       const newNote = {
         ...payload,
         updatedAt: Date.now(),
-        isLocal: true,
         beforeLoggedIn: !isLoggedInCat.get(),
       };
       updateAlbumsState(newNote, 'update');
@@ -215,13 +209,7 @@ async function processQueue() {
 }
 
 async function processOneAction({ type, payload }) {
-  if (
-    !actionsQueue.find(
-      action => action.type === type && action.payload?.sortKey === payload?.sortKey
-    )
-  ) {
-    await actionHandlers[type].async(payload);
-  }
+  await actionHandlers[type].async(payload);
   LocalStorage.set(localStorageKeys.actions, actionsQueue);
 }
 

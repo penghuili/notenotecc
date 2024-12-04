@@ -109,7 +109,7 @@ async function forceFetchNoteEffect(noteId) {
       (isNewer(data.updatedAt, noteCat.get()?.updatedAt) &&
         noteTimestamps.fetchNotes > noteTimestamps.updateNotes))
   ) {
-    updateNoteStates(data, 'update', true);
+    updateNoteStates(data, 'update');
   }
 
   isLoadingNoteCat.set(false);
@@ -117,7 +117,6 @@ async function forceFetchNoteEffect(noteId) {
 
 export async function fetchNoteEffect(noteId) {
   const noteInState = noteCat.get();
-  console.log(noteInState, noteId);
   if (noteInState?.sortKey === noteId) {
     return;
   }
@@ -136,14 +135,7 @@ export async function fetchNoteEffect(noteId) {
   }
 }
 
-export async function createNoteEffect({
-  sortKey,
-  timestamp,
-  note,
-  images,
-  albumIds,
-  updateStore = true,
-}) {
+export async function createNoteEffect({ sortKey, timestamp, note, images, albumIds }) {
   if (!isLoggedInCat.get()) {
     return;
   }
@@ -152,10 +144,10 @@ export async function createNoteEffect({
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
-    if (updateStore) {
-      const action = notesCat.get()?.items?.find(n => n.sortKey === sortKey) ? 'update' : 'create';
-      updateNoteStates(data, action, true);
-    }
+    const found = notesCat.get()?.items?.find(n => n.sortKey === sortKey);
+    const action = found ? 'update' : 'create';
+    const newNote = { ...data, ...found };
+    updateNoteStates(newNote, action);
     fetchSettingsEffect();
   }
 
@@ -176,7 +168,7 @@ export async function updateNoteEffect(noteId, { encryptedPassword, note, albumI
   });
 
   if (data) {
-    updateNoteStates(data, 'update', true);
+    updateNoteStates(data, 'update');
   }
 
   isUpdatingNoteCat.set(false);
@@ -192,7 +184,7 @@ export async function deleteImageEffect(noteId, { imagePath }) {
   const { data } = await deleteImage(noteId, imagePath);
 
   if (data) {
-    updateNoteStates(data, 'update', true);
+    updateNoteStates(data, 'update');
 
     fetchSettingsEffect();
   }
@@ -210,7 +202,7 @@ export async function addImagesEffect(noteId, { encryptedPassword, images }) {
   const { data } = await addImages(noteId, { encryptedPassword, images });
 
   if (data) {
-    updateNoteStates(data, 'update', true);
+    updateNoteStates(data, 'update');
 
     fetchSettingsEffect();
   }
@@ -228,7 +220,7 @@ export async function deleteNoteEffect(noteId) {
   const { data } = await deleteNote(noteId);
 
   if (data) {
-    updateNoteStates(data, 'delete', true);
+    updateNoteStates(data, 'delete');
 
     fetchSettingsEffect();
   }
@@ -277,9 +269,9 @@ export async function saveLocalNotesAndAlbumsEffect() {
   hasLocalNotesCat.set(false);
 }
 
-export function updateNoteStates(newNote, type, isServer = false) {
+export function updateNoteStates(newNote, type) {
   const updateFn = (items, item) =>
-    items.map(i => (i.sortKey === item.sortKey ? { ...i, ...item, isLocal: !isServer } : i));
+    items.map(i => (i.sortKey === item.sortKey ? { ...i, ...item } : i));
   const createFn = (items, item) => [item, ...items];
   const deleteFn = (items, item) => items.filter(i => i.sortKey !== item.sortKey);
   const fn = type === 'update' ? updateFn : type === 'create' ? createFn : deleteFn;
@@ -295,7 +287,7 @@ export function updateNoteStates(newNote, type, isServer = false) {
 
   // single
   if (type === 'update' || type === 'create') {
-    const mergedNote = { ...noteCat.get(), ...newNote, isLocal: !isServer };
+    const mergedNote = { ...noteCat.get(), ...newNote };
     noteCat.set(mergedNote);
     LocalStorage.set(`${localStorageKeys.note}-${newNote.sortKey}`, mergedNote);
   } else if (type === 'delete') {

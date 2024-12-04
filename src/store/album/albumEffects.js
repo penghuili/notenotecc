@@ -102,15 +102,13 @@ eventEmitter.on(eventEmitterEvents.loggedIn, () => {
   fetchAlbumsEffect();
 });
 
-export function updateAlbumsState(newAlbum, type, isServer) {
+export function updateAlbumsState(newAlbum, type) {
   const albumsInState = albumsCat.get() || [];
 
   let newItems = albumsInState;
   if (type === 'update') {
     newItems = orderByPosition(
-      newItems.map(item =>
-        item.sortKey === newAlbum.sortKey ? { ...newAlbum, isLocal: !isServer } : item
-      ),
+      newItems.map(item => (item.sortKey === newAlbum.sortKey ? newAlbum : item)),
       true
     );
   } else if (type === 'delete') {
