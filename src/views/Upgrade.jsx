@@ -6,7 +6,7 @@ import { useCat } from 'usecat';
 
 import { isMobileWidth } from '../shared/browser/device.js';
 import { PageContent } from '../shared/browser/PageContent.jsx';
-import { useExpiresAt, useFreeTrialsUntil } from '../shared/browser/store/sharedCats.js';
+import { useExpiresAt, useFreeTrialsUntil, userCat } from '../shared/browser/store/sharedCats.js';
 import { formatDate } from '../shared/js/date.js';
 import { Flex } from '../shared/semi/Flex.jsx';
 import { PageHeader } from '../shared/semi/PageHeader.jsx';
@@ -31,6 +31,7 @@ const Header = fastMemo(() => {
 });
 
 const Prices = fastMemo(() => {
+  const user = useCat(userCat);
   const expiresAt = useExpiresAt();
   const freeTrialUntil = useFreeTrialsUntil();
   const isTrying = useCat(isFreeTryingCat);
@@ -70,9 +71,7 @@ const Prices = fastMemo(() => {
             { text: 'All notes are encrypted', enabled: true },
             { text: 'Rich text editor', enabled: true },
             { text: 'Markdown editor', enabled: true },
-            // eslint-disable-next-line sonarjs/no-duplicate-string
             { text: 'Unlimited images', enabled: false },
-            // eslint-disable-next-line sonarjs/no-duplicate-string
             { text: 'Unlimited short videos', enabled: false },
             { text: 'Unlimited free drawings', bold: true, enabled: false },
           ]}
@@ -94,7 +93,11 @@ const Prices = fastMemo(() => {
         >
           {(!expiresAt || expiresAt < formatDate(new Date())) && (
             <div style={{ marginBottom: '1rem' }}>
-              <a href={import.meta.env.VITE_MONTHLY_LINK} target="_blank" rel="noreferrer">
+              <a
+                href={`${import.meta.env.VITE_MONTHLY_LINK}?prefilled_email=${user?.email}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <Button theme="solid" type="warning">
                   Upgrade to Pro
                 </Button>
