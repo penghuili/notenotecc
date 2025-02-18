@@ -201,16 +201,13 @@ async function processQueue() {
   }
 
   isProcessing = true;
-  while (actionsQueue.length > 0) {
-    const { type, payload } = actionsQueue.shift();
-    await processOneAction({ type, payload });
+  while (actionsQueue[0]) {
+    const { type, payload } = actionsQueue[0];
+    await actionHandlers[type].async(payload);
+    actionsQueue.shift();
+    LocalStorage.set(localStorageKeys.actions, actionsQueue);
   }
   isProcessing = false;
-}
-
-async function processOneAction({ type, payload }) {
-  await actionHandlers[type].async(payload);
-  LocalStorage.set(localStorageKeys.actions, actionsQueue);
 }
 
 export function loadActionsFromLocalStorage() {

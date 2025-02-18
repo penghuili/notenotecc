@@ -144,14 +144,33 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
 
   const { data } = await createNote({ sortKey, timestamp, note, images, albumIds });
   if (data) {
+    const found = notesCat.get()?.items?.find(n => n.sortKey === sortKey);
+    const action = found ? 'update' : 'create';
+    const newNote = { ...data, ...found };
+    updateNoteStates(newNote, action);
+
     fetchSettingsEffect();
   }
 
   isCreatingNoteCat.set(false);
 }
 
-export async function updateNoteEffect(noteId, { encryptedPassword, note, albumIds }) {
+function getEncryptedPassword(noteId) {
+  const noteInState = noteCat.get();
+  if (!noteInState || noteInState?.sortKey !== noteId) {
+    return;
+  }
+
+  return noteInState.encryptedPassword;
+}
+
+export async function updateNoteEffect(noteId, { note, albumIds }) {
   if (!isLoggedInCat.get()) {
+    return;
+  }
+
+  const encryptedPassword = getEncryptedPassword(noteId);
+  if (!encryptedPassword) {
     return;
   }
 
@@ -188,8 +207,13 @@ export async function deleteImageEffect(noteId, { imagePath }) {
   isDeletingImageCat.set(false);
 }
 
-export async function addImagesEffect(noteId, { encryptedPassword, images }) {
+export async function addImagesEffect(noteId, { images }) {
   if (!isLoggedInCat.get()) {
+    return;
+  }
+
+  const encryptedPassword = getEncryptedPassword(noteId);
+  if (!encryptedPassword) {
     return;
   }
 

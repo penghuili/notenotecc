@@ -148,6 +148,7 @@ export async function createNote({ sortKey, timestamp, note, images, albumIds })
 
     return { data: decrypted, error: null };
   } catch (error) {
+    console.log(error);
     return { data: null, error };
   }
 }
