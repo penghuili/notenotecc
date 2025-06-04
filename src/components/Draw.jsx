@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 
-import { imageType } from '../lib/constants';
+import { imageSize, imageType } from '../lib/constants';
 import { canvasToBlob } from '../shared/browser/canvasToBlob';
 import { idbStorage } from '../shared/browser/indexDB';
 import { randomHash } from '../shared/js/randomHash';
@@ -41,7 +41,7 @@ const colors = [
   '#978365',
 ];
 
-const INTERNAL_SIZE = 900;
+const INTERNAL_SIZE = imageSize;
 const displaySize = getCameraSize();
 
 const DrawingCanvas = styled.canvas`

@@ -24,3 +24,5 @@ export const imageType = isIOSBrowser() ? fileTypes.jpeg : fileTypes.webp;
 export const videoType = isIOSBrowser() ? fileTypes.mp4 : fileTypes.webm;
 
 export const playStoreLink = 'https://play.google.com/store/apps/details?id=cc.notenote.app.twa';
+
+export const imageSize = 1024;

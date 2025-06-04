@@ -1,5 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
+import { imageSize } from '../../lib/constants';
 import { disablePullToRefresh, enablePullToRefresh } from './bodySccroll';
 import { isAndroidBrowser, isIOSBrowser } from './device';
 
@@ -158,7 +159,10 @@ export const ImageCropper = forwardRef(({ width, pickedImage, onError }, ref) =>
     const newCtx = newCanvas.getContext('2d');
     const originalSquareSize = (squareSize - 2 * PADDING) / scale;
 
-    const targetWidth = Math.min(imageWidth || 900, Math.max(originalSquareSize, image.width));
+    const targetWidth = Math.min(
+      imageWidth || imageSize,
+      Math.max(originalSquareSize, image.width)
+    );
 
     const scaleFactor = targetWidth / originalSquareSize;
 

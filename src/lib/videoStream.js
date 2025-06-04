@@ -1,6 +1,7 @@
 import { createCat } from 'usecat';
 
 import { isMobileBrowser } from '../shared/browser/device';
+import { imageSize } from './constants';
 
 const facingModeCat = createCat(isMobileBrowser() ? 'environment' : 'user');
 export const isUsingVideoStreamCat = createCat(false);
@@ -25,8 +26,8 @@ export async function requestVideoStream() {
         }
       : {
           video: {
-            width: { ideal: 900 },
-            height: { ideal: 900 },
+            width: { ideal: imageSize },
+            height: { ideal: imageSize },
             facingMode: { ideal: facing },
           },
         };
