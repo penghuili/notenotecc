@@ -1,6 +1,7 @@
 import { Typography } from '@douyinfe/semi-ui';
 import { RiImageAddLine } from '@remixicon/react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { goBack } from 'react-baby-router';
 import fastMemo from 'react-fast-memo';
 import styled from 'styled-components';
 import { createCat, useCat } from 'usecat';
@@ -69,6 +70,7 @@ export const PickPhoto = fastMemo(({ onSelect }) => {
     processPickedPhotos(pickedPhotos).then(({ succeeded, failed }) => {
       if (succeeded.length) {
         onSelect(succeeded);
+        goBack();
       }
       if (failed.length) {
         setError(failed[0]);

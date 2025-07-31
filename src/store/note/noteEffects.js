@@ -146,7 +146,7 @@ export async function createNoteEffect({ sortKey, timestamp, note, images, album
   if (data) {
     const found = notesCat.get()?.items?.find(n => n.sortKey === sortKey);
     const action = found ? 'update' : 'create';
-    const newNote = { ...data, ...found };
+    const newNote = { ...found, ...data };
     updateNoteStates(newNote, action);
 
     fetchSettingsEffect();
