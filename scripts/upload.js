@@ -79,7 +79,7 @@ function uploadVersionJson() {
     ? `{"version": "${version}", "changes": "${newVersionMessage}"}`
     : `{"version": "${version}"}`;
 
-  execSync(`echo '${json}' > dist/version.json`);
+  fs.writeFileSync(path.join(__dirname, '..', 'dist', 'version.json'), json);
 
   execSync(
     `aws s3 cp dist/version.json ${process.env.S3_URL}/version.json --cache-control max-age=0,no-store`
@@ -104,14 +104,17 @@ function uploadVersionJson() {
 
 function deleteOldVersion() {
   console.log('Deleting old versions ...');
-  // Retrieve the list of folder names (versions) from S3
-  const command = `aws s3 ls ${process.env.S3_URL} --recursive | awk '{print $4}' | grep '/' | cut -d/ -f1 | uniq`;
-  const result = execSync(command).toString();
-  // Split the result into an array, filter out 'index.html' and other non-versioned entries, and then sort
-  const versions = result
-    .split('\n')
-    .filter(v => v && v !== 'index.html' && /^\d{14}$/.test(v))
-    .sort();
+  const result = execSync(`aws s3 ls ${process.env.S3_URL} --recursive`).toString();
+  const versions = [
+    ...new Set(
+      result
+        .split(/\r?\n/)
+        .map(line => line.trim().split(/\s+/).pop())
+        .filter(Boolean)
+        .map(key => key.split('/')[0])
+        .filter(version => /^\d{14}$/.test(version))
+    ),
+  ].sort();
   // If there are more than 10 versions, remove the oldest ones
   if (versions.length > 10) {
     const toDelete = versions.slice(0, versions.length - 10); // Keep the last 10

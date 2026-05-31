@@ -4,7 +4,6 @@ import fastMemo from 'react-fast-memo';
 import { useCat } from 'usecat';
 
 import { isLoggedInCat } from '../shared/browser/store/sharedCats';
-import { RouteLink } from '../shared/semi/RouteLink.jsx';
 import { notesCat } from '../store/note/noteCats.js';
 
 export const BackupBitte = fastMemo(() => {
@@ -27,7 +26,7 @@ export const BackupBitte = fastMemo(() => {
       closeIcon={null}
       description={
         <Typography.Text>
-          <RouteLink to="/sign-up">Create an account</RouteLink> to backup your notes.
+          Sign in to backup your notes.
         </Typography.Text>
       }
       style={{ margin: '1rem 0' }}

@@ -52,7 +52,7 @@
   "scripts": {
     "time": "sudo ntpdate time.nist.gov",
     "cc": "node scripts/commit.js",
-    "cs": "cp -a ../private-sharedjs/scripts/copy-shared.js scripts/copy-shared.js && node scripts/copy-shared.js semi",
+    "cs": "powershell -NoProfile -Command \"if (Test-Path src/shared) { Remove-Item -LiteralPath src/shared -Recurse -Force }; New-Item -ItemType Directory -Force src/shared | Out-Null; Copy-Item -Recurse ../private-sharedjs/lib/js src/shared/js; Copy-Item -Recurse ../private-sharedjs/lib/browser src/shared/browser; Copy-Item -Recurse ../private-sharedjs/lib/semi src/shared/semi\"",
     "start": "npm run cs && vite",
     "build": "vite build",
     "dt": "node ./scripts/update-build-env.js dev && node ./scripts/upload.js",

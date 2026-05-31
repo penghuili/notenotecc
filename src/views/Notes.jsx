@@ -124,13 +124,8 @@ const HeaderMenu = fastMemo(() => {
     <>
       {!isLoggedIn && (
         <>
-          <BabyLink to="/sign-up">
-            <Button theme="solid" size="small" style={{ marginRight: '0.5rem' }}>
-              Sign up
-            </Button>
-          </BabyLink>
           <BabyLink to="/sign-in">
-            <Button size="small" style={{ marginRight: '0.5rem' }}>
+            <Button theme="solid" size="small" style={{ marginRight: '0.5rem' }}>
               Sign in
             </Button>
           </BabyLink>

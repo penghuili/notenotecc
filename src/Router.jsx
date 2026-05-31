@@ -11,12 +11,9 @@ import { ChangeEmail } from './shared/semi/ChangeEmail.jsx';
 import { ChangePassword } from './shared/semi/ChangePassword.jsx';
 import { PageLoading } from './shared/semi/PageLoading.jsx';
 import { PrepareData } from './shared/semi/PrepareData.jsx';
-import { ResetPassword } from './shared/semi/ResetPassword.jsx';
 import { Security } from './shared/semi/Security.jsx';
 import { Settings } from './shared/semi/Settings.jsx';
 import { Setup2FA } from './shared/semi/Setup2FA.jsx';
-import { SignIn } from './shared/semi/SignIn.jsx';
-import { SignUp } from './shared/semi/SignUp.jsx';
 import { Verify2FA } from './shared/semi/Verify2FA.jsx';
 import { VerifyEmail } from './shared/semi/VerifyEmail.jsx';
 import { hasLocalNotesCat } from './store/note/noteCats.js';
@@ -32,6 +29,8 @@ import { NoteEdit } from './views/NoteEdit.jsx';
 import { Notes } from './views/Notes.jsx';
 import { OnThisDay } from './views/OnThisDay.jsx';
 import { PreviewImages } from './views/PreviewImages.jsx';
+import { ResetPassword } from './views/ResetPassword.jsx';
+import { SignIn } from './views/SignIn.jsx';
 import { Upgrade } from './views/Upgrade.jsx';
 
 async function load() {
@@ -81,7 +80,6 @@ const loggedInRoutes = {
 const publicRoutes = {
   ...commonRoutes,
 
-  '/sign-up': SignUp,
   '/sign-in': SignIn,
   '/sign-in/2fa': Verify2FA,
   '/reset-password': ResetPassword,
